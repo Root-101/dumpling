@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+    <title>Dumpling</title>
+    <rect width="120" height="120" rx="28" fill="#121019"/>
+    <g transform="translate(16 29)">
+        <rect x="4" y="15" width="16" height="16" rx="4" fill="#e6b77e"/>
+        <path d="M20 23H29M59 23H68" fill="none" stroke="#9d8fd0" stroke-width="4"/>
+        <rect x="31.5" y="9.5" width="25" height="27" rx="6.5" fill="none" stroke="#9d8fd0" stroke-width="5"/>
+        <rect x="68" y="15" width="16" height="16" rx="4" fill="#9d8fd0"/>
+        <path d="M12 47.5Q44 61.5 76 48.5M67.91 45.89L76 48.5L72.02 56.01" fill="none" stroke="#6d5bb5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+</svg>

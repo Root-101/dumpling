@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="$FLUTTER_BASE_HREF">
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Dumpling</title>
+    <meta name="description" content="Dumpling: database backups on a schedule">
+
+    <!-- Responsive -->
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- PWA -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Dumpling">
+
+    <!-- Theme color -->
+    <meta name="theme-color" content="#121019">
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="icons/Icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+        @font-face {
+          font-family: "DM Sans";
+          src: url("assets/assets/fonts/DMSans/DMSans-Regular.ttf") format("truetype");
+          font-weight: 400;
+          font-display: swap;
+        }
+
+        @font-face {
+          font-family: "DM Sans";
+          src: url("assets/assets/fonts/DMSans/DMSans-Bold.ttf") format("truetype");
+          font-weight: 700;
+          font-display: swap;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        html,
+        body {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+          background: #121019;
+          font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        #splash {
+          position: fixed;
+          inset: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background: #121019;
+          z-index: 9999;
+          transition: opacity 0.35s ease;
+        }
+
+        #splash-logo {
+          width: 132px;
+          height: 93px;
+        }
+
+        .fade-out {
+          opacity: 0;
+          pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Splash -->
+<div id="splash" role="status" aria-live="polite">
+    <svg id="splash-logo" viewBox="0 0 88 62" aria-label="Dumpling"><rect x="4" y="15" width="16" height="16" rx="4" fill="#e6b77e"/><path d="M20 23H29M59 23H68" fill="none" stroke="#9d8fd0" stroke-width="4"/><rect x="31.5" y="9.5" width="25" height="27" rx="6.5" fill="none" stroke="#9d8fd0" stroke-width="5"/><rect x="68" y="15" width="16" height="16" rx="4" fill="#9d8fd0"/><path d="M12 47.5Q44 61.5 76 48.5M67.91 45.89L76 48.5L72.02 56.01" fill="none" stroke="#6d5bb5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+
+<script>
+    if ((navigator.language || "").toLowerCase().startsWith("es")) {
+      document.documentElement.lang = "es";
+    }
+</script>
+
+<!-- Flutter -->
+<script src="flutter_bootstrap.js" async=""></script>
+
+<!-- Remove splash when Flutter renders first frame -->
+<script>
+    window.addEventListener('flutter-first-frame', function () {
+      const splash = document.getElementById('splash');
+
+      if (splash) {
+        splash.classList.add('fade-out');
+
+        setTimeout(() => {
+          splash.remove();
+          document.body.style.background = 'transparent';
+        }, 400);
+      }
+    });
+</script>
+
+</body>
+
+</html>

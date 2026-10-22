@@ -1,0 +1,98 @@
+name: console
+description: "Web console of dumpling, served as static files by the service"
+publish_to: 'none'
+
+version: 0.0.1
+
+environment:
+  flutter: ^3.47.0
+  sdk: ^3.13.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  #state management
+  flutter_bloc: 9.1.1
+
+  #routing
+  go_router: 17.5.0
+
+  #view
+  flutter_svg: 2.3.0    #to show icons in svg format
+  material_ui: 1.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: 6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/icons/
+  fonts:
+    - family: DMSans
+      fonts:
+        - asset: assets/fonts/DMSans/DMSans-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/DMSans/DMSans-ThinItalic.ttf
+          weight: 100
+          style: italic
+
+        - asset: assets/fonts/DMSans/DMSans-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/DMSans/DMSans-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+
+        - asset: assets/fonts/DMSans/DMSans-Light.ttf
+          weight: 300
+        - asset: assets/fonts/DMSans/DMSans-LightItalic.ttf
+          weight: 300
+          style: italic
+
+        - asset: assets/fonts/DMSans/DMSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/DMSans/DMSans-Italic.ttf
+          weight: 400
+          style: italic
+
+        - asset: assets/fonts/DMSans/DMSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/DMSans/DMSans-MediumItalic.ttf
+          weight: 500
+          style: italic
+
+        - asset: assets/fonts/DMSans/DMSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/DMSans/DMSans-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+
+        - asset: assets/fonts/DMSans/DMSans-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/DMSans/DMSans-BoldItalic.ttf
+          weight: 700
+          style: italic
+
+        - asset: assets/fonts/DMSans/DMSans-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/DMSans/DMSans-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+
+        - asset: assets/fonts/DMSans/DMSans-Black.ttf
+          weight: 900
+        - asset: assets/fonts/DMSans/DMSans-BlackItalic.ttf
+          weight: 900
+          style: italic
+
+    - family: JetBrainsMono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono/JetBrainsMono-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/JetBrainsMono/JetBrainsMono-Medium.ttf
+          weight: 500

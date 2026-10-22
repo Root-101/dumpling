@@ -1,0 +1,14 @@
+name: service
+description: Service of dumpling, a lightweight tool to back up databases on a schedule
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  winter: 1.0.0-rc.1            #framework
+
+dev_dependencies:
+  lints: 6.1.0
+  test: 1.33.0
