@@ -96,28 +96,39 @@ class PipelineCubit extends Cubit<PipelineState> {
     );
   }
 
-  /// A wire dropped from a config's out port moves it to another destination
-  void relink(String configId, DropTarget target) {
+  /// A wire dropped from a config's out port (re)connects it to a destination
+  void relink(String configId, DropTarget target) => _update(
+    configId,
+    (c) => c.copyWith(
+      destinationId: () => target.destinationId,
+      folderId: () => target.folderId,
+    ),
+  );
+
+  /// A wire dropped from a source on a config gives it that source
+  void attachSource(String sourceId, String configId) =>
+      _update(configId, (c) => c.copyWith(sourceId: () => sourceId));
+
+  /// Removes one wire of a config; the config and the nodes stay, as orphans
+  void disconnect(String configId, WireEnd end) => _update(
+    configId,
+    (c) => end == WireEnd.source
+        ? c.copyWith(sourceId: () => null)
+        : c.copyWith(destinationId: () => null, folderId: () => null),
+  );
+
+  void _update(String configId, BackupConfig Function(BackupConfig) f) {
     emit(
       state.copyWith(
         selectedId: () => configId,
-        configs: [
-          for (final c in state.configs)
-            c.id == configId
-                ? c.copyWith(
-                    destinationId: target.destinationId,
-                    folderId: () => target.folderId,
-                  )
-                : c,
-        ],
+        configs: [for (final c in state.configs) c.id == configId ? f(c) : c],
       ),
     );
   }
 
   void deleteConfig(String id) {
     final s = state;
-    final config = s.configs.where((c) => c.id == id).firstOrNull;
-    if (config == null || !s.canDelete(config)) return;
+    if (s.config(id) == null) return;
     emit(
       s.copyWith(
         configs: s.configs.where((c) => c.id != id).toList(),
@@ -151,12 +162,14 @@ class PipelineCubit extends Cubit<PipelineState> {
     );
   }
 
-  void addSource() {
+  /// Adds the next source of the pool at [pos] (world), or stacked under
+  /// the sources column
+  void addSource([Offset? pos]) {
     final s = state;
     if (s.sourcePool.isEmpty) return;
     final n = s.sources.length - 3;
     final source = s.sourcePool.first.copyWith(
-      pos: Offset(40.0 + (n % 3) * 24, 620.0 + (n % 3) * 12),
+      pos: pos ?? Offset(40.0 + (n % 3) * 24, 620.0 + (n % 3) * 12),
     );
     emit(
       s.copyWith(
@@ -166,17 +179,54 @@ class PipelineCubit extends Cubit<PipelineState> {
     );
   }
 
-  void addDestination() {
+  void addDestination([Offset? pos]) {
     final s = state;
     if (s.destinationPool.isEmpty) return;
     final n = s.destinations.length - 2;
     final dest = s.destinationPool.first.copyWith(
-      pos: Offset(760.0 - n * 24, 610.0 + n * 12),
+      pos: pos ?? Offset(760.0 - n * 24, 610.0 + n * 12),
     );
     emit(
       s.copyWith(
         destinations: [...s.destinations, dest],
         destinationPool: s.destinationPool.sublist(1),
+      ),
+    );
+  }
+
+  /// Removes a source; its configs stay, without source. It goes back to the
+  /// pool, so the toolbar can add it again
+  void deleteSource(String id) {
+    final s = state;
+    final source = s.source(id);
+    if (source == null) return;
+    emit(
+      s.copyWith(
+        sources: s.sources.where((x) => x.id != id).toList(),
+        sourcePool: [...s.sourcePool, source],
+        configs: [
+          for (final c in s.configs)
+            c.sourceId == id ? c.copyWith(sourceId: () => null) : c,
+        ],
+      ),
+    );
+  }
+
+  /// Removes a destination; its configs stay, without destination
+  void deleteDestination(String id) {
+    final s = state;
+    final dest = s.destination(id);
+    if (dest == null) return;
+    emit(
+      s.copyWith(
+        destinations: s.destinations.where((x) => x.id != id).toList(),
+        destinationPool: [...s.destinationPool, dest],
+        configs: [
+          for (final c in s.configs)
+            c.destinationId == id
+                ? c.copyWith(destinationId: () => null, folderId: () => null)
+                : c,
+        ],
       ),
     );
   }

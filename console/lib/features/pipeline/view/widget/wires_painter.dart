@@ -6,7 +6,19 @@ class Wire {
   final Offset to;
   final bool selected;
 
-  const Wire(this.from, this.to, {this.selected = false});
+  /// Clicked to be removed: amber and solid
+  final bool picked;
+
+  /// Part of an incomplete flow (discarded on save): faded amber
+  final bool orphan;
+
+  const Wire(
+    this.from,
+    this.to, {
+    this.selected = false,
+    this.picked = false,
+    this.orphan = false,
+  });
 }
 
 /// The source → config → destination wires. The selected ones flow (dashes
@@ -28,10 +40,16 @@ class WiresPainter extends CustomPainter {
       final paint = Paint()
         ..style = PaintingStyle.stroke
         ..strokeCap = StrokeCap.round
-        ..color = w.selected ? colors.brand.primary : colors.surface.wire
-        ..strokeWidth = w.selected ? 2.5 : 1.5;
+        ..color = w.picked
+            ? colors.brand.accent
+            : w.selected
+            ? colors.brand.primary
+            : w.orphan
+            ? colors.brand.accent.withValues(alpha: 0.6)
+            : colors.surface.wire
+        ..strokeWidth = w.selected || w.picked ? 2.5 : 1.5;
       final path = PipelineGeometry.curve(w.from, w.to);
-      if (w.selected) {
+      if (w.selected && !w.picked) {
         drawDashedPath(
           canvas,
           path,

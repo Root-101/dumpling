@@ -32,7 +32,9 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/icons/
+    - assets/icons/actions/
+    - assets/icons/navigation/
+    - assets/icons/nodes/
   fonts:
     - family: DMSans
       fonts:

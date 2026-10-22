@@ -1,3 +1,4 @@
+export 'assets/app_assets.dart';
 export 'assets/app_icons.dart';
 export 'buttons/app_button.dart';
 export 'colors/app_colors.dart';

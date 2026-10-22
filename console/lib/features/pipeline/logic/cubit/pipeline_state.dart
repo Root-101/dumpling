@@ -24,23 +24,34 @@ class PipelineState {
     this.seq = 1,
   });
 
-  BackupConfig? get selected {
-    for (final c in configs) {
-      if (c.id == selectedId) return c;
-    }
-    return null;
-  }
+  BackupConfig? get selected => config(selectedId);
 
-  SourceNode? source(String id) => _find(sources, id, (s) => s.id);
+  SourceNode? source(String? id) => _find(sources, id, (s) => s.id);
 
-  DestinationNode? destination(String id) =>
+  DestinationNode? destination(String? id) =>
       _find(destinations, id, (d) => d.id);
 
-  /// A source always keeps at least one config
-  bool canDelete(BackupConfig c) =>
-      configs.where((x) => x.sourceId == c.sourceId).length > 1;
+  BackupConfig? config(String? id) => _find(configs, id, (c) => c.id);
 
-  static T? _find<T>(List<T> list, String id, String Function(T) idOf) {
+  /// Orphans: everything outside a complete flow source → config →
+  /// destination. A config missing either end; a source or destination with
+  /// no complete config. Saving the pipeline drops them
+  bool sourceOrphan(String id) =>
+      !configs.any((c) => c.sourceId == id && !configOrphan(c));
+
+  bool destinationOrphan(String id) =>
+      !configs.any((c) => c.destinationId == id && !configOrphan(c));
+
+  static bool configOrphan(BackupConfig c) =>
+      c.sourceId == null || c.destinationId == null;
+
+  int get orphans =>
+      sources.where((x) => sourceOrphan(x.id)).length +
+      destinations.where((x) => destinationOrphan(x.id)).length +
+      configs.where(configOrphan).length;
+
+  static T? _find<T>(List<T> list, String? id, String Function(T) idOf) {
+    if (id == null) return null;
     for (final x in list) {
       if (idOf(x) == id) return x;
     }

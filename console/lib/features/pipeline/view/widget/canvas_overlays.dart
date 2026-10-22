@@ -34,8 +34,7 @@ class AddToolbar extends StatelessWidget {
             label: 'Database',
             type: AppButtonType.ghost,
             height: 34,
-            icon: AppIcon(
-              AppIcons.database,
+            icon: app.assets.icons.nodes.database.build(
               size: 15,
               color: colors.brand.postgres,
             ),
@@ -46,8 +45,7 @@ class AddToolbar extends StatelessWidget {
             label: 'Destination',
             type: AppButtonType.ghost,
             height: 34,
-            icon: AppIcon(
-              AppIcons.bucket,
+            icon: app.assets.icons.nodes.bucket.build(
               size: 15,
               color: colors.brand.accent,
             ),
@@ -107,8 +105,7 @@ class ShortcutsPanel extends StatelessWidget {
                 size: 28,
                 tooltip: 'Hide shortcuts',
                 onPressed: onClose,
-                icon: AppIcon(
-                  AppIcons.close,
+                icon: app.assets.icons.actions.close.build(
                   size: 14,
                   color: colors.text.muted,
                 ),
@@ -123,7 +120,12 @@ class ShortcutsPanel extends StatelessWidget {
                   const KeyCap('Space'),
                   Text(' + drag', style: hint),
                 ]),
-                row('Move canvas', [Text('drag background', style: hint)]),
+                row('Connect', [Text('drag from a port', style: hint)]),
+                row('Options', [Text('right click', style: hint)]),
+                row('Remove connection', [
+                  Text('click it + ', style: hint),
+                  const KeyCap('Del'),
+                ]),
                 row('Zoom', [
                   if (ctrlZoom) ...[
                     const KeyCap('Ctrl'),
@@ -196,14 +198,20 @@ class ViewControls extends StatelessWidget {
         children: [
           _square(
             'Canvas settings',
-            AppIcon(AppIcons.settings, size: 16, color: colors.text.secondary),
+            app.assets.icons.navigation.settings.build(
+              size: 16,
+              color: colors.text.secondary,
+            ),
             onSettings,
             showSettings ? active : null,
           ),
           divider,
           _square(
             'Show or hide shortcuts (?)',
-            AppIcon(AppIcons.keyboard, size: 17, color: colors.text.secondary),
+            app.assets.icons.actions.keyboard.build(
+              size: 17,
+              color: colors.text.secondary,
+            ),
             onKeys,
             showKeys ? active : null,
           ),
@@ -214,8 +222,7 @@ class ViewControls extends StatelessWidget {
               label: 'Center',
               type: AppButtonType.ghost,
               height: 36,
-              icon: AppIcon(
-                AppIcons.center,
+              icon: app.assets.icons.actions.center.build(
                 size: 14,
                 color: colors.text.secondary,
               ),
@@ -293,15 +300,11 @@ class ViewControls extends StatelessWidget {
 /// Popover of the canvas settings, above the view controls
 class CanvasSettingsPopover extends StatelessWidget {
   final bool ctrlZoom;
-  final bool showKeys;
   final VoidCallback onCtrlZoom;
-  final VoidCallback onKeys;
 
   const CanvasSettingsPopover({
     required this.ctrlZoom,
-    required this.showKeys,
     required this.onCtrlZoom,
-    required this.onKeys,
     super.key,
   });
 
@@ -330,13 +333,145 @@ class CanvasSettingsPopover extends StatelessWidget {
             value: ctrlZoom,
             onChanged: onCtrlZoom,
           ),
-          AppSwitchTile(
-            title: 'Show shortcuts',
-            subtitle: 'Panel at the bottom left',
-            value: showKeys,
-            onChanged: onKeys,
-          ),
         ],
+      ),
+    );
+  }
+}
+
+class ContextMenuItem {
+  final String label;
+  final SvgAsset icon;
+
+  /// null: disabled (shown greyed out)
+  final VoidCallback? onTap;
+  final bool danger;
+
+  const ContextMenuItem(
+    this.label,
+    this.icon,
+    this.onTap, {
+    this.danger = false,
+  });
+}
+
+/// The right-click menu of the canvas
+class CanvasContextMenu extends StatelessWidget {
+  static const double width = 220;
+
+  final List<ContextMenuItem> items;
+
+  const CanvasContextMenu({required this.items, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = app.colors;
+    return Container(
+      width: width,
+      padding: const EdgeInsets.all(4),
+      decoration: _panel(color: colors.surface.surface2),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final item in items)
+            Builder(
+              builder: (context) {
+                final color = item.onTap == null
+                    ? colors.text.subtle
+                    : item.danger
+                    ? colors.status.error
+                    : colors.text.secondary;
+                return TextButton(
+                  onPressed: item.onTap,
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 36),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    alignment: Alignment.centerLeft,
+                    foregroundColor: color,
+                    disabledForegroundColor: color,
+                    textStyle: const TextStyle(
+                      fontFamily: AppText.sans,
+                      fontSize: 13,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: app.dimensions.radius.xs,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      item.icon.build(size: 15, color: color),
+                      const SizedBox(width: 10),
+                      Expanded(child: Text(item.label)),
+                    ],
+                  ),
+                );
+              },
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Top right, under the toolbar, while something is not connected
+class OrphansWarning extends StatelessWidget {
+  final int count;
+
+  const OrphansWarning({required this.count, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = app.colors;
+    return Semantics(
+      liveRegion: true,
+      child: Container(
+        width: 280,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: colors.surface.surface2,
+          borderRadius: app.dimensions.radius.m,
+          border: Border.all(color: colors.brand.accent.withValues(alpha: 0.6)),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x59000000),
+              blurRadius: 16,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            app.assets.icons.actions.warning.build(
+              size: 18,
+              color: colors.brand.accent,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    count == 1
+                        ? '1 unconnected item'
+                        : '$count unconnected items',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: colors.brand.accent,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Only complete flows (database → config → destination) are kept. '
+                    'Everything in amber is discarded when the pipeline is saved.',
+                    style: TextStyle(fontSize: 12, color: colors.text.muted),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

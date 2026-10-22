@@ -1,4 +1,6 @@
 import 'package:console/app_exporter.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -9,6 +11,9 @@ void main() {
   GoRouter.optionURLReflectsImperativeAPIs = true;
 
   WidgetsFlutterBinding.ensureInitialized();
+
+  // the canvas has its own right-click menu
+  if (kIsWeb) BrowserContextMenu.disableContextMenu();
 
   runApp(const App());
 }
@@ -39,4 +44,6 @@ class AppGlobal {
   AppColors colors = AppColors();
 
   AppDimensions dimensions = AppDimensions();
+
+  AppAssets assets = AppAssets();
 }

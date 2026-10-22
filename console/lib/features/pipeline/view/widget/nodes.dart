@@ -34,13 +34,19 @@ BoxDecoration _nodeDecoration({List<BoxShadow>? shadow}) => BoxDecoration(
 );
 
 /// Painted over the content, so a thicker (selected) border doesn't move it
-BoxDecoration _nodeBorder(bool selected) => BoxDecoration(
-  borderRadius: app.dimensions.radius.l,
-  border: Border.all(
-    color: selected ? app.colors.brand.primary : app.colors.surface.border,
-    width: selected ? 2 : 1,
-  ),
-);
+/// Orphans (not connected on both sides) get an amber border: saving drops them
+BoxDecoration _nodeBorder(bool selected, {bool orphan = false}) =>
+    BoxDecoration(
+      borderRadius: app.dimensions.radius.l,
+      border: Border.all(
+        color: selected
+            ? app.colors.brand.primary
+            : orphan
+            ? app.colors.brand.accent
+            : app.colors.surface.border,
+        width: selected ? 2 : (orphan ? 1.5 : 1),
+      ),
+    );
 
 /// A round port. Only out ports ([onDown] set) take the pointer, and grow on hover
 class NodePort extends StatefulWidget {
@@ -180,7 +186,7 @@ class SourceNodeView extends StatelessWidget {
             height: size.height,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: _nodeDecoration(),
-            foregroundDecoration: _nodeBorder(selected),
+            foregroundDecoration: _nodeBorder(selected, orphan: !used),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -253,14 +259,12 @@ class SourceNodeView extends StatelessWidget {
 class ConfigNodeView extends StatelessWidget {
   final BackupConfig config;
   final bool selected;
-  final bool canDelete;
   final NodeHandlers handlers;
   final VoidCallback onDelete;
 
   const ConfigNodeView({
     required this.config,
     required this.selected,
-    required this.canDelete,
     required this.handlers,
     required this.onDelete,
     super.key,
@@ -311,7 +315,10 @@ class ConfigNodeView extends StatelessWidget {
                     ]
                   : null,
             ),
-            foregroundDecoration: _nodeBorder(selected),
+            foregroundDecoration: _nodeBorder(
+              selected,
+              orphan: PipelineState.configOrphan(config),
+            ),
             child: Column(
               children: [
                 Padding(
@@ -322,8 +329,7 @@ class ConfigNodeView extends StatelessWidget {
                         background: colors.brand.primary.withValues(
                           alpha: 0.14,
                         ),
-                        child: AppIcon(
-                          AppIcons.clock,
+                        child: app.assets.icons.nodes.clock.build(
                           size: 16,
                           color: colors.brand.primary,
                         ),
@@ -455,8 +461,16 @@ class ConfigNodeView extends StatelessWidget {
           top: portY - 6,
           child: NodePort(
             size: 12,
-            fill: selected ? colors.brand.primary : colors.surface.background,
-            border: selected ? colors.brand.primary : colors.surface.wire,
+            fill: selected
+                ? colors.brand.primary
+                : config.sourceId == null
+                ? colors.brand.accent
+                : colors.surface.background,
+            border: selected
+                ? colors.brand.primary
+                : config.sourceId == null
+                ? colors.brand.accent
+                : colors.surface.wire,
           ),
         ),
         Positioned(
@@ -464,13 +478,22 @@ class ConfigNodeView extends StatelessWidget {
           top: portY - 9,
           child: NodePort(
             size: 18,
-            tooltip: 'Drag to another destination',
-            fill: selected ? colors.brand.primary : colors.surface.background,
-            border: selected ? colors.brand.primary : colors.surface.wire,
+            tooltip: 'Drag to a destination',
+            // amber: free port, like an unconnected source
+            fill: selected
+                ? colors.brand.primary
+                : config.destinationId == null
+                ? colors.brand.accent
+                : colors.surface.background,
+            border: selected
+                ? colors.brand.primary
+                : config.destinationId == null
+                ? colors.brand.accent
+                : colors.surface.wire,
             onDown: (e) => handlers.portDown(NodeKind.config, config.id, e),
           ),
         ),
-        if (selected && canDelete)
+        if (selected)
           Positioned(
             right: -11,
             top: -11,
@@ -486,9 +509,8 @@ class ConfigNodeView extends StatelessWidget {
                   size: 24,
                   tooltip: 'Delete config',
                   onPressed: onDelete,
-                  icon: AppIcon(
-                    AppIcons.close,
-                    size: 12,
+                  icon: app.assets.icons.actions.delete.build(
+                    size: 13,
                     color: colors.status.error,
                   ),
                 ),
@@ -512,6 +534,9 @@ class DestinationNodeView extends StatelessWidget {
 
   /// Some config writes to the root
   final bool rootUsed;
+
+  /// No config writes here
+  final bool orphan;
   final NodeHandlers handlers;
   final VoidCallback onAddFolder;
 
@@ -521,6 +546,7 @@ class DestinationNodeView extends StatelessWidget {
     required this.targetFolder,
     required this.linking,
     required this.rootUsed,
+    required this.orphan,
     required this.handlers,
     required this.onAddFolder,
     super.key,
@@ -564,7 +590,7 @@ class DestinationNodeView extends StatelessWidget {
             height: PipelineGeometry.destinationHeight(d),
             padding: const EdgeInsets.symmetric(vertical: 1),
             decoration: _nodeDecoration(),
-            foregroundDecoration: _nodeBorder(false),
+            foregroundDecoration: _nodeBorder(false, orphan: orphan),
             child: Column(
               children: [
                 SizedBox(
@@ -577,8 +603,7 @@ class DestinationNodeView extends StatelessWidget {
                         children: [
                           _Badge(
                             background: const Color(0xFFF1EFF6),
-                            child: AppIcon(
-                              AppIcons.bucket,
+                            child: app.assets.icons.nodes.bucket.build(
                               size: 17,
                               color: colors.brand.primaryAction,
                             ),
@@ -728,8 +753,7 @@ class _FolderRow extends StatelessWidget {
           ),
           child: Row(
             children: [
-              AppIcon(
-                AppIcons.folder,
+              app.assets.icons.nodes.folder.build(
                 size: 15,
                 color: selected ? colors.brand.primary : colors.text.subtle,
               ),

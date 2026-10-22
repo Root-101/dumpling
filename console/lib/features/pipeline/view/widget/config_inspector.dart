@@ -18,8 +18,12 @@ class ConfigInspector extends StatelessWidget {
     final dest = state.destination(c.destinationId);
     final folder = dest?.folders.where((f) => f.id == c.folderId).firstOrNull;
     final base = '${dest?.bucket ?? ''}${folder?.path ?? ''}';
-    final dbName = db?.name ?? '';
-    final canDelete = state.canDelete(c);
+    final dbName = db?.name ?? 'no source';
+    // an orphan config (no source or no destination) never runs
+    final missing = [
+      if (db == null) 'a source',
+      if (dest == null) 'a destination',
+    ];
     final section = AppText.overline.copyWith(
       fontSize: 12,
       color: colors.brand.primary,
@@ -67,7 +71,7 @@ class ConfigInspector extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '$dbName → $base',
+                        '$dbName → ${dest == null ? 'no destination' : base}',
                         style: AppText.mono.copyWith(
                           fontSize: 12,
                           color: colors.text.muted,
@@ -80,8 +84,7 @@ class ConfigInspector extends StatelessWidget {
                   tooltip: 'Close (Esc)',
                   background: colors.surface.control.withValues(alpha: 0.75),
                   onPressed: () => cubit.select(null),
-                  icon: AppIcon(
-                    AppIcons.close,
+                  icon: app.assets.icons.actions.close.build(
                     size: 16,
                     color: colors.text.secondary,
                   ),
@@ -181,7 +184,9 @@ class ConfigInspector extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Relative to ${folder != null ? 'the folder ${folder.path}' : 'the root of ${dest?.bucket ?? ''}'}.',
+                  dest == null
+                      ? 'Connect a destination to choose where it goes.'
+                      : 'Relative to ${folder != null ? 'the folder ${folder.path}' : 'the root of ${dest.bucket}'}.',
                   style: TextStyle(fontSize: 12, color: colors.text.subtle),
                 ),
                 const SizedBox(height: 12),
@@ -201,21 +206,31 @@ class ConfigInspector extends StatelessWidget {
                 const SizedBox(height: 10),
                 _Box(
                   children: [
-                    Text(
-                      '${(dest?.provider ?? '').split(' · ').first} · $base',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                    if (missing.isNotEmpty)
+                      Text(
+                        'Nothing: connect ${missing.join(' and ')}.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: colors.brand.accent,
+                        ),
+                      )
+                    else ...[
+                      Text(
+                        '${dest!.provider.split(' · ').first} · $base',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      's3://$base/${PipelineCubit.resolveKey(c.objectKey, dbName)}',
-                      style: AppText.mono.copyWith(
-                        fontSize: 11,
-                        color: colors.brand.accent,
+                      const SizedBox(height: 4),
+                      Text(
+                        's3://$base/${PipelineCubit.resolveKey(c.objectKey, dbName)}',
+                        style: AppText.mono.copyWith(
+                          fontSize: 11,
+                          color: colors.brand.accent,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ],
@@ -233,39 +248,12 @@ class ConfigInspector extends StatelessWidget {
             ),
             child: Row(
               children: [
-                if (canDelete)
-                  AppButton(
-                    label: 'Delete config',
-                    type: AppButtonType.danger,
-                    onPressed: () => cubit.deleteConfig(c.id),
-                  )
-                else
-                  Expanded(
-                    child: Tooltip(
-                      message: 'A database needs at least one config',
-                      child: Row(
-                        children: [
-                          AppIcon(
-                            AppIcons.lock,
-                            size: 14,
-                            color: colors.text.subtle,
-                          ),
-                          const SizedBox(width: 6),
-                          Flexible(
-                            child: Text(
-                              'Only config of $dbName',
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: colors.text.subtle,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                if (canDelete) const Spacer() else const SizedBox(width: 10),
+                AppButton(
+                  label: 'Delete config',
+                  type: AppButtonType.danger,
+                  onPressed: () => cubit.deleteConfig(c.id),
+                ),
+                const Spacer(),
                 const AppButton(
                   label: 'Run now',
                   type: AppButtonType.secondary,

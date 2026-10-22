@@ -83,11 +83,14 @@ class DestinationNode {
       );
 }
 
-/// One connection source → destination (folder), with its schedule
+/// One connection source → destination (folder), with its schedule. Either
+/// end can be missing: orphans are allowed while editing
 class BackupConfig {
   final String id;
-  final String sourceId;
-  final String destinationId;
+
+  /// null: not connected yet (or its wire was removed)
+  final String? sourceId;
+  final String? destinationId;
 
   /// null: the root of the bucket
   final String? folderId;
@@ -127,7 +130,8 @@ class BackupConfig {
 
   BackupConfig copyWith({
     Offset? pos,
-    String? destinationId,
+    String? Function()? sourceId,
+    String? Function()? destinationId,
     String? Function()? folderId,
     Frequency? frequency,
     String? cron,
@@ -137,8 +141,8 @@ class BackupConfig {
     String? objectKey,
   }) => BackupConfig(
     id: id,
-    sourceId: sourceId,
-    destinationId: destinationId ?? this.destinationId,
+    sourceId: sourceId != null ? sourceId() : this.sourceId,
+    destinationId: destinationId != null ? destinationId() : this.destinationId,
     folderId: folderId != null ? folderId() : this.folderId,
     pos: pos ?? this.pos,
     name: name,
@@ -172,3 +176,6 @@ class DropTarget {
   @override
   int get hashCode => Object.hash(destinationId, folderId);
 }
+
+/// The two wires of a config: from its source, or to its destination
+enum WireEnd { source, destination }

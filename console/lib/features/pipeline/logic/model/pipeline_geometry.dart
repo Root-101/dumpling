@@ -79,6 +79,86 @@ class PipelineGeometry {
     return null;
   }
 
+  /// The config under [p] (a source wire dropped on it attaches the source)
+  static BackupConfig? hitConfig(List<BackupConfig> configs, Offset p) {
+    for (final c in configs.reversed) {
+      if (configRect(c).inflate(8).contains(p)) return c;
+    }
+    return null;
+  }
+
+  /// The two ends of a config's wire, if both nodes exist
+  static (Offset, Offset)? wireEnds(
+    PipelineState s,
+    BackupConfig c,
+    WireEnd end,
+  ) {
+    if (end == WireEnd.source) {
+      final source = s.source(c.sourceId);
+      return source == null ? null : (sourceOut(source), configIn(c));
+    }
+    final dest = s.destination(c.destinationId);
+    return dest == null
+        ? null
+        : (configOut(c), destinationPort(dest, c.folderId));
+  }
+
+  /// The wire nearest to [p] within [tolerance] (world units)
+  static (String, WireEnd)? hitWire(
+    PipelineState s,
+    Offset p,
+    double tolerance,
+  ) {
+    (String, WireEnd)? best;
+    var bestD = tolerance;
+    for (final c in s.configs) {
+      for (final end in WireEnd.values) {
+        final ends = wireEnds(s, c, end);
+        if (ends == null) continue;
+        final d = _distanceToCurve(ends.$1, ends.$2, p);
+        if (d <= bestD) {
+          bestD = d;
+          best = (c.id, end);
+        }
+      }
+    }
+    return best;
+  }
+
+  /// Point of [curve] at t (0..1)
+  static Offset curveAt(Offset a, Offset b, double t) {
+    final dx = math.max(40.0, (b.dx - a.dx).abs() / 2);
+    final p1 = Offset(a.dx + dx, a.dy), p2 = Offset(b.dx - dx, b.dy);
+    final u = 1 - t;
+    return a * (u * u * u) +
+        p1 * (3 * u * u * t) +
+        p2 * (3 * u * t * t) +
+        b * (t * t * t);
+  }
+
+  static double _distanceToCurve(Offset a, Offset b, Offset p) {
+    const steps = 32;
+    var best = double.infinity;
+    var prev = a;
+    for (var i = 1; i <= steps; i++) {
+      final next = curveAt(a, b, i / steps);
+      best = math.min(best, _distanceToSegment(p, prev, next));
+      prev = next;
+    }
+    return best;
+  }
+
+  static double _distanceToSegment(Offset p, Offset a, Offset b) {
+    final ab = b - a;
+    final len2 = ab.distanceSquared;
+    if (len2 == 0) return (p - a).distance;
+    final t = (((p - a).dx * ab.dx + (p - a).dy * ab.dy) / len2).clamp(
+      0.0,
+      1.0,
+    );
+    return (p - (a + ab * t)).distance;
+  }
+
   /// Horizontal S-curve between two ports
   static Path curve(Offset a, Offset b) {
     final dx = math.max(40.0, (b.dx - a.dx).abs() / 2);

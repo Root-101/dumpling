@@ -9,7 +9,7 @@ class AppRail extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = app.colors;
     Widget item(
-      AppIcons icon,
+      SvgAsset icon,
       String label, {
       bool active = false,
       int? badge,
@@ -22,8 +22,8 @@ class AppRail extends StatelessWidget {
             tooltip: label,
             background: active ? colors.brand.primarySelected : null,
             onPressed: () {},
-            icon: AppIcon(
-              icon,
+            icon: icon.build(
+              size: 20,
               color: active ? colors.text.primary : colors.text.muted,
             ),
           ),
@@ -76,13 +76,17 @@ class AppRail extends StatelessWidget {
             child: const DumplingLogo(),
           ),
           const SizedBox(height: 6),
-          item(AppIcons.backups, 'Backups'),
-          item(AppIcons.pipeline, 'Pipeline editor', active: true),
-          item(AppIcons.database, 'Sources'),
-          item(AppIcons.bucket, 'Destinations'),
-          item(AppIcons.events, 'Events', badge: 2),
+          item(app.assets.icons.navigation.backups, 'Backups'),
+          item(
+            app.assets.icons.navigation.pipeline,
+            'Pipeline editor',
+            active: true,
+          ),
+          item(app.assets.icons.nodes.database, 'Sources'),
+          item(app.assets.icons.nodes.bucket, 'Destinations'),
+          item(app.assets.icons.navigation.events, 'Events', badge: 2),
           const Spacer(),
-          item(AppIcons.settings, 'Settings'),
+          item(app.assets.icons.navigation.settings, 'Settings'),
         ],
       ),
     );
