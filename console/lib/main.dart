@@ -1,5 +1,7 @@
 import 'package:console/app_exporter.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart' as old;
+import 'package:flutter/services.dart' show BrowserContextMenu;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -37,6 +39,8 @@ void main() {
   GoRouter.optionURLReflectsImperativeAPIs = true;
 
   WidgetsFlutterBinding.ensureInitialized();
+  // the right click is the canvas's own menu, not the browser's
+  if (kIsWeb) BrowserContextMenu.disableContextMenu();
 
   runApp(
     FutureBuilder(
