@@ -472,3 +472,196 @@ class OrphansWarning extends StatelessWidget {
     );
   }
 }
+
+/// Bottom center, until the workspace has its first config: add a source,
+/// add a destination, connect them. A step with something off the canvas
+/// places it; with nothing at all, it goes to create it
+class CanvasGuide extends StatelessWidget {
+  final CanvasData data;
+  final ValueChanged<String> onPlaceSource;
+  final ValueChanged<String> onPlaceDestination;
+  final VoidCallback onCreateSource;
+  final VoidCallback onCreateDestination;
+
+  const CanvasGuide({
+    required this.data,
+    required this.onPlaceSource,
+    required this.onPlaceDestination,
+    required this.onCreateSource,
+    required this.onCreateDestination,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = app.intl.canvas.guide;
+    final hasSource = data.sources.isNotEmpty;
+    final hasDestination = data.destinations.isNotEmpty;
+    final source = data.sourcePool.firstOrNull;
+    final destination = data.destinationPool.firstOrNull;
+    return Container(
+      width: 640,
+      padding: const EdgeInsets.fromLTRB(18, 14, 18, 16),
+      decoration: _panel(color: app.colors.surface.surface2),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            t.title.toUpperCase(),
+            style: AppText.overline.copyWith(color: app.colors.brand.primary),
+          ),
+          const SizedBox(height: 12),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: _GuideStep(
+                    number: 1,
+                    done: hasSource,
+                    title: t.source,
+                    help: t.sourceHelp,
+                    action: hasSource
+                        ? null
+                        : source == null
+                        ? (t.create, onCreateSource)
+                        : (
+                            t.place(name: source.name),
+                            () => onPlaceSource(source.id),
+                          ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _GuideStep(
+                    number: 2,
+                    done: hasDestination,
+                    title: t.destination,
+                    help: t.destinationHelp,
+                    action: hasDestination
+                        ? null
+                        : destination == null
+                        ? (t.create, onCreateDestination)
+                        : (
+                            t.place(name: destination.name),
+                            () => onPlaceDestination(destination.id),
+                          ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _GuideStep(
+                    number: 3,
+                    done: false,
+                    active: hasSource && hasDestination,
+                    title: t.connect,
+                    help: t.connectHelp,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GuideStep extends StatelessWidget {
+  final int number;
+  final bool done;
+
+  /// The next one to do: the others wait, dimmed
+  final bool active;
+  final String title;
+  final String help;
+  final (String, VoidCallback)? action;
+
+  const _GuideStep({
+    required this.number,
+    required this.done,
+    required this.title,
+    required this.help,
+    this.active = true,
+    this.action,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = app.colors;
+    final accent = done ? colors.status.success : colors.brand.primary;
+    final action = this.action;
+    return Opacity(
+      opacity: active || done ? 1 : 0.5,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: colors.surface.surface1,
+          borderRadius: app.dimensions.radius.m,
+          border: Border.all(
+            color: done
+                ? colors.status.success.withValues(alpha: 0.5)
+                : colors.surface.border,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 22,
+                  height: 22,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: accent.withValues(alpha: 0.16),
+                  ),
+                  child: done
+                      ? app.assets.icons.actions.check.build(
+                          size: 13,
+                          color: accent,
+                        )
+                      : Text(
+                          '$number',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: accent,
+                          ),
+                        ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              help,
+              style: TextStyle(fontSize: 12, color: colors.text.muted),
+            ),
+            if (action != null && !done) ...[
+              const Spacer(),
+              const SizedBox(height: 10),
+              AppButton(
+                label: action.$1,
+                type: AppButtonType.secondary,
+                height: 30,
+                onPressed: action.$2,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}

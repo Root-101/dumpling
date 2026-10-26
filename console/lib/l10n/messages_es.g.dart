@@ -792,6 +792,10 @@ class AppMessages$canvas$es implements AppMessages$canvas$en {
       AppMessages$canvas$testRun$es._(_root);
   @override
   late final AppMessages$canvas$run$es run = AppMessages$canvas$run$es._(_root);
+  @override
+  late final AppMessages$canvas$guide$es guide = AppMessages$canvas$guide$es._(
+    _root,
+  );
 }
 
 // Path: destinations.typeSub
@@ -1081,6 +1085,34 @@ class AppMessages$canvas$run$es implements AppMessages$canvas$run$en {
   @override
   String failed({required String name, required String error}) =>
       'Backup ${name} falló: ${error}';
+}
+
+// Path: canvas.guide
+class AppMessages$canvas$guide$es implements AppMessages$canvas$guide$en {
+  AppMessages$canvas$guide$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get title => 'Tu primer backup';
+  @override
+  String get source => 'Agrega un origen';
+  @override
+  String get sourceHelp => 'La base de datos a respaldar.';
+  @override
+  String get destination => 'Agrega un destino';
+  @override
+  String get destinationHelp => 'El bucket donde van los backups.';
+  @override
+  String get connect => 'Conéctalos';
+  @override
+  String get connectHelp =>
+      'Arrastra desde el puerto del origen hasta una carpeta o el bucket: se crea una config entre ellos. Luego guarda.';
+  @override
+  String get create => 'Crear uno';
+  @override
+  String place({required String name}) => 'Colocar ${name}';
 }
 
 /// The flat map containing all translations for locale <es>.
@@ -1551,6 +1583,15 @@ extension on AppMessagesEs {
         required String name,
         required String error,
       }) => 'Backup ${name} falló: ${error}',
+      'canvas.guide.title' => 'Tu primer backup',
+      'canvas.guide.source' => 'Agrega un origen',
+      'canvas.guide.sourceHelp' => 'La base de datos a respaldar.',
+      'canvas.guide.destination' => 'Agrega un destino',
+      'canvas.guide.destinationHelp' => 'El bucket donde van los backups.',
+      'canvas.guide.connect' => 'Conéctalos',
+      'canvas.guide.connectHelp' => 'Arrastra desde el puerto del origen hasta una carpeta o el bucket: se crea una config entre ellos. Luego guarda.',
+      'canvas.guide.create' => 'Crear uno',
+      'canvas.guide.place' => ({required String name}) => 'Colocar ${name}',
       _ => null,
     };
   }

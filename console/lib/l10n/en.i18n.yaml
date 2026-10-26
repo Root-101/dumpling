@@ -380,3 +380,13 @@ canvas:
     needsSave: 'Save the canvas first: a run uses the saved config.'
     done: 'Backup {name: String} done: {size: String}'
     failed: 'Backup {name: String} failed: {error: String}'
+  guide:
+    title: 'Your first backup'
+    source: 'Add a source'
+    sourceHelp: 'The database to back up.'
+    destination: 'Add a destination'
+    destinationHelp: 'The bucket the backups go to.'
+    connect: 'Connect them'
+    connectHelp: 'Drag from the port of the source to a folder or the bucket: a config is created between them. Then save.'
+    create: 'Create one'
+    place: 'Place {name: String}'

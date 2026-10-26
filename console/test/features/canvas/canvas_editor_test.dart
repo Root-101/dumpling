@@ -40,7 +40,7 @@ void main() {
   });
 
   /// The editor with [demoCanvas] loaded
-  Future<CanvasCubit> pump(WidgetTester tester) async {
+  Future<CanvasCubit> pump(WidgetTester tester, [CanvasModel? canvas]) async {
     tester.view.physicalSize = const Size(1440, 900);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -50,7 +50,7 @@ void main() {
     final destinations = _MockDestinations();
     when(() => auth.auth).thenReturn(session());
     when(() => repo.get(workspace: 'production', token: 'jwt'))
-        .thenAnswer((_) async => demoCanvas());
+        .thenAnswer((_) async => canvas ?? demoCanvas());
     final cubit = CanvasCubit(repo, sources, destinations, auth);
     await cubit.load('production');
     await tester.pumpWidget(
@@ -334,4 +334,50 @@ void main() {
       expect(cubit.state.data.config('j1')!.compression, 'none');
     },
   );
+
+  testWidgets('an empty workspace shows the guide until its first config', (
+    tester,
+  ) async {
+    final demo = demoCanvas();
+    final cubit = await pump(
+      tester,
+      CanvasModel(
+        sources: const [],
+        sourcePool: demo.sourcePool,
+        destinations: const [],
+        destinationPool: demo.destinationPool,
+        configs: const [],
+      ),
+    );
+    expect(find.byType(CanvasGuide), findsOneWidget);
+    expect(find.text('YOUR FIRST BACKUP'), findsOneWidget);
+
+    await tester.tap(find.text('Place billing-db'));
+    await tester.pump();
+    expect(cubit.state.data.source('billing'), isNotNull);
+    await tester.tap(find.text('Place br'));
+    await tester.pump();
+    expect(cubit.state.data.destination('br'), isNotNull);
+    expect(find.byType(CanvasGuide), findsOneWidget); // connect them is left
+
+    cubit.connect('billing', const DropTarget('br', null));
+    await tester.pump();
+    expect(find.byType(CanvasGuide), findsNothing);
+  });
+
+  testWidgets('with nothing to place, the guide sends to create it', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      const CanvasModel(
+        sources: [],
+        sourcePool: [],
+        destinations: [],
+        destinationPool: [],
+        configs: [],
+      ),
+    );
+    expect(find.text('Create one'), findsNWidgets(2));
+  });
 }

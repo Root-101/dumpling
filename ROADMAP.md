@@ -140,7 +140,8 @@ Screens: Pipeline editor, Getting started · Empty workspace.
 - [x] Test run from the header: checks without backing anything up that every complete flow
   could run (each source connects and `pg_dump` can dump it, each destination takes a write in
   its folders, the ones added on the canvas and not saved yet too).
-- [ ] Empty workspace guide: add a source, add a destination, connect them.
+- [x] Empty workspace guide: add a source, add a destination, connect them. Until the first
+  config; a step places what is off the canvas, or goes to create it when there is none.
 
 ## M6 · Backup engine
 

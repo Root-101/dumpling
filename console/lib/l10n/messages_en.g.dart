@@ -1013,6 +1013,9 @@ class AppMessages$canvas$en {
   late final AppMessages$canvas$testRun$en testRun =
       AppMessages$canvas$testRun$en._(_root);
   late final AppMessages$canvas$run$en run = AppMessages$canvas$run$en._(_root);
+  late final AppMessages$canvas$guide$en guide = AppMessages$canvas$guide$en._(
+    _root,
+  );
 }
 
 // Path: destinations.typeSub
@@ -1381,6 +1384,43 @@ class AppMessages$canvas$run$en {
   /// en: 'Backup {name: String} failed: {error: String}'
   String failed({required String name, required String error}) =>
       'Backup ${name} failed: ${error}';
+}
+
+// Path: canvas.guide
+class AppMessages$canvas$guide$en {
+  AppMessages$canvas$guide$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Your first backup'
+  String get title => 'Your first backup';
+
+  /// en: 'Add a source'
+  String get source => 'Add a source';
+
+  /// en: 'The database to back up.'
+  String get sourceHelp => 'The database to back up.';
+
+  /// en: 'Add a destination'
+  String get destination => 'Add a destination';
+
+  /// en: 'The bucket the backups go to.'
+  String get destinationHelp => 'The bucket the backups go to.';
+
+  /// en: 'Connect them'
+  String get connect => 'Connect them';
+
+  /// en: 'Drag from the port of the source to a folder or the bucket: a config is created between them. Then save.'
+  String get connectHelp =>
+      'Drag from the port of the source to a folder or the bucket: a config is created between them. Then save.';
+
+  /// en: 'Create one'
+  String get create => 'Create one';
+
+  /// en: 'Place {name: String}'
+  String place({required String name}) => 'Place ${name}';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -1843,6 +1883,15 @@ extension on AppMessages {
         required String name,
         required String error,
       }) => 'Backup ${name} failed: ${error}',
+      'canvas.guide.title' => 'Your first backup',
+      'canvas.guide.source' => 'Add a source',
+      'canvas.guide.sourceHelp' => 'The database to back up.',
+      'canvas.guide.destination' => 'Add a destination',
+      'canvas.guide.destinationHelp' => 'The bucket the backups go to.',
+      'canvas.guide.connect' => 'Connect them',
+      'canvas.guide.connectHelp' => 'Drag from the port of the source to a folder or the bucket: a config is created between them. Then save.',
+      'canvas.guide.create' => 'Create one',
+      'canvas.guide.place' => ({required String name}) => 'Place ${name}',
       _ => null,
     };
   }

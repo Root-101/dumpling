@@ -380,3 +380,13 @@ canvas:
     needsSave: 'Guarda el canvas primero: una ejecución usa la config guardada.'
     done: 'Backup {name: String} terminado: {size: String}'
     failed: 'Backup {name: String} falló: {error: String}'
+  guide:
+    title: 'Tu primer backup'
+    source: 'Agrega un origen'
+    sourceHelp: 'La base de datos a respaldar.'
+    destination: 'Agrega un destino'
+    destinationHelp: 'El bucket donde van los backups.'
+    connect: 'Conéctalos'
+    connectHelp: 'Arrastra desde el puerto del origen hasta una carpeta o el bucket: se crea una config entre ellos. Luego guarda.'
+    create: 'Crear uno'
+    place: 'Colocar {name: String}'
