@@ -358,4 +358,64 @@ void main() {
     expect(bb.folders, ['orders', 'users', 'billing']);
     expect(bb.secretKey, isNull);
   });
+
+  LastRun run(RunStatus status, {int? size, String? error}) => LastRun(
+    id: 'run_1',
+    status: status,
+    startedAt: DateTime.utc(2026, 10, 26, 3),
+    sizeBytes: size,
+    error: error,
+  );
+
+  test(
+    'run now follows the run until it ends, without moving the selection',
+    () async {
+      final cubit = CanvasCubit(
+        repo,
+        sources,
+        destinations,
+        auth,
+        pollEvery: Duration.zero,
+      );
+      await cubit.load('production');
+      cubit.select('j2');
+      when(
+        () =>
+            repo.runNow(workspace: 'production', configId: 'j1', token: 'jwt'),
+      ).thenAnswer((_) async => run(RunStatus.running));
+      final answers = [
+        run(RunStatus.running),
+        run(RunStatus.success, size: 2048),
+      ];
+      when(() => repo.run(workspace: 'production', id: 'run_1', token: 'jwt'))
+          .thenAnswer((_) async => answers.removeAt(0));
+
+      final seen = <RunStatus?>[];
+      final sub = cubit.stream.listen(
+        (s) => seen.add(s.data.config('j1')!.lastRun?.status),
+      );
+      await cubit.runNow('j1');
+      await sub.cancel();
+
+      expect(seen.first, RunStatus.running);
+      expect(
+        cubit.state,
+        isA<CanvasRunFinishedState>()
+            .having((s) => s.configName, 'name', 'Nightly full')
+            .having((s) => s.run.sizeBytes, 'size', 2048),
+      );
+      expect(cubit.state.data.config('j1')!.lastRun!.status, RunStatus.success);
+      expect(cubit.state.data.selectedId, 'j2');
+    },
+  );
+
+  test('run now while one is running says why', () async {
+    final cubit = await loaded();
+    when(
+      () => repo.runNow(workspace: 'production', configId: 'j1', token: 'jwt'),
+    ).thenThrow(apiError('A run of this config is already in progress'));
+    await cubit.runNow('j1');
+    expect(cubit.state, isA<CanvasProcessingErrorState>());
+    expect(cubit.state.data.config('j1')!.lastRun, isNull);
+  });
 }

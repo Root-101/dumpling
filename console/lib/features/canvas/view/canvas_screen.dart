@@ -78,6 +78,26 @@ class _CanvasScreenState extends State<CanvasScreen> {
         );
       }
     }
+    if (state is CanvasRunFinishedState) {
+      final run = state.run;
+      if (run.status == RunStatus.success) {
+        app.snack.showSuccess(
+          message: app.intl.canvas.run.done(
+            name: state.configName,
+            size: StorageFormatter().formatSize(run.sizeBytes ?? 0),
+          ),
+          context: app.context,
+        );
+      } else {
+        app.snack.showError(
+          message: app.intl.canvas.run.failed(
+            name: state.configName,
+            error: run.error ?? '',
+          ),
+          context: app.context,
+        );
+      }
+    }
     if (state is CanvasProcessingErrorState) {
       app.snack.showError(message: state.message, context: app.context);
     }

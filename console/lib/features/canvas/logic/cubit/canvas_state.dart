@@ -152,6 +152,18 @@ class CanvasTestedState extends CanvasState {
   const CanvasTestedState(this.checks, {required super.data});
 }
 
+/// A run started with Run now is over, well or not
+class CanvasRunFinishedState extends CanvasState {
+  final String configName;
+  final LastRun run;
+
+  const CanvasRunFinishedState(
+    this.configName,
+    this.run, {
+    required super.data,
+  });
+}
+
 class CanvasProcessingErrorState extends CanvasState {
   final String message;
 

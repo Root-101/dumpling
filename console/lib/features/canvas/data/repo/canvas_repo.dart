@@ -31,6 +31,40 @@ class CanvasRepo {
       throw ExceptionConverter.parse(e);
     }
   }
+
+  Future<LastRun> runNow({
+    required String workspace,
+    required String configId,
+    String? token,
+  }) async {
+    try {
+      final json = await _client.runNow(
+        workspace: workspace,
+        configId: configId,
+        token: token,
+      );
+      return LastRun.fromJson(json);
+    } catch (e) {
+      throw ExceptionConverter.parse(e);
+    }
+  }
+
+  Future<LastRun> run({
+    required String workspace,
+    required String id,
+    String? token,
+  }) async {
+    try {
+      final json = await _client.run(
+        workspace: workspace,
+        id: id,
+        token: token,
+      );
+      return LastRun.fromJson(json);
+    } catch (e) {
+      throw ExceptionConverter.parse(e);
+    }
+  }
 }
 
 extension CanvasResponseMapping on CanvasResponse {
@@ -77,14 +111,7 @@ extension CanvasResponseMapping on CanvasResponse {
         objectKey: json['object_key'],
         enabled: json['enabled'],
         nextRun: next == null ? null : DateTime.parse(next),
-        lastRun: last == null
-            ? null
-            : LastRun(
-                status: RunStatus.values.byName(last['status']),
-                startedAt: DateTime.parse(last['started_at']),
-                sizeBytes: last['size_bytes'],
-                error: last['error'],
-              ),
+        lastRun: last == null ? null : LastRun.fromJson(last),
       );
     }
 

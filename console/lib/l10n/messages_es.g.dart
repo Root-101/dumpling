@@ -790,6 +790,8 @@ class AppMessages$canvas$es implements AppMessages$canvas$en {
   @override
   late final AppMessages$canvas$testRun$es testRun =
       AppMessages$canvas$testRun$es._(_root);
+  @override
+  late final AppMessages$canvas$run$es run = AppMessages$canvas$run$es._(_root);
 }
 
 // Path: destinations.typeSub
@@ -1035,6 +1037,29 @@ class AppMessages$canvas$testRun$es implements AppMessages$canvas$testRun$en {
   @override
   String get nothing =>
       'Nada que probar: primero conecta un origen a un destino.';
+}
+
+// Path: canvas.run
+class AppMessages$canvas$run$es implements AppMessages$canvas$run$en {
+  AppMessages$canvas$run$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get button => 'Ejecutar ahora';
+  @override
+  String get help =>
+      'Ejecuta este backup ahora, de verdad, tal como está guardado: los cambios sin guardar no se usan.';
+  @override
+  String get needsSave =>
+      'Guarda el canvas primero: una ejecución usa la config guardada.';
+  @override
+  String done({required String name, required String size}) =>
+      'Backup ${name} terminado: ${size}';
+  @override
+  String failed({required String name, required String error}) =>
+      'Backup ${name} falló: ${error}';
 }
 
 /// The flat map containing all translations for locale <es>.
@@ -1482,6 +1507,18 @@ extension on AppMessagesEs {
       }) => 'Fallaron algunas comprobaciones: ${list}',
       'canvas.testRun.nothing' =>
         'Nada que probar: primero conecta un origen a un destino.',
+      'canvas.run.button' => 'Ejecutar ahora',
+      'canvas.run.help' => 'Ejecuta este backup ahora, de verdad, tal como está guardado: los cambios sin guardar no se usan.',
+      'canvas.run.needsSave' =>
+        'Guarda el canvas primero: una ejecución usa la config guardada.',
+      'canvas.run.done' => ({
+        required String name,
+        required String size,
+      }) => 'Backup ${name} terminado: ${size}',
+      'canvas.run.failed' => ({
+        required String name,
+        required String error,
+      }) => 'Backup ${name} falló: ${error}',
       _ => null,
     };
   }

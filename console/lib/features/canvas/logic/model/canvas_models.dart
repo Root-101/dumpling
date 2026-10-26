@@ -121,17 +121,29 @@ class DestinationNode {
 
 /// The last run of a config
 class LastRun {
+  final String id;
   final RunStatus status;
   final DateTime startedAt;
   final int? sizeBytes;
   final String? error;
 
   const LastRun({
+    required this.id,
     required this.status,
     required this.startedAt,
     this.sizeBytes,
     this.error,
   });
+
+  factory LastRun.fromJson(Map<String, dynamic> json) => LastRun(
+    id: json['id'],
+    status: RunStatus.values.byName(json['status']),
+    startedAt: DateTime.parse(json['started_at']),
+    sizeBytes: json['size_bytes'],
+    error: json['error'],
+  );
+
+  bool get running => status == RunStatus.running;
 }
 
 /// One connection source → destination (folder), with its schedule. Either
@@ -183,6 +195,7 @@ class BackupConfig {
     String? Function()? folderId,
     String? schedule,
     String? Function()? objectKey,
+    LastRun? lastRun,
   }) => BackupConfig(
     id: id,
     sourceId: sourceId != null ? sourceId() : this.sourceId,
@@ -196,7 +209,7 @@ class BackupConfig {
     enabled: enabled,
     // what the service computed is stale once the schedule changes
     nextRun: schedule != null ? null : nextRun,
-    lastRun: lastRun,
+    lastRun: lastRun ?? this.lastRun,
   );
 }
 

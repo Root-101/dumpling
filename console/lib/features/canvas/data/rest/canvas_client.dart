@@ -28,6 +28,32 @@ class CanvasClient extends BaseClient {
     );
     return CanvasResponse.fromJson(rawResponse.data);
   }
+
+  /// Starts a run of the saved [configId]; 202 with the run, still running.
+  /// A 409 when one is already in progress
+  Future<Map<String, dynamic>> runNow({
+    required String workspace,
+    required String configId,
+    String? token,
+  }) async {
+    Response rawResponse = await dio.post(
+      '$baseUrl/workspaces/$workspace/configs/$configId/run',
+      options: options(token: token),
+    );
+    return rawResponse.data;
+  }
+
+  Future<Map<String, dynamic>> run({
+    required String workspace,
+    required String id,
+    String? token,
+  }) async {
+    Response rawResponse = await dio.get(
+      '$baseUrl/workspaces/$workspace/runs/$id',
+      options: options(token: token),
+    );
+    return rawResponse.data;
+  }
 }
 
 //---------- CANVAS REQUEST ----------

@@ -365,3 +365,9 @@ canvas:
     ok: 'Todo funciona: {n: int} comprobaciones correctas'
     failed: 'Fallaron algunas comprobaciones: {list: String}'
     nothing: 'Nada que probar: primero conecta un origen a un destino.'
+  run:
+    button: 'Ejecutar ahora'
+    help: 'Ejecuta este backup ahora, de verdad, tal como está guardado: los cambios sin guardar no se usan.'
+    needsSave: 'Guarda el canvas primero: una ejecución usa la config guardada.'
+    done: 'Backup {name: String} terminado: {size: String}'
+    failed: 'Backup {name: String} falló: {error: String}'

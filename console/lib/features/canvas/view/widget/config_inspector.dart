@@ -23,6 +23,9 @@ class ConfigInspector extends StatelessWidget {
     final schedule = c.schedule;
     final defaults = app.intl.canvas.workspaceDefault;
     final next = c.nextRun;
+    // a run uses the saved config: a new one has to be saved first
+    final unsaved = c.id.startsWith(CanvasCubit.newPrefix);
+    final running = c.lastRun?.running ?? false;
     // an orphan config (no source or no destination) never runs
     final missing = db == null && dest == null
         ? t.missingBoth
@@ -263,6 +266,21 @@ class ConfigInspector extends StatelessWidget {
                   label: app.intl.canvas.deleteConfig,
                   type: AppButtonType.danger,
                   onPressed: () => cubit.deleteConfig(c.id),
+                ),
+                const Spacer(),
+                Tooltip(
+                  message: unsaved
+                      ? app.intl.canvas.run.needsSave
+                      : app.intl.canvas.run.help,
+                  child: AppButton(
+                    label: running
+                        ? app.intl.canvas.runStatus.running
+                        : app.intl.canvas.run.button,
+                    type: AppButtonType.secondary,
+                    onPressed: unsaved || running || missing != null
+                        ? null
+                        : () => cubit.runNow(c.id),
+                  ),
                 ),
               ],
             ),

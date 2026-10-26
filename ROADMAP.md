@@ -134,8 +134,8 @@ Screens: Pipeline editor, Getting started · Empty workspace.
   The service side is done (`{HH}` and `{mm}` too).
 - [x] Only complete flows are saved (as today in 0.0.1): the console leaves out the orphan
   configs, which the service would reject.
-- [ ] Run now from the config: a real run. The service side is done:
-  `POST /api/workspaces/{slug}/configs/{id}/run`.
+- [x] Run now from the config: a real run of the saved config (a new one is saved first),
+  followed until it ends; its node shows it and a notice says the size or the error.
 - [x] Test run from the header: checks without backing anything up that every complete flow
   could run (each source connects and `pg_dump` can dump it, each destination takes a write in
   its folders, the ones added on the canvas and not saved yet too).

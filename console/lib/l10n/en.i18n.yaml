@@ -365,3 +365,9 @@ canvas:
     ok: 'Everything works: {n: int} checks passed'
     failed: 'Some checks failed: {list: String}'
     nothing: 'Nothing to test: connect a source to a destination first.'
+  run:
+    button: 'Run now'
+    help: 'Runs this backup now, for real, as it is saved: the edits not saved yet are not used.'
+    needsSave: 'Save the canvas first: a run uses the saved config.'
+    done: 'Backup {name: String} done: {size: String}'
+    failed: 'Backup {name: String} failed: {error: String}'

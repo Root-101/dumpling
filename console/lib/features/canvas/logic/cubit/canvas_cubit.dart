@@ -14,8 +14,16 @@ class CanvasCubit extends Cubit<CanvasState> {
   final DestinationRepo _destinations;
   final AuthCubit _auth;
 
-  CanvasCubit(this._repo, this._sources, this._destinations, this._auth)
-    : super(const CanvasInitialState());
+  /// How often a run started here is asked how it goes
+  final Duration pollEvery;
+
+  CanvasCubit(
+    this._repo,
+    this._sources,
+    this._destinations,
+    this._auth, {
+    this.pollEvery = const Duration(seconds: 2),
+  }) : super(const CanvasInitialState());
 
   String? get _token => _auth.auth?.accessToken;
 
@@ -115,6 +123,48 @@ class CanvasCubit extends Cubit<CanvasState> {
     if (_data.workspace != workspace) return;
     emit(CanvasTestedState(checks, data: _data));
   }
+
+  /// Runs the saved [configId] for real, whether it is enabled or not, and
+  /// follows it: its node shows it running until the service says how it
+  /// ended. A run uses the config as it is saved, not the edits on the canvas
+  Future<void> runNow(String configId) async {
+    final workspace = _data.workspace;
+    final config = _data.config(configId);
+    if (workspace == null || config == null) return;
+    try {
+      var run = await _repo.runNow(
+        workspace: workspace,
+        configId: configId,
+        token: _token,
+      );
+      while (true) {
+        if (isClosed || _data.workspace != workspace) return;
+        _setRun(configId, run);
+        if (!run.running) break;
+        await Future.delayed(pollEvery);
+        run = await _repo.run(workspace: workspace, id: run.id, token: _token);
+      }
+      emit(CanvasRunFinishedState(config.name, run, data: _data));
+    } catch (e) {
+      if (isClosed || _data.workspace != workspace) return;
+      emit(
+        CanvasProcessingErrorState(
+          ExceptionConverter.parse(e).message,
+          data: _data,
+        ),
+      );
+    }
+  }
+
+  /// Without selecting it: the user may be on another config meanwhile
+  void _setRun(String configId, LastRun run) => _edit(
+    _data.copyWith(
+      configs: [
+        for (final c in _data.configs)
+          c.id == configId ? c.copyWith(lastRun: run) : c,
+      ],
+    ),
+  );
 
   /// After signing out
   void reset() => emit(const CanvasInitialState());

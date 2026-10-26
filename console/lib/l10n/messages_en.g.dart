@@ -1012,6 +1012,7 @@ class AppMessages$canvas$en {
 
   late final AppMessages$canvas$testRun$en testRun =
       AppMessages$canvas$testRun$en._(_root);
+  late final AppMessages$canvas$run$en run = AppMessages$canvas$run$en._(_root);
 }
 
 // Path: destinations.typeSub
@@ -1323,6 +1324,33 @@ class AppMessages$canvas$testRun$en {
   /// en: 'Nothing to test: connect a source to a destination first.'
   String get nothing =>
       'Nothing to test: connect a source to a destination first.';
+}
+
+// Path: canvas.run
+class AppMessages$canvas$run$en {
+  AppMessages$canvas$run$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Run now'
+  String get button => 'Run now';
+
+  /// en: 'Runs this backup now, for real, as it is saved: the edits not saved yet are not used.'
+  String get help =>
+      'Runs this backup now, for real, as it is saved: the edits not saved yet are not used.';
+
+  /// en: 'Save the canvas first: a run uses the saved config.'
+  String get needsSave => 'Save the canvas first: a run uses the saved config.';
+
+  /// en: 'Backup {name: String} done: {size: String}'
+  String done({required String name, required String size}) =>
+      'Backup ${name} done: ${size}';
+
+  /// en: 'Backup {name: String} failed: {error: String}'
+  String failed({required String name, required String error}) =>
+      'Backup ${name} failed: ${error}';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -1763,6 +1791,18 @@ extension on AppMessages {
       }) => 'Some checks failed: ${list}',
       'canvas.testRun.nothing' =>
         'Nothing to test: connect a source to a destination first.',
+      'canvas.run.button' => 'Run now',
+      'canvas.run.help' => 'Runs this backup now, for real, as it is saved: the edits not saved yet are not used.',
+      'canvas.run.needsSave' =>
+        'Save the canvas first: a run uses the saved config.',
+      'canvas.run.done' => ({
+        required String name,
+        required String size,
+      }) => 'Backup ${name} done: ${size}',
+      'canvas.run.failed' => ({
+        required String name,
+        required String error,
+      }) => 'Backup ${name} failed: ${error}',
       _ => null,
     };
   }
