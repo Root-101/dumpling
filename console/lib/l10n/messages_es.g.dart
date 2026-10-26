@@ -80,6 +80,8 @@ class AppMessagesEs
       AppMessages$destinations$es._(_root);
   @override
   late final AppMessages$canvas$es canvas = AppMessages$canvas$es._(_root);
+  @override
+  late final AppMessages$runs$es runs = AppMessages$runs$es._(_root);
 }
 
 // Path: app
@@ -796,6 +798,69 @@ class AppMessages$canvas$es implements AppMessages$canvas$en {
   late final AppMessages$canvas$guide$es guide = AppMessages$canvas$guide$es._(
     _root,
   );
+}
+
+// Path: runs
+class AppMessages$runs$es implements AppMessages$runs$en {
+  AppMessages$runs$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get title => 'Registro de ejecuciones';
+  @override
+  String description({required String workspace}) =>
+      'Cada respaldo que ejecutó el workspace ${workspace}, del más reciente al más antiguo.';
+  @override
+  String get refresh => 'Actualizar';
+  @override
+  String get search => 'Buscar por respaldo, origen o destino';
+  @override
+  String get columnStatus => 'Estado';
+  @override
+  String get columnConfig => 'Respaldo';
+  @override
+  String get columnSource => 'Origen';
+  @override
+  String get columnDestination => 'Destino';
+  @override
+  String get columnStarted => 'Inicio';
+  @override
+  String get columnDuration => 'Duración';
+  @override
+  String get columnSize => 'Tamaño';
+  @override
+  String get scheduled => 'Programada';
+  @override
+  String get manual => 'Ejecutar ahora';
+  @override
+  String get showDetail => 'Ver el detalle';
+  @override
+  String get hideDetail => 'Ocultar el detalle';
+  @override
+  String get emptyTitle => 'Aún no hay ejecuciones';
+  @override
+  String get emptyDescription =>
+      'Los respaldos se ejecutan según su programación, o con Ejecutar ahora en el editor.';
+  @override
+  String get newestOnly =>
+      'Solo se muestran las 200 ejecuciones más recientes.';
+  @override
+  String get location => 'Archivo';
+  @override
+  String get error => 'Error';
+  @override
+  String get log => 'Log (UTC)';
+  @override
+  String get copyLog => 'Copiar log';
+  @override
+  String get logCopied => 'Log copiado';
+  @override
+  String get logWhenDone =>
+      'El log se escribe cuando termina la ejecución. Actualiza para verlo.';
+  @override
+  String get noLog => 'Esta ejecución no tiene log.';
 }
 
 // Path: destinations.typeSub
@@ -1592,6 +1657,35 @@ extension on AppMessagesEs {
       'canvas.guide.connectHelp' => 'Arrastra desde el puerto del origen hasta una carpeta o el bucket: se crea una config entre ellos. Luego guarda.',
       'canvas.guide.create' => 'Crear uno',
       'canvas.guide.place' => ({required String name}) => 'Colocar ${name}',
+      'runs.title' => 'Registro de ejecuciones',
+      'runs.description' => ({
+        required String workspace,
+      }) => 'Cada respaldo que ejecutó el workspace ${workspace}, del más reciente al más antiguo.',
+      'runs.refresh' => 'Actualizar',
+      'runs.search' => 'Buscar por respaldo, origen o destino',
+      'runs.columnStatus' => 'Estado',
+      'runs.columnConfig' => 'Respaldo',
+      'runs.columnSource' => 'Origen',
+      'runs.columnDestination' => 'Destino',
+      'runs.columnStarted' => 'Inicio',
+      'runs.columnDuration' => 'Duración',
+      'runs.columnSize' => 'Tamaño',
+      'runs.scheduled' => 'Programada',
+      'runs.manual' => 'Ejecutar ahora',
+      'runs.showDetail' => 'Ver el detalle',
+      'runs.hideDetail' => 'Ocultar el detalle',
+      'runs.emptyTitle' => 'Aún no hay ejecuciones',
+      'runs.emptyDescription' => 'Los respaldos se ejecutan según su programación, o con Ejecutar ahora en el editor.',
+      'runs.newestOnly' =>
+        'Solo se muestran las 200 ejecuciones más recientes.',
+      'runs.location' => 'Archivo',
+      'runs.error' => 'Error',
+      'runs.log' => 'Log (UTC)',
+      'runs.copyLog' => 'Copiar log',
+      'runs.logCopied' => 'Log copiado',
+      'runs.logWhenDone' =>
+        'El log se escribe cuando termina la ejecución. Actualiza para verlo.',
+      'runs.noLog' => 'Esta ejecución no tiene log.',
       _ => null,
     };
   }

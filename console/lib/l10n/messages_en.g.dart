@@ -63,6 +63,7 @@ class AppMessages with BaseTranslations<AppMessagesLocale, AppMessages> {
   late final AppMessages$destinations$en destinations =
       AppMessages$destinations$en._(_root);
   late final AppMessages$canvas$en canvas = AppMessages$canvas$en._(_root);
+  late final AppMessages$runs$en runs = AppMessages$runs$en._(_root);
 }
 
 // Path: app
@@ -1018,6 +1019,93 @@ class AppMessages$canvas$en {
   );
 }
 
+// Path: runs
+class AppMessages$runs$en {
+  AppMessages$runs$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Run log'
+  String get title => 'Run log';
+
+  /// en: 'Every backup the {workspace: String} workspace ran, newest first.'
+  String description({required String workspace}) =>
+      'Every backup the ${workspace} workspace ran, newest first.';
+
+  /// en: 'Refresh'
+  String get refresh => 'Refresh';
+
+  /// en: 'Search by backup, source or destination'
+  String get search => 'Search by backup, source or destination';
+
+  /// en: 'Status'
+  String get columnStatus => 'Status';
+
+  /// en: 'Backup'
+  String get columnConfig => 'Backup';
+
+  /// en: 'Source'
+  String get columnSource => 'Source';
+
+  /// en: 'Destination'
+  String get columnDestination => 'Destination';
+
+  /// en: 'Started'
+  String get columnStarted => 'Started';
+
+  /// en: 'Duration'
+  String get columnDuration => 'Duration';
+
+  /// en: 'Size'
+  String get columnSize => 'Size';
+
+  /// en: 'On schedule'
+  String get scheduled => 'On schedule';
+
+  /// en: 'Run now'
+  String get manual => 'Run now';
+
+  /// en: 'Show the detail'
+  String get showDetail => 'Show the detail';
+
+  /// en: 'Hide the detail'
+  String get hideDetail => 'Hide the detail';
+
+  /// en: 'No runs yet'
+  String get emptyTitle => 'No runs yet';
+
+  /// en: 'Backups run on their schedule, or with Run now in the pipeline editor.'
+  String get emptyDescription =>
+      'Backups run on their schedule, or with Run now in the pipeline editor.';
+
+  /// en: 'Only the 200 newest runs are shown.'
+  String get newestOnly => 'Only the 200 newest runs are shown.';
+
+  /// en: 'File'
+  String get location => 'File';
+
+  /// en: 'Error'
+  String get error => 'Error';
+
+  /// en: 'Log (UTC)'
+  String get log => 'Log (UTC)';
+
+  /// en: 'Copy log'
+  String get copyLog => 'Copy log';
+
+  /// en: 'Log copied'
+  String get logCopied => 'Log copied';
+
+  /// en: 'The log is written when the run ends. Refresh to see it.'
+  String get logWhenDone =>
+      'The log is written when the run ends. Refresh to see it.';
+
+  /// en: 'This run has no log.'
+  String get noLog => 'This run has no log.';
+}
+
 // Path: destinations.typeSub
 class AppMessages$destinations$typeSub$en {
   AppMessages$destinations$typeSub$en._(this._root);
@@ -1892,6 +1980,34 @@ extension on AppMessages {
       'canvas.guide.connectHelp' => 'Drag from the port of the source to a folder or the bucket: a config is created between them. Then save.',
       'canvas.guide.create' => 'Create one',
       'canvas.guide.place' => ({required String name}) => 'Place ${name}',
+      'runs.title' => 'Run log',
+      'runs.description' => ({
+        required String workspace,
+      }) => 'Every backup the ${workspace} workspace ran, newest first.',
+      'runs.refresh' => 'Refresh',
+      'runs.search' => 'Search by backup, source or destination',
+      'runs.columnStatus' => 'Status',
+      'runs.columnConfig' => 'Backup',
+      'runs.columnSource' => 'Source',
+      'runs.columnDestination' => 'Destination',
+      'runs.columnStarted' => 'Started',
+      'runs.columnDuration' => 'Duration',
+      'runs.columnSize' => 'Size',
+      'runs.scheduled' => 'On schedule',
+      'runs.manual' => 'Run now',
+      'runs.showDetail' => 'Show the detail',
+      'runs.hideDetail' => 'Hide the detail',
+      'runs.emptyTitle' => 'No runs yet',
+      'runs.emptyDescription' => 'Backups run on their schedule, or with Run now in the pipeline editor.',
+      'runs.newestOnly' => 'Only the 200 newest runs are shown.',
+      'runs.location' => 'File',
+      'runs.error' => 'Error',
+      'runs.log' => 'Log (UTC)',
+      'runs.copyLog' => 'Copy log',
+      'runs.logCopied' => 'Log copied',
+      'runs.logWhenDone' =>
+        'The log is written when the run ends. Refresh to see it.',
+      'runs.noLog' => 'This run has no log.',
       _ => null,
     };
   }

@@ -183,3 +183,35 @@ CanvasModel demoCanvas() => CanvasModel(
     ),
   ],
 );
+
+/// A run of the backup [config] that started on 20/Oct 02:14 UTC; [log]
+/// makes it the detail
+RunModel run(
+  String id, {
+  String config = 'Nightly orders',
+  RunStatus status = RunStatus.success,
+  String sourceType = 'postgres',
+  String destinationType = 's3',
+  List<String>? log,
+}) {
+  final started = DateTime.utc(2026, 10, 20, 2, 14);
+  return RunModel(
+    id: id,
+    configId: 'cfg_$id',
+    configName: config,
+    sourceName: 'orders-db',
+    sourceType: sourceType,
+    destinationName: 'bucket',
+    destinationType: destinationType,
+    trigger: 'schedule',
+    status: status,
+    startedAt: started,
+    finishedAt: status == RunStatus.running
+        ? null
+        : started.add(const Duration(minutes: 3, seconds: 5)),
+    sizeBytes: status == RunStatus.success ? 5 * 1024 * 1024 : null,
+    location: 's3://bucket/orders/$id.dump.gz',
+    error: status == RunStatus.failed ? 'pg_dump: connection refused' : null,
+    log: log == null ? null : [for (final m in log) RunLogLine(started, m)],
+  );
+}

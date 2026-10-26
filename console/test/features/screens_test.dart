@@ -28,6 +28,8 @@ class _MockSources extends MockCubit<SourceState> implements SourceCubit {}
 class _MockDestinations extends MockCubit<DestinationState>
     implements DestinationCubit {}
 
+class _MockRuns extends MockCubit<RunState> implements RunCubit {}
+
 /// The app as `main` runs it, at the size of a laptop screen, with the cubits
 /// the router and the rail read in DI. A layout that overflows fails the test
 void main() {
@@ -36,6 +38,7 @@ void main() {
   final workspaces = _MockWorkspaces();
   final sources = _MockSources();
   final destinations = _MockDestinations();
+  final runs = _MockRuns();
   final authStates = StreamController<AuthState>.broadcast();
 
   final english = LanguageModel(
@@ -103,6 +106,27 @@ void main() {
         ),
       ),
     );
+    whenListen(
+      runs,
+      const Stream<RunState>.empty(),
+      initialState: RunLoadingSuccessState(
+        data: const RunData.empty('production')
+            .withRuns([
+              run('r2', status: RunStatus.failed),
+              run('r1', config: 'Hourly users'),
+            ])
+            .withDetail(
+              run(
+                'r2',
+                status: RunStatus.failed,
+                log: ['Checking the connection to orders-db', 'Failed: boom'],
+              ),
+            ),
+      ),
+    );
+    when(() => runs.load(any())).thenAnswer((_) async {});
+    registerFallbackValue(run('fallback'));
+    when(() => runs.detail(any())).thenAnswer((_) async {});
     when(() => sources.load(any())).thenAnswer((_) async {});
     when(() => destinations.load(any())).thenAnswer((_) async {});
     when(() => workspaces.load()).thenAnswer((_) async {});
@@ -112,6 +136,7 @@ void main() {
     app.di.put<WorkspaceCubit>(workspaces);
     app.di.put<SourceCubit>(sources);
     app.di.put<DestinationCubit>(destinations);
+    app.di.put<RunCubit>(runs);
     // the dialogs and drawers make their own cubit with them
     app.di.put<WorkspaceRepo>(_MockRepo());
     app.di.put<SourceRepo>(_MockSourceRepo());
@@ -141,6 +166,7 @@ void main() {
           BlocProvider<WorkspaceCubit>.value(value: workspaces),
           BlocProvider<SourceCubit>.value(value: sources),
           BlocProvider<DestinationCubit>.value(value: destinations),
+          BlocProvider<RunCubit>.value(value: runs),
         ],
         child: const App(),
       ),
@@ -290,5 +316,29 @@ void main() {
     await settle(tester);
     expect(find.text('03 FOLDERS'), findsOneWidget);
     expect(find.text('Path-style addressing'), findsOneWidget);
+  });
+
+  testWidgets('Run log: the runs, and a row opens on its log', (tester) async {
+    when(() => auth.auth).thenReturn(session());
+    await pumpApp(tester);
+    RouteConfig.router.go('/workspaces/production/runs');
+    await settle(tester);
+
+    expect(find.text('Hourly users'), findsOneWidget);
+    expect(find.text('Failed'), findsOneWidget);
+    expect(find.text('Success'), findsOneWidget);
+    expect(find.text('3 min 5 s'), findsNWidgets(2));
+    expect(find.text('5.00 MB'), findsOneWidget);
+    verify(() => runs.load('production')).called(greaterThan(0));
+
+    await tester.tap(find.byTooltip('Show the detail').first);
+    await settle(tester);
+    expect(find.text('s3://bucket/orders/r2.dump.gz'), findsOneWidget);
+    expect(find.text('pg_dump: connection refused'), findsOneWidget);
+    expect(
+      find.textContaining('Failed: boom', findRichText: true),
+      findsOneWidget,
+    );
+    expect(find.text('Copy log'), findsOneWidget);
   });
 }

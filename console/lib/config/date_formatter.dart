@@ -26,6 +26,9 @@ class DateFormatter {
   /// with the local time next to it ([AppDateTime])
   DateFormat get time => DateFormat('dd/MMM hh:mm a');
 
+  /// HH:mm:ss: a line of the log of a run, in UTC
+  DateFormat get clock => DateFormat('HH:mm:ss');
+
   /// yyyy-MM-dd
   DateFormat get api => DateFormat('yyyy-MM-dd');
 
