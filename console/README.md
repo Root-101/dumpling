@@ -6,7 +6,7 @@ build (`console/build/web`) as static files, on the same origin as the API.
 ```bash
 fvm flutter pub get
 fvm dart run slang                                  # after editing lib/l10n/*.i18n.yaml
-fvm flutter build web                               # then start the service: http://localhost:8080
+fvm flutter build web                               # then start the service: http://localhost:8080 (the release image does both)
 fvm flutter run -d chrome --web-port=8081           # or apart, for UI work
 fvm flutter analyze
 fvm flutter test                                    # on the VM, no browser
@@ -26,5 +26,4 @@ Structure, the same as feather-io's console: `adapter/` (DI, navigation, dialogs
 browser), `config/` (env, routes, theme), `design_system/` (tokens and shared widgets),
 `exceptions/`, `l10n/` (slang, `es` and `en`), `shared/` (loading, error and empty pages) and
 `features/<name>/` with `data/rest` (client and DTOs), `data/repo`, `logic/cubit`, `logic/model`,
-`view` and its `<name>_init.dart`. `features/pipeline` is the proof of concept of the canvas (0.0.1),
-not wired to the API yet.
+`view` and its `<name>_init.dart`.

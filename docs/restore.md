@@ -10,12 +10,12 @@ Open the **Run log** of the workspace and expand the run you want: **File** show
 as `bucket/key` (e.g. `backups/shop/orders/2026-10-20-run_xkq3….dump.gz`). The key comes from
 the object key of the config; its extension tells you how to restore it:
 
-| Extension  | What it is                                   | Restore with                     |
-|------------|----------------------------------------------|----------------------------------|
-| `.dump`    | `pg_dump` custom format (`-Fc`)              | `pg_restore`                     |
-| `.dump.gz` | custom format, gzipped by the config         | `gunzip`, then `pg_restore`      |
-| `.sql`     | plain SQL                                    | `psql`                           |
-| `.sql.gz`  | plain SQL, gzipped                           | `gunzip -c … \| psql`             |
+| Extension  | What it is                           | Restore with                |
+|------------|--------------------------------------|-----------------------------|
+| `.dump`    | `pg_dump` custom format (`-Fc`)      | `pg_restore`                |
+| `.dump.gz` | custom format, gzipped by the config | `gunzip`, then `pg_restore` |
+| `.sql`     | plain SQL                            | `psql`                      |
+| `.sql.gz`  | plain SQL, gzipped                   | `gunzip -c … \| psql`       |
 
 ## 2. Download it
 

@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.1.0-rc.1
+
+The first release candidate, on the API of the service.
+
+- Sign in, with the error of the service in the form; back to the page asked for after signing in.
+- Workspaces: cards with counts, health and last run; create; switch from the rail or the URL.
+- Sources and destinations: list with search and type filter, create, edit, duplicate, test and
+  delete; the folders of each bucket from its row.
+- The canvas, loaded from and saved to the service: Save, Test run, and a panel per config (name,
+  frequency or cron, enabled, object key with a preview, compression, Run now). A guide for an
+  empty workspace. The right click opens only the menu of the canvas.
+- Backups: healthy, failing and the next run; every backup with its last and next run, filters,
+  sort and Run now.
+- Run log: every run with filters by status, source type and destination type; a row opens on
+  where the file went, the error and the log, which can be copied.
+- Not found and Connection lost pages.
+- English and Spanish; times in UTC with the local time next to them.
+
 ## 0.0.1
 
 Proof of concept of the pipeline canvas, with a demo pipeline (nothing is saved yet).
