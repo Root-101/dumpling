@@ -62,8 +62,9 @@ class DestinationService {
   ) async {
     final row = await _row(workspace, id);
     final settings = request.settings!;
+    final stored = _storedFor(row, request.destinationType);
     final values = Secrets.require(settings.requiredSecrets, {
-      ..._storedFor(row, request.destinationType),
+      ...stored,
       ...settings.secrets,
     });
     await _checkTargets(id, request.cleanFolders);
@@ -75,6 +76,13 @@ class DestinationService {
       settings: jsonEncode(settings),
       secretsEncrypted: secrets.encrypt(id, values),
       folders: request.cleanFolders,
+      connectionChanged: DestinationTableRepo.connectionChanged(
+        row,
+        type: request.destinationType!,
+        settings: jsonEncode(settings),
+        secrets: (stored, values),
+        folders: request.cleanFolders,
+      ),
     );
     logger.info(
       'Destination updated',

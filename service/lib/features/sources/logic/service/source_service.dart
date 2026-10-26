@@ -68,6 +68,10 @@ class SourceService {
       type: request.sourceType!,
       settings: jsonEncode(settings),
       secretsEncrypted: secrets.encrypt(id, values),
+      connectionChanged:
+          row.type != request.sourceType ||
+          row.settings != jsonEncode(settings) ||
+          !Secrets.same(stored, values),
     );
     logger.info(
       'Source updated',

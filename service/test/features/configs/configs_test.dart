@@ -101,7 +101,7 @@ void main() {
       expect(body['folder'], 'orders');
       expect(body['schedule'], '0 2 * * *');
       expect(body['compression'], 'gzip');
-      expect(body['object_key'], '{yyyy}/{MM}/{dd}');
+      expect(body['object_key'], '{db}/{yyyy}-{MM}-{dd}-{run_id}');
       expect(body['enabled'], isTrue);
       // The next 02:00 UTC
       final next = DateTime.parse(body['next_run']);

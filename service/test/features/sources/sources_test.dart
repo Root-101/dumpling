@@ -270,6 +270,52 @@ void main() {
       );
       expect(read['last_check']['status'], 'failed');
     });
+
+    test('Should keep the last check unless the connection changes, also through the canvas', () async {
+      final body = postgres(name: 'kept-db', host: '127.0.0.1', port: 1);
+      final id = (await created(body))['id'];
+      await http.post(
+        server.url(path('production', '/$id/test')),
+        headers: server.auth(),
+      );
+      Future<Object?> lastCheck() async => jsonDecode(
+        (await http.get(
+          server.url(path('production', '/$id')),
+          headers: server.auth(),
+        )).body,
+      )['last_check'];
+      Future<void> put(Map<String, Object?> body) async {
+        final response = await http.put(
+          server.url(path('production', '/$id')),
+          headers: jsonHeaders(),
+          body: jsonEncode(body),
+        );
+        expect(response.statusCode, 200, reason: response.body);
+      }
+
+      // a new name, and the same password typed again
+      await put(postgres(name: 'renamed-db', host: '127.0.0.1', port: 1));
+      expect(await lastCheck(), isNotNull);
+
+      // the canvas sends every node on each save, without its password
+      final canvas = jsonDecode(
+        (await http.get(
+          server.url('/api/workspaces/production/canvas'),
+          headers: server.auth(),
+        )).body,
+      );
+      final saved = await http.put(
+        server.url('/api/workspaces/production/canvas'),
+        headers: jsonHeaders(),
+        body: jsonEncode(canvas),
+      );
+      expect(saved.statusCode, 200, reason: saved.body);
+      expect(await lastCheck(), isNotNull);
+
+      // another port is another connection: its check is of the old one
+      await put(postgres(name: 'renamed-db', host: '127.0.0.1', port: 2));
+      expect(await lastCheck(), isNull);
+    });
   });
 
   group('PgDump', () {

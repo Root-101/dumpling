@@ -87,7 +87,10 @@ class WorkspaceDefaults {
   /// Every day at 02:00 UTC
   static const String defaultSchedule = '0 2 * * *';
   static const Compression defaultCompression = Compression.gzip;
-  static const String defaultObjectKey = '{yyyy}/{MM}/{dd}';
+
+  /// With the run id: two runs of a day (Run now, or an hourly schedule)
+  /// never write the same file
+  static const String defaultObjectKey = '{db}/{yyyy}-{MM}-{dd}-{run_id}';
 
   /// A cron expression, always in UTC.
   final String schedule;

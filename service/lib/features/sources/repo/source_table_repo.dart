@@ -42,14 +42,15 @@ class SourceTableRepo {
         );
   }
 
-  /// Replaces the name, type and connection; the last check goes, since it
-  /// was of the old connection.
+  /// Replaces the name, type and connection. The last check goes only when
+  /// [connectionChanged]: it was of the old connection.
   Future<void> update({
     required String id,
     required String name,
     required SourceType type,
     required String settings,
     required String secretsEncrypted,
+    required bool connectionChanged,
   }) async {
     await (_db.update(
       _db.sourceTable,
@@ -59,7 +60,7 @@ class SourceTableRepo {
         type: Value(type),
         settings: Value(settings),
         secretsEncrypted: Value(secretsEncrypted),
-        lastCheck: const Value(null),
+        lastCheck: connectionChanged ? const Value(null) : const Value.absent(),
         updatedAt: Value(DateTime.now()),
       ),
     );

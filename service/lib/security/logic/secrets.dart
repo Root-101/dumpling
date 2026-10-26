@@ -36,6 +36,11 @@ class Secrets {
     return secrets;
   }
 
+  /// Whether [a] and [b] hold the same secrets: their encrypted forms always
+  /// differ (a random nonce each time), so only the plain ones compare.
+  static bool same(Map<String, String> a, Map<String, String> b) =>
+      a.length == b.length && a.entries.every((e) => b[e.key] == e.value);
+
   /// [prefix] and 16 random base32 characters (`src_k3x…`): no 0, 1, 8 or 9,
   /// which read like letters.
   static String newId(String prefix) =>

@@ -34,22 +34,25 @@ class DialogTemplate extends StatelessWidget {
     return Dialog(
       elevation: 50.0,
       alignment: Alignment.center,
+      backgroundColor: app.colors.primary.backgroundForm,
+      shape: RoundedRectangleBorder(
+        borderRadius: app.dimensions.border.borderRadius.s,
+      ),
+      clipBehavior: Clip.antiAlias,
+      // Without [h], as tall as its content (up to the screen): a longer text
+      // or another language never overflows it
       child: SizedBox(
         width: w ?? 550,
-        height: h ?? app.mediaQuery.size.height - app.dimensions.padding.xxl,
-        child: ClipRRect(
-          borderRadius: app.dimensions.border.borderRadius.s,
-          child: Scaffold(
-            backgroundColor: app.colors.primary.backgroundForm,
-            appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(50),
+        height: h,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 50,
               child: Stack(
                 children: [
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    top: 0,
+                  Positioned.fill(
                     child: Center(
                       child: Text(title, style: app.textTheme.titleMedium),
                     ),
@@ -73,8 +76,8 @@ class DialogTemplate extends StatelessWidget {
                 ],
               ),
             ),
-            body: child,
-          ),
+            Flexible(child: SingleChildScrollView(child: child)),
+          ],
         ),
       ),
     );

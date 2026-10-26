@@ -172,6 +172,10 @@ class CanvasService {
             type: source.sourceType!,
             settings: jsonEncode(settings),
             secretsEncrypted: secrets.encrypt(id, values),
+            connectionChanged:
+                saved.type != source.sourceType ||
+                saved.settings != jsonEncode(settings) ||
+                !Secrets.same(stored, values),
           );
         }
       }
@@ -180,7 +184,8 @@ class CanvasService {
         final id = ids[node.id]!;
         final destination = node.request;
         final settings = destination.settings!;
-        final saved = savedDestinations[id]?.destination;
+        final savedRow = savedDestinations[id];
+        final saved = savedRow?.destination;
         final stored =
             saved != null && saved.type == destination.destinationType
             ? secrets.decrypt(id, saved.secretsEncrypted)
@@ -207,6 +212,13 @@ class CanvasService {
             settings: jsonEncode(settings),
             secretsEncrypted: secrets.encrypt(id, values),
             folders: destination.cleanFolders,
+            connectionChanged: DestinationTableRepo.connectionChanged(
+              savedRow!,
+              type: destination.destinationType!,
+              settings: jsonEncode(settings),
+              secrets: (stored, values),
+              folders: destination.cleanFolders,
+            ),
           );
         }
       }

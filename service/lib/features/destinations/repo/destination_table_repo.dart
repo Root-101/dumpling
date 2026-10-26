@@ -72,8 +72,25 @@ class DestinationTableRepo {
     });
   }
 
-  /// Replaces the name, type, connection and folders; the last check goes,
-  /// since it was of the old connection.
+  /// Whether saving [row] with these values changes what its last check
+  /// tested: the type, the settings, the secrets (stored, new) or the folders.
+  static bool connectionChanged(
+    DestinationRow row, {
+    required DestinationType type,
+    required String settings,
+    required (Map<String, String>, Map<String, String>) secrets,
+    required List<String> folders,
+  }) {
+    final saved = [for (final f in row.folders) f.path];
+    return row.destination.type != type ||
+        row.destination.settings != settings ||
+        !Secrets.same(secrets.$1, secrets.$2) ||
+        saved.length != folders.length ||
+        !saved.toSet().containsAll(folders);
+  }
+
+  /// Replaces the name, type, connection and folders. The last check goes
+  /// only when [connectionChanged] (the folders too: it tested each one).
   Future<void> update({
     required String id,
     required String name,
@@ -81,6 +98,7 @@ class DestinationTableRepo {
     required String settings,
     required String secretsEncrypted,
     required List<String> folders,
+    required bool connectionChanged,
   }) async {
     await _db.transaction(() async {
       await (_db.update(
@@ -91,7 +109,9 @@ class DestinationTableRepo {
           type: Value(type),
           settings: Value(settings),
           secretsEncrypted: Value(secretsEncrypted),
-          lastCheck: const Value(null),
+          lastCheck: connectionChanged
+              ? const Value(null)
+              : const Value.absent(),
           updatedAt: Value(DateTime.now()),
         ),
       );

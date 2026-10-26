@@ -16,7 +16,7 @@ class ConfirmDialog extends StatelessWidget {
     DialogTemplate.open(
       title: title,
       w: w ?? 400,
-      h: h ?? 250,
+      h: h,
       child: ConfirmDialog(
         description: description,
         confirmAction: confirmAction,
@@ -49,10 +49,15 @@ class ConfirmDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: app.colors.neutral.transparent,
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        app.dimensions.padding.xl,
+        app.dimensions.padding.m,
+        app.dimensions.padding.xl,
+        app.dimensions.padding.xl,
+      ),
       child: Column(
-        mainAxisAlignment: .center,
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: .center,
         children: [
           Text(
