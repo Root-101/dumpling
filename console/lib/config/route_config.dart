@@ -1,16 +1,99 @@
 import 'package:console/app_exporter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 
 class RouteConfig {
   RouteConfig._();
 
   static final GoRouter router = GoRouter(
+    initialLocation: WorkspacesScreen.navigator.path,
+    navigatorKey: navigatorKey,
+    refreshListenable: GoRouterRefreshStream(app.di.find<AuthCubit>().stream),
+    redirect: (context, state) {
+      final auth = app.di.find<AuthCubit>();
+      final isLoggingIn = state.matchedLocation == LoginScreen.navigator.path;
+
+      if (auth.auth == null) {
+        if (isLoggingIn) return null;
+        // Remember where the user was going, to open it after logging in
+        return Uri(
+          path: LoginScreen.navigator.path,
+          queryParameters: {RouteNames.loginFromParam: state.uri.toString()},
+        ).toString();
+      }
+
+      if (isLoggingIn) {
+        return afterLogin(state.uri.queryParameters[RouteNames.loginFromParam]);
+      }
+
+      return null;
+    },
+    errorBuilder: (context, state) => ErrorPage(
+      message: app.intl.common.noData,
+      buttonText: app.intl.nav.workspaces,
+      onRetry: () => app.navigator.go(RouteNames.workspaces),
+    ),
     routes: [
       GoRoute(
-        name: 'pipeline',
         path: '/',
-        builder: (context, state) => const PipelineScreen(),
+        redirect: (context, state) => WorkspacesScreen.navigator.path,
+      ),
+      GoRoute(
+        name: LoginScreen.navigator.name,
+        path: LoginScreen.navigator.path,
+        builder: LoginScreen.navigator.builder,
+      ),
+      ShellRoute(
+        builder: (context, state, child) =>
+            BaseScreen(state: state, child: child),
+        routes: [
+          ///   /workspaces
+          GoRoute(
+            name: WorkspacesScreen.navigator.name,
+            path: WorkspacesScreen.navigator.path,
+            builder: WorkspacesScreen.navigator.builder,
+            routes: [
+              ///   /workspaces/{slug}: its backups
+              GoRoute(
+                path: ':${RouteNames.slugParam}',
+                redirect: (context, state) =>
+                    state.fullPath == '/workspaces/:${RouteNames.slugParam}'
+                    ? '${state.matchedLocation}/${RouteNames.backups}'
+                    : null,
+                routes: [
+                  for (final section in SectionScreen.sections)
+                    GoRoute(
+                      name: section,
+                      path: section,
+                      builder: (context, state) =>
+                          SectionScreen(section: section),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     ],
   );
+
+  /// The location saved in `?from=` if it is one of ours (a path, not the login
+  /// itself); otherwise the workspaces
+  static String afterLogin(String? from) {
+    final uri = from == null ? null : Uri.tryParse(from);
+    final valid =
+        uri != null &&
+        !uri.hasScheme &&
+        !uri.hasAuthority &&
+        uri.path.startsWith('/') &&
+        uri.path != LoginScreen.navigator.path;
+    return valid ? from! : WorkspacesScreen.navigator.path;
+  }
+}
+
+class GoRouterRefreshStream extends ChangeNotifier {
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    notifyListeners();
+    stream.listen((_) => notifyListeners());
+  }
 }

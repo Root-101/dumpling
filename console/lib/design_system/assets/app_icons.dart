@@ -9,6 +9,17 @@ class AppIcons {
   final ActionsIcons actions = const ActionsIcons();
   final NavigationIcons navigation = const NavigationIcons();
   final NodesIcons nodes = const NodesIcons();
+  final LanguageIcons language = const LanguageIcons();
+}
+
+class LanguageIcons {
+  const LanguageIcons();
+
+  static const String _language = 'assets/icons/languages';
+
+  SvgAsset get es => const SvgAsset('$_language/es.svg');
+
+  SvgAsset get en => const SvgAsset('$_language/en.svg');
 }
 
 /// Sections of the rail
@@ -57,6 +68,16 @@ class ActionsIcons {
   SvgAsset get keyboard => const SvgAsset('$_actions/keyboard.svg');
 
   SvgAsset get warning => const SvgAsset('$_actions/warning.svg');
+
+  SvgAsset get edit => const SvgAsset('$_actions/edit.svg');
+
+  SvgAsset get logout => const SvgAsset('$_actions/logout.svg');
+
+  SvgAsset get more => const SvgAsset('$_actions/more.svg');
+
+  SvgAsset get refresh => const SvgAsset('$_actions/refresh.svg');
+
+  SvgAsset get search => const SvgAsset('$_actions/search.svg');
 }
 
 class SvgAsset {

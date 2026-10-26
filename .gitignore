@@ -24,6 +24,9 @@ doc/api/
 .artifacts/
 .temp/
 
+# local run of the console: SERVICE_URL (see console/README.md)
+/console/web/env.js
+
 # local development of the service (see .env.example)
 /service/.env
 # SQLite database of the service in development (DATA_PATH), run from service/ or the root
