@@ -28,6 +28,11 @@ const sourceTypes = [
   SourceTypeModel(type: 'mysql', enabled: false),
 ];
 
+const destinationTypes = [
+  DestinationTypeModel(type: DestinationTypes.s3, enabled: true),
+  DestinationTypeModel(type: 'gdrive', enabled: false),
+];
+
 /// A PostgreSQL source whose id, name and database are [id]
 SourceModel source(String id, {ConnectionCheckModel? lastCheck}) => SourceModel(
   id: id,
@@ -40,6 +45,26 @@ SourceModel source(String id, {ConnectionCheckModel? lastCheck}) => SourceModel(
     username: 'dumpling_backup',
     dumpFormat: PostgresSettingsModel.custom,
   ),
+  lastCheck: lastCheck,
+);
+
+/// An S3 destination whose id, name and bucket are [id]
+DestinationModel destination(
+  String id, {
+  List<String> folders = const [],
+  ConnectionCheckModel? lastCheck,
+}) => DestinationModel(
+  id: id,
+  name: id,
+  type: DestinationTypes.s3,
+  s3: S3SettingsModel(
+    endpoint: 'https://s3.us-east-1.amazonaws.com',
+    region: 'us-east-1',
+    bucket: id,
+    accessKeyId: 'AKIA',
+    pathStyle: false,
+  ),
+  folders: folders,
   lastCheck: lastCheck,
 );
 

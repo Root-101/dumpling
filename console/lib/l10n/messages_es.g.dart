@@ -75,6 +75,9 @@ class AppMessagesEs
       AppMessages$connections$es._(_root);
   @override
   late final AppMessages$sources$es sources = AppMessages$sources$es._(_root);
+  @override
+  late final AppMessages$destinations$es destinations =
+      AppMessages$destinations$es._(_root);
 }
 
 // Path: app
@@ -528,6 +531,179 @@ class AppMessages$sources$es implements AppMessages$sources$en {
   String saved({required Object name}) => 'Source ${name} guardado';
 }
 
+// Path: destinations
+class AppMessages$destinations$es implements AppMessages$destinations$en {
+  AppMessages$destinations$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get title => 'Destinations';
+  @override
+  String description({required Object workspace}) =>
+      'Donde el workspace ${workspace} escribe los backups: buckets S3.';
+  @override
+  String get create => 'Nuevo destination';
+  @override
+  String get search => 'Buscar destinations';
+  @override
+  String get columnName => 'Nombre';
+  @override
+  String get columnType => 'Tipo';
+  @override
+  String get columnEndpoint => 'Endpoint';
+  @override
+  String get columnBackups => 'Backups';
+  @override
+  String get columnStatus => 'Estado';
+  @override
+  String get bucketRoot => 'Raíz del bucket';
+  @override
+  String folderCount({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: '${n} carpeta',
+        other: '${n} carpetas',
+      );
+  @override
+  String showFolders({required Object name}) =>
+      'Mostrar las carpetas de ${name}';
+  @override
+  String hideFolders({required Object name}) =>
+      'Ocultar las carpetas de ${name}';
+  @override
+  String get emptyTitle => 'Todavía no hay destinations';
+  @override
+  String get emptyDescription => 'Agrega un bucket donde escribir los backups.';
+  @override
+  String inUse({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: 'Lo usa ${n} backup. Quítalo primero.',
+        other: 'Lo usan ${n} backups. Quítalos primero.',
+      );
+  @override
+  String deleteTitle({required Object name}) =>
+      '¿Eliminar el destination ${name}?';
+  @override
+  String get deleteConfirm =>
+      'Ningún backup lo usa. Su conexión y sus llaves guardadas se borran de este workspace. Los archivos que ya están en el bucket se quedan ahí.';
+  @override
+  String deleted({required Object name}) => 'Destination ${name} eliminado';
+  @override
+  String get noFolders =>
+      'Sin carpetas · la raíz del bucket es el único punto de conexión';
+  @override
+  String folderUsed({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: '${n} backup',
+        other: '${n} backups',
+      );
+  @override
+  String get notUsedYet => 'Sin usar';
+  @override
+  String deleteFolder({required Object path}) => 'Eliminar la carpeta ${path}';
+  @override
+  String get folderLocked => 'La usan backups. Reconéctalos primero.';
+  @override
+  String get addFolder => 'Agregar carpeta';
+  @override
+  String get folderHint => '/nombre-carpeta';
+  @override
+  String get folderEmpty => 'Escribe el nombre de la carpeta';
+  @override
+  String get folderInvalid => 'Minúsculas, dígitos, - . _ y / entre ellos';
+  @override
+  String get folderRepeated => 'Esa carpeta ya existe';
+  @override
+  String folderAdded({required Object path}) => 'Carpeta ${path} agregada';
+  @override
+  String folderDeleted({required Object path}) => 'Carpeta ${path} eliminada';
+  @override
+  String get newTitle => 'Nuevo destination';
+  @override
+  String get editTitle => 'Editar destination';
+  @override
+  String get formDescription => 'Elige dónde se escriben los backups.';
+  @override
+  String get sectionType => '01 Tipo';
+  @override
+  String get sectionConnection => '02 Conexión';
+  @override
+  String get sectionFolders => '03 Carpetas';
+  @override
+  String get name => 'Nombre';
+  @override
+  String get nameHint => 'p. ej. bucket-backups';
+  @override
+  String copyName({required Object name}) => '${name}-copia';
+  @override
+  String get endpoint => 'Endpoint';
+  @override
+  String get endpointHelp =>
+      'Cualquier URL compatible con S3. Para AWS usa https://s3.<región>.amazonaws.com.';
+  @override
+  String get bucket => 'Bucket';
+  @override
+  String get region => 'Región';
+  @override
+  String get accessKeyId => 'Access key ID';
+  @override
+  String get secretKey => 'Secret key';
+  @override
+  String get secretKeepHint => 'Déjala vacía para mantener la guardada';
+  @override
+  String get secretHelp => 'Se guarda cifrada y no se vuelve a mostrar.';
+  @override
+  String get pathStyle => 'Direcciones path-style';
+  @override
+  String get pathStyleHelp =>
+      'La necesitan casi todos los servidores S3 propios.';
+  @override
+  String get permissions =>
+      'Permisos necesarios: s3:PutObject y s3:AbortMultipartUpload.';
+  @override
+  String get foldersHelp =>
+      'Las carpetas son opcionales. Con al menos una, cada carpeta es un punto de conexión del canvas y la raíz del bucket no. Sin carpetas, la raíz del bucket es el único punto de conexión.';
+  @override
+  String get testIdle =>
+      'Dumpling inicia y cancela una subida multipart en cada carpeta; no queda nada en el bucket.';
+  @override
+  String connectedSub({required Object bucket}) =>
+      '${bucket} · no quedó nada en el bucket';
+  @override
+  String get createButton => 'Crear destination';
+  @override
+  String created({required Object name}) => 'Destination ${name} creado';
+  @override
+  String saved({required Object name}) => 'Destination ${name} guardado';
+  @override
+  late final AppMessages$destinations$typeSub$es typeSub =
+      AppMessages$destinations$typeSub$es._(_root);
+}
+
+// Path: destinations.typeSub
+class AppMessages$destinations$typeSub$es
+    implements AppMessages$destinations$typeSub$en {
+  AppMessages$destinations$typeSub$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get s3 => 'Cualquier almacenamiento compatible con S3';
+  @override
+  String get gdrive => 'Unidad o carpeta compartida';
+  @override
+  String get dropbox => 'Carpeta de la app';
+  @override
+  String get azure => 'Contenedor de almacenamiento';
+  @override
+  String get sftp => 'Cualquier servidor SSH';
+}
+
 /// The flat map containing all translations for locale <es>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -749,6 +925,114 @@ extension on AppMessagesEs {
       'sources.createButton' => 'Crear source',
       'sources.created' => ({required Object name}) => 'Source ${name} creado',
       'sources.saved' => ({required Object name}) => 'Source ${name} guardado',
+      'destinations.title' => 'Destinations',
+      'destinations.description' => ({
+        required Object workspace,
+      }) => 'Donde el workspace ${workspace} escribe los backups: buckets S3.',
+      'destinations.create' => 'Nuevo destination',
+      'destinations.search' => 'Buscar destinations',
+      'destinations.columnName' => 'Nombre',
+      'destinations.columnType' => 'Tipo',
+      'destinations.columnEndpoint' => 'Endpoint',
+      'destinations.columnBackups' => 'Backups',
+      'destinations.columnStatus' => 'Estado',
+      'destinations.bucketRoot' => 'Raíz del bucket',
+      'destinations.folderCount' =>
+        ({required num n}) =>
+            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+              n,
+              one: '${n} carpeta',
+              other: '${n} carpetas',
+            ),
+      'destinations.showFolders' => ({
+        required Object name,
+      }) => 'Mostrar las carpetas de ${name}',
+      'destinations.hideFolders' => ({
+        required Object name,
+      }) => 'Ocultar las carpetas de ${name}',
+      'destinations.emptyTitle' => 'Todavía no hay destinations',
+      'destinations.emptyDescription' =>
+        'Agrega un bucket donde escribir los backups.',
+      'destinations.inUse' =>
+        ({required num n}) =>
+            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+              n,
+              one: 'Lo usa ${n} backup. Quítalo primero.',
+              other: 'Lo usan ${n} backups. Quítalos primero.',
+            ),
+      'destinations.deleteTitle' => ({
+        required Object name,
+      }) => '¿Eliminar el destination ${name}?',
+      'destinations.deleteConfirm' => 'Ningún backup lo usa. Su conexión y sus llaves guardadas se borran de este workspace. Los archivos que ya están en el bucket se quedan ahí.',
+      'destinations.deleted' => ({
+        required Object name,
+      }) => 'Destination ${name} eliminado',
+      'destinations.noFolders' =>
+        'Sin carpetas · la raíz del bucket es el único punto de conexión',
+      'destinations.folderUsed' =>
+        ({required num n}) =>
+            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+              n,
+              one: '${n} backup',
+              other: '${n} backups',
+            ),
+      'destinations.notUsedYet' => 'Sin usar',
+      'destinations.deleteFolder' => ({
+        required Object path,
+      }) => 'Eliminar la carpeta ${path}',
+      'destinations.folderLocked' => 'La usan backups. Reconéctalos primero.',
+      'destinations.addFolder' => 'Agregar carpeta',
+      'destinations.folderHint' => '/nombre-carpeta',
+      'destinations.folderEmpty' => 'Escribe el nombre de la carpeta',
+      'destinations.folderInvalid' =>
+        'Minúsculas, dígitos, - . _ y / entre ellos',
+      'destinations.folderRepeated' => 'Esa carpeta ya existe',
+      'destinations.folderAdded' => ({
+        required Object path,
+      }) => 'Carpeta ${path} agregada',
+      'destinations.folderDeleted' => ({
+        required Object path,
+      }) => 'Carpeta ${path} eliminada',
+      'destinations.newTitle' => 'Nuevo destination',
+      'destinations.editTitle' => 'Editar destination',
+      'destinations.formDescription' => 'Elige dónde se escriben los backups.',
+      'destinations.sectionType' => '01 Tipo',
+      'destinations.sectionConnection' => '02 Conexión',
+      'destinations.sectionFolders' => '03 Carpetas',
+      'destinations.name' => 'Nombre',
+      'destinations.nameHint' => 'p. ej. bucket-backups',
+      'destinations.copyName' => ({required Object name}) => '${name}-copia',
+      'destinations.endpoint' => 'Endpoint',
+      'destinations.endpointHelp' => 'Cualquier URL compatible con S3. Para AWS usa https://s3.<región>.amazonaws.com.',
+      'destinations.bucket' => 'Bucket',
+      'destinations.region' => 'Región',
+      'destinations.accessKeyId' => 'Access key ID',
+      'destinations.secretKey' => 'Secret key',
+      'destinations.secretKeepHint' => 'Déjala vacía para mantener la guardada',
+      'destinations.secretHelp' =>
+        'Se guarda cifrada y no se vuelve a mostrar.',
+      'destinations.pathStyle' => 'Direcciones path-style',
+      'destinations.pathStyleHelp' =>
+        'La necesitan casi todos los servidores S3 propios.',
+      'destinations.permissions' =>
+        'Permisos necesarios: s3:PutObject y s3:AbortMultipartUpload.',
+      'destinations.foldersHelp' => 'Las carpetas son opcionales. Con al menos una, cada carpeta es un punto de conexión del canvas y la raíz del bucket no. Sin carpetas, la raíz del bucket es el único punto de conexión.',
+      'destinations.testIdle' => 'Dumpling inicia y cancela una subida multipart en cada carpeta; no queda nada en el bucket.',
+      'destinations.connectedSub' => ({
+        required Object bucket,
+      }) => '${bucket} · no quedó nada en el bucket',
+      'destinations.createButton' => 'Crear destination',
+      'destinations.created' => ({
+        required Object name,
+      }) => 'Destination ${name} creado',
+      'destinations.saved' => ({
+        required Object name,
+      }) => 'Destination ${name} guardado',
+      'destinations.typeSub.s3' => 'Cualquier almacenamiento compatible con S3',
+      'destinations.typeSub.gdrive' => 'Unidad o carpeta compartida',
+      'destinations.typeSub.dropbox' => 'Carpeta de la app',
+      'destinations.typeSub.azure' => 'Contenedor de almacenamiento',
+      'destinations.typeSub.sftp' => 'Cualquier servidor SSH',
       _ => null,
     };
   }

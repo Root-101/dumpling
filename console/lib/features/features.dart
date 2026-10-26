@@ -3,6 +3,7 @@ export 'base_client.dart';
 export 'base_screen.dart';
 export 'configs/configs.dart';
 export 'connections/connections.dart';
+export 'destinations/destinations.dart';
 export 'features_init.dart';
 export 'global/global.dart';
 export 'language/language.dart';

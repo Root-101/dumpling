@@ -18,10 +18,15 @@ class _MockRepo extends Mock implements WorkspaceRepo {}
 
 class _MockSourceRepo extends Mock implements SourceRepo {}
 
+class _MockDestinationRepo extends Mock implements DestinationRepo {}
+
 class _MockWorkspaces extends MockCubit<WorkspaceState>
     implements WorkspaceCubit {}
 
 class _MockSources extends MockCubit<SourceState> implements SourceCubit {}
+
+class _MockDestinations extends MockCubit<DestinationState>
+    implements DestinationCubit {}
 
 /// The app as `main` runs it, at the size of a laptop screen, with the cubits
 /// the router and the rail read in DI. A layout that overflows fails the test
@@ -30,6 +35,7 @@ void main() {
   final language = _MockLanguage();
   final workspaces = _MockWorkspaces();
   final sources = _MockSources();
+  final destinations = _MockDestinations();
   final authStates = StreamController<AuthState>.broadcast();
 
   final english = LanguageModel(
@@ -81,16 +87,35 @@ void main() {
         ),
       ),
     );
+    whenListen(
+      destinations,
+      const Stream<DestinationState>.empty(),
+      initialState: DestinationLoadingSuccessState(
+        data: const DestinationData.empty('production').withList(
+          destinationTypes,
+          [
+            destination('bucket', folders: ['orders', 'users']),
+          ],
+          [
+            config('orders', 'bucket', folder: 'orders'),
+            config('orders', 'bucket', folder: 'orders'),
+          ],
+        ),
+      ),
+    );
     when(() => sources.load(any())).thenAnswer((_) async {});
+    when(() => destinations.load(any())).thenAnswer((_) async {});
     when(() => workspaces.load()).thenAnswer((_) async {});
     when(() => workspaces.select(any())).thenReturn(null);
     app.di.put<AuthCubit>(auth);
     app.di.put<LanguageCubit>(language);
     app.di.put<WorkspaceCubit>(workspaces);
     app.di.put<SourceCubit>(sources);
+    app.di.put<DestinationCubit>(destinations);
     // the dialogs and drawers make their own cubit with them
     app.di.put<WorkspaceRepo>(_MockRepo());
     app.di.put<SourceRepo>(_MockSourceRepo());
+    app.di.put<DestinationRepo>(_MockDestinationRepo());
   });
 
   tearDownAll(authStates.close);
@@ -115,6 +140,7 @@ void main() {
           BlocProvider<LanguageCubit>.value(value: language),
           BlocProvider<WorkspaceCubit>.value(value: workspaces),
           BlocProvider<SourceCubit>.value(value: sources),
+          BlocProvider<DestinationCubit>.value(value: destinations),
         ],
         child: const App(),
       ),
@@ -238,5 +264,31 @@ void main() {
     await settle(tester);
     expect(find.text('pg-billing.internal'), findsOneWidget);
     expect(find.text('5432'), findsOneWidget);
+  });
+
+  testWidgets('Destinations: folders open under the row, and the drawer', (
+    tester,
+  ) async {
+    when(() => auth.auth).thenReturn(session());
+    await pumpApp(tester);
+    RouteConfig.router.go('/workspaces/production/destinations');
+    await settle(tester);
+
+    expect(find.text('bucket'), findsOneWidget);
+    expect(find.text('2 folders'), findsOneWidget);
+    expect(find.text('s3.us-east-1.amazonaws.com/bucket'), findsOneWidget);
+    expect(find.text('Not tested'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Show the folders of bucket'));
+    await settle(tester);
+    expect(find.text('/orders'), findsOneWidget);
+    expect(find.text('2 backups'), findsOneWidget);
+    expect(find.text('Not used yet'), findsOneWidget);
+    expect(find.text('Add folder'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(PrimaryButton, 'New destination'));
+    await settle(tester);
+    expect(find.text('03 FOLDERS'), findsOneWidget);
+    expect(find.text('Path-style addressing'), findsOneWidget);
   });
 }

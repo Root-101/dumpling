@@ -60,6 +60,8 @@ class AppMessages with BaseTranslations<AppMessagesLocale, AppMessages> {
   late final AppMessages$connections$en connections =
       AppMessages$connections$en._(_root);
   late final AppMessages$sources$en sources = AppMessages$sources$en._(_root);
+  late final AppMessages$destinations$en destinations =
+      AppMessages$destinations$en._(_root);
 }
 
 // Path: app
@@ -676,6 +678,238 @@ class AppMessages$sources$en {
   String saved({required String name}) => 'Source ${name} saved';
 }
 
+// Path: destinations
+class AppMessages$destinations$en {
+  AppMessages$destinations$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Destinations'
+  String get title => 'Destinations';
+
+  /// en: 'Where the {workspace: String} workspace writes backups: S3 buckets.'
+  String description({required String workspace}) =>
+      'Where the ${workspace} workspace writes backups: S3 buckets.';
+
+  /// en: 'New destination'
+  String get create => 'New destination';
+
+  /// en: 'Search destinations'
+  String get search => 'Search destinations';
+
+  /// en: 'Name'
+  String get columnName => 'Name';
+
+  /// en: 'Type'
+  String get columnType => 'Type';
+
+  /// en: 'Endpoint'
+  String get columnEndpoint => 'Endpoint';
+
+  /// en: 'Backups'
+  String get columnBackups => 'Backups';
+
+  /// en: 'Status'
+  String get columnStatus => 'Status';
+
+  /// en: 'Bucket root'
+  String get bucketRoot => 'Bucket root';
+
+  /// en: '(one) {{n} folder} (other) {{n} folders}'
+  String folderCount({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} folder',
+        other: '${n} folders',
+      );
+
+  /// en: 'Show the folders of {name: String}'
+  String showFolders({required String name}) => 'Show the folders of ${name}';
+
+  /// en: 'Hide the folders of {name: String}'
+  String hideFolders({required String name}) => 'Hide the folders of ${name}';
+
+  /// en: 'No destinations yet'
+  String get emptyTitle => 'No destinations yet';
+
+  /// en: 'Add a bucket to write backups to.'
+  String get emptyDescription => 'Add a bucket to write backups to.';
+
+  /// en: '(one) {Used by {n} backup. Remove it first.} (other) {Used by {n} backups. Remove them first.}'
+  String inUse({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: 'Used by ${n} backup. Remove it first.',
+        other: 'Used by ${n} backups. Remove them first.',
+      );
+
+  /// en: 'Delete the destination {name: String}?'
+  String deleteTitle({required String name}) =>
+      'Delete the destination ${name}?';
+
+  /// en: 'It isn't used by any backup. Its saved connection and keys are removed from this workspace. The files already in the bucket stay there.'
+  String get deleteConfirm =>
+      'It isn\'t used by any backup. Its saved connection and keys are removed from this workspace. The files already in the bucket stay there.';
+
+  /// en: 'Destination {name: String} deleted'
+  String deleted({required String name}) => 'Destination ${name} deleted';
+
+  /// en: 'No folders · the bucket root is the only connection point'
+  String get noFolders =>
+      'No folders · the bucket root is the only connection point';
+
+  /// en: '(one) {{n} backup} (other) {{n} backups}'
+  String folderUsed({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} backup',
+        other: '${n} backups',
+      );
+
+  /// en: 'Not used yet'
+  String get notUsedYet => 'Not used yet';
+
+  /// en: 'Delete folder {path: String}'
+  String deleteFolder({required String path}) => 'Delete folder ${path}';
+
+  /// en: 'In use by backups. Reconnect them first.'
+  String get folderLocked => 'In use by backups. Reconnect them first.';
+
+  /// en: 'Add folder'
+  String get addFolder => 'Add folder';
+
+  /// en: '/folder-name'
+  String get folderHint => '/folder-name';
+
+  /// en: 'Enter a folder name'
+  String get folderEmpty => 'Enter a folder name';
+
+  /// en: 'Lowercase letters, digits, - . _ and / between them'
+  String get folderInvalid =>
+      'Lowercase letters, digits, - . _ and / between them';
+
+  /// en: 'That folder already exists'
+  String get folderRepeated => 'That folder already exists';
+
+  /// en: 'Folder {path: String} added'
+  String folderAdded({required String path}) => 'Folder ${path} added';
+
+  /// en: 'Folder {path: String} deleted'
+  String folderDeleted({required String path}) => 'Folder ${path} deleted';
+
+  /// en: 'New destination'
+  String get newTitle => 'New destination';
+
+  /// en: 'Edit destination'
+  String get editTitle => 'Edit destination';
+
+  /// en: 'Choose where backups are written.'
+  String get formDescription => 'Choose where backups are written.';
+
+  /// en: '01 Type'
+  String get sectionType => '01 Type';
+
+  /// en: '02 Connection'
+  String get sectionConnection => '02 Connection';
+
+  /// en: '03 Folders'
+  String get sectionFolders => '03 Folders';
+
+  /// en: 'Name'
+  String get name => 'Name';
+
+  /// en: 'e.g. bucket-backups'
+  String get nameHint => 'e.g. bucket-backups';
+
+  /// en: '{name: String}-copy'
+  String copyName({required String name}) => '${name}-copy';
+
+  /// en: 'Endpoint'
+  String get endpoint => 'Endpoint';
+
+  /// en: 'Any S3-compatible URL. For AWS use https://s3.<region>.amazonaws.com.'
+  String get endpointHelp =>
+      'Any S3-compatible URL. For AWS use https://s3.<region>.amazonaws.com.';
+
+  /// en: 'Bucket'
+  String get bucket => 'Bucket';
+
+  /// en: 'Region'
+  String get region => 'Region';
+
+  /// en: 'Access key ID'
+  String get accessKeyId => 'Access key ID';
+
+  /// en: 'Secret key'
+  String get secretKey => 'Secret key';
+
+  /// en: 'Leave empty to keep the saved one'
+  String get secretKeepHint => 'Leave empty to keep the saved one';
+
+  /// en: 'Stored encrypted; never shown again after saving.'
+  String get secretHelp => 'Stored encrypted; never shown again after saving.';
+
+  /// en: 'Path-style addressing'
+  String get pathStyle => 'Path-style addressing';
+
+  /// en: 'Needed by most self-hosted S3 servers.'
+  String get pathStyleHelp => 'Needed by most self-hosted S3 servers.';
+
+  /// en: 'Permissions needed: s3:PutObject and s3:AbortMultipartUpload.'
+  String get permissions =>
+      'Permissions needed: s3:PutObject and s3:AbortMultipartUpload.';
+
+  /// en: 'Folders are optional. With at least one folder, each folder is a connection point on the canvas and the bucket root is not. With no folders, the bucket root is the only connection point.'
+  String get foldersHelp =>
+      'Folders are optional. With at least one folder, each folder is a connection point on the canvas and the bucket root is not. With no folders, the bucket root is the only connection point.';
+
+  /// en: 'Dumpling starts and aborts a multipart upload in each folder; nothing is left in the bucket.'
+  String get testIdle =>
+      'Dumpling starts and aborts a multipart upload in each folder; nothing is left in the bucket.';
+
+  /// en: '{bucket: String} · nothing was left in the bucket'
+  String connectedSub({required String bucket}) =>
+      '${bucket} · nothing was left in the bucket';
+
+  /// en: 'Create destination'
+  String get createButton => 'Create destination';
+
+  /// en: 'Destination {name: String} created'
+  String created({required String name}) => 'Destination ${name} created';
+
+  /// en: 'Destination {name: String} saved'
+  String saved({required String name}) => 'Destination ${name} saved';
+
+  late final AppMessages$destinations$typeSub$en typeSub =
+      AppMessages$destinations$typeSub$en._(_root);
+}
+
+// Path: destinations.typeSub
+class AppMessages$destinations$typeSub$en {
+  AppMessages$destinations$typeSub$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Any S3-compatible storage'
+  String get s3 => 'Any S3-compatible storage';
+
+  /// en: 'Shared drive or folder'
+  String get gdrive => 'Shared drive or folder';
+
+  /// en: 'App folder'
+  String get dropbox => 'App folder';
+
+  /// en: 'Storage container'
+  String get azure => 'Storage container';
+
+  /// en: 'Any SSH server'
+  String get sftp => 'Any SSH server';
+}
+
 /// The flat map containing all translations for locale <en>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -889,6 +1123,113 @@ extension on AppMessages {
       'sources.createButton' => 'Create source',
       'sources.created' => ({required String name}) => 'Source ${name} created',
       'sources.saved' => ({required String name}) => 'Source ${name} saved',
+      'destinations.title' => 'Destinations',
+      'destinations.description' => ({
+        required String workspace,
+      }) => 'Where the ${workspace} workspace writes backups: S3 buckets.',
+      'destinations.create' => 'New destination',
+      'destinations.search' => 'Search destinations',
+      'destinations.columnName' => 'Name',
+      'destinations.columnType' => 'Type',
+      'destinations.columnEndpoint' => 'Endpoint',
+      'destinations.columnBackups' => 'Backups',
+      'destinations.columnStatus' => 'Status',
+      'destinations.bucketRoot' => 'Bucket root',
+      'destinations.folderCount' =>
+        ({required num n}) =>
+            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+              n,
+              one: '${n} folder',
+              other: '${n} folders',
+            ),
+      'destinations.showFolders' => ({
+        required String name,
+      }) => 'Show the folders of ${name}',
+      'destinations.hideFolders' => ({
+        required String name,
+      }) => 'Hide the folders of ${name}',
+      'destinations.emptyTitle' => 'No destinations yet',
+      'destinations.emptyDescription' => 'Add a bucket to write backups to.',
+      'destinations.inUse' =>
+        ({required num n}) =>
+            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+              n,
+              one: 'Used by ${n} backup. Remove it first.',
+              other: 'Used by ${n} backups. Remove them first.',
+            ),
+      'destinations.deleteTitle' => ({
+        required String name,
+      }) => 'Delete the destination ${name}?',
+      'destinations.deleteConfirm' => 'It isn\'t used by any backup. Its saved connection and keys are removed from this workspace. The files already in the bucket stay there.',
+      'destinations.deleted' => ({
+        required String name,
+      }) => 'Destination ${name} deleted',
+      'destinations.noFolders' =>
+        'No folders · the bucket root is the only connection point',
+      'destinations.folderUsed' =>
+        ({required num n}) =>
+            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+              n,
+              one: '${n} backup',
+              other: '${n} backups',
+            ),
+      'destinations.notUsedYet' => 'Not used yet',
+      'destinations.deleteFolder' => ({
+        required String path,
+      }) => 'Delete folder ${path}',
+      'destinations.folderLocked' => 'In use by backups. Reconnect them first.',
+      'destinations.addFolder' => 'Add folder',
+      'destinations.folderHint' => '/folder-name',
+      'destinations.folderEmpty' => 'Enter a folder name',
+      'destinations.folderInvalid' =>
+        'Lowercase letters, digits, - . _ and / between them',
+      'destinations.folderRepeated' => 'That folder already exists',
+      'destinations.folderAdded' => ({
+        required String path,
+      }) => 'Folder ${path} added',
+      'destinations.folderDeleted' => ({
+        required String path,
+      }) => 'Folder ${path} deleted',
+      'destinations.newTitle' => 'New destination',
+      'destinations.editTitle' => 'Edit destination',
+      'destinations.formDescription' => 'Choose where backups are written.',
+      'destinations.sectionType' => '01 Type',
+      'destinations.sectionConnection' => '02 Connection',
+      'destinations.sectionFolders' => '03 Folders',
+      'destinations.name' => 'Name',
+      'destinations.nameHint' => 'e.g. bucket-backups',
+      'destinations.copyName' => ({required String name}) => '${name}-copy',
+      'destinations.endpoint' => 'Endpoint',
+      'destinations.endpointHelp' =>
+        'Any S3-compatible URL. For AWS use https://s3.<region>.amazonaws.com.',
+      'destinations.bucket' => 'Bucket',
+      'destinations.region' => 'Region',
+      'destinations.accessKeyId' => 'Access key ID',
+      'destinations.secretKey' => 'Secret key',
+      'destinations.secretKeepHint' => 'Leave empty to keep the saved one',
+      'destinations.secretHelp' =>
+        'Stored encrypted; never shown again after saving.',
+      'destinations.pathStyle' => 'Path-style addressing',
+      'destinations.pathStyleHelp' => 'Needed by most self-hosted S3 servers.',
+      'destinations.permissions' =>
+        'Permissions needed: s3:PutObject and s3:AbortMultipartUpload.',
+      'destinations.foldersHelp' => 'Folders are optional. With at least one folder, each folder is a connection point on the canvas and the bucket root is not. With no folders, the bucket root is the only connection point.',
+      'destinations.testIdle' => 'Dumpling starts and aborts a multipart upload in each folder; nothing is left in the bucket.',
+      'destinations.connectedSub' => ({
+        required String bucket,
+      }) => '${bucket} · nothing was left in the bucket',
+      'destinations.createButton' => 'Create destination',
+      'destinations.created' => ({
+        required String name,
+      }) => 'Destination ${name} created',
+      'destinations.saved' => ({
+        required String name,
+      }) => 'Destination ${name} saved',
+      'destinations.typeSub.s3' => 'Any S3-compatible storage',
+      'destinations.typeSub.gdrive' => 'Shared drive or folder',
+      'destinations.typeSub.dropbox' => 'App folder',
+      'destinations.typeSub.azure' => 'Storage container',
+      'destinations.typeSub.sftp' => 'Any SSH server',
       _ => null,
     };
   }
