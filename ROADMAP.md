@@ -215,3 +215,14 @@ Applied on the canvas on 2026-10-25:
 - Account screen; users and changing the password.
 - Copying connections between workspaces; zstd compression.
 - More sources (MySQL, MariaDB, MongoDB) and destinations (Google Drive, SFTP, local download).
+
+## After 1.0
+
+- Source metadata: the detail of a source shows what is in its database without reading any row:
+  schemas, tables with their column count, estimated rows and size, and the types (enums,
+  composites, domains). One more `SourceDriver` method each driver implements from its catalog
+  (`pg_catalog` in PostgreSQL, `information_schema` in MySQL/MariaDB, `stats()` and a sample of
+  documents in MongoDB, whose fields are only inferred). Row counts are estimates
+  (`reltuples`, `TABLE_ROWS`, `estimatedDocumentCount`), never `count(*)`; what the user can't
+  read shows as not available; the last result is kept with its time instead of querying on every
+  visit.
