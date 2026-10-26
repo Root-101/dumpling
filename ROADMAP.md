@@ -43,7 +43,7 @@ and connected by hand.
   `enabled`, which the console reads to show the disabled ones.
 - [x] Global rate limit per IP with Winter's `RateLimiterFilter` as the first filter (like
   feather-io).
-- [ ] `console`: i18n with slang (`es`, `en`) and a language switch, a `SERVICE_URL` for the local
+- [x] `console`: i18n with slang (`es`, `en`) and a language switch, a `SERVICE_URL` for the local
   run, a base client with the token. Times shown in UTC, with the local time smaller next to them.
 - [ ] Release: one Dockerfile that builds the console and serves it from the service;
   `docker-compose.yml` with a volume; `.env.example`.
@@ -61,7 +61,11 @@ Screens: Login, Login · Wrong password, Error · Session expired.
 - [x] `POST /api/auth/login` returns a JWT of 12 h; every other `/api` route requires it.
 - [x] Failed logins limited per IP like feather-io's `LoginRateLimiter` (delay per failure, lock
   after several in a row).
-- [ ] Console: login screen; a `401` sends back to the login, there is no refresh; sign out.
+- [x] Console: login screen (a wrong password shows the error of the service inside the form);
+  a `401` sends back to the login, there is no refresh; back to the page asked for after signing
+  in; sign out.
+- [ ] Console: the Error · Session expired screen of the design (today a `401` goes straight to
+  the login).
 
 ## M2 · Workspaces
 
@@ -71,7 +75,11 @@ Screens: Workspaces, Workspaces · New workspace, Workspace settings, Workspace 
 - [x] Defaults for new configs: schedule, compression, object key.
 - [ ] Delete by typing its name: its sources, destinations, configs and runs go, the files in the
   buckets stay. The service side is done.
-- [ ] Console: list, switch, create, settings, delete.
+- [x] `GET /api/workspaces` returns the `stats` of each workspace: sources, destinations,
+  configs, failing, running and the last run.
+- [ ] Console: list, switch, create, settings, delete. List (cards with counts, health and last
+  run), switch (the rail, by the URL, the last one remembered) and create are done; settings and
+  delete are not.
 
 ## M3 · Sources
 
@@ -85,8 +93,11 @@ Screens: Sources · List / New source / Row options / Delete confirmation, Sourc
   can be in its internal network.
 - [x] The test reads `server_version_num` and compares it with the `pg_dump` of the image: a server
   newer than `pg_dump` is reported as not compatible. Checked again before every run.
-- [ ] List with search and type filter, detail, edit, delete only when no config uses it. The
-  service side is done (the console searches and filters the list).
+- [x] List, detail, edit, delete only when no config uses it (the console searches and filters the
+  list).
+- [ ] Console: list with search and type filter, create (by fields or URL), edit (an empty
+  password keeps the saved one), duplicate, test, delete only when no backup uses it. All done
+  but the Source detail screen.
 
 ## M4 · Destinations
 
@@ -103,6 +114,8 @@ Screens: Destinations · List / New destination / Row options / Delete confirmat
   in each folder (or the root) and abort it, which proves the credentials, the bucket and the
   write permission there.
 - [x] List, detail, edit, delete only when no config writes to it.
+- [ ] Console: list with search and type filter, create, edit, duplicate, test, delete, and the
+  folders of each bucket added or deleted from its row. All done but the detail screen.
 
 ## M5 · Canvas
 
@@ -171,6 +184,9 @@ UX/UI improvements in 0.1.0, not features.
   `/workspaces/{slug}/runs` (with its filters in the query), `/workspaces/{slug}/settings`. The
   slug comes from the workspace name when it is created (`test-workspace`), is unique and doesn't
   change on a rename, so links keep working. An unknown path or slug shows Error · Not found.
+  Done: `/workspaces` and `/workspaces/{slug}/{section}`, reloaded or opened from a link (without
+  a session, the login opens it after signing in). Missing: the paths of the details and of a run,
+  and Error · Not found.
 - [ ] Unsaved canvas: leaving the canvas (another screen, another workspace, closing or reloading
   the tab) with changes not saved asks first that they will be discarded.
 - [ ] Save only with changes: the Save button of the canvas is disabled until something changes,
