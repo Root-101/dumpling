@@ -27,21 +27,21 @@ typedef _WireRef = (String, WireEnd);
 /// The right-click menu: where (view coordinates) and its options
 typedef _Menu = ({Offset at, List<ContextMenuItem> items});
 
-/// The interactive pipeline editor. World coordinates are those of the
+/// The interactive canvas editor. World coordinates are those of the
 /// nodes; the view shows them translated by [_pan] and scaled by [_zoom]
-class PipelineCanvas extends StatefulWidget {
-  const PipelineCanvas({super.key});
+class CanvasEditor extends StatefulWidget {
+  const CanvasEditor({super.key});
 
   @override
-  State<PipelineCanvas> createState() => _PipelineCanvasState();
+  State<CanvasEditor> createState() => _CanvasEditorState();
 }
 
-class _PipelineCanvasState extends State<PipelineCanvas>
+class _CanvasEditorState extends State<CanvasEditor>
     with SingleTickerProviderStateMixin {
   static const double _minZoom = 0.4;
   static const double _maxZoom = 2;
 
-  final FocusNode _focus = FocusNode(debugLabel: 'pipeline-canvas');
+  final FocusNode _focus = FocusNode(debugLabel: 'canvas');
   final GlobalKey _viewport = GlobalKey();
   late final AnimationController _flow = AnimationController(
     vsync: this,
@@ -70,7 +70,7 @@ class _PipelineCanvasState extends State<PipelineCanvas>
   /// background must not start a pan. Children get the event first
   bool _claimed = false;
 
-  PipelineCubit get _cubit => context.read<PipelineCubit>();
+  CanvasCubit get _cubit => context.read<CanvasCubit>();
 
   @override
   void dispose() {
@@ -110,7 +110,7 @@ class _PipelineCanvasState extends State<PipelineCanvas>
   });
 
   void _fit() {
-    final b = PipelineGeometry.bounds(_cubit.state);
+    final b = CanvasGeometry.bounds(_cubit.state.data);
     if (b.isEmpty) return;
     const pad = 64.0;
     final size = _viewSize;
@@ -151,7 +151,7 @@ class _PipelineCanvasState extends State<PipelineCanvas>
       return;
     }
     if (e.buttons != kPrimaryButton) return;
-    final s = _cubit.state;
+    final s = _cubit.state.data;
     final pos = switch (kind) {
       NodeKind.source => s.source(id)!.pos,
       NodeKind.config => s.configs.firstWhere((c) => c.id == id).pos,
@@ -191,7 +191,7 @@ class _PipelineCanvasState extends State<PipelineCanvas>
       return;
     }
     final world = _toWorld(e.position);
-    final wire = PipelineGeometry.hitWire(_cubit.state, world, 6 / _zoom);
+    final wire = CanvasGeometry.hitWire(_cubit.state.data, world, 6 / _zoom);
     setState(() {
       _showSettings = false;
       // only Space + drag (or the middle button) moves the canvas
@@ -237,9 +237,9 @@ class _PipelineCanvasState extends State<PipelineCanvas>
     return [
       switch (kind) {
         NodeKind.source => ContextMenuItem(
-          'Delete database',
+          app.intl.canvas.removeFromCanvas,
           icons.actions.delete,
-          _act(() => _cubit.deleteSource(id)),
+          _act(() => _cubit.removeSource(id)),
           danger: true,
         ),
         NodeKind.config => ContextMenuItem(
@@ -249,9 +249,9 @@ class _PipelineCanvasState extends State<PipelineCanvas>
           danger: true,
         ),
         NodeKind.destination => ContextMenuItem(
-          'Delete destination',
+          app.intl.canvas.removeFromCanvas,
           icons.actions.delete,
-          _act(() => _cubit.deleteDestination(id)),
+          _act(() => _cubit.removeDestination(id)),
           danger: true,
         ),
       },
@@ -267,25 +267,50 @@ class _PipelineCanvasState extends State<PipelineCanvas>
     ),
   ];
 
-  /// Add a node where the menu was opened
+  /// Add a node of the pool where the menu was opened
   List<ContextMenuItem> _emptyMenu(Offset world) {
-    final s = _cubit.state;
-    final icons = app.assets.icons;
     final at = Offset(world.dx.roundToDouble(), world.dy.roundToDouble());
-    return [
-      ContextMenuItem(
-        'Add database',
-        icons.nodes.database,
-        s.sourcePool.isEmpty ? null : _act(() => _cubit.addSource(at)),
-      ),
-      ContextMenuItem(
-        'Add destination',
-        icons.nodes.bucket,
-        s.destinationPool.isEmpty
-            ? null
-            : _act(() => _cubit.addDestination(at)),
-      ),
-    ];
+    return [..._sourceItems(at), ..._destinationItems(at)];
+  }
+
+  /// One item per source off the canvas; [at] null: stacked in its column
+  List<ContextMenuItem> _sourceItems([Offset? at]) {
+    final pool = _cubit.state.data.sourcePool;
+    final icon = app.assets.icons.nodes.database;
+    return pool.isEmpty
+        ? [ContextMenuItem(app.intl.canvas.allSourcesPlaced, icon, null)]
+        : [
+            for (final x in pool)
+              ContextMenuItem(
+                x.name,
+                icon,
+                _act(() => _cubit.addSource(x.id, at)),
+              ),
+          ];
+  }
+
+  List<ContextMenuItem> _destinationItems([Offset? at]) {
+    final pool = _cubit.state.data.destinationPool;
+    final icon = app.assets.icons.nodes.bucket;
+    return pool.isEmpty
+        ? [ContextMenuItem(app.intl.canvas.allDestinationsPlaced, icon, null)]
+        : [
+            for (final x in pool)
+              ContextMenuItem(
+                x.name,
+                icon,
+                _act(() => _cubit.addDestination(x.id, at)),
+              ),
+          ];
+  }
+
+  /// The toolbar opens its menu under itself. On release, so the press that
+  /// opened it is over: no need to keep it from closing the menu
+  void _openToolbarMenu(List<ContextMenuItem> items) {
+    setState(() {
+      _showSettings = false;
+      _menu = (at: const Offset(16, 64), items: items);
+    });
   }
 
   void _toggleKeys() => setState(() {
@@ -340,11 +365,11 @@ class _PipelineCanvasState extends State<PipelineCanvas>
     final link = _link;
     if (drag != null && !drag.moved) _cubit.tapNode(drag.kind, drag.id);
     if (link != null) {
-      final s = _cubit.state;
+      final s = _cubit.state.data;
       final config = link.kind == NodeKind.source
-          ? PipelineGeometry.hitConfig(s.configs, link.point)
+          ? CanvasGeometry.hitConfig(s.configs, link.point)
           : null;
-      final target = PipelineGeometry.hit(s.destinations, link.point);
+      final target = CanvasGeometry.hit(s.destinations, link.point);
       if (config != null) {
         _cubit.attachSource(link.id, config.id);
       } else if (target != null) {
@@ -415,7 +440,7 @@ class _PipelineCanvasState extends State<PipelineCanvas>
     }
     if (key == LogicalKeyboardKey.delete ||
         key == LogicalKeyboardKey.backspace) {
-      final sel = _cubit.state.selectedId;
+      final sel = _cubit.state.data.selectedId;
       if (_wire != null) {
         _deleteWire();
       } else if (sel != null) {
@@ -485,7 +510,7 @@ class _PipelineCanvasState extends State<PipelineCanvas>
       autofocus: true,
       onKeyEvent: _key,
       child: Semantics(
-        label: 'Pipeline canvas. Hold Space and drag to move it; right click for options; arrow keys pan; Ctrl and scroll zooms; F centers; click a connection and press Delete to remove it; Escape closes the config',
+        label: 'Canvas. Hold Space and drag to move it; right click for options; arrow keys pan; Ctrl and scroll zooms; F centers; click a connection and press Delete to remove it; Escape closes the config',
         child: MouseRegion(
           cursor: cursor,
           child: Listener(
@@ -515,8 +540,8 @@ class _PipelineCanvasState extends State<PipelineCanvas>
                       transform: Matrix4.identity()
                         ..translateByDouble(_pan.dx, _pan.dy, 0, 1)
                         ..scaleByDouble(_zoom, _zoom, 1, 1),
-                      child: BlocBuilder<PipelineCubit, PipelineState>(
-                        builder: (context, s) => _world(s),
+                      child: BlocBuilder<CanvasCubit, CanvasState>(
+                        builder: (context, s) => _world(s.data),
                       ),
                     ),
                   ),
@@ -533,16 +558,20 @@ class _PipelineCanvasState extends State<PipelineCanvas>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           AddToolbar(
-                            onAddSource: _cubit.addSource,
-                            onAddDestination: _cubit.addDestination,
+                            onAddSource: () => _openToolbarMenu(_sourceItems()),
+                            onAddDestination: () =>
+                                _openToolbarMenu(_destinationItems()),
                           ),
-                          BlocBuilder<PipelineCubit, PipelineState>(
-                            buildWhen: (a, b) => a.orphans != b.orphans,
-                            builder: (context, s) => s.orphans == 0
+                          BlocBuilder<CanvasCubit, CanvasState>(
+                            buildWhen: (a, b) =>
+                                a.data.orphans != b.data.orphans,
+                            builder: (context, s) => s.data.orphans == 0
                                 ? const SizedBox.shrink()
                                 : Padding(
                                     padding: const EdgeInsets.only(top: 8),
-                                    child: OrphansWarning(count: s.orphans),
+                                    child: OrphansWarning(
+                                      count: s.data.orphans,
+                                    ),
                                   ),
                           ),
                         ],
@@ -599,12 +628,12 @@ class _PipelineCanvasState extends State<PipelineCanvas>
     );
   }
 
-  Widget _world(PipelineState s) {
+  Widget _world(CanvasData s) {
     final colors = app.colors;
     final sel = s.selected;
     final link = _link;
     final target = link != null
-        ? PipelineGeometry.hit(s.destinations, link.point)
+        ? CanvasGeometry.hit(s.destinations, link.point)
         : null;
     final handlers = NodeHandlers(
       nodeDown: _nodeDown,
@@ -616,7 +645,7 @@ class _PipelineCanvasState extends State<PipelineCanvas>
     Offset? wireMid;
     for (final c in s.configs) {
       for (final end in WireEnd.values) {
-        final ends = PipelineGeometry.wireEnds(s, c, end);
+        final ends = CanvasGeometry.wireEnds(s, c, end);
         if (ends == null) continue;
         // while relinking, the live wire replaces the config's out wire
         if (end == WireEnd.destination &&
@@ -625,14 +654,14 @@ class _PipelineCanvasState extends State<PipelineCanvas>
           continue;
         }
         final picked = _wire == (c.id, end);
-        if (picked) wireMid = PipelineGeometry.curveAt(ends.$1, ends.$2, 0.5);
+        if (picked) wireMid = CanvasGeometry.curveAt(ends.$1, ends.$2, 0.5);
         wires.add(
           Wire(
             ends.$1,
             ends.$2,
             selected: sel?.id == c.id,
             picked: picked,
-            orphan: PipelineState.configOrphan(c),
+            orphan: CanvasData.configOrphan(c),
           ),
         );
       }
@@ -642,16 +671,16 @@ class _PipelineCanvasState extends State<PipelineCanvas>
     Offset? ghost;
     if (link != null) {
       final from = link.kind == NodeKind.source
-          ? PipelineGeometry.sourceOut(s.source(link.id)!)
-          : PipelineGeometry.configOut(s.config(link.id)!);
+          ? CanvasGeometry.sourceOut(s.source(link.id)!)
+          : CanvasGeometry.configOut(s.config(link.id)!);
       // a source wire over a config attaches to it: snap to its in port
       final attach = link.kind == NodeKind.source
-          ? PipelineGeometry.hitConfig(s.configs, link.point)
+          ? CanvasGeometry.hitConfig(s.configs, link.point)
           : null;
       final to = attach != null
-          ? PipelineGeometry.configIn(attach)
+          ? CanvasGeometry.configIn(attach)
           : target != null
-          ? PipelineGeometry.destinationPort(
+          ? CanvasGeometry.destinationPort(
               s.destination(target.destinationId)!,
               target.folderId,
             )
@@ -714,7 +743,6 @@ class _PipelineCanvasState extends State<PipelineCanvas>
               ),
               orphan: s.destinationOrphan(d.id),
               handlers: handlers,
-              onAddFolder: () => _cubit.addFolder(d.id),
             ),
           ),
         ),

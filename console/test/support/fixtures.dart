@@ -1,4 +1,5 @@
 import 'package:console/app_exporter.dart';
+import 'package:material_ui/material_ui.dart' show Offset;
 
 /// A workspace with sensible defaults; each test changes only what it checks
 WorkspaceModel workspace(
@@ -91,3 +92,94 @@ AuthModel session() => AuthModel(accessToken: 'jwt', expireAt: DateTime(2100));
 /// An error as the repos throw it (already converted)
 GlobalException apiError([String message = 'boom']) =>
     GlobalException(type: GlobalExceptionType.general, message: message);
+
+/// A canvas node of a PostgreSQL source whose id and database are [id]
+SourceNode sourceNode(String id, [Offset pos = Offset.zero]) => SourceNode(
+  id: id,
+  name: '$id-db',
+  type: SourceTypes.postgres,
+  settings: {
+    'host': '$id.internal',
+    'port': 5432,
+    'database': id,
+    'username': 'dumpling_backup',
+    'dump_format': PostgresSettingsModel.custom,
+  },
+  pos: pos,
+);
+
+/// A canvas node of an S3 destination whose id, name and bucket are [id]
+DestinationNode destinationNode(
+  String id, {
+  List<String> folders = const [],
+  Offset pos = Offset.zero,
+}) => DestinationNode(
+  id: id,
+  name: id,
+  type: DestinationTypes.s3,
+  settings: {
+    'endpoint': 'https://s3.us-east-1.amazonaws.com',
+    'region': 'us-east-1',
+    'bucket': id,
+    'access_key_id': 'AKIA',
+    'path_style': false,
+  },
+  folders: folders,
+  pos: pos,
+);
+
+/// Three complete flows: orders → j1 → bb/orders, users → j2 → bb/users and
+/// media → j3 → the root of ca. Off the canvas: the source billing and the
+/// destination br
+CanvasModel demoCanvas() => CanvasModel(
+  sources: [
+    sourceNode('orders', const Offset(40, 130)),
+    sourceNode('users', const Offset(40, 300)),
+    sourceNode('media', const Offset(40, 470)),
+  ],
+  sourcePool: [sourceNode('billing')],
+  destinations: [
+    destinationNode(
+      'bb',
+      folders: ['orders', 'users'],
+      pos: const Offset(760, 88),
+    ),
+    destinationNode('ca', pos: const Offset(760, 484)),
+  ],
+  destinationPool: [destinationNode('br')],
+  configs: const [
+    BackupConfig(
+      id: 'j1',
+      sourceId: 'orders',
+      destinationId: 'bb',
+      folderId: 'orders',
+      pos: Offset(380, 98),
+      name: 'Nightly full',
+      schedule: '0 2 * * *',
+      compression: 'gzip',
+      objectKey: '{yyyy}/{MM}/{dd}',
+    ),
+    BackupConfig(
+      id: 'j2',
+      sourceId: 'users',
+      destinationId: 'bb',
+      folderId: 'users',
+      pos: Offset(380, 268),
+      name: 'Nightly',
+      schedule: '30 2 * * *',
+      compression: 'gzip',
+      objectKey: '{yyyy}-{MM}-{dd}',
+    ),
+    BackupConfig(
+      id: 'j3',
+      sourceId: 'media',
+      destinationId: 'ca',
+      folderId: null,
+      pos: Offset(380, 438),
+      name: 'Weekly archive',
+      schedule: '0 3 * * 0',
+      compression: 'none',
+      objectKey: '{db}/{yyyy}-{MM}-{dd}',
+    ),
+  ],
+);

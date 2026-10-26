@@ -74,6 +74,11 @@ class RouteConfig {
                 path: DestinationsScreen.navigator.path,
                 builder: DestinationsScreen.navigator.builder,
               ),
+              GoRoute(
+                name: CanvasScreen.navigator.name,
+                path: CanvasScreen.navigator.path,
+                builder: CanvasScreen.navigator.builder,
+              ),
               for (final section in SectionScreen.sections)
                 GoRoute(
                   name: section,

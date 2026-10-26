@@ -78,6 +78,8 @@ class AppMessagesEs
   @override
   late final AppMessages$destinations$es destinations =
       AppMessages$destinations$es._(_root);
+  @override
+  late final AppMessages$canvas$es canvas = AppMessages$canvas$es._(_root);
 }
 
 // Path: app
@@ -684,6 +686,46 @@ class AppMessages$destinations$es implements AppMessages$destinations$en {
       AppMessages$destinations$typeSub$es._(_root);
 }
 
+// Path: canvas
+class AppMessages$canvas$es implements AppMessages$canvas$en {
+  AppMessages$canvas$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String description({required String workspace}) =>
+      'Conecta los orígenes y destinos de ${workspace}. Nada cambia hasta que guardes.';
+  @override
+  String get save => 'Guardar canvas';
+  @override
+  String get saved => 'Canvas guardado';
+  @override
+  String get newConfig => 'Nueva config';
+  @override
+  String get removeFromCanvas => 'Quitar del canvas';
+  @override
+  String get allSourcesPlaced => 'Todos los orígenes están en el canvas';
+  @override
+  String get allDestinationsPlaced => 'Todos los destinos están en el canvas';
+  @override
+  String get workspaceDefault => 'Predeterminado del workspace';
+  @override
+  String get neverRun => 'Nunca se ha ejecutado';
+  @override
+  String get disabled => 'Desactivada';
+  @override
+  String orphans({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: '${n} config incompleta',
+        other: '${n} configs incompletas',
+      );
+  @override
+  String get orphansHelp =>
+      'Solo se guardan los flujos completos (origen → config → destino). Las configs en ámbar se descartan al guardar; los orígenes y destinos se quedan.';
+}
+
 // Path: destinations.typeSub
 class AppMessages$destinations$typeSub$es
     implements AppMessages$destinations$typeSub$en {
@@ -1033,6 +1075,26 @@ extension on AppMessagesEs {
       'destinations.typeSub.dropbox' => 'Carpeta de la app',
       'destinations.typeSub.azure' => 'Contenedor de almacenamiento',
       'destinations.typeSub.sftp' => 'Cualquier servidor SSH',
+      'canvas.description' => ({
+        required String workspace,
+      }) => 'Conecta los orígenes y destinos de ${workspace}. Nada cambia hasta que guardes.',
+      'canvas.save' => 'Guardar canvas',
+      'canvas.saved' => 'Canvas guardado',
+      'canvas.newConfig' => 'Nueva config',
+      'canvas.removeFromCanvas' => 'Quitar del canvas',
+      'canvas.allSourcesPlaced' => 'Todos los orígenes están en el canvas',
+      'canvas.allDestinationsPlaced' => 'Todos los destinos están en el canvas',
+      'canvas.workspaceDefault' => 'Predeterminado del workspace',
+      'canvas.neverRun' => 'Nunca se ha ejecutado',
+      'canvas.disabled' => 'Desactivada',
+      'canvas.orphans' =>
+        ({required num n}) =>
+            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+              n,
+              one: '${n} config incompleta',
+              other: '${n} configs incompletas',
+            ),
+      'canvas.orphansHelp' => 'Solo se guardan los flujos completos (origen → config → destino). Las configs en ámbar se descartan al guardar; los orígenes y destinos se quedan.',
       _ => null,
     };
   }

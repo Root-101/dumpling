@@ -257,3 +257,19 @@ destinations:
     dropbox: 'App folder'
     azure: 'Storage container'
     sftp: 'Any SSH server'
+
+canvas:
+  description: 'Connect the sources and destinations of {workspace: String}. Nothing changes until you save.'
+  save: 'Save canvas'
+  saved: 'Canvas saved'
+  newConfig: 'New config'
+  removeFromCanvas: 'Remove from canvas'
+  allSourcesPlaced: 'Every source is on the canvas'
+  allDestinationsPlaced: 'Every destination is on the canvas'
+  workspaceDefault: 'Workspace default'
+  neverRun: 'Never run'
+  disabled: 'Disabled'
+  orphans(plural, param=n):
+    one: '{n} incomplete config'
+    other: '{n} incomplete configs'
+  orphansHelp: 'Only complete flows (source → config → destination) are saved. The configs in amber are discarded on save; sources and destinations stay.'

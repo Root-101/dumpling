@@ -48,7 +48,7 @@ class WiresPainter extends CustomPainter {
             ? colors.brand.accent.withValues(alpha: 0.6)
             : colors.surface.wire
         ..strokeWidth = w.selected || w.picked ? 2.5 : 1.5;
-      final path = PipelineGeometry.curve(w.from, w.to);
+      final path = CanvasGeometry.curve(w.from, w.to);
       if (w.selected && !w.picked) {
         drawDashedPath(
           canvas,
@@ -70,7 +70,7 @@ class WiresPainter extends CustomPainter {
         ..strokeWidth = 2;
       drawDashedPath(
         canvas,
-        PipelineGeometry.curve(live!.$1, live!.$2),
+        CanvasGeometry.curve(live!.$1, live!.$2),
         paint,
         dash: 3,
         gap: 5,

@@ -62,6 +62,7 @@ class AppMessages with BaseTranslations<AppMessagesLocale, AppMessages> {
   late final AppMessages$sources$en sources = AppMessages$sources$en._(_root);
   late final AppMessages$destinations$en destinations =
       AppMessages$destinations$en._(_root);
+  late final AppMessages$canvas$en canvas = AppMessages$canvas$en._(_root);
 }
 
 // Path: app
@@ -886,6 +887,58 @@ class AppMessages$destinations$en {
       AppMessages$destinations$typeSub$en._(_root);
 }
 
+// Path: canvas
+class AppMessages$canvas$en {
+  AppMessages$canvas$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Connect the sources and destinations of {workspace: String}. Nothing changes until you save.'
+  String description({required String workspace}) =>
+      'Connect the sources and destinations of ${workspace}. Nothing changes until you save.';
+
+  /// en: 'Save canvas'
+  String get save => 'Save canvas';
+
+  /// en: 'Canvas saved'
+  String get saved => 'Canvas saved';
+
+  /// en: 'New config'
+  String get newConfig => 'New config';
+
+  /// en: 'Remove from canvas'
+  String get removeFromCanvas => 'Remove from canvas';
+
+  /// en: 'Every source is on the canvas'
+  String get allSourcesPlaced => 'Every source is on the canvas';
+
+  /// en: 'Every destination is on the canvas'
+  String get allDestinationsPlaced => 'Every destination is on the canvas';
+
+  /// en: 'Workspace default'
+  String get workspaceDefault => 'Workspace default';
+
+  /// en: 'Never run'
+  String get neverRun => 'Never run';
+
+  /// en: 'Disabled'
+  String get disabled => 'Disabled';
+
+  /// en: '(one) {{n} incomplete config} (other) {{n} incomplete configs}'
+  String orphans({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} incomplete config',
+        other: '${n} incomplete configs',
+      );
+
+  /// en: 'Only complete flows (source → config → destination) are saved. The configs in amber are discarded on save; sources and destinations stay.'
+  String get orphansHelp =>
+      'Only complete flows (source → config → destination) are saved. The configs in amber are discarded on save; sources and destinations stay.';
+}
+
 // Path: destinations.typeSub
 class AppMessages$destinations$typeSub$en {
   AppMessages$destinations$typeSub$en._(this._root);
@@ -1230,6 +1283,26 @@ extension on AppMessages {
       'destinations.typeSub.dropbox' => 'App folder',
       'destinations.typeSub.azure' => 'Storage container',
       'destinations.typeSub.sftp' => 'Any SSH server',
+      'canvas.description' => ({
+        required String workspace,
+      }) => 'Connect the sources and destinations of ${workspace}. Nothing changes until you save.',
+      'canvas.save' => 'Save canvas',
+      'canvas.saved' => 'Canvas saved',
+      'canvas.newConfig' => 'New config',
+      'canvas.removeFromCanvas' => 'Remove from canvas',
+      'canvas.allSourcesPlaced' => 'Every source is on the canvas',
+      'canvas.allDestinationsPlaced' => 'Every destination is on the canvas',
+      'canvas.workspaceDefault' => 'Workspace default',
+      'canvas.neverRun' => 'Never run',
+      'canvas.disabled' => 'Disabled',
+      'canvas.orphans' =>
+        ({required num n}) =>
+            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+              n,
+              one: '${n} incomplete config',
+              other: '${n} incomplete configs',
+            ),
+      'canvas.orphansHelp' => 'Only complete flows (source → config → destination) are saved. The configs in amber are discarded on save; sources and destinations stay.',
       _ => null,
     };
   }

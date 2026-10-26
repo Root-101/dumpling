@@ -170,9 +170,8 @@ class SourceNodeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = app.colors;
-    final isS3 = source.abbr == 'S3';
-    final tint = isS3 ? colors.brand.accent : colors.brand.postgres;
-    final size = PipelineGeometry.sourceSize;
+    final tint = source.look.color;
+    final size = CanvasGeometry.sourceSize;
     // ports and buttons are siblings of the body: they stick out of it, and
     // only an UnboundedStack takes pointers outside of its size
     return UnboundedStack(
@@ -195,7 +194,7 @@ class SourceNodeView extends StatelessWidget {
                     _Badge(
                       background: tint.withValues(alpha: 0.16),
                       child: Text(
-                        source.abbr,
+                        source.look.abbr,
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
@@ -225,8 +224,10 @@ class SourceNodeView extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  source.size,
+                  source.detail,
                   style: TextStyle(fontSize: 11, color: colors.text.muted),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -273,18 +274,23 @@ class ConfigNodeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = app.colors;
-    final size = PipelineGeometry.configSize;
-    final portY = PipelineGeometry.configPortY;
-    final lastColor = switch (config.lastStatus) {
+    final size = CanvasGeometry.configSize;
+    final portY = CanvasGeometry.configPortY;
+    final last = config.lastRun;
+    final next = config.nextRun;
+    final time = app.dateFormatter.time;
+    final lastColor = switch (last?.status) {
       RunStatus.success => colors.status.success,
       RunStatus.failed => colors.status.error,
-      RunStatus.pending => colors.status.pending,
+      RunStatus.running || null => colors.status.pending,
     };
-    final lastLabel = switch (config.lastStatus) {
+    final lastLabel = switch (last?.status) {
       RunStatus.success => 'Success',
       RunStatus.failed => 'Failed',
-      RunStatus.pending => 'Pending',
+      RunStatus.running => 'Running',
+      null => '',
     };
+    final schedule = config.schedule;
     final rowStyle = TextStyle(
       fontSize: 11,
       height: 16 / 11,
@@ -317,7 +323,7 @@ class ConfigNodeView extends StatelessWidget {
             ),
             foregroundDecoration: _nodeBorder(
               selected,
-              orphan: PipelineState.configOrphan(config),
+              orphan: CanvasData.configOrphan(config),
             ),
             child: Column(
               children: [
@@ -346,7 +352,11 @@ class ConfigNodeView extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
-                              config.human,
+                              schedule == null
+                                  ? app.intl.canvas.workspaceDefault
+                                  : config.enabled
+                                  ? Frequency.of(schedule).label
+                                  : app.intl.canvas.disabled,
                               style: AppText.meta,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -355,22 +365,23 @@ class ConfigNodeView extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 6),
-                      Container(
-                        height: 22,
-                        padding: const EdgeInsets.symmetric(horizontal: 7),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: colors.surface.control,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Text(
-                          config.cron,
-                          style: AppText.mono.copyWith(
-                            fontSize: 11,
-                            color: colors.text.secondary,
+                      if (schedule != null)
+                        Container(
+                          height: 22,
+                          padding: const EdgeInsets.symmetric(horizontal: 7),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: colors.surface.control,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Text(
+                            schedule,
+                            style: AppText.mono.copyWith(
+                              fontSize: 11,
+                              color: colors.text.secondary,
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -400,7 +411,11 @@ class ConfigNodeView extends StatelessWidget {
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
-                              config.last,
+                              last == null
+                                  ? app.intl.canvas.neverRun
+                                  : app.intl.time.utc(
+                                      time: time.format(last.startedAt.toUtc()),
+                                    ),
                               style: rowStyle,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -437,15 +452,15 @@ class ConfigNodeView extends StatelessWidget {
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
-                              config.next,
+                              next == null
+                                  ? '—'
+                                  : app.intl.time.utc(
+                                      time: time.format(next.toUtc()),
+                                    ),
                               style: rowStyle,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                          Text(
-                            config.nextIn,
-                            style: rowStyle.copyWith(color: colors.text.subtle),
                           ),
                         ],
                       ),
@@ -538,7 +553,6 @@ class DestinationNodeView extends StatelessWidget {
   /// No config writes here
   final bool orphan;
   final NodeHandlers handlers;
-  final VoidCallback onAddFolder;
 
   const DestinationNodeView({
     required this.destination,
@@ -548,7 +562,6 @@ class DestinationNodeView extends StatelessWidget {
     required this.rootUsed,
     required this.orphan,
     required this.handlers,
-    required this.onAddFolder,
     super.key,
   });
 
@@ -586,15 +599,15 @@ class DestinationNodeView extends StatelessWidget {
           id: d.id,
           handlers: handlers,
           child: Container(
-            width: PipelineGeometry.destinationWidth,
-            height: PipelineGeometry.destinationHeight(d),
+            width: CanvasGeometry.destinationWidth,
+            height: CanvasGeometry.destinationHeight(d),
             padding: const EdgeInsets.symmetric(vertical: 1),
             decoration: _nodeDecoration(),
             foregroundDecoration: _nodeBorder(false, orphan: orphan),
             child: Column(
               children: [
                 SizedBox(
-                  height: PipelineGeometry.destinationHeader - 1,
+                  height: CanvasGeometry.destinationHeader - 1,
                   child: dropOutline(
                     noFolders && targetFolder == '',
                     Padding(
@@ -615,12 +628,12 @@ class DestinationNodeView extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  d.bucket,
+                                  d.name,
                                   style: AppText.nodeTitle,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
-                                  d.provider,
+                                  d.detail,
                                   style: AppText.meta,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -636,54 +649,23 @@ class DestinationNodeView extends StatelessWidget {
                   height: 1,
                   color: colors.surface.border.withValues(alpha: 0.5),
                 ),
-                const SizedBox(height: PipelineGeometry.destinationPadding),
+                const SizedBox(height: CanvasGeometry.destinationPadding),
                 for (final f in d.folders)
                   _FolderRow(
                     folder: f,
-                    selected: selectedFolder == f.id,
-                    wrap: (child) => dropOutline(targetFolder == f.id, child),
+                    selected: selectedFolder == f,
+                    wrap: (child) => dropOutline(targetFolder == f, child),
                   ),
                 if (noFolders)
                   Container(
-                    height: PipelineGeometry.rootNote,
+                    height: CanvasGeometry.rootNote,
                     padding: const EdgeInsets.symmetric(horizontal: 14),
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'No folders · writes to the bucket root',
+                      app.intl.destinations.bucketRoot,
                       style: AppText.meta,
                     ),
                   ),
-                Listener(
-                  onPointerDown: (_) => handlers.claim(),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 4, 10, 2),
-                    child: DashedBorder(
-                      color: colors.surface.border,
-                      strokeWidth: 1,
-                      radius: 8,
-                      dash: 4,
-                      gap: 3,
-                      child: SizedBox(
-                        height: 30,
-                        width: double.infinity,
-                        child: TextButton(
-                          onPressed: onAddFolder,
-                          style: TextButton.styleFrom(
-                            foregroundColor: colors.text.muted,
-                            textStyle: const TextStyle(
-                              fontFamily: AppText.sans,
-                              fontSize: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: app.dimensions.radius.s,
-                            ),
-                          ),
-                          child: const Text('+ Add folder'),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
@@ -707,16 +689,16 @@ class DestinationNodeView extends StatelessWidget {
             left: -6,
             top:
                 1 +
-                PipelineGeometry.destinationHeader +
-                PipelineGeometry.destinationPadding +
-                PipelineGeometry.folderRow * i +
+                CanvasGeometry.destinationHeader +
+                CanvasGeometry.destinationPadding +
+                CanvasGeometry.folderRow * i +
                 14,
             child: NodePort(
               size: 12,
-              fill: selectedFolder == f.id
+              fill: selectedFolder == f
                   ? colors.brand.primary
                   : colors.surface.background,
-              border: selectedFolder == f.id
+              border: selectedFolder == f
                   ? colors.brand.primary
                   : colors.surface.wire,
             ),
@@ -727,7 +709,8 @@ class DestinationNodeView extends StatelessWidget {
 }
 
 class _FolderRow extends StatelessWidget {
-  final DestinationFolder folder;
+  /// Its path, without slashes around it
+  final String folder;
   final bool selected;
   final Widget Function(Widget child) wrap;
 
@@ -741,7 +724,7 @@ class _FolderRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = app.colors;
     return SizedBox(
-      height: PipelineGeometry.folderRow,
+      height: CanvasGeometry.folderRow,
       child: wrap(
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -760,7 +743,8 @@ class _FolderRow extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  folder.path,
+                  FolderPath.show(folder),
+                  overflow: TextOverflow.ellipsis,
                   style: AppText.mono.copyWith(
                     fontSize: 12,
                     color: selected
@@ -769,7 +753,6 @@ class _FolderRow extends StatelessWidget {
                   ),
                 ),
               ),
-              Text(folder.meta, style: AppText.meta),
             ],
           ),
         ),

@@ -5,8 +5,8 @@ import 'package:material_ui/material_ui.dart';
 
 /// Sizes of the nodes and where their ports are, in world coordinates. The
 /// widgets use the same numbers so the wires land on the ports
-class PipelineGeometry {
-  PipelineGeometry._();
+class CanvasGeometry {
+  CanvasGeometry._();
 
   static const Size sourceSize = Size(200, 88);
   static const Size configSize = Size(240, 112);
@@ -14,7 +14,6 @@ class PipelineGeometry {
   static const double destinationHeader = 60;
   static const double folderRow = 40;
   static const double rootNote = 30;
-  static const double addFolderArea = 36;
   static const double destinationPadding = 6;
 
   /// Port y inside a config (center of its in and out ports)
@@ -24,8 +23,7 @@ class PipelineGeometry {
       2 + // border
       destinationHeader +
       destinationPadding * 2 +
-      (d.folders.isEmpty ? rootNote : d.folders.length * folderRow) +
-      addFolderArea;
+      (d.folders.isEmpty ? rootNote : d.folders.length * folderRow);
 
   static Offset sourceOut(SourceNode s) =>
       s.pos + Offset(sourceSize.width, sourceSize.height / 2);
@@ -37,7 +35,7 @@ class PipelineGeometry {
       c.pos + Offset(configSize.width, configPortY);
 
   static Offset destinationPort(DestinationNode d, String? folderId) {
-    final i = d.folders.indexWhere((f) => f.id == folderId);
+    final i = folderId == null ? -1 : d.folders.indexOf(folderId);
     if (i < 0) return d.pos + const Offset(0, 30);
     // border + header + padding + half a row
     return d.pos +
@@ -74,7 +72,7 @@ class PipelineGeometry {
           ((p.dy - (d.pos.dy + 1 + destinationHeader + destinationPadding)) /
                   folderRow)
               .floor();
-      return DropTarget(d.id, d.folders[row.clamp(0, d.folders.length - 1)].id);
+      return DropTarget(d.id, d.folders[row.clamp(0, d.folders.length - 1)]);
     }
     return null;
   }
@@ -88,11 +86,7 @@ class PipelineGeometry {
   }
 
   /// The two ends of a config's wire, if both nodes exist
-  static (Offset, Offset)? wireEnds(
-    PipelineState s,
-    BackupConfig c,
-    WireEnd end,
-  ) {
+  static (Offset, Offset)? wireEnds(CanvasData s, BackupConfig c, WireEnd end) {
     if (end == WireEnd.source) {
       final source = s.source(c.sourceId);
       return source == null ? null : (sourceOut(source), configIn(c));
@@ -104,11 +98,7 @@ class PipelineGeometry {
   }
 
   /// The wire nearest to [p] within [tolerance] (world units)
-  static (String, WireEnd)? hitWire(
-    PipelineState s,
-    Offset p,
-    double tolerance,
-  ) {
+  static (String, WireEnd)? hitWire(CanvasData s, Offset p, double tolerance) {
     (String, WireEnd)? best;
     var bestD = tolerance;
     for (final c in s.configs) {
@@ -167,7 +157,7 @@ class PipelineGeometry {
       ..cubicTo(a.dx + dx, a.dy, b.dx - dx, b.dy, b.dx, b.dy);
   }
 
-  static Rect bounds(PipelineState s) {
+  static Rect bounds(CanvasData s) {
     final rects = [
       ...s.sources.map(sourceRect),
       ...s.configs.map(configRect),

@@ -452,9 +452,7 @@ class OrphansWarning extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    count == 1
-                        ? '1 unconnected item'
-                        : '$count unconnected items',
+                    app.intl.canvas.orphans(n: count),
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -463,8 +461,7 @@ class OrphansWarning extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Only complete flows (database → config → destination) are kept. '
-                    'Everything in amber is discarded when the pipeline is saved.',
+                    app.intl.canvas.orphansHelp,
                     style: TextStyle(fontSize: 12, color: colors.text.muted),
                   ),
                 ],

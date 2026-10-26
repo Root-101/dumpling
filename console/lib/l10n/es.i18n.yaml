@@ -257,3 +257,19 @@ destinations:
     dropbox: 'Carpeta de la app'
     azure: 'Contenedor de almacenamiento'
     sftp: 'Cualquier servidor SSH'
+
+canvas:
+  description: 'Conecta los orígenes y destinos de {workspace: String}. Nada cambia hasta que guardes.'
+  save: 'Guardar canvas'
+  saved: 'Canvas guardado'
+  newConfig: 'Nueva config'
+  removeFromCanvas: 'Quitar del canvas'
+  allSourcesPlaced: 'Todos los orígenes están en el canvas'
+  allDestinationsPlaced: 'Todos los destinos están en el canvas'
+  workspaceDefault: 'Predeterminado del workspace'
+  neverRun: 'Nunca se ha ejecutado'
+  disabled: 'Desactivada'
+  orphans(plural, param=n):
+    one: '{n} config incompleta'
+    other: '{n} configs incompletas'
+  orphansHelp: 'Solo se guardan los flujos completos (origen → config → destino). Las configs en ámbar se descartan al guardar; los orígenes y destinos se quedan.'

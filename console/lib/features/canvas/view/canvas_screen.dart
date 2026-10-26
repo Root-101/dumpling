@@ -1,0 +1,127 @@
+import 'package:console/app_exporter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
+
+class CanvasScreenNavigator {
+  String get name => RouteNames.canvas;
+
+  String get path => RouteNames.canvas;
+
+  Widget builder(BuildContext context, GoRouterState state) {
+    return CanvasScreen(workspace: state.pathParameters[RouteNames.slugParam]!);
+  }
+}
+
+/// The canvas of a workspace: its sources, destinations and the configs
+/// between them, edited here and saved whole
+class CanvasScreen extends StatefulWidget {
+  static final CanvasScreenNavigator navigator = CanvasScreenNavigator();
+
+  final String workspace;
+
+  const CanvasScreen({required this.workspace, super.key});
+
+  @override
+  State<CanvasScreen> createState() => _CanvasScreenState();
+}
+
+class _CanvasScreenState extends State<CanvasScreen> {
+  late final CanvasCubit cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    cubit = context.read<CanvasCubit>();
+    cubit.load(widget.workspace);
+  }
+
+  @override
+  void didUpdateWidget(covariant CanvasScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.workspace != widget.workspace) cubit.load(widget.workspace);
+  }
+
+  void _onState(BuildContext context, CanvasState state) {
+    if (state is CanvasProcessInProgressState) {
+      app.loading.show();
+    } else {
+      app.loading.hide();
+    }
+    if (state is CanvasProcessingOKState) {
+      app.snack.showSuccess(
+        message: app.intl.canvas.saved,
+        context: app.context,
+      );
+    }
+    if (state is CanvasProcessingErrorState) {
+      app.snack.showError(message: state.message, context: app.context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final workspaceName = context.select<WorkspaceCubit, String>(
+      (c) => c.state.data.current?.name ?? widget.workspace,
+    );
+    return Scaffold(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          PageHeader(
+            title: app.intl.nav.canvas,
+            description: app.intl.canvas.description(workspace: workspaceName),
+            actions: [
+              BlocBuilder<CanvasCubit, CanvasState>(
+                builder: (context, state) => PrimaryButton.primary(
+                  onPressed: state.data.loaded ? cubit.save : null,
+                  title: app.intl.canvas.save,
+                  color: app.colors.primary.primaryAction,
+                  h: 40,
+                  w: 150,
+                ),
+              ),
+            ],
+          ),
+          Expanded(
+            child: BlocConsumer<CanvasCubit, CanvasState>(
+              listener: _onState,
+              // the editor keeps its viewport: only built again when the
+              // canvas of another workspace is loaded
+              buildWhen: (a, b) =>
+                  a.data.loaded != b.data.loaded ||
+                  a.data.workspace != b.data.workspace ||
+                  (b is CanvasLoadingErrorState) !=
+                      (a is CanvasLoadingErrorState),
+              builder: (context, state) {
+                if (!state.data.loaded) {
+                  return state is CanvasLoadingErrorState
+                      ? ErrorPage(
+                          message: state.exception.message,
+                          onRetry: cubit.reload,
+                        )
+                      : const LoadingPage();
+                }
+                return Row(
+                  key: ValueKey(state.data.workspace),
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Expanded(child: CanvasEditor()),
+                    BlocBuilder<CanvasCubit, CanvasState>(
+                      builder: (context, s) {
+                        final sel = s.data.selected;
+                        return sel == null
+                            ? const SizedBox.shrink()
+                            : ConfigInspector(data: s.data, config: sel);
+                      },
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

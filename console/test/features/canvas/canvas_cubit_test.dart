@@ -1,0 +1,277 @@
+import 'package:console/app_exporter.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+import '../../support/fixtures.dart';
+
+class _MockRepo extends Mock implements CanvasRepo {}
+
+class _MockAuth extends Mock implements AuthCubit {}
+
+void main() {
+  // the texts of a new config come from app.intl, which reads the navigator
+  TestWidgetsFlutterBinding.ensureInitialized();
+  late _MockRepo repo;
+  late _MockAuth auth;
+
+  setUpAll(() => registerFallbackValue(const CanvasData.empty()));
+
+  setUp(() {
+    repo = _MockRepo();
+    auth = _MockAuth();
+    when(() => auth.auth).thenReturn(session());
+    when(() => repo.get(workspace: 'production', token: 'jwt'))
+        .thenAnswer((_) async => demoCanvas());
+  });
+
+  /// The cubit with [demoCanvas] loaded
+  Future<CanvasCubit> loaded() async {
+    final cubit = CanvasCubit(repo, auth);
+    await cubit.load('production');
+    return cubit;
+  }
+
+  test('the nodes without position wait off the canvas', () async {
+    final s = (await loaded()).state.data;
+    expect(s.loaded, isTrue);
+    expect(s.sources.map((x) => x.id), ['orders', 'users', 'media']);
+    expect(s.sourcePool.map((x) => x.id), ['billing']);
+    expect(s.destinationPool.map((x) => x.id), ['br']);
+  });
+
+  test('a load that fails keeps what there was and says why', () async {
+    when(() => repo.get(workspace: 'production', token: 'jwt'))
+        .thenThrow(apiError('down'));
+    final cubit = CanvasCubit(repo, auth);
+    await cubit.load('production');
+    expect(cubit.state, isA<CanvasLoadingErrorState>());
+    expect(cubit.state.data.loaded, isFalse);
+  });
+
+  test('a drop on a folder row targets that folder, on a bucket without folders its root', () async {
+    final s = (await loaded()).state.data;
+    final bb = s.destination('bb')!;
+    // second folder row of bb: its port is at y + 87 + 40
+    expect(
+      CanvasGeometry.hit(s.destinations, bb.pos + const Offset(10, 127)),
+      const DropTarget('bb', 'users'),
+    );
+    expect(
+      CanvasGeometry.destinationPort(bb, 'users'),
+      bb.pos + const Offset(0, 127),
+    );
+    final ca = s.destination('ca')!;
+    expect(
+      CanvasGeometry.hit(s.destinations, ca.pos + const Offset(-20, 40)),
+      const DropTarget('ca', null),
+    );
+    expect(CanvasGeometry.hit(s.destinations, const Offset(0, 0)), isNull);
+  });
+
+  test('connect creates a selected config with the defaults of the workspace; any config can be deleted', () async {
+    final cubit = await loaded();
+    cubit.connect('users', const DropTarget('ca', null));
+    final created = cubit.state.data.selected!;
+    expect(created.id, startsWith(CanvasCubit.newPrefix));
+    expect(created.sourceId, 'users');
+    expect(
+      (created.schedule, created.compression, created.objectKey),
+      (null, null, null),
+    );
+
+    cubit.deleteConfig('j3'); // media is left an orphan
+    expect(cubit.state.data.configs.any((c) => c.id == 'j3'), isFalse);
+    expect(cubit.state.data.source('media'), isNotNull);
+
+    cubit.deleteConfig(created.id);
+    expect(cubit.state.data.configs.any((c) => c.id == created.id), isFalse);
+    expect(cubit.state.data.selectedId, isNull);
+  });
+
+  test('relink moves a config to another destination', () async {
+    final cubit = (await loaded())..relink('j1', const DropTarget('ca', null));
+    final j1 = cubit.state.data.config('j1')!;
+    expect((j1.destinationId, j1.folderId), ('ca', null));
+  });
+
+  test('disconnect leaves orphans; attachSource reconnects', () async {
+    final cubit = (await loaded())
+      ..disconnect('j1', WireEnd.source)
+      ..disconnect('j2', WireEnd.destination);
+    final s = cubit.state.data;
+    final j1 = s.config('j1')!;
+    final j2 = s.config('j2')!;
+    expect(j1.sourceId, isNull);
+    expect((j2.destinationId, j2.folderId), (null, null));
+    expect(CanvasGeometry.wireEnds(s, j1, WireEnd.source), isNull);
+
+    cubit.attachSource('users', 'j1');
+    expect(cubit.state.data.config('j1')!.sourceId, 'users');
+  });
+
+  test(
+    'removing a source or destination leaves its configs as orphans',
+    () async {
+      final cubit = await loaded();
+      expect(cubit.state.data.orphans, 0);
+      cubit.removeSource('media'); // j3 loses its source
+      var s = cubit.state.data;
+      expect(s.config('j3')!.sourceId, isNull);
+      expect(s.sourcePool.last.id, 'media');
+      expect(s.orphans, 1);
+      // ca is amber: its only config is not a complete flow any more
+      expect(s.destinationOrphan('ca'), isTrue);
+
+      cubit.removeDestination('ca'); // j3 loses its destination too
+      s = cubit.state.data;
+      expect(s.config('j3')!.destinationId, isNull);
+      expect(s.destinationPool.last.id, 'ca');
+      expect(s.orphans, 1);
+
+      cubit.deleteConfig('j3');
+      expect(cubit.state.data.orphans, 0);
+    },
+  );
+
+  test(
+    'only complete flows are kept: a broken chain is orphan end to end',
+    () async {
+      final cubit = (await loaded())..disconnect('j1', WireEnd.destination);
+      final s = cubit.state.data;
+      expect(CanvasData.configOrphan(s.config('j1')!), isTrue);
+      expect(s.sourceOrphan('orders'), isTrue); // its only config is broken
+      expect(s.destinationOrphan('bb'), isFalse); // j2 still completes it
+      expect(s.orphans, 1);
+    },
+  );
+
+  test('the frequency keeps the time of the schedule', () async {
+    final cubit = (await loaded())..select('j2');
+    cubit.setFrequency(Frequency.weekly);
+    expect(cubit.state.data.config('j2')!.schedule, '30 2 * * 0');
+    cubit.setFrequency(Frequency.hourly);
+    expect(cubit.state.data.config('j2')!.schedule, '30 * * * *');
+    expect(Frequency.of('30 * * * *'), Frequency.hourly);
+    expect(Frequency.of('*/5 * * * *'), Frequency.cron);
+    cubit.setObjectKey('  ');
+    expect(cubit.state.data.config('j2')!.objectKey, isNull);
+  });
+
+  test('a click on a wire picks it', () async {
+    final s = (await loaded()).state.data;
+    final j1 = s.config('j1')!;
+    final (a, b) = CanvasGeometry.wireEnds(s, j1, WireEnd.destination)!;
+    final mid = CanvasGeometry.curveAt(a, b, 0.5);
+    expect(CanvasGeometry.hitWire(s, mid + const Offset(0, 3), 6), (
+      'j1',
+      WireEnd.destination,
+    ));
+    expect(CanvasGeometry.hitWire(s, const Offset(300, 700), 6), isNull);
+  });
+
+  test(
+    'the save sends every source and destination, but only complete configs',
+    () async {
+      final cubit = (await loaded())
+        ..disconnect('j1', WireEnd.destination)
+        ..removeSource('media')
+        ..addDestination('br', const Offset(760, 700));
+      final request = cubit.state.data.toRequest().toJson();
+      final sources = request['sources'] as List;
+      expect(
+        [for (final s in sources) '${s['id']} ${s['position']}'],
+        [
+          'orders {x: 40.0, y: 130.0}',
+          'users {x: 40.0, y: 300.0}',
+          'billing null',
+          'media null',
+        ],
+      );
+      // never a password: the service keeps the saved one
+      expect(
+        (sources.first['settings'] as Map).containsKey('password'),
+        isFalse,
+      );
+      expect(
+        [for (final d in request['destinations'] as List) d['id']],
+        ['bb', 'ca', 'br'],
+      );
+      expect([for (final c in request['configs'] as List) c['id']], ['j2']);
+    },
+  );
+
+  test(
+    'a new config leaves out what takes the default of the workspace',
+    () async {
+      final cubit = (await loaded())
+        ..connect('billing', const DropTarget('ca', null)) // off the canvas
+        ..addSource('billing')
+        ..connect('billing', const DropTarget('bb', 'orders'));
+      final configs = cubit.state.data.toRequest().toJson()['configs'] as List;
+      final created = configs.last as Map;
+      expect(created['folder'], 'orders');
+      expect(created.containsKey('schedule'), isFalse);
+      expect(created.containsKey('object_key'), isFalse);
+      expect(configs.length, 4);
+    },
+  );
+
+  test('after a save the selection follows the id the config got', () async {
+    final cubit = (await loaded())
+      ..connect('users', const DropTarget('ca', null));
+    final created = cubit.state.data.selectedId!;
+    final saved = demoCanvas();
+    when(
+      () => repo.save(
+        workspace: 'production',
+        data: any(named: 'data'),
+        token: 'jwt',
+      ),
+    ).thenAnswer(
+      (_) async => CanvasModel(
+        sources: saved.sources,
+        sourcePool: saved.sourcePool,
+        destinations: saved.destinations,
+        destinationPool: saved.destinationPool,
+        configs: [
+          ...saved.configs,
+          const BackupConfig(
+            id: 'cfg_new',
+            sourceId: 'users',
+            destinationId: 'ca',
+            folderId: null,
+            pos: Offset(400, 400),
+            name: 'New config',
+            schedule: '0 3 * * *',
+          ),
+        ],
+        ids: {created: 'cfg_new'},
+      ),
+    );
+    await cubit.save();
+    expect(cubit.state, isA<CanvasProcessingOKState>());
+    expect(cubit.state.data.selectedId, 'cfg_new');
+    expect(cubit.state.data.config('cfg_new')!.schedule, '0 3 * * *');
+  });
+
+  test('a save that fails keeps the edits and says why', () async {
+    final cubit = (await loaded())..removeSource('media');
+    when(
+      () => repo.save(
+        workspace: 'production',
+        data: any(named: 'data'),
+        token: 'jwt',
+      ),
+    ).thenThrow(apiError('invalid'));
+    await cubit.save();
+    expect(
+      cubit.state,
+      isA<CanvasProcessingErrorState>().having(
+        (s) => s.message,
+        'message',
+        'invalid',
+      ),
+    );
+    expect(cubit.state.data.source('media'), isNull);
+  });
+}

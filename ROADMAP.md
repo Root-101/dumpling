@@ -121,17 +121,19 @@ Screens: Destinations · List / New destination / Row options / Delete confirmat
 
 Screens: Pipeline editor, Getting started · Empty workspace.
 
-- [ ] The canvas of 0.0.1 is edited whole in the console and saved with one Save: sources,
-  destinations, configs, their connections and positions, in one transaction. The service is
-  ready: `GET /api/workspaces/{slug}/canvas` loads it and `PUT` saves it. What the save leaves
-  out is deleted; new nodes have an id the console makes up (`new_…`), and the response maps it to
-  the saved one. A source or destination without position is off the canvas (in the toolbar).
-  The service side is done.
+- [x] The canvas of 0.0.1 is edited whole in the console and saved with one Save: sources,
+  destinations, configs, their connections and positions, in one transaction.
+  `GET /api/workspaces/{slug}/canvas` loads it and `PUT` saves it. What the save leaves out is
+  deleted; new nodes have an id the console makes up (`new_…`), and the response maps it to the
+  saved one. A source or destination without position is off the canvas (in the toolbar, and
+  "Remove from canvas" sends it back there: it is not deleted). The folders are added from the
+  Destinations screen, not from the canvas.
 - [ ] Config between a source and a destination: name, schedule (cron in UTC), object key with
   placeholders (`{yyyy}`, `{MM}`, `{dd}`, `{db}`, `{run_id}`) and without extension, compression
   (gzip or none), enabled. The engine adds the extension from the dump format and the compression.
   The service side is done (`{HH}` and `{mm}` too).
-- [ ] Only complete flows are saved (as today in 0.0.1). The service rejects an orphan config.
+- [x] Only complete flows are saved (as today in 0.0.1): the console leaves out the orphan
+  configs, which the service would reject.
 - [ ] Run now from the config. The service side is done:
   `POST /api/workspaces/{slug}/configs/{id}/run`.
 - [ ] Empty workspace guide: add a source, add a destination, connect them.

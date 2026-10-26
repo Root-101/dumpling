@@ -7,6 +7,6 @@ export 'destinations/destinations.dart';
 export 'features_init.dart';
 export 'global/global.dart';
 export 'language/language.dart';
-export 'pipeline/pipeline.dart';
+export 'canvas/canvas.dart';
 export 'sources/sources.dart';
 export 'workspaces/workspaces.dart';

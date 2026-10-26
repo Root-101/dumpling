@@ -4,21 +4,24 @@ import 'package:material_ui/material_ui.dart';
 
 /// Side panel with the settings of the selected config
 class ConfigInspector extends StatelessWidget {
-  final PipelineState state;
+  final CanvasData data;
   final BackupConfig config;
 
-  const ConfigInspector({required this.state, required this.config, super.key});
+  const ConfigInspector({required this.data, required this.config, super.key});
 
   @override
   Widget build(BuildContext context) {
     final colors = app.colors;
-    final cubit = context.read<PipelineCubit>();
+    final cubit = context.read<CanvasCubit>();
     final c = config;
-    final db = state.source(c.sourceId);
-    final dest = state.destination(c.destinationId);
-    final folder = dest?.folders.where((f) => f.id == c.folderId).firstOrNull;
-    final base = '${dest?.bucket ?? ''}${folder?.path ?? ''}';
+    final db = data.source(c.sourceId);
+    final dest = data.destination(c.destinationId);
+    final folder = c.folderId == null ? null : FolderPath.show(c.folderId!);
+    final base = '${dest?.bucket ?? ''}${folder ?? ''}';
     final dbName = db?.name ?? 'no source';
+    final schedule = c.schedule;
+    final defaults = app.intl.canvas.workspaceDefault;
+    final next = c.nextRun;
     // an orphan config (no source or no destination) never runs
     final missing = [
       if (db == null) 'a source',
@@ -99,14 +102,14 @@ class ConfigInspector extends StatelessWidget {
                 Text('01 SCHEDULE', style: section),
                 const SizedBox(height: 12),
                 _FrequencyPicker(
-                  value: c.frequency,
+                  value: schedule == null ? null : Frequency.of(schedule),
                   onChanged: cubit.setFrequency,
                 ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
-                      child: _Field(label: 'Time', value: c.time),
+                      child: _Field(label: 'Cron', value: schedule ?? defaults),
                     ),
                     const SizedBox(width: 10),
                     const Expanded(
@@ -128,23 +131,23 @@ class ConfigInspector extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Text(
-                          c.cron,
-                          style: AppText.mono.copyWith(
-                            fontSize: 11,
-                            color: colors.text.secondary,
-                          ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 6),
-                    Text(
-                      '${c.next} · ${c.nextIn}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: colors.text.secondary,
+                    if (next == null)
+                      Text(
+                        // the service computes it on save
+                        '—',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: colors.text.secondary,
+                        ),
+                      )
+                    else
+                      AppDateTime(
+                        time: next,
+                        alignment: CrossAxisAlignment.start,
                       ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 22),
@@ -162,6 +165,7 @@ class ConfigInspector extends StatelessWidget {
                     color: colors.text.primary,
                   ),
                   decoration: InputDecoration(
+                    hintText: defaults,
                     isDense: true,
                     filled: true,
                     fillColor: colors.surface.surface1,
@@ -186,18 +190,17 @@ class ConfigInspector extends StatelessWidget {
                 Text(
                   dest == null
                       ? 'Connect a destination to choose where it goes.'
-                      : 'Relative to ${folder != null ? 'the folder ${folder.path}' : 'the root of ${dest.bucket}'}.',
+                      : 'Relative to ${folder != null ? 'the folder $folder' : 'the root of ${dest.bucket}'}. The extension is added from the format and the compression.',
                   style: TextStyle(fontSize: 12, color: colors.text.subtle),
                 ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
-                      child: _Field(label: 'Compression', value: c.compression),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: _Field(label: 'Retention', value: c.retention),
+                      child: _Field(
+                        label: 'Compression',
+                        value: c.compression ?? defaults,
+                      ),
                     ),
                   ],
                 ),
@@ -216,7 +219,7 @@ class ConfigInspector extends StatelessWidget {
                       )
                     else ...[
                       Text(
-                        '${dest!.provider.split(' · ').first} · $base',
+                        '${dest!.detail} · $base',
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -224,7 +227,9 @@ class ConfigInspector extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        's3://$base/${PipelineCubit.resolveKey(c.objectKey, dbName)}',
+                        c.objectKey == null
+                            ? defaults
+                            : 's3://$base/${CanvasCubit.resolveKey(c.objectKey!, db!.settings['database'] ?? db.name)}',
                         style: AppText.mono.copyWith(
                           fontSize: 11,
                           color: colors.brand.accent,
@@ -253,11 +258,6 @@ class ConfigInspector extends StatelessWidget {
                   type: AppButtonType.danger,
                   onPressed: () => cubit.deleteConfig(c.id),
                 ),
-                const Spacer(),
-                const AppButton(
-                  label: 'Run now',
-                  type: AppButtonType.secondary,
-                ),
               ],
             ),
           ),
@@ -268,7 +268,8 @@ class ConfigInspector extends StatelessWidget {
 }
 
 class _FrequencyPicker extends StatelessWidget {
-  final Frequency value;
+  /// Null: the default of the workspace, none of them
+  final Frequency? value;
   final ValueChanged<Frequency> onChanged;
 
   const _FrequencyPicker({required this.value, required this.onChanged});

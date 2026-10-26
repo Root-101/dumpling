@@ -6,7 +6,6 @@ import 'package:material_ui/material_ui.dart';
 class SectionScreen extends StatelessWidget {
   static const List<String> sections = [
     RouteNames.backups,
-    RouteNames.canvas,
     RouteNames.runs,
     RouteNames.settings,
   ];
