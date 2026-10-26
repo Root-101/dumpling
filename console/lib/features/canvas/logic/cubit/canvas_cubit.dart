@@ -69,13 +69,33 @@ class CanvasCubit extends Cubit<CanvasState> {
       emit(CanvasProcessingOKState(data: _data.withCanvas(canvas)));
     } catch (e) {
       if (_data.workspace != workspace) return;
-      emit(
-        CanvasProcessingErrorState(
-          ExceptionConverter.parse(e).message,
-          data: _data,
-        ),
-      );
+      emit(CanvasProcessingErrorState(_saveError(e), data: _data));
     }
+  }
+
+  /// A 422 names each field by its place in the request
+  /// (`configs[0].schedule`): it says the name of that node instead
+  String _saveError(Object e) {
+    final exception = ExceptionConverter.parse(e);
+    final errors = exception.data;
+    if (exception.type != GlobalExceptionType.validation ||
+        errors is! List<ValidationError> ||
+        errors.isEmpty) {
+      return exception.message;
+    }
+    final request = _data.toRequest().toJson();
+    final node = RegExp(r'^(sources|destinations|configs)\[(\d+)\]');
+    String nameOf(String field) {
+      final m = node.firstMatch(field);
+      final nodes = m == null ? null : request[m.group(1)] as List?;
+      final i = m == null ? null : int.parse(m.group(2)!);
+      return nodes != null && i! < nodes.length
+          ? (nodes[i] as Map)['name'] as String
+          : field;
+    }
+
+    return [for (final v in errors) '${nameOf(v.source)}: ${v.message}']
+        .join(' · ');
   }
 
   /// Checks, without backing anything up, that every complete flow could
@@ -400,18 +420,34 @@ class CanvasCubit extends Cubit<CanvasState> {
       Frequency.weekly => '$m $h * * 0',
       Frequency.cron => sel.schedule!,
     };
-    _update(sel.id, (c) => c.copyWith(schedule: cron));
+    _updateSelected((c) => c.copyWith(schedule: cron));
   }
 
   /// Empty: the default of the workspace
   void setObjectKey(String key) {
-    final id = _data.selectedId;
-    if (id == null) return;
     final value = key.trim();
-    _update(
-      id,
+    _updateSelected(
       (c) => c.copyWith(objectKey: () => value.isEmpty ? null : value),
     );
+  }
+
+  /// As typed: the panel says when it is empty, the service trims it
+  void setName(String name) => _updateSelected((c) => c.copyWith(name: name));
+
+  /// A cron in UTC, as typed; the frequency picker follows it
+  void setSchedule(String cron) =>
+      _updateSelected((c) => c.copyWith(schedule: cron.trim()));
+
+  void setCompression(String compression) =>
+      _updateSelected((c) => c.copyWith(compression: compression));
+
+  /// A disabled config only runs with Run now
+  void setEnabled(bool enabled) =>
+      _updateSelected((c) => c.copyWith(enabled: enabled));
+
+  void _updateSelected(BackupConfig Function(BackupConfig) f) {
+    final id = _data.selectedId;
+    if (id != null) _update(id, f);
   }
 
   /// What a run now would write, with the placeholders of the key filled

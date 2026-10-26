@@ -106,23 +106,64 @@ class ConfigInspector extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(20),
               children: [
+                _Label(t.name),
+                const SizedBox(height: 6),
+                _Input(
+                  key: ValueKey('name-${c.id}'),
+                  value: c.name,
+                  maxLength: ConfigRules.maxNameLength,
+                  error: ConfigRules.name(c.name),
+                  onChanged: cubit.setName,
+                ),
+                const SizedBox(height: 22),
                 Text(t.schedule.toUpperCase(), style: section),
                 const SizedBox(height: 12),
-                _FrequencyPicker(
+                _Segmented<Frequency>(
+                  values: Frequency.values,
+                  labelOf: (f) => f.label,
                   value: schedule == null ? null : Frequency.of(schedule),
                   onChanged: cubit.setFrequency,
                 ),
                 const SizedBox(height: 12),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: _Field(label: t.cron, value: schedule ?? defaults),
+                      flex: 3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _Label(t.cron),
+                          const SizedBox(height: 6),
+                          _Input(
+                            key: ValueKey('cron-${c.id}'),
+                            value: schedule ?? '',
+                            hint: defaults,
+                            mono: true,
+                            error: ConfigRules.cron(schedule),
+                            onChanged: cubit.setSchedule,
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
+                      flex: 2,
                       child: _Field(label: t.timeZone, value: 'UTC'),
                     ),
                   ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  t.cronHelp,
+                  style: TextStyle(fontSize: 12, color: colors.text.subtle),
+                ),
+                const SizedBox(height: 12),
+                AppSwitchTile(
+                  title: t.enabled,
+                  subtitle: c.enabled ? t.enabledOn : t.enabledOff,
+                  value: c.enabled,
+                  onChanged: () => cubit.setEnabled(!c.enabled),
                 ),
                 const SizedBox(height: 12),
                 _Box(
@@ -162,36 +203,14 @@ class ConfigInspector extends StatelessWidget {
                 const SizedBox(height: 12),
                 _Label(t.objectKey),
                 const SizedBox(height: 6),
-                TextFormField(
-                  // a new config gets a new field with its key
+                _Input(
                   key: ValueKey('key-${c.id}'),
-                  initialValue: c.objectKey,
+                  value: c.objectKey ?? '',
+                  hint: defaults,
+                  mono: true,
+                  maxLength: ConfigRules.maxObjectKeyLength,
+                  error: ConfigRules.objectKey(c.objectKey),
                   onChanged: cubit.setObjectKey,
-                  style: AppText.mono.copyWith(
-                    fontSize: 12,
-                    color: colors.text.primary,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: defaults,
-                    isDense: true,
-                    filled: true,
-                    fillColor: colors.surface.surface1,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 14,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: app.dimensions.radius.s,
-                      borderSide: BorderSide(color: colors.surface.border),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: app.dimensions.radius.s,
-                      borderSide: BorderSide(
-                        color: colors.brand.primary,
-                        width: 2,
-                      ),
-                    ),
-                  ),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -203,16 +222,21 @@ class ConfigInspector extends StatelessWidget {
                   style: TextStyle(fontSize: 12, color: colors.text.subtle),
                 ),
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _Field(
-                        label: t.compression,
-                        value: c.compression ?? defaults,
-                      ),
-                    ),
-                  ],
+                _Label(t.compression),
+                const SizedBox(height: 6),
+                _Segmented<String>(
+                  values: ConfigRules.compressions,
+                  labelOf: (v) => v == 'gzip' ? 'gzip' : t.compressionNone,
+                  value: c.compression,
+                  onChanged: cubit.setCompression,
                 ),
+                if (c.compression == null) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    defaults,
+                    style: TextStyle(fontSize: 12, color: colors.text.subtle),
+                  ),
+                ],
                 const SizedBox(height: 22),
                 Text(t.writes.toUpperCase(), style: section),
                 const SizedBox(height: 10),
@@ -228,7 +252,7 @@ class ConfigInspector extends StatelessWidget {
                       )
                     else ...[
                       Text(
-                        '${dest!.detail} · $base',
+                        '${DestinationTypeLook.labelOf(dest!.type)} · $base',
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -238,7 +262,7 @@ class ConfigInspector extends StatelessWidget {
                       Text(
                         c.objectKey == null
                             ? defaults
-                            : 's3://$base/${CanvasCubit.resolveKey(c.objectKey!, db!.settings['database'] ?? db.name)}',
+                            : 's3://$base/${CanvasCubit.resolveKey(c.objectKey!, db!.settings['database'] ?? db.name)}${ConfigRules.extension(db, c.compression)}',
                         style: AppText.mono.copyWith(
                           fontSize: 11,
                           color: colors.brand.accent,
@@ -291,12 +315,19 @@ class ConfigInspector extends StatelessWidget {
   }
 }
 
-class _FrequencyPicker extends StatelessWidget {
-  /// Null: the default of the workspace, none of them
-  final Frequency? value;
-  final ValueChanged<Frequency> onChanged;
+/// One of [values]; null: the default of the workspace, none of them
+class _Segmented<T> extends StatelessWidget {
+  final List<T> values;
+  final String Function(T value) labelOf;
+  final T? value;
+  final ValueChanged<T> onChanged;
 
-  const _FrequencyPicker({required this.value, required this.onChanged});
+  const _Segmented({
+    required this.values,
+    required this.labelOf,
+    required this.value,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -309,7 +340,7 @@ class _FrequencyPicker extends StatelessWidget {
       ),
       child: Row(
         children: [
-          for (final f in Frequency.values)
+          for (final f in values)
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 2),
@@ -338,12 +369,93 @@ class _FrequencyPicker extends StatelessWidget {
                         borderRadius: BorderRadius.circular(7),
                       ),
                     ),
-                    child: Text(f.label),
+                    child: Text(labelOf(f)),
                   ),
                 ),
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// A text field that follows [value] when it changes from outside (the
+/// frequency writes the cron), without moving the cursor while typing
+class _Input extends StatefulWidget {
+  final String value;
+  final String? hint;
+  final String? error;
+  final bool mono;
+  final int? maxLength;
+  final ValueChanged<String> onChanged;
+
+  const _Input({
+    required this.value,
+    required this.onChanged,
+    this.hint,
+    this.error,
+    this.mono = false,
+    this.maxLength,
+    super.key,
+  });
+
+  @override
+  State<_Input> createState() => _InputState();
+}
+
+class _InputState extends State<_Input> {
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.value,
+  );
+
+  @override
+  void didUpdateWidget(covariant _Input oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // what the cubit keeps is trimmed: only a real change replaces the text
+    if (widget.value.trim() != _controller.text.trim()) {
+      _controller.text = widget.value;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = app.colors;
+    OutlineInputBorder border(Color color, [double width = 1]) =>
+        OutlineInputBorder(
+          borderRadius: app.dimensions.radius.s,
+          borderSide: BorderSide(color: color, width: width),
+        );
+    return TextField(
+      controller: _controller,
+      onChanged: widget.onChanged,
+      maxLength: widget.maxLength,
+      style: (widget.mono ? AppText.mono : const TextStyle()).copyWith(
+        fontSize: widget.mono ? 12 : 13,
+        color: colors.text.primary,
+      ),
+      decoration: InputDecoration(
+        hintText: widget.hint,
+        errorText: widget.error,
+        errorMaxLines: 5,
+        counterText: '',
+        isDense: true,
+        filled: true,
+        fillColor: colors.surface.surface1,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 14,
+        ),
+        enabledBorder: border(colors.surface.border),
+        focusedBorder: border(colors.brand.primary, 2),
+        errorBorder: border(colors.status.error),
+        focusedErrorBorder: border(colors.status.error, 2),
       ),
     );
   }

@@ -60,7 +60,20 @@ void main() {
         theme: ThemeConfig.theme,
         home: BlocProvider.value(
           value: cubit,
-          child: const Scaffold(body: CanvasEditor()),
+          // the editor and the panel of the selected config, as on the screen
+          child: Scaffold(
+            body: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Expanded(child: CanvasEditor()),
+                BlocBuilder<CanvasCubit, CanvasState>(
+                  builder: (context, s) => s.data.selected == null
+                      ? const SizedBox.shrink()
+                      : ConfigInspector(data: s.data, config: s.data.selected!),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -276,6 +289,49 @@ void main() {
       expect(cubit.state.data.destination('ca')!.folders, ['media']);
       expect(ca.folders, isEmpty);
       expect(find.text('/media'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'the panel edits the selected config and checks what it is typed',
+    (tester) async {
+      final cubit = (await pump(tester))..select('j1');
+      await tester.pump();
+      final cron = find.widgetWithText(TextField, '0 2 * * *');
+      expect(cron, findsOneWidget);
+
+      // the frequency rewrites the cron field
+      await tester.tap(find.widgetWithText(TextButton, 'Weekly'));
+      await tester.pump();
+      expect(find.widgetWithText(TextField, '0 2 * * 0'), findsOneWidget);
+      expect(cubit.state.data.config('j1')!.schedule, '0 2 * * 0');
+
+      // the name shows on its node as it is typed
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Nightly full'),
+        'Orders',
+      );
+      await tester.pump();
+      expect(find.text('Orders'), findsWidgets);
+
+      await tester.enterText(
+        find.widgetWithText(TextField, '{yyyy}/{MM}/{dd}'),
+        '{db}/{yyyy}.sql',
+      );
+      await tester.pump();
+      expect(
+        find.text(
+          'Leave out the extension: it is added from the dump format and the compression',
+        ),
+        findsOneWidget,
+      );
+
+      final none = find.widgetWithText(TextButton, 'None');
+      await tester.ensureVisible(none);
+      await tester.pump();
+      await tester.tap(none);
+      await tester.pump();
+      expect(cubit.state.data.config('j1')!.compression, 'none');
     },
   );
 }

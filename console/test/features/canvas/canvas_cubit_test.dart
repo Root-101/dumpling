@@ -418,4 +418,81 @@ void main() {
     expect(cubit.state, isA<CanvasProcessingErrorState>());
     expect(cubit.state.data.config('j1')!.lastRun, isNull);
   });
+
+  test('the panel edits name, schedule, compression and enabled; the save sends them', () async {
+    final cubit = (await loaded())..select('j1');
+    cubit
+      ..setName('Hourly orders')
+      ..setSchedule('  15 * * * * ')
+      ..setCompression('none')
+      ..setEnabled(false)
+      ..setObjectKey('{db}/{yyyy}');
+    final j1 = cubit.state.data.config('j1')!;
+    expect(j1.name, 'Hourly orders');
+    expect(j1.schedule, '15 * * * *');
+    expect(Frequency.of(j1.schedule!), Frequency.hourly);
+    expect((j1.compression, j1.enabled, j1.nextRun), ('none', false, null));
+    final sent =
+        (cubit.state.data.toRequest().toJson()['configs'] as List).first as Map;
+    expect(
+      [sent['name'], sent['schedule'], sent['compression'], sent['enabled']],
+      ['Hourly orders', '15 * * * *', 'none', false],
+    );
+    expect(sent['object_key'], '{db}/{yyyy}');
+  });
+
+  test('the rules of a config are those of the service', () {
+    expect(ConfigRules.name('  '), isNotNull);
+    expect(ConfigRules.name('Nightly'), isNull);
+    expect(ConfigRules.cron(null), isNull); // the default of the workspace
+    expect(ConfigRules.cron('0 2 * * *'), isNull);
+    expect(ConfigRules.cron('*/15 1-5 * * MON'), isNull);
+    expect(ConfigRules.cron('0 2 * *'), isNotNull);
+    expect(ConfigRules.cron(''), isNotNull);
+    expect(ConfigRules.objectKey('{db}/{yyyy}-{MM}'), isNull);
+    expect(ConfigRules.objectKey('/{db}'), isNotNull);
+    expect(ConfigRules.objectKey('{db}/backup.sql.gz'), isNotNull);
+    expect(ConfigRules.extension(sourceNode('orders'), 'gzip'), '.dump.gz');
+    expect(
+      ConfigRules.extension(
+        const SourceNode(
+          id: 'x',
+          name: 'x',
+          type: SourceTypes.postgres,
+          settings: {'dump_format': 'plain'},
+        ),
+        'none',
+      ),
+      '.sql',
+    );
+  });
+
+  test('a save the service rejects names the config of each error', () async {
+    final cubit = (await loaded())..disconnect('j1', WireEnd.source);
+    when(
+      () => repo.save(
+        workspace: 'production',
+        data: any(named: 'data'),
+        token: 'jwt',
+      ),
+    ).thenThrow(
+      GlobalException(
+        type: GlobalExceptionType.validation,
+        message: 'Validation error',
+        // j1 is left out of the request: configs[0] is j2
+        data: [
+          ValidationError(
+            source: 'configs[0].schedule',
+            code: null,
+            message: 'Not a valid cron expression',
+          ),
+        ],
+      ),
+    );
+    await cubit.save();
+    expect(
+      (cubit.state as CanvasProcessingErrorState).message,
+      'Nightly: Not a valid cron expression',
+    );
+  });
 }

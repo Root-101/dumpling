@@ -1209,6 +1209,36 @@ class AppMessages$canvas$inspector$en {
 
   // Translations
 
+  /// en: 'Name'
+  String get name => 'Name';
+
+  /// en: 'minute hour day month weekday, in UTC. Hourly, daily and weekly write it for you.'
+  String get cronHelp =>
+      'minute hour day month weekday, in UTC. Hourly, daily and weekly write it for you.';
+
+  /// en: 'Not a valid cron expression (minute hour day month weekday)'
+  String get cronInvalid =>
+      'Not a valid cron expression (minute hour day month weekday)';
+
+  /// en: 'Enabled'
+  String get enabled => 'Enabled';
+
+  /// en: 'Runs on its schedule'
+  String get enabledOn => 'Runs on its schedule';
+
+  /// en: 'Off: it only runs with Run now'
+  String get enabledOff => 'Off: it only runs with Run now';
+
+  /// en: 'None'
+  String get compressionNone => 'None';
+
+  /// en: 'The object key cannot start with /'
+  String get objectKeySlash => 'The object key cannot start with /';
+
+  /// en: 'Leave out the extension: it is added from the dump format and the compression'
+  String get objectKeyExtension =>
+      'Leave out the extension: it is added from the dump format and the compression';
+
   /// en: 'Config'
   String get title => 'Config';
 
@@ -1750,6 +1780,16 @@ extension on AppMessages {
       'canvas.view.ctrlZoomOn' =>
         'Scroll moves the canvas, Ctrl + scroll zooms',
       'canvas.view.ctrlZoomOff' => 'Scroll always zooms',
+      'canvas.inspector.name' => 'Name',
+      'canvas.inspector.cronHelp' => 'minute hour day month weekday, in UTC. Hourly, daily and weekly write it for you.',
+      'canvas.inspector.cronInvalid' =>
+        'Not a valid cron expression (minute hour day month weekday)',
+      'canvas.inspector.enabled' => 'Enabled',
+      'canvas.inspector.enabledOn' => 'Runs on its schedule',
+      'canvas.inspector.enabledOff' => 'Off: it only runs with Run now',
+      'canvas.inspector.compressionNone' => 'None',
+      'canvas.inspector.objectKeySlash' => 'The object key cannot start with /',
+      'canvas.inspector.objectKeyExtension' => 'Leave out the extension: it is added from the dump format and the compression',
       'canvas.inspector.title' => 'Config',
       'canvas.inspector.close' => 'Close (Esc)',
       'canvas.inspector.schedule' => '01 Schedule',

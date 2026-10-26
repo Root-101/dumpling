@@ -949,6 +949,27 @@ class AppMessages$canvas$inspector$es
 
   // Translations
   @override
+  String get name => 'Nombre';
+  @override
+  String get cronHelp =>
+      'minuto hora día mes día-de-la-semana, en UTC. Cada hora, diaria y semanal lo escriben por ti.';
+  @override
+  String get cronInvalid =>
+      'No es una expresión cron válida (minuto hora día mes día-de-la-semana)';
+  @override
+  String get enabled => 'Activa';
+  @override
+  String get enabledOn => 'Se ejecuta según su programación';
+  @override
+  String get enabledOff => 'Desactivada: solo se ejecuta con Ejecutar ahora';
+  @override
+  String get compressionNone => 'Ninguna';
+  @override
+  String get objectKeySlash => 'El object key no puede empezar con /';
+  @override
+  String get objectKeyExtension =>
+      'Omite la extensión: se agrega según el formato del dump y la compresión';
+  @override
   String get title => 'Config';
   @override
   String get close => 'Cerrar (Esc)';
@@ -1468,6 +1489,17 @@ extension on AppMessagesEs {
       'canvas.view.ctrlZoomOn' =>
         'La rueda mueve el canvas, Ctrl + rueda hace zoom',
       'canvas.view.ctrlZoomOff' => 'La rueda siempre hace zoom',
+      'canvas.inspector.name' => 'Nombre',
+      'canvas.inspector.cronHelp' => 'minuto hora día mes día-de-la-semana, en UTC. Cada hora, diaria y semanal lo escriben por ti.',
+      'canvas.inspector.cronInvalid' => 'No es una expresión cron válida (minuto hora día mes día-de-la-semana)',
+      'canvas.inspector.enabled' => 'Activa',
+      'canvas.inspector.enabledOn' => 'Se ejecuta según su programación',
+      'canvas.inspector.enabledOff' =>
+        'Desactivada: solo se ejecuta con Ejecutar ahora',
+      'canvas.inspector.compressionNone' => 'Ninguna',
+      'canvas.inspector.objectKeySlash' =>
+        'El object key no puede empezar con /',
+      'canvas.inspector.objectKeyExtension' => 'Omite la extensión: se agrega según el formato del dump y la compresión',
       'canvas.inspector.title' => 'Config',
       'canvas.inspector.close' => 'Cerrar (Esc)',
       'canvas.inspector.schedule' => '01 Programación',

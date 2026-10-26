@@ -128,10 +128,11 @@ Screens: Pipeline editor, Getting started · Empty workspace.
   saved one. A source or destination without position is off the canvas (in the toolbar, and
   "Remove from canvas" sends it back there: it is not deleted). A folder can be added to a bucket
   from the canvas too; with the first one, the configs on the root are disconnected.
-- [ ] Config between a source and a destination: name, schedule (cron in UTC), object key with
-  placeholders (`{yyyy}`, `{MM}`, `{dd}`, `{db}`, `{run_id}`) and without extension, compression
-  (gzip or none), enabled. The engine adds the extension from the dump format and the compression.
-  The service side is done (`{HH}` and `{mm}` too).
+- [x] Config between a source and a destination: name, schedule (cron in UTC), object key with
+  placeholders (`{yyyy}`, `{MM}`, `{dd}`, `{HH}`, `{mm}`, `{db}`, `{run_id}`) and without
+  extension, compression (gzip or none), enabled. The engine adds the extension from the dump
+  format and the compression. The panel checks each field like the service does, and a save it
+  rejects says which config and why.
 - [x] Only complete flows are saved (as today in 0.0.1): the console leaves out the orphan
   configs, which the service would reject.
 - [x] Run now from the config: a real run of the saved config (a new one is saved first),
