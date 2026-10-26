@@ -10,7 +10,7 @@ void main() async {
   // .env (and .env.<WINTER_PROFILE>) under the variables of the process, for
   // local development; in a container only the process ones exist
   Winter.context.setUp(env: Env.load());
-  await Dumpling.start();
+  await Dumpling.start(port: env.port);
 }
 
 class Dumpling {

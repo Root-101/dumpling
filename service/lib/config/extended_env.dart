@@ -6,6 +6,7 @@ const String _adminPassword = 'DUMPLING_ADMIN_PASSWORD';
 const String _jwtSecret = 'JWT_SECRET';
 const String _secretsEncryptionKey = 'SECRETS_ENCRYPTION_KEY';
 const String _dataPath = 'DATA_PATH';
+const String _port = 'PORT';
 const String _pgDumpPath = 'PG_DUMP_PATH';
 const String _trustedProxies = 'TRUSTED_PROXIES';
 const String _rateLimitRequests = 'RATE_LIMIT_REQUESTS';
@@ -50,6 +51,9 @@ extension ExtendedEnv on Env {
   /// Encrypts the credentials of the sources and destinations in the database
   /// (see [SecretCipher]). Changing it makes every stored credential unreadable.
   String get secretsEncryptionKey => require<String>(_secretsEncryptionKey);
+
+  /// The port of the API and the console: 8080 unless another is given.
+  int get port => find<int>(_port) ?? 8080;
 
   /// The `pg_dump` the service runs: the one in the `PATH` unless another is
   /// given. Its version decides which servers it can dump (its own or older).
