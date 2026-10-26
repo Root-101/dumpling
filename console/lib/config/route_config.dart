@@ -52,24 +52,24 @@ class RouteConfig {
             name: WorkspacesScreen.navigator.name,
             path: WorkspacesScreen.navigator.path,
             builder: WorkspacesScreen.navigator.builder,
+          ),
+
+          ///   /workspaces/{slug}: its backups. Beside the list, not under
+          /// it: as a child, opening a section from its URL would also build
+          /// the list below it, never laid out (it breaks the SelectionArea)
+          GoRoute(
+            path: '${WorkspacesScreen.navigator.path}/:${RouteNames.slugParam}',
+            redirect: (context, state) =>
+                state.fullPath == '/workspaces/:${RouteNames.slugParam}'
+                ? '${state.matchedLocation}/${RouteNames.backups}'
+                : null,
             routes: [
-              ///   /workspaces/{slug}: its backups
-              GoRoute(
-                path: ':${RouteNames.slugParam}',
-                redirect: (context, state) =>
-                    state.fullPath == '/workspaces/:${RouteNames.slugParam}'
-                    ? '${state.matchedLocation}/${RouteNames.backups}'
-                    : null,
-                routes: [
-                  for (final section in SectionScreen.sections)
-                    GoRoute(
-                      name: section,
-                      path: section,
-                      builder: (context, state) =>
-                          SectionScreen(section: section),
-                    ),
-                ],
-              ),
+              for (final section in SectionScreen.sections)
+                GoRoute(
+                  name: section,
+                  path: section,
+                  builder: (context, state) => SectionScreen(section: section),
+                ),
             ],
           ),
         ],
