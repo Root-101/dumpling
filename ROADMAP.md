@@ -45,9 +45,9 @@ and connected by hand.
   feather-io).
 - [x] `console`: i18n with slang (`es`, `en`) and a language switch, a `SERVICE_URL` for the local
   run, a base client with the token. Times shown in UTC, with the local time smaller next to them.
-- [ ] Release: one Dockerfile that builds the console and serves it from the service;
+- [x] Release: one Dockerfile that builds the console and serves it from the service;
   `docker-compose.yml` with a volume; `.env.example`.
-- [ ] `pg_dump` from the official PostgreSQL packages, its major version from `PG_VERSION` in the
+- [x] `pg_dump` from the official PostgreSQL packages, its major version from `PG_VERSION` in the
   `.env` (a build arg: changing it and running `docker compose up -d --build` updates it). The
   service reads `pg_dump --version` (`PG_DUMP_PATH`) for the compatibility check; the image is
   what is missing.
@@ -171,7 +171,7 @@ Screens: Backups, Backups · Filters / Sort / Run details, Events (as the run lo
 - [x] Restore guide: `pg_restore` / `psql` of a file taken from the bucket.
 - [x] Security pass (`SECURITY.md`): credentials, auth, rate limits, input validation, what the
   logs show.
-- [ ] End-to-end test with PostgreSQL and MinIO (or feather-io) in Docker.
+- [x] End-to-end test with PostgreSQL and MinIO (or feather-io) in Docker.
 - [ ] README, `CONTRIBUTING.md`, `DECISIONS.md`, changelogs; versions and tag `0.1.0-rc.1`.
 
 ## Quality of life

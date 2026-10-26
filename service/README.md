@@ -12,3 +12,19 @@ cd service && fvm dart run lib/main.dart   # http://localhost:8080
 fvm dart test
 fvm dart run slang                         # after changing lib/i18n/*.i18n.yaml
 ```
+
+## End-to-end test
+
+`tool/e2e/run.sh` builds the image (`service/Dockerfile`, from the root of the repo) and runs it
+next to PostgreSQL and an S3 server in Docker. Through the API it backs up a seeded database in
+both dump formats, downloads each file from the bucket, restores it as
+[`docs/restore.md`](../docs/restore.md) says and compares the rows; a wrong password must fail.
+It needs Docker, `curl` 7.75+ and `python3`:
+
+```bash
+service/tool/e2e/run.sh                     # SKIP_BUILD=1 to reuse dumpling:e2e, KEEP=1 to look after
+```
+
+The S3 server is [feather-io](https://github.com/Root-101/feather-io) by default
+(`S3_IMAGE=feather-io:1.0.0-rc.7`, built from its repo); `S3_KIND=minio` with a MinIO image in
+`S3_IMAGE` uses MinIO instead (tested with `elestio/minio`).
