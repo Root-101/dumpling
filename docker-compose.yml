@@ -1,0 +1,30 @@
+# Dumpling in one container: the service runs the backups and serves the console as static files.
+# The variables come from the environment of the shell, or from a .env file next to this one
+# (see .env.example); the shell wins. The four secrets have no default:
+#   cp .env.example .env    # and fill in the secrets
+#   docker compose up -d --build
+# Console and API at http://localhost:8080.
+services:
+  dumpling:
+    build:
+      # The root, because the image also builds the console
+      context: .
+      dockerfile: service/Dockerfile
+      args:
+        PG_VERSION: ${PG_VERSION:-18}
+    image: dumpling:0.1.0-rc.1
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DUMPLING_ADMIN_USER: ${DUMPLING_ADMIN_USER:?set it in .env}
+      DUMPLING_ADMIN_PASSWORD: ${DUMPLING_ADMIN_PASSWORD:?set it in .env}
+      JWT_SECRET: ${JWT_SECRET:?set it in .env}
+      SECRETS_ENCRYPTION_KEY: ${SECRETS_ENCRYPTION_KEY:?set it in .env}
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES:-0}
+    volumes:
+      # The SQLite database
+      - dumpling-data:/data
+
+volumes:
+  dumpling-data:

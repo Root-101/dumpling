@@ -1,0 +1,43 @@
+# Messages of the service errors, in English (the base locale and the default answer).
+# The parameter types are declared here ({name: String}); the other locales only need the text.
+# After any change run `fvm dart run slang` (from service/) and commit the generated messages*.g.dart.
+# Quote the texts: `{name: String}` has a `: ` that YAML would read as a map.
+errors:
+  auth:
+    invalidCredentials: 'Wrong username or password'
+    tooManyLoginAttempts: 'Too many failed sign-in attempts'
+    invalidLoginRequest: 'Invalid sign-in request'
+  workspaces:
+    notFound: 'The workspace "{slug: String}" does not exist.'
+  sources:
+    notFound: 'The source "{id: String}" does not exist in this workspace.'
+    inUse: 'Configs back up this source ({configs: int}): delete them or connect them to another source first.'
+  destinations:
+    notFound: 'The destination "{id: String}" does not exist in this workspace.'
+    inUse: 'Configs write to this destination ({configs: int}): delete them or connect them to another destination first.'
+    folderInUse: 'The config "{config: String}" writes to "{folder: String}": move it before removing that folder.'
+  configs:
+    notFound: 'The config "{id: String}" does not exist in this workspace.'
+  runs:
+    notFound: 'The run "{id: String}" does not exist in this workspace.'
+    alreadyRunning: 'This config is already running: wait for it to end.'
+    invalidFilter: '{name: String} must be one of: {values: String}'
+  # Validation rules of the service's own requests (Winter translates its validators)
+  validations:
+    cron: 'Not a valid cron expression (minute hour day month weekday)'
+    objectKey: 'The object key cannot start with /'
+    objectKeyExtension: 'Leave out the extension: it is added from the dump format and the compression'
+    sourceTypeDisabled: 'This type of source is not available yet'
+    destinationTypeDisabled: 'This type of destination is not available yet'
+    s3Endpoint: 'Not an endpoint URL (https://s3.us-east-1.amazonaws.com, http://minio:9000)'
+    bucketName: 'Not a valid bucket name: 3 to 63 lowercase letters, digits, dots or hyphens'
+    folderPath: 'Use lowercase letters, digits, - . _ and / between them'
+    repeatedFolder: 'Each folder can only appear once'
+    unknownSource: 'There is no such source in this workspace'
+    unknownDestination: 'There is no such destination in this workspace'
+    unknownFolder: 'Choose one of the folders of the destination'
+    folderOnRoot: 'This destination has no folders: leave the folder empty to write to the root'
+    unknownNode: 'Not a node of this workspace: a new one has an id that starts with new_'
+    repeatedNode: 'Each node needs its own id'
+    canvasPosition: 'x and y must be between -{max: int} and {max}'
+    postgresUrl: 'Not a PostgreSQL connection URL (postgresql://user:password@host:5432/database)'

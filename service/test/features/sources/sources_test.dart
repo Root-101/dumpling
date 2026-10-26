@@ -1,0 +1,286 @@
+@TestOn('vm')
+library;
+
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+import 'package:service/dumpling.dart';
+import 'package:test/test.dart';
+
+import '../../support/test_server.dart';
+
+void main() {
+  final server = TestServer(port: 8183);
+
+  setUpAll(() async {
+    await server.start();
+    await server.createWorkspace('Production');
+    await server.createWorkspace('Staging');
+  });
+  tearDownAll(server.stop);
+
+  String path(String workspace, [String rest = '']) =>
+      '/api/workspaces/$workspace/sources$rest';
+
+  Map<String, String> jsonHeaders() => {
+    ...server.auth(),
+    'content-type': 'application/json',
+  };
+
+  Map<String, Object?> postgres({
+    String name = 'orders-db',
+    String? password = 's3cr3t-pass',
+    String host = 'pg-prod-01.internal',
+    int? port,
+  }) => {
+    'name': name,
+    'type': 'postgres',
+    'settings': {
+      'host': host,
+      'port': ?port,
+      'database': 'orders',
+      'username': 'dumpling_backup',
+      'password': ?password,
+    },
+  };
+
+  Future<http.Response> create(
+    Object body, {
+    String workspace = 'production',
+  }) => http.post(
+    server.url(path(workspace)),
+    headers: jsonHeaders(),
+    body: jsonEncode(body),
+  );
+
+  Future<Map<String, dynamic>> created(Object body) async {
+    final response = await create(body);
+    expect(response.statusCode, 201, reason: response.body);
+    return jsonDecode(response.body);
+  }
+
+  /// The stored secrets of [id], decrypted.
+  Future<Map<String, dynamic>> storedSecrets(String id) async {
+    final db = di.find<AppDatabase>();
+    final row = await (db.select(
+      db.sourceTable,
+    )..where((t) => t.id.equals(id))).getSingle();
+    expect(row.secretsEncrypted, isNot(contains('s3cr3t')));
+    return jsonDecode(
+      di.find<SecretCipher>().decrypt(row.secretsEncrypted, associatedData: id),
+    );
+  }
+
+  group('SourceController', () {
+    test('Should list every type, only PostgreSQL enabled', () async {
+      final response = await http.get(
+        server.url('/api/source-types'),
+        headers: server.auth(),
+      );
+      expect(response.statusCode, 200);
+      final types = {
+        for (final t in jsonDecode(response.body) as List)
+          t['type']: t['enabled'],
+      };
+      expect(types, {
+        'postgres': true,
+        'mysql': false,
+        'mariadb': false,
+        'mongodb': false,
+        'redis': false,
+      });
+    });
+
+    test(
+      'Should create a source without ever returning the password',
+      () async {
+        final response = await create(postgres());
+        expect(response.statusCode, 201);
+        expect(response.body, isNot(contains('s3cr3t')));
+        final body = jsonDecode(response.body);
+        expect(body['id'], startsWith('src_'));
+        expect(body['workspace'], 'production');
+        expect(body['settings'], {
+          'host': 'pg-prod-01.internal',
+          'port': 5432,
+          'database': 'orders',
+          'username': 'dumpling_backup',
+          'dump_format': 'custom',
+        });
+        expect(body['last_check'], isNull);
+        expect(await storedSecrets(body['id']), {'password': 's3cr3t-pass'});
+
+        final read = await http.get(
+          server.url(path('production', '/${body['id']}')),
+          headers: server.auth(),
+        );
+        expect(read.body, isNot(contains('s3cr3t')));
+      },
+    );
+
+    test(
+      'Should keep the stored password when an update leaves it out',
+      () async {
+        final source = await created(postgres(name: 'users-db'));
+        final response = await http.put(
+          server.url(path('production', '/${source['id']}')),
+          headers: jsonHeaders(),
+          body: jsonEncode(postgres(name: 'users', password: null)),
+        );
+        expect(response.statusCode, 200, reason: response.body);
+        expect(jsonDecode(response.body)['name'], 'users');
+        expect(await storedSecrets(source['id']), {'password': 's3cr3t-pass'});
+      },
+    );
+
+    test('Should take the connection from a URL, fields winning', () async {
+      final source = await created({
+        'name': 'from-url',
+        'type': 'postgres',
+        'settings': {
+          'connection_url': 'postgresql://dumpling%40ro:s3cr3t%3Aurl@pg-billing.internal:6432/billing',
+          'database': 'billing_replica',
+        },
+      });
+      expect(source['settings'], {
+        'host': 'pg-billing.internal',
+        'port': 6432,
+        'database': 'billing_replica',
+        'username': 'dumpling@ro',
+        'dump_format': 'custom',
+      });
+      expect(await storedSecrets(source['id']), {'password': 's3cr3t:url'});
+    });
+
+    test('Should reject a URL that is not PostgreSQL (422)', () async {
+      final response = await create({
+        'name': 'bad-url',
+        'type': 'postgres',
+        'settings': {'connection_url': 'mysql://u:p@host/db'},
+      });
+      expect(response.statusCode, 422);
+      expect(response.body, contains('settings.connection_url'));
+      expect(response.body, isNot(contains('mysql://')));
+    });
+
+    test('Should require the password on create (422)', () async {
+      final response = await create(postgres(password: null));
+      expect(response.statusCode, 422);
+      expect(response.body, contains('settings.password'));
+    });
+
+    test('Should reject a disabled type and invalid settings (422)', () async {
+      final disabled = await create({
+        'name': 'shop',
+        'type': 'mysql',
+        'settings': {'host': 'mysql.internal'},
+      });
+      expect(disabled.statusCode, 422);
+      expect(disabled.body, contains('not available yet'));
+
+      final invalid = await create({
+        'name': 'x',
+        'type': 'postgres',
+        'settings': {
+          'host': '',
+          'port': 70000,
+          'database': 'orders',
+          'username': 'u',
+          'password': 'p',
+          'dump_format': 'directory',
+        },
+      });
+      expect(invalid.statusCode, 422);
+      final fields = {
+        for (final v in jsonDecode(invalid.body)['violations'] as List)
+          v['fieldName'],
+      };
+      expect(
+        fields,
+        containsAll(['settings.host', 'settings.port', 'settings.dump_format']),
+      );
+    });
+
+    test('Should not find a source from another workspace', () async {
+      final source = await created(postgres(name: 'billing-db'));
+      final response = await http.get(
+        server.url(path('staging', '/${source['id']}')),
+        headers: server.auth(),
+      );
+      expect(response.statusCode, 404);
+    });
+
+    test('Should delete a source', () async {
+      final source = await created(postgres(name: 'tmp-db'));
+      final deleted = await http.delete(
+        server.url(path('production', '/${source['id']}')),
+        headers: server.auth(),
+      );
+      expect(deleted.statusCode, 204);
+      final read = await http.get(
+        server.url(path('production', '/${source['id']}')),
+        headers: server.auth(),
+      );
+      expect(read.statusCode, 404);
+    });
+
+    test('Should delete the sources with their workspace', () async {
+      await server.createWorkspace('Doomed');
+      await create(postgres(name: 'gone-db'), workspace: 'doomed');
+      await http.delete(
+        server.url('/api/workspaces/doomed'),
+        headers: server.auth(),
+      );
+      final db = di.find<AppDatabase>();
+      final left = await (db.select(
+        db.sourceTable,
+      )..where((t) => t.workspaceSlug.equals('doomed'))).get();
+      expect(left, isEmpty);
+    });
+
+    test('Should report a connection that fails, without throwing', () async {
+      // Nothing listens on port 1
+      final body = postgres(host: '127.0.0.1', port: 1);
+      final response = await http.post(
+        server.url(path('production', '/test')),
+        headers: jsonHeaders(),
+        body: jsonEncode(body),
+      );
+      expect(response.statusCode, 200, reason: response.body);
+      final check = jsonDecode(response.body);
+      expect(check['status'], 'failed');
+      expect(check['message'], isNotEmpty);
+      expect(check['server_version'], isNull);
+    });
+
+    test('Should keep the result of testing a saved source', () async {
+      final body = postgres(name: 'local-db', host: '127.0.0.1', port: 1);
+      final source = await created(body);
+      final tested = await http.post(
+        server.url(path('production', '/${source['id']}/test')),
+        headers: server.auth(),
+      );
+      expect(jsonDecode(tested.body)['status'], 'failed');
+
+      final read = jsonDecode(
+        (await http.get(
+          server.url(path('production', '/${source['id']}')),
+          headers: server.auth(),
+        )).body,
+      );
+      expect(read['last_check']['status'], 'failed');
+    });
+  });
+
+  group('PgDump', () {
+    test('Should read the version of pg_dump', () {
+      expect(PgDump.parseVersion('pg_dump (PostgreSQL) 18.2'), '18.2');
+      expect(
+        PgDump.parseVersion('pg_dump (PostgreSQL) 17.2 (Debian 17.2-1.pgdg)'),
+        '17.2',
+      );
+      expect(PgDump.parseVersion('command not found'), isNull);
+      expect(PgDump.major('17.2'), 17);
+    });
+  });
+}

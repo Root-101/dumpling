@@ -23,3 +23,9 @@ doc/api/
 /.env
 .artifacts/
 .temp/
+
+# local development of the service (see .env.example)
+/service/.env
+# SQLite database of the service in development (DATA_PATH), run from service/ or the root
+/service/data/
+/data/

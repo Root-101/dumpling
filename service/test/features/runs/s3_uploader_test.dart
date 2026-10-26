@@ -1,0 +1,94 @@
+@TestOn('vm')
+library;
+
+import 'package:service/dumpling.dart';
+import 'package:test/test.dart';
+
+import '../../support/fake_s3.dart';
+
+void main() {
+  final s3 = FakeS3();
+  late S3Client client;
+
+  setUpAll(() async {
+    await s3.start();
+    client = S3Client(
+      endpoint: Uri.parse(s3.endpoint),
+      region: FakeS3.region,
+      bucket: 'backups',
+      accessKeyId: FakeS3.accessKeyId,
+      secretAccessKey: FakeS3.secretAccessKey,
+      pathStyle: true,
+    );
+  });
+  tearDownAll(s3.stop);
+  setUp(s3.reset);
+
+  /// [length] bytes in chunks of 100, like the output of a process.
+  Stream<List<int>> bytes(int length, {Object? failAfter}) async* {
+    for (var i = 0; i < length; i += 100) {
+      if (failAfter != null && i >= (failAfter as int)) {
+        throw DumpException('pg_dump exited with code 1');
+      }
+      yield List.generate(
+        i + 100 > length ? length - i : 100,
+        (j) => (i + j) % 251,
+      );
+    }
+  }
+
+  List<int> expected(int length) => List.generate(length, (i) => i % 251);
+
+  group('S3Uploader', () {
+    test('Should send a stream that fits in one part with PutObject', () async {
+      final size = await S3Uploader(
+        client,
+        partSize: 1000,
+      ).upload('orders/a.dump', bytes(250));
+      expect(size, 250);
+      expect(s3.objects['backups/orders/a.dump'], expected(250));
+      expect(s3.requests.single, startsWith('PUT /backups/orders/a.dump'));
+    });
+
+    test('Should send a bigger one part by part, in order', () async {
+      final progress = <int>[];
+      final size = await S3Uploader(
+        client,
+        partSize: 1000,
+      ).upload('orders/b.dump', bytes(2500), onProgress: progress.add);
+      expect(size, 2500);
+      expect(s3.objects['backups/orders/b.dump'], expected(2500));
+      expect(progress, [1000, 2000, 2500]);
+      expect(s3.openUploads, isEmpty);
+      expect(s3.requests.where((r) => r.contains('partNumber')), hasLength(3));
+    });
+
+    test('Should abort the upload when the stream fails', () async {
+      await expectLater(
+        S3Uploader(
+          client,
+          partSize: 1000,
+        ).upload('orders/c.dump', bytes(5000, failAfter: 2500)),
+        throwsA(isA<DumpException>()),
+      );
+      expect(s3.objects, isEmpty);
+      expect(s3.openUploads, isEmpty);
+      expect(s3.requests.last, startsWith('DELETE'));
+    });
+  });
+
+  group('ObjectKey', () {
+    test('Should fill in the placeholders and add the extension', () {
+      expect(
+        ObjectKey.render(
+          '{db}/{yyyy}/{MM}/{dd}-{HH}{mm}-{run_id}-{nope}',
+          at: DateTime.utc(2026, 3, 7, 4, 5),
+          database: 'orders',
+          runId: 'run_abc',
+          extension: '.dump.gz',
+        ),
+        'orders/2026/03/07-0405-run_abc-{nope}.dump.gz',
+      );
+    });
+  });
+}
