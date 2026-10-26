@@ -152,10 +152,7 @@ class _CanvasScreenState extends State<CanvasScreen> {
               builder: (context, state) {
                 if (!state.data.loaded) {
                   return state is CanvasLoadingErrorState
-                      ? ErrorPage(
-                          message: state.exception.message,
-                          onRetry: cubit.reload,
-                        )
+                      ? ErrorPage.of(state.exception, onRetry: cubit.reload)
                       : const LoadingPage();
                 }
                 return Row(

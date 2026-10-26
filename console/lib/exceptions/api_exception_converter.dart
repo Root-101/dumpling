@@ -1,6 +1,5 @@
 import 'package:console/app_exporter.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 
 class ApiExceptionConverter {
   static GlobalException parse(DioException error) {
@@ -12,17 +11,17 @@ class ApiExceptionConverter {
         );
       case DioExceptionType.connectionTimeout:
         return GlobalException(
-          type: GlobalExceptionType.general,
+          type: GlobalExceptionType.offline,
           message: app.intl.errors.connectionTimeout,
         );
       case DioExceptionType.transformTimeout:
         return GlobalException(
-          type: GlobalExceptionType.general,
+          type: GlobalExceptionType.offline,
           message: app.intl.errors.noConnection,
         );
       case DioExceptionType.unknown:
         return GlobalException(
-          type: GlobalExceptionType.general,
+          type: GlobalExceptionType.offline,
           message: app.intl.errors.noConnection,
         );
       case DioExceptionType.receiveTimeout:
@@ -41,20 +40,12 @@ class ApiExceptionConverter {
           message: app.intl.errors.badCertificate,
         );
       case DioExceptionType.connectionError:
-        // TODO: look at the web error in more detail
-        if (kIsWeb) {
-          return GlobalException(
-            // on web, Dio reports 403/401 as a connection error (the browser closes the connection)
-            // every other status (200, 404, 422) works, so this connection error is handled as an auth exception
-            type: GlobalExceptionType.auth,
-            message: app.intl.errors.connection,
-          );
-        } else {
-          return GlobalException(
-            type: GlobalExceptionType.general,
-            message: app.intl.errors.connection,
-          );
-        }
+        // the service is down or unreachable (its errors, 401 too, come
+        // with CORS headers, so they are bad responses)
+        return GlobalException(
+          type: GlobalExceptionType.offline,
+          message: app.intl.errors.noConnection,
+        );
       case DioExceptionType.badResponse:
         return _parseBadResponse(error);
     }
@@ -76,6 +67,12 @@ class ApiExceptionConverter {
       // A wrong username or password, or a session that expired
       return GlobalException(
         type: GlobalExceptionType.auth,
+        message: _message(error.response!.data),
+        data: error.response!.data,
+      );
+    } else if (error.response!.statusCode == 404) {
+      return GlobalException(
+        type: GlobalExceptionType.notFound,
         message: _message(error.response!.data),
         data: error.response!.data,
       );

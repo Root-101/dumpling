@@ -123,10 +123,7 @@ class _RunsScreenState extends State<RunsScreen> {
               builder: (context, state) {
                 if (!state.data.loaded) {
                   return state is RunLoadingErrorState
-                      ? ErrorPage(
-                          message: state.exception.message,
-                          onRetry: cubit.reload,
-                        )
+                      ? ErrorPage.of(state.exception, onRetry: cubit.reload)
                       : const LoadingPage();
                 }
                 return SingleChildScrollView(

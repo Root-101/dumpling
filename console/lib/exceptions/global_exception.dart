@@ -1,4 +1,15 @@
-enum GlobalExceptionType { general, auth, validation, conflict }
+enum GlobalExceptionType {
+  general,
+  auth,
+  validation,
+  conflict,
+
+  /// A 404: what was asked for (a workspace, a run…) does not exist
+  notFound,
+
+  /// The service could not be reached
+  offline,
+}
 
 class GlobalException<T> implements Exception {
   final GlobalExceptionType type;

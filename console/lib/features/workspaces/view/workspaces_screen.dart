@@ -60,10 +60,7 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
               builder: (context, state) {
                 if (!state.data.loaded) {
                   return state is WorkspaceLoadingErrorState
-                      ? ErrorPage(
-                          message: state.exception.message,
-                          onRetry: cubit.load,
-                        )
+                      ? ErrorPage.of(state.exception, onRetry: cubit.load)
                       : const LoadingPage();
                 }
                 return _buildGrid(state.data);

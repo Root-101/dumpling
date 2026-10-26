@@ -4,9 +4,7 @@ import 'package:material_ui/material_ui.dart';
 /// The screens of a workspace that aren't built yet: each one has its route,
 /// so the rail and the links already work
 class SectionScreen extends StatelessWidget {
-  static const List<String> sections = [
-    RouteNames.settings,
-  ];
+  static const List<String> sections = [RouteNames.settings];
 
   final String section;
 

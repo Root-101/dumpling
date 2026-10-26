@@ -45,6 +45,10 @@ errors:
   validation: 'Error de validación'
   server: 'Error del servidor'
   unknown: 'Error desconocido'
+  notFoundTitle: 'No encontrado'
+  pageNotFound: 'Esta página no existe.'
+  offlineTitle: 'Conexión perdida'
+  offline: 'No se puede conectar con el servicio de Dumpling en {url: String}. Revisa que esté corriendo e inténtalo de nuevo.'
 
 nav:
   switchWorkspace: '{name} · cambiar de workspace'

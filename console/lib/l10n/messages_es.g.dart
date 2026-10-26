@@ -205,6 +205,15 @@ class AppMessages$errors$es implements AppMessages$errors$en {
   String get server => 'Error del servidor';
   @override
   String get unknown => 'Error desconocido';
+  @override
+  String get notFoundTitle => 'No encontrado';
+  @override
+  String get pageNotFound => 'Esta página no existe.';
+  @override
+  String get offlineTitle => 'Conexión perdida';
+  @override
+  String offline({required String url}) =>
+      'No se puede conectar con el servicio de Dumpling en ${url}. Revisa que esté corriendo e inténtalo de nuevo.';
 }
 
 // Path: nav
@@ -1298,6 +1307,12 @@ extension on AppMessagesEs {
       'errors.validation' => 'Error de validación',
       'errors.server' => 'Error del servidor',
       'errors.unknown' => 'Error desconocido',
+      'errors.notFoundTitle' => 'No encontrado',
+      'errors.pageNotFound' => 'Esta página no existe.',
+      'errors.offlineTitle' => 'Conexión perdida',
+      'errors.offline' => ({
+        required String url,
+      }) => 'No se puede conectar con el servicio de Dumpling en ${url}. Revisa que esté corriendo e inténtalo de nuevo.',
       'nav.switchWorkspace' => ({
         required Object name,
       }) => '${name} · cambiar de workspace',

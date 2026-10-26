@@ -164,7 +164,7 @@ Screens: Backups, Backups · Filters / Sort / Run details, Events (as the run lo
 - [x] Run log per workspace: every run, newest first, filtered by source type, destination type
   and status. The service side is done (the 200 newest; paging when it is needed).
 - [x] Run detail: steps, log (copy). The service side is done.
-- [ ] Error states: Error · Not found, Error · Connection lost.
+- [x] Error states: Error · Not found, Error · Connection lost.
 
 ## M8 · Release candidate
 

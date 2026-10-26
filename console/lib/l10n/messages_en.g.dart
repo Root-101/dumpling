@@ -224,6 +224,19 @@ class AppMessages$errors$en {
 
   /// en: 'Unknown error'
   String get unknown => 'Unknown error';
+
+  /// en: 'Not found'
+  String get notFoundTitle => 'Not found';
+
+  /// en: 'This page does not exist.'
+  String get pageNotFound => 'This page does not exist.';
+
+  /// en: 'Connection lost'
+  String get offlineTitle => 'Connection lost';
+
+  /// en: 'Can't reach the Dumpling service at {url: String}. Check that it is running and try again.'
+  String offline({required String url}) =>
+      'Can\'t reach the Dumpling service at ${url}. Check that it is running and try again.';
 }
 
 // Path: nav
@@ -1651,6 +1664,12 @@ extension on AppMessages {
       'errors.validation' => 'Validation error',
       'errors.server' => 'Server error',
       'errors.unknown' => 'Unknown error',
+      'errors.notFoundTitle' => 'Not found',
+      'errors.pageNotFound' => 'This page does not exist.',
+      'errors.offlineTitle' => 'Connection lost',
+      'errors.offline' => ({
+        required String url,
+      }) => 'Can\'t reach the Dumpling service at ${url}. Check that it is running and try again.',
       'nav.switchWorkspace' => ({
         required String name,
       }) => '${name} · switch workspace',
