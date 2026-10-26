@@ -78,6 +78,14 @@ void main() {
         for (final w in jsonDecode(response.body) as List) w['slug'],
       ];
       expect(slugs.last, 'listed');
+      expect((jsonDecode(response.body) as List).last['stats'], {
+        'sources': 0,
+        'destinations': 0,
+        'configs': 0,
+        'failing': 0,
+        'running': 0,
+        'last_run_at': null,
+      });
     });
 
     test('Should replace the data but keep the slug on update', () async {

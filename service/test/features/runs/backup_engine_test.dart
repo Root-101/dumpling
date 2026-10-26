@@ -231,6 +231,20 @@ void main() {
         headers: server.auth(),
       );
       expect(invalid.statusCode, 400);
+
+      // The workspace counts the configs whose last run failed
+      final workspaces = jsonDecode(
+        (await http.get(
+          server.url('/api/workspaces'),
+          headers: server.auth(),
+        )).body,
+      ) as List;
+      final stats = workspaces.single['stats'];
+      expect(stats['sources'], 1);
+      expect(stats['destinations'], 1);
+      expect(stats['failing'], 2);
+      expect(stats['running'], 0);
+      expect(stats['last_run_at'], isNotNull);
     });
   });
 

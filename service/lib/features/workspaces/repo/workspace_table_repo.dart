@@ -11,6 +11,44 @@ class WorkspaceTableRepo {
     _db.workspaceTable,
   )..orderBy([(tbl) => OrderingTerm.asc(tbl.createdAt)])).get();
 
+  /// What each workspace has, by slug: one query for all of them.
+  Future<Map<String, WorkspaceStats>> stats() async {
+    final rows = await _db
+        .customSelect(
+          'SELECT w.slug, '
+          '(SELECT COUNT(*) FROM source WHERE workspace_slug = w.slug) AS sources, '
+          '(SELECT COUNT(*) FROM destination WHERE workspace_slug = w.slug) AS destinations, '
+          '(SELECT COUNT(*) FROM config WHERE workspace_slug = w.slug) AS configs, '
+          // The configs whose last run failed
+          '(SELECT COUNT(*) FROM run r WHERE r.workspace_slug = w.slug '
+          "AND r.config_id IS NOT NULL AND r.status = 'failed' "
+          'AND r.started_at = (SELECT MAX(started_at) FROM run '
+          'WHERE config_id = r.config_id)) AS failing, '
+          "(SELECT COUNT(*) FROM run WHERE workspace_slug = w.slug AND status = 'running') AS running, "
+          '(SELECT MAX(started_at) FROM run WHERE workspace_slug = w.slug) AS last_run_at '
+          'FROM workspace w',
+          readsFrom: {
+            _db.workspaceTable,
+            _db.sourceTable,
+            _db.destinationTable,
+            _db.configTable,
+            _db.runTable,
+          },
+        )
+        .get();
+    return {
+      for (final row in rows)
+        row.read<String>('slug'): WorkspaceStats(
+          sources: row.read<int>('sources'),
+          destinations: row.read<int>('destinations'),
+          configs: row.read<int>('configs'),
+          failing: row.read<int>('failing'),
+          running: row.read<int>('running'),
+          lastRunAt: row.readNullable<DateTime>('last_run_at'),
+        ),
+    };
+  }
+
   Future<WorkspaceTableData?> get(String slug) => (_db.select(
     _db.workspaceTable,
   )..where((tbl) => tbl.slug.equals(slug))).getSingleOrNull();

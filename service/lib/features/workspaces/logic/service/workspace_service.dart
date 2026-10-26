@@ -8,8 +8,13 @@ class WorkspaceService {
 
   WorkspaceService() : repo = WorkspaceTableRepo(di.find());
 
-  Future<List<WorkspaceModel>> list() async =>
-      (await repo.getAll()).map(WorkspaceModel.fromRow).toList();
+  Future<List<WorkspaceModel>> list() async {
+    final stats = await repo.stats();
+    return [
+      for (final row in await repo.getAll())
+        WorkspaceModel.fromRow(row, stats: stats[row.slug]),
+    ];
+  }
 
   Future<WorkspaceModel> get(String slug) async {
     final row = await repo.get(slug);

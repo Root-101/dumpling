@@ -9,6 +9,9 @@ class WorkspaceModel {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  /// Only in the list: what the cards of the console show.
+  final WorkspaceStats? stats;
+
   WorkspaceModel({
     required this.slug,
     required this.name,
@@ -17,9 +20,13 @@ class WorkspaceModel {
     required this.defaults,
     required this.createdAt,
     required this.updatedAt,
+    this.stats,
   });
 
-  factory WorkspaceModel.fromRow(WorkspaceTableData row) => WorkspaceModel(
+  factory WorkspaceModel.fromRow(
+    WorkspaceTableData row, {
+    WorkspaceStats? stats,
+  }) => WorkspaceModel(
     slug: row.slug,
     name: row.name,
     description: row.description,
@@ -31,6 +38,7 @@ class WorkspaceModel {
     ),
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
+    stats: stats,
   );
 
   Map<String, Object?> toJson() => {
@@ -41,6 +49,36 @@ class WorkspaceModel {
     'defaults': defaults,
     'created_at': createdAt.toUtc().toIso8601String(),
     'updated_at': updatedAt.toUtc().toIso8601String(),
+    if (stats != null) 'stats': stats,
+  };
+}
+
+/// What a workspace has: its nodes, the configs whose last run failed, the
+/// runs in progress and when the last one started.
+class WorkspaceStats {
+  final int sources;
+  final int destinations;
+  final int configs;
+  final int failing;
+  final int running;
+  final DateTime? lastRunAt;
+
+  WorkspaceStats({
+    required this.sources,
+    required this.destinations,
+    required this.configs,
+    required this.failing,
+    required this.running,
+    this.lastRunAt,
+  });
+
+  Map<String, Object?> toJson() => {
+    'sources': sources,
+    'destinations': destinations,
+    'configs': configs,
+    'failing': failing,
+    'running': running,
+    'last_run_at': lastRunAt?.toUtc().toIso8601String(),
   };
 }
 
