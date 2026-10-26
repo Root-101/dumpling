@@ -168,8 +168,8 @@ Screens: Backups, Backups · Filters / Sort / Run details, Events (as the run lo
 
 ## M8 · Release candidate
 
-- [ ] Restore guide: `pg_restore` / `psql` of a file taken from the bucket.
-- [ ] Security pass (`SECURITY.md`): credentials, auth, rate limits, input validation, what the
+- [x] Restore guide: `pg_restore` / `psql` of a file taken from the bucket.
+- [x] Security pass (`SECURITY.md`): credentials, auth, rate limits, input validation, what the
   logs show.
 - [ ] End-to-end test with PostgreSQL and MinIO (or feather-io) in Docker.
 - [ ] README, `CONTRIBUTING.md`, `DECISIONS.md`, changelogs; versions and tag `0.1.0-rc.1`.

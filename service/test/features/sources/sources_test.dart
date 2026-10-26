@@ -282,5 +282,31 @@ void main() {
       expect(PgDump.parseVersion('command not found'), isNull);
       expect(PgDump.major('17.2'), 17);
     });
+
+    test('Should give pg_dump its connection in PG* variables, without the secrets of the service', () {
+      final vars = PostgresSourceDriver.dumpEnvironment(
+        PostgresSettings(
+          host: ' db.internal ',
+          port: 6543,
+          // a connection string here stays a name: it isn't an argument
+          database: 'x host=elsewhere',
+          username: 'backup',
+        ),
+        {PostgresSettings.passwordKey: 'pw'},
+      );
+      expect(vars['PGHOST'], 'db.internal');
+      expect(vars['PGPORT'], '6543');
+      expect(vars['PGDATABASE'], 'x host=elsewhere');
+      expect((vars['PGUSER'], vars['PGPASSWORD']), ('backup', 'pw'));
+      for (final name in requiredEnvVariables) {
+        expect(vars.keys.map((k) => k.toUpperCase()), isNot(contains(name)));
+      }
+      expect(
+        vars.keys.where(
+          (k) => k.toUpperCase().startsWith('PG') && !k.startsWith('PG'),
+        ),
+        isEmpty,
+      );
+    });
   });
 }

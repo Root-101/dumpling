@@ -23,8 +23,9 @@ class PostgresSourceDriver implements SourceDriver {
   String databaseName(SourceSettings settings) =>
       (settings as PostgresSettings).database!.trim();
 
-  /// `pg_dump` to stdout. The password goes in `PGPASSWORD`, never in the
-  /// arguments (which any user of the machine can list).
+  /// `pg_dump` to stdout. The connection goes in its `PG*` variables, never
+  /// in the arguments: any user of the machine can list those, and a
+  /// `--dbname` with `=` would be read as a whole connection string.
   @override
   Stream<List<int>> dump(SourceSettings settings, Map<String, String> secrets) {
     final postgres = settings as PostgresSettings;
@@ -36,19 +37,11 @@ class PostgresSourceDriver implements SourceDriver {
           process = await Process.start(
             env.pgDumpPath,
             [
-              '--host=${postgres.host!.trim()}',
-              '--port=${postgres.portOrDefault}',
-              '--username=${postgres.username!.trim()}',
-              '--dbname=${postgres.database!.trim()}',
               '--format=${postgres.format == PostgresDumpFormat.custom ? 'custom' : 'plain'}',
               '--no-password',
             ],
-            environment: {
-              'PGPASSWORD': secrets[PostgresSettings.passwordKey] ?? '',
-              'PGSSLMODE': postgres.ssl.name,
-              'PGCONNECT_TIMEOUT': '${timeout.inSeconds}',
-              'PGAPPNAME': 'dumpling',
-            },
+            environment: dumpEnvironment(postgres, secrets),
+            includeParentEnvironment: false,
           );
         } on ProcessException catch (e) {
           controller.addError(DumpException('pg_dump could not start: $e'));
@@ -78,6 +71,27 @@ class PostgresSourceDriver implements SourceDriver {
     );
     return controller.stream;
   }
+
+  /// The variables of `pg_dump`: those of the service (the `PATH`, and what
+  /// Windows needs to open a socket) without its secrets nor any `PG*` of the
+  /// machine, plus the connection to [postgres].
+  static Map<String, String> dumpEnvironment(
+    PostgresSettings postgres,
+    Map<String, String> secrets,
+  ) => {
+    for (final MapEntry(:key, :value) in Platform.environment.entries)
+      if (!key.toUpperCase().startsWith('PG') &&
+          !requiredEnvVariables.contains(key.toUpperCase()))
+        key: value,
+    'PGHOST': postgres.host!.trim(),
+    'PGPORT': '${postgres.portOrDefault}',
+    'PGUSER': postgres.username!.trim(),
+    'PGDATABASE': postgres.database!.trim(),
+    'PGPASSWORD': secrets[PostgresSettings.passwordKey] ?? '',
+    'PGSSLMODE': postgres.ssl.name,
+    'PGCONNECT_TIMEOUT': '${timeout.inSeconds}',
+    'PGAPPNAME': 'dumpling',
+  };
 
   @override
   Future<ConnectionCheck> testConnection(
