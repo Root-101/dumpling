@@ -80,6 +80,11 @@ class RouteConfig {
                 builder: CanvasScreen.navigator.builder,
               ),
               GoRoute(
+                name: BackupsScreen.navigator.name,
+                path: BackupsScreen.navigator.path,
+                builder: BackupsScreen.navigator.builder,
+              ),
+              GoRoute(
                 name: RunsScreen.navigator.name,
                 path: RunsScreen.navigator.path,
                 builder: RunsScreen.navigator.builder,

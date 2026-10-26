@@ -82,6 +82,8 @@ class AppMessagesEs
   late final AppMessages$canvas$es canvas = AppMessages$canvas$es._(_root);
   @override
   late final AppMessages$runs$es runs = AppMessages$runs$es._(_root);
+  @override
+  late final AppMessages$backups$es backups = AppMessages$backups$es._(_root);
 }
 
 // Path: app
@@ -861,6 +863,68 @@ class AppMessages$runs$es implements AppMessages$runs$en {
       'El log se escribe cuando termina la ejecución. Actualiza para verlo.';
   @override
   String get noLog => 'Esta ejecución no tiene log.';
+}
+
+// Path: backups
+class AppMessages$backups$es implements AppMessages$backups$en {
+  AppMessages$backups$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get title => 'Respaldos';
+  @override
+  String description({required String workspace}) =>
+      'Cómo van los respaldos del workspace ${workspace}.';
+  @override
+  String get openEditor => 'Abrir el editor';
+  @override
+  String get healthy => 'Correctos';
+  @override
+  String get failing => 'Con fallas';
+  @override
+  String get paused => 'Pausado';
+  @override
+  String get nextRun => 'Próxima ejecución';
+  @override
+  String ofTotal({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: 'de ${n} respaldo',
+        other: 'de ${n} respaldos',
+      );
+  @override
+  String get noFailures => 'Nada falla';
+  @override
+  String get seeFailing => 'Su última ejecución falló';
+  @override
+  String get nothingScheduled => 'Nada programado';
+  @override
+  String get search => 'Buscar por respaldo, origen o destino';
+  @override
+  String get columnStatus => 'Estado';
+  @override
+  String get columnBackup => 'Respaldo';
+  @override
+  String get columnRoute => 'Origen → destino';
+  @override
+  String get columnLastRun => 'Última ejecución';
+  @override
+  String get columnNextRun => 'Próxima ejecución';
+  @override
+  String get sortBy => 'Ordenar por';
+  @override
+  String get sortName => 'Nombre';
+  @override
+  String get sortLastRun => 'Última ejecución, la más reciente primero';
+  @override
+  String get sortNextRun => 'Próxima ejecución, la más cercana primero';
+  @override
+  String get emptyDescription =>
+      'Conecta un origen con un destino en el editor para crear uno.';
+  @override
+  String get seeRuns => 'Ver el registro de ejecuciones';
 }
 
 // Path: destinations.typeSub
@@ -1686,6 +1750,38 @@ extension on AppMessagesEs {
       'runs.logWhenDone' =>
         'El log se escribe cuando termina la ejecución. Actualiza para verlo.',
       'runs.noLog' => 'Esta ejecución no tiene log.',
+      'backups.title' => 'Respaldos',
+      'backups.description' => ({
+        required String workspace,
+      }) => 'Cómo van los respaldos del workspace ${workspace}.',
+      'backups.openEditor' => 'Abrir el editor',
+      'backups.healthy' => 'Correctos',
+      'backups.failing' => 'Con fallas',
+      'backups.paused' => 'Pausado',
+      'backups.nextRun' => 'Próxima ejecución',
+      'backups.ofTotal' =>
+        ({required num n}) =>
+            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+              n,
+              one: 'de ${n} respaldo',
+              other: 'de ${n} respaldos',
+            ),
+      'backups.noFailures' => 'Nada falla',
+      'backups.seeFailing' => 'Su última ejecución falló',
+      'backups.nothingScheduled' => 'Nada programado',
+      'backups.search' => 'Buscar por respaldo, origen o destino',
+      'backups.columnStatus' => 'Estado',
+      'backups.columnBackup' => 'Respaldo',
+      'backups.columnRoute' => 'Origen → destino',
+      'backups.columnLastRun' => 'Última ejecución',
+      'backups.columnNextRun' => 'Próxima ejecución',
+      'backups.sortBy' => 'Ordenar por',
+      'backups.sortName' => 'Nombre',
+      'backups.sortLastRun' => 'Última ejecución, la más reciente primero',
+      'backups.sortNextRun' => 'Próxima ejecución, la más cercana primero',
+      'backups.emptyDescription' =>
+        'Conecta un origen con un destino en el editor para crear uno.',
+      'backups.seeRuns' => 'Ver el registro de ejecuciones',
       _ => null,
     };
   }

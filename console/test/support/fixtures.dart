@@ -215,3 +215,59 @@ RunModel run(
     log: log == null ? null : [for (final m in log) RunLogLine(started, m)],
   );
 }
+
+/// [demoCanvas] as the Backups screen sees it: j1 healthy, runs next on
+/// 21/Oct 02:00; j2 failing, on 21/Oct 02:30; j3 paused, never ran
+CanvasModel backupCanvas() {
+  final canvas = demoCanvas();
+  final started = DateTime.utc(2026, 10, 20, 2, 14);
+  BackupConfig with_(
+    BackupConfig c, {
+    LastRun? last,
+    DateTime? next,
+    bool enabled = true,
+  }) => BackupConfig(
+    id: c.id,
+    sourceId: c.sourceId,
+    destinationId: c.destinationId,
+    folderId: c.folderId,
+    pos: c.pos,
+    name: c.name,
+    schedule: c.schedule,
+    compression: c.compression,
+    objectKey: c.objectKey,
+    enabled: enabled,
+    nextRun: next,
+    lastRun: last,
+  );
+  final [j1, j2, j3] = canvas.configs;
+  return CanvasModel(
+    sources: canvas.sources,
+    sourcePool: canvas.sourcePool,
+    destinations: canvas.destinations,
+    destinationPool: canvas.destinationPool,
+    configs: [
+      with_(
+        j1,
+        last: LastRun(
+          id: 'r1',
+          status: RunStatus.success,
+          startedAt: started,
+          sizeBytes: 5 * 1024 * 1024,
+        ),
+        next: DateTime.utc(2026, 10, 21, 2),
+      ),
+      with_(
+        j2,
+        last: LastRun(
+          id: 'r2',
+          status: RunStatus.failed,
+          startedAt: started.add(const Duration(minutes: 20)),
+          error: 'pg_dump: connection refused',
+        ),
+        next: DateTime.utc(2026, 10, 21, 2, 30),
+      ),
+      with_(j3, enabled: false),
+    ],
+  );
+}

@@ -28,6 +28,8 @@ class _MockSources extends MockCubit<SourceState> implements SourceCubit {}
 class _MockDestinations extends MockCubit<DestinationState>
     implements DestinationCubit {}
 
+class _MockBackups extends MockCubit<BackupState> implements BackupCubit {}
+
 class _MockRuns extends MockCubit<RunState> implements RunCubit {}
 
 /// The app as `main` runs it, at the size of a laptop screen, with the cubits
@@ -39,6 +41,7 @@ void main() {
   final sources = _MockSources();
   final destinations = _MockDestinations();
   final runs = _MockRuns();
+  final backups = _MockBackups();
   final authStates = StreamController<AuthState>.broadcast();
 
   final english = LanguageModel(
@@ -125,6 +128,14 @@ void main() {
       ),
     );
     when(() => runs.load(any())).thenAnswer((_) async {});
+    whenListen(
+      backups,
+      const Stream<BackupState>.empty(),
+      initialState: BackupLoadingSuccessState(
+        data: const BackupData.empty('production').withCanvas(backupCanvas()),
+      ),
+    );
+    when(() => backups.load(any())).thenAnswer((_) async {});
     registerFallbackValue(run('fallback'));
     when(() => runs.detail(any())).thenAnswer((_) async {});
     when(() => sources.load(any())).thenAnswer((_) async {});
@@ -137,6 +148,7 @@ void main() {
     app.di.put<SourceCubit>(sources);
     app.di.put<DestinationCubit>(destinations);
     app.di.put<RunCubit>(runs);
+    app.di.put<BackupCubit>(backups);
     // the dialogs and drawers make their own cubit with them
     app.di.put<WorkspaceRepo>(_MockRepo());
     app.di.put<SourceRepo>(_MockSourceRepo());
@@ -167,6 +179,7 @@ void main() {
           BlocProvider<SourceCubit>.value(value: sources),
           BlocProvider<DestinationCubit>.value(value: destinations),
           BlocProvider<RunCubit>.value(value: runs),
+          BlocProvider<BackupCubit>.value(value: backups),
         ],
         child: const App(),
       ),
@@ -244,8 +257,19 @@ void main() {
       RouteConfig.router.routerDelegate.currentConfiguration.uri.path,
       '/workspaces/production/backups',
     );
-    expect(find.text('This screen comes next.'), findsOneWidget);
     verify(() => workspaces.select('production')).called(greaterThan(0));
+
+    // the summary and the table of its backups
+    expect(find.text('HEALTHY'), findsOneWidget);
+    expect(find.text('of 3 backups'), findsOneWidget);
+    expect(find.text('21/Oct 02:00 AM UTC'), findsNWidgets(2));
+    expect(find.text('Nightly full'), findsNWidgets(2));
+    expect(find.text('Daily · 0 2 * * *'), findsOneWidget);
+    expect(find.text('Failing'), findsOneWidget);
+    expect(find.text('Paused'), findsNWidgets(2));
+    expect(find.text('Never run'), findsOneWidget);
+    expect(find.text('20/Oct 02:14 AM UTC · 5.00 MB'), findsOneWidget);
+    verify(() => backups.load('production')).called(greaterThan(0));
   });
 
   testWidgets('Sources: usage, status, a locked delete and the drawer', (

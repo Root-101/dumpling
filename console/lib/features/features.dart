@@ -9,5 +9,6 @@ export 'global/global.dart';
 export 'language/language.dart';
 export 'canvas/canvas.dart';
 export 'runs/runs.dart';
+export 'backups/backups.dart';
 export 'sources/sources.dart';
 export 'workspaces/workspaces.dart';

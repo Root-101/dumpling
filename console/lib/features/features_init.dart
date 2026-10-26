@@ -52,6 +52,7 @@ class FeaturesInit {
     await DestinationsInit.init();
     await CanvasInit.init();
     await RunsInit.init();
+    await BackupsInit.init();
 
     // Listen for logout to reset other cubits
     app.di.find<AuthCubit>().stream.listen((state) async {
@@ -67,6 +68,7 @@ class FeaturesInit {
     app.di.find<DestinationCubit>().reset();
     app.di.find<CanvasCubit>().reset();
     app.di.find<RunCubit>().reset();
+    app.di.find<BackupCubit>().reset();
     app.di.find<AuthCubit>().reset();
   }
 
@@ -91,5 +93,7 @@ class FeaturesInit {
     BlocProvider<CanvasCubit>(create: (context) => app.di.find<CanvasCubit>()),
     // RUNS: the run log of the open workspace
     BlocProvider<RunCubit>(create: (context) => app.di.find<RunCubit>()),
+    // BACKUPS: the home of the open workspace
+    BlocProvider<BackupCubit>(create: (context) => app.di.find<BackupCubit>()),
   ];
 }

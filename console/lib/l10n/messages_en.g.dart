@@ -64,6 +64,7 @@ class AppMessages with BaseTranslations<AppMessagesLocale, AppMessages> {
       AppMessages$destinations$en._(_root);
   late final AppMessages$canvas$en canvas = AppMessages$canvas$en._(_root);
   late final AppMessages$runs$en runs = AppMessages$runs$en._(_root);
+  late final AppMessages$backups$en backups = AppMessages$backups$en._(_root);
 }
 
 // Path: app
@@ -1106,6 +1107,91 @@ class AppMessages$runs$en {
   String get noLog => 'This run has no log.';
 }
 
+// Path: backups
+class AppMessages$backups$en {
+  AppMessages$backups$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Backups'
+  String get title => 'Backups';
+
+  /// en: 'How the backups of the {workspace: String} workspace are doing.'
+  String description({required String workspace}) =>
+      'How the backups of the ${workspace} workspace are doing.';
+
+  /// en: 'Open pipeline editor'
+  String get openEditor => 'Open pipeline editor';
+
+  /// en: 'Healthy'
+  String get healthy => 'Healthy';
+
+  /// en: 'Failing'
+  String get failing => 'Failing';
+
+  /// en: 'Paused'
+  String get paused => 'Paused';
+
+  /// en: 'Next run'
+  String get nextRun => 'Next run';
+
+  /// en: '(one) {of {n} backup} (other) {of {n} backups}'
+  String ofTotal({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: 'of ${n} backup',
+        other: 'of ${n} backups',
+      );
+
+  /// en: 'Nothing failing'
+  String get noFailures => 'Nothing failing';
+
+  /// en: 'Their last run failed'
+  String get seeFailing => 'Their last run failed';
+
+  /// en: 'Nothing scheduled'
+  String get nothingScheduled => 'Nothing scheduled';
+
+  /// en: 'Search by backup, source or destination'
+  String get search => 'Search by backup, source or destination';
+
+  /// en: 'Status'
+  String get columnStatus => 'Status';
+
+  /// en: 'Backup'
+  String get columnBackup => 'Backup';
+
+  /// en: 'Source → destination'
+  String get columnRoute => 'Source → destination';
+
+  /// en: 'Last run'
+  String get columnLastRun => 'Last run';
+
+  /// en: 'Next run'
+  String get columnNextRun => 'Next run';
+
+  /// en: 'Sort by'
+  String get sortBy => 'Sort by';
+
+  /// en: 'Name'
+  String get sortName => 'Name';
+
+  /// en: 'Last run, newest first'
+  String get sortLastRun => 'Last run, newest first';
+
+  /// en: 'Next run, soonest first'
+  String get sortNextRun => 'Next run, soonest first';
+
+  /// en: 'Connect a source to a destination in the pipeline editor to create one.'
+  String get emptyDescription =>
+      'Connect a source to a destination in the pipeline editor to create one.';
+
+  /// en: 'See the run log'
+  String get seeRuns => 'See the run log';
+}
+
 // Path: destinations.typeSub
 class AppMessages$destinations$typeSub$en {
   AppMessages$destinations$typeSub$en._(this._root);
@@ -2008,6 +2094,37 @@ extension on AppMessages {
       'runs.logWhenDone' =>
         'The log is written when the run ends. Refresh to see it.',
       'runs.noLog' => 'This run has no log.',
+      'backups.title' => 'Backups',
+      'backups.description' => ({
+        required String workspace,
+      }) => 'How the backups of the ${workspace} workspace are doing.',
+      'backups.openEditor' => 'Open pipeline editor',
+      'backups.healthy' => 'Healthy',
+      'backups.failing' => 'Failing',
+      'backups.paused' => 'Paused',
+      'backups.nextRun' => 'Next run',
+      'backups.ofTotal' =>
+        ({required num n}) =>
+            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+              n,
+              one: 'of ${n} backup',
+              other: 'of ${n} backups',
+            ),
+      'backups.noFailures' => 'Nothing failing',
+      'backups.seeFailing' => 'Their last run failed',
+      'backups.nothingScheduled' => 'Nothing scheduled',
+      'backups.search' => 'Search by backup, source or destination',
+      'backups.columnStatus' => 'Status',
+      'backups.columnBackup' => 'Backup',
+      'backups.columnRoute' => 'Source → destination',
+      'backups.columnLastRun' => 'Last run',
+      'backups.columnNextRun' => 'Next run',
+      'backups.sortBy' => 'Sort by',
+      'backups.sortName' => 'Name',
+      'backups.sortLastRun' => 'Last run, newest first',
+      'backups.sortNextRun' => 'Next run, soonest first',
+      'backups.emptyDescription' => 'Connect a source to a destination in the pipeline editor to create one.',
+      'backups.seeRuns' => 'See the run log',
       _ => null,
     };
   }

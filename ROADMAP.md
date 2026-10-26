@@ -159,7 +159,7 @@ Screens: Pipeline editor, Getting started · Empty workspace.
 
 Screens: Backups, Backups · Filters / Sort / Run details, Events (as the run log), Events · Filters.
 
-- [ ] Backups: summary (healthy, failing, next run), configs with their last and next run, filters
+- [x] Backups: summary (healthy, failing, next run), configs with their last and next run, filters
   and sort. The service side is done: each config has `next_run` and `last_run`.
 - [x] Run log per workspace: every run, newest first, filtered by source type, destination type
   and status. The service side is done (the 200 newest; paging when it is needed).

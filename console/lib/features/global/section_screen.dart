@@ -5,7 +5,6 @@ import 'package:material_ui/material_ui.dart';
 /// so the rail and the links already work
 class SectionScreen extends StatelessWidget {
   static const List<String> sections = [
-    RouteNames.backups,
     RouteNames.settings,
   ];
 
