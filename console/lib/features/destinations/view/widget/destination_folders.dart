@@ -36,13 +36,7 @@ class _DestinationFoldersState extends State<DestinationFolders> {
 
   void _add() {
     final path = FolderPath.clean(_controller.text);
-    final error = path.isEmpty
-        ? app.intl.destinations.folderEmpty
-        : !FolderPath.isValid(path)
-        ? app.intl.destinations.folderInvalid
-        : widget.destination.folders.contains(path)
-        ? app.intl.destinations.folderRepeated
-        : null;
+    final error = FolderPath.error(path, widget.destination.folders);
     setState(() => _error = error);
     if (error != null) return;
     widget.onAdd(path);

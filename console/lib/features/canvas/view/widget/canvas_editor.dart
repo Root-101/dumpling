@@ -243,7 +243,7 @@ class _CanvasEditorState extends State<CanvasEditor>
           danger: true,
         ),
         NodeKind.config => ContextMenuItem(
-          'Delete config',
+          app.intl.canvas.deleteConfig,
           icons.actions.delete,
           _act(() => _cubit.deleteConfig(id)),
           danger: true,
@@ -260,7 +260,7 @@ class _CanvasEditorState extends State<CanvasEditor>
 
   List<ContextMenuItem> _wireMenu() => [
     ContextMenuItem(
-      'Remove connection',
+      app.intl.canvas.removeConnection,
       app.assets.icons.actions.delete,
       _act(_deleteWire),
       danger: true,
@@ -510,7 +510,7 @@ class _CanvasEditorState extends State<CanvasEditor>
       autofocus: true,
       onKeyEvent: _key,
       child: Semantics(
-        label: 'Canvas. Hold Space and drag to move it; right click for options; arrow keys pan; Ctrl and scroll zooms; F centers; click a connection and press Delete to remove it; Escape closes the config',
+        label: app.intl.canvas.semantics,
         child: MouseRegion(
           cursor: cursor,
           child: Listener(
@@ -743,6 +743,11 @@ class _CanvasEditorState extends State<CanvasEditor>
               ),
               orphan: s.destinationOrphan(d.id),
               handlers: handlers,
+              onAddFolder: () => AddFolderDialog.open(
+                context,
+                destination: d,
+                onAdd: (path) => _cubit.addFolder(d.id, path),
+              ),
             ),
           ),
         ),
@@ -806,13 +811,13 @@ class _CanvasEditorState extends State<CanvasEditor>
 
     return UnboundedStack(
       children: [
-        label(40, 'SOURCES'),
-        label(380, 'CONFIG · ONE PER CONNECTION'),
-        label(760, 'DESTINATIONS'),
+        label(40, app.intl.canvas.columns.sources.toUpperCase()),
+        label(380, app.intl.canvas.columns.configs.toUpperCase()),
+        label(760, app.intl.canvas.columns.destinations.toUpperCase()),
         hint(
           40,
           200,
-          'Drag from a source port',
+          app.intl.canvas.hints.dragFromSource,
           colors.brand.accent.withValues(alpha: 0.75),
           colors.brand.accent,
           dot: true,
@@ -820,14 +825,14 @@ class _CanvasEditorState extends State<CanvasEditor>
         hint(
           380,
           240,
-          'Config is created here',
+          app.intl.canvas.configHere,
           colors.brand.primary.withValues(alpha: 0.6),
           colors.text.muted,
         ),
         hint(
           760,
           256,
-          'Drop on a folder or bucket',
+          app.intl.canvas.hints.dropOnDestination,
           colors.brand.accent.withValues(alpha: 0.75),
           colors.brand.accent,
         ),
@@ -866,7 +871,7 @@ class _CanvasEditorState extends State<CanvasEditor>
                 ),
                 child: AppIconButton(
                   size: 24,
-                  tooltip: 'Remove connection (Del)',
+                  tooltip: app.intl.canvas.removeConnectionKey,
                   onPressed: _deleteWire,
                   icon: app.assets.icons.actions.delete.build(
                     size: 13,
@@ -915,8 +920,8 @@ class _CanvasEditorState extends State<CanvasEditor>
                       const SizedBox(height: 4),
                       Text(
                         target != null
-                            ? 'Release to create the config'
-                            : 'Config is created here',
+                            ? app.intl.canvas.releaseToCreate
+                            : app.intl.canvas.configHere,
                         style: TextStyle(
                           fontSize: 12,
                           color: colors.text.muted,

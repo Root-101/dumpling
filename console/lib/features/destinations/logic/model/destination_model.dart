@@ -127,4 +127,13 @@ abstract class FolderPath {
 
   /// How it shows: `/orders`
   static String show(String path) => '/$path';
+
+  /// Why [path] (already [clean]) can't be added next to [folders]
+  static String? error(String path, List<String> folders) => path.isEmpty
+      ? app.intl.destinations.folderEmpty
+      : !isValid(path)
+      ? app.intl.destinations.folderInvalid
+      : folders.contains(path)
+      ? app.intl.destinations.folderRepeated
+      : null;
 }

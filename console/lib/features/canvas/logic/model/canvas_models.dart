@@ -7,14 +7,17 @@ enum NodeKind { source, config, destination }
 enum RunStatus { running, success, failed }
 
 enum Frequency {
-  hourly('Hourly'),
-  daily('Daily'),
-  weekly('Weekly'),
-  cron('Cron');
+  hourly,
+  daily,
+  weekly,
+  cron;
 
-  final String label;
-
-  const Frequency(this.label);
+  String get label => switch (this) {
+    hourly => app.intl.canvas.frequency.hourly,
+    daily => app.intl.canvas.frequency.daily,
+    weekly => app.intl.canvas.frequency.weekly,
+    cron => app.intl.canvas.frequency.cron,
+  };
 
   /// What the picker shows for [cron]: the schedules it writes
   /// (`m * * * *`, `m h * * *`, `m h * * 0`), any other one is [cron]
@@ -87,20 +90,33 @@ class DestinationNode {
   });
 
   /// `S3 · bucket-backups`
-  String get detail => type == DestinationTypes.s3
-      ? 'S3 · ${settings['bucket']}'
-      : DestinationTypeLook.labelOf(type);
+  String get detail =>
+      [DestinationTypeLook.labelOf(type), ?settings['bucket']].join(' · ');
 
   String get bucket => settings['bucket'] ?? name;
 
-  DestinationNode copyWith({Offset? pos}) => DestinationNode(
-    id: id,
+  /// What its connection test sends: the saved settings with the folders of
+  /// the canvas; without the secret key, which the service fills in
+  DestinationDraft toDraft() => DestinationDraft(
     name: name,
     type: type,
-    settings: settings,
+    endpoint: settings['endpoint'] ?? '',
+    region: settings['region'] ?? '',
+    bucket: settings['bucket'] ?? '',
+    accessKeyId: settings['access_key_id'] ?? '',
+    pathStyle: settings['path_style'] ?? false,
     folders: folders,
-    pos: pos ?? this.pos,
   );
+
+  DestinationNode copyWith({Offset? pos, List<String>? folders}) =>
+      DestinationNode(
+        id: id,
+        name: name,
+        type: type,
+        settings: settings,
+        folders: folders ?? this.folders,
+        pos: pos ?? this.pos,
+      );
 }
 
 /// The last run of a config
@@ -203,6 +219,18 @@ class DropTarget {
 
 /// The two wires of a config: from its source, or to its destination
 enum WireEnd { source, destination }
+
+/// One check of a test run: a source or destination of [name], and what its
+/// connection test found, or why the request failed ([error])
+class CanvasCheck {
+  final String name;
+  final ConnectionCheckModel? check;
+  final String? error;
+
+  const CanvasCheck(this.name, {this.check, this.error});
+
+  bool get ok => check?.status == CheckStatus.connected;
+}
 
 /// A canvas as the service returns it: the nodes without position are off
 /// the canvas ([sourcePool], [destinationPool]). [ids] maps the `new_` ids of

@@ -10,9 +10,12 @@ class CanvasCubit extends Cubit<CanvasState> {
   static const String newPrefix = 'new_';
 
   final CanvasRepo _repo;
+  final SourceRepo _sources;
+  final DestinationRepo _destinations;
   final AuthCubit _auth;
 
-  CanvasCubit(this._repo, this._auth) : super(const CanvasInitialState());
+  CanvasCubit(this._repo, this._sources, this._destinations, this._auth)
+    : super(const CanvasInitialState());
 
   String? get _token => _auth.auth?.accessToken;
 
@@ -65,6 +68,52 @@ class CanvasCubit extends Cubit<CanvasState> {
         ),
       );
     }
+  }
+
+  /// Checks, without backing anything up, that every complete flow could
+  /// run: each source connects and its server is not newer than `pg_dump`;
+  /// each destination takes a write in every folder (or the root), the ones
+  /// added here and not saved yet too
+  Future<void> testRun() async {
+    final workspace = _data.workspace;
+    if (workspace == null || !_data.loaded) return;
+    final complete = _data.configs.where((c) => !CanvasData.configOrphan(c));
+    final sources = {for (final c in complete) ?_data.source(c.sourceId)};
+    final destinations = {
+      for (final c in complete) ?_data.destination(c.destinationId),
+    };
+    Future<CanvasCheck> check(
+      String name,
+      Future<ConnectionCheckModel> Function() test,
+    ) async {
+      try {
+        return CanvasCheck(name, check: await test());
+      } catch (e) {
+        return CanvasCheck(name, error: ExceptionConverter.parse(e).message);
+      }
+    }
+
+    emit(CanvasProcessInProgressState(data: _data));
+    final checks = await Future.wait([
+      for (final s in sources)
+        check(
+          s.name,
+          () =>
+              _sources.testSaved(workspace: workspace, id: s.id, token: _token),
+        ),
+      for (final d in destinations)
+        check(
+          d.name,
+          () => _destinations.testUnsaved(
+            workspace: workspace,
+            draft: d.toDraft(),
+            destinationId: d.id,
+            token: _token,
+          ),
+        ),
+    ]);
+    if (_data.workspace != workspace) return;
+    emit(CanvasTestedState(checks, data: _data));
   }
 
   /// After signing out
@@ -185,6 +234,32 @@ class CanvasCubit extends Cubit<CanvasState> {
       s.copyWith(
         configs: s.configs.where((c) => c.id != id).toList(),
         selectedId: () => s.selectedId == id ? null : s.selectedId,
+      ),
+    );
+  }
+
+  /// Adds [path] (checked with [FolderPath.error]) to a destination; it is
+  /// created in the bucket on save. With the first folder the root stops being
+  /// a connection point: the configs that write to it are disconnected
+  void addFolder(String destinationId, String path) {
+    final s = _data;
+    final dest = s.destination(destinationId);
+    if (dest == null) return;
+    final first = dest.folders.isEmpty;
+    _edit(
+      s.copyWith(
+        destinations: [
+          for (final d in s.destinations)
+            d.id == destinationId
+                ? d.copyWith(folders: [...d.folders, path])
+                : d,
+        ],
+        configs: [
+          for (final c in s.configs)
+            first && c.destinationId == destinationId
+                ? c.copyWith(destinationId: () => null, folderId: () => null)
+                : c,
+        ],
       ),
     );
   }

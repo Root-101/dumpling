@@ -12,6 +12,10 @@ class _MockRepo extends Mock implements CanvasRepo {}
 
 class _MockAuth extends Mock implements AuthCubit {}
 
+class _MockSources extends Mock implements SourceRepo {}
+
+class _MockDestinations extends Mock implements DestinationRepo {}
+
 void main() {
   // the real fonts, so text overflows are the ones of the browser
   setUpAll(() async {
@@ -42,13 +46,17 @@ void main() {
     addTearDown(tester.view.reset);
     final repo = _MockRepo();
     final auth = _MockAuth();
+    final sources = _MockSources();
+    final destinations = _MockDestinations();
     when(() => auth.auth).thenReturn(session());
     when(() => repo.get(workspace: 'production', token: 'jwt'))
         .thenAnswer((_) async => demoCanvas());
-    final cubit = CanvasCubit(repo, auth);
+    final cubit = CanvasCubit(repo, sources, destinations, auth);
     await cubit.load('production');
     await tester.pumpWidget(
       MaterialApp(
+        // the dialogs and buttons of the app read it
+        navigatorKey: navigatorKey,
         theme: ThemeConfig.theme,
         home: BlocProvider.value(
           value: cubit,
@@ -241,4 +249,33 @@ void main() {
     await tester.pump();
     expect(cubit.state.data.selectedId, isNull);
   });
+
+  testWidgets(
+    'a folder is added from its bucket, checked like the Destinations screen',
+    (tester) async {
+      final cubit = await pump(tester);
+      final ca = cubit.state.data.destination('ca')!;
+      // the button of ca is the second one: bb comes first
+      await tester.tap(find.text('+ Add folder').last);
+      // the wires animate forever: no pumpAndSettle
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text('Add a folder to ca'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField), 'Bad Name');
+      await tester.tap(find.text('Add'));
+      await tester.pump();
+      expect(
+        find.text('Lowercase letters, digits, - . _ and / between them'),
+        findsOneWidget,
+      );
+
+      await tester.enterText(find.byType(TextField), '/media/');
+      await tester.tap(find.text('Add'));
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text('Add a folder to ca'), findsNothing);
+      expect(cubit.state.data.destination('ca')!.folders, ['media']);
+      expect(ca.folders, isEmpty);
+      expect(find.text('/media'), findsOneWidget);
+    },
+  );
 }

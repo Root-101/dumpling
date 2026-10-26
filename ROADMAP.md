@@ -126,16 +126,19 @@ Screens: Pipeline editor, Getting started · Empty workspace.
   `GET /api/workspaces/{slug}/canvas` loads it and `PUT` saves it. What the save leaves out is
   deleted; new nodes have an id the console makes up (`new_…`), and the response maps it to the
   saved one. A source or destination without position is off the canvas (in the toolbar, and
-  "Remove from canvas" sends it back there: it is not deleted). The folders are added from the
-  Destinations screen, not from the canvas.
+  "Remove from canvas" sends it back there: it is not deleted). A folder can be added to a bucket
+  from the canvas too; with the first one, the configs on the root are disconnected.
 - [ ] Config between a source and a destination: name, schedule (cron in UTC), object key with
   placeholders (`{yyyy}`, `{MM}`, `{dd}`, `{db}`, `{run_id}`) and without extension, compression
   (gzip or none), enabled. The engine adds the extension from the dump format and the compression.
   The service side is done (`{HH}` and `{mm}` too).
 - [x] Only complete flows are saved (as today in 0.0.1): the console leaves out the orphan
   configs, which the service would reject.
-- [ ] Run now from the config. The service side is done:
+- [ ] Run now from the config: a real run. The service side is done:
   `POST /api/workspaces/{slug}/configs/{id}/run`.
+- [x] Test run from the header: checks without backing anything up that every complete flow
+  could run (each source connects and `pg_dump` can dump it, each destination takes a write in
+  its folders, the ones added on the canvas and not saved yet too).
 - [ ] Empty workspace guide: add a source, add a destination, connect them.
 
 ## M6 · Backup engine

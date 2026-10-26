@@ -31,7 +31,7 @@ class AddToolbar extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           AppButton(
-            label: 'Database',
+            label: app.intl.canvas.addSource,
             type: AppButtonType.ghost,
             height: 34,
             icon: app.assets.icons.nodes.database.build(
@@ -42,7 +42,7 @@ class AddToolbar extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           AppButton(
-            label: 'Destination',
+            label: app.intl.canvas.addDestination,
             type: AppButtonType.ghost,
             height: 34,
             icon: app.assets.icons.nodes.bucket.build(
@@ -86,6 +86,8 @@ class ShortcutsPanel extends StatelessWidget {
       ),
     );
     final hint = TextStyle(fontSize: 12, color: colors.text.subtle);
+    final keys = app.intl.canvas.shortcuts;
+    final cap = app.intl.canvas.keys;
     return Container(
       width: 268,
       padding: const EdgeInsets.fromLTRB(14, 6, 6, 12),
@@ -97,13 +99,13 @@ class ShortcutsPanel extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'SHORTCUTS',
+                  app.intl.canvas.shortcuts.title.toUpperCase(),
                   style: AppText.overline.copyWith(color: colors.brand.primary),
                 ),
               ),
               AppIconButton(
                 size: 28,
-                tooltip: 'Hide shortcuts',
+                tooltip: app.intl.canvas.shortcuts.hide,
                 onPressed: onClose,
                 icon: app.assets.icons.actions.close.build(
                   size: 14,
@@ -116,33 +118,30 @@ class ShortcutsPanel extends StatelessWidget {
             padding: const EdgeInsets.only(right: 8),
             child: Column(
               children: [
-                row('Move canvas', [
-                  const KeyCap('Space'),
-                  Text(' + drag', style: hint),
+                row(keys.moveCanvas, [
+                  KeyCap(cap.space),
+                  Text(keys.drag, style: hint),
                 ]),
-                row('Connect', [Text('drag from a port', style: hint)]),
-                row('Options', [Text('right click', style: hint)]),
-                row('Remove connection', [
-                  Text('click it + ', style: hint),
-                  const KeyCap('Del'),
+                row(keys.connect, [Text(keys.dragFromPort, style: hint)]),
+                row(keys.options, [Text(keys.rightClick, style: hint)]),
+                row(app.intl.canvas.removeConnection, [
+                  Text(keys.clickIt, style: hint),
+                  KeyCap(cap.del),
                 ]),
-                row('Zoom', [
-                  if (ctrlZoom) ...[
-                    const KeyCap('Ctrl'),
-                    Text(' + ', style: hint),
-                  ],
-                  Text('scroll', style: hint),
+                row(keys.zoom, [
+                  if (ctrlZoom) ...[KeyCap(cap.ctrl), Text(' + ', style: hint)],
+                  Text(keys.scroll, style: hint),
                 ]),
-                row('Zoom in / out', [
+                row(keys.zoomInOut, [
                   const KeyCap('+'),
                   const SizedBox(width: 4),
                   const KeyCap('−'),
                 ]),
-                row('Center canvas', [const KeyCap('F')]),
-                row('Reset to 100%', [const KeyCap('0')]),
-                row('Move with keys', [const KeyCap('←↑→↓')]),
-                row('Close config', [const KeyCap('Esc')]),
-                row('Show / hide shortcuts', [const KeyCap('?')]),
+                row(keys.center, [const KeyCap('F')]),
+                row(keys.reset, [const KeyCap('0')]),
+                row(keys.moveWithKeys, [const KeyCap('←↑→↓')]),
+                row(keys.closeConfig, [KeyCap(cap.esc)]),
+                row(keys.toggle, [const KeyCap('?')]),
               ],
             ),
           ),
@@ -197,7 +196,7 @@ class ViewControls extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _square(
-            'Canvas settings',
+            app.intl.canvas.view.settings,
             app.assets.icons.navigation.settings.build(
               size: 16,
               color: colors.text.secondary,
@@ -207,7 +206,7 @@ class ViewControls extends StatelessWidget {
           ),
           divider,
           _square(
-            'Show or hide shortcuts (?)',
+            app.intl.canvas.view.toggleShortcuts,
             app.assets.icons.actions.keyboard.build(
               size: 17,
               color: colors.text.secondary,
@@ -217,9 +216,9 @@ class ViewControls extends StatelessWidget {
           ),
           divider,
           Tooltip(
-            message: 'Center canvas (F)',
+            message: app.intl.canvas.view.centerTooltip,
             child: AppButton(
-              label: 'Center',
+              label: app.intl.canvas.view.center,
               type: AppButtonType.ghost,
               height: 36,
               icon: app.assets.icons.actions.center.build(
@@ -231,7 +230,7 @@ class ViewControls extends StatelessWidget {
           ),
           divider,
           _square(
-            'Zoom out (−)',
+            app.intl.canvas.view.zoomOut,
             Text(
               '−',
               style: TextStyle(fontSize: 16, color: colors.text.secondary),
@@ -241,7 +240,7 @@ class ViewControls extends StatelessWidget {
           ),
           divider,
           Tooltip(
-            message: 'Reset to 100% (0)',
+            message: app.intl.canvas.view.reset,
             child: SizedBox(
               width: 56,
               height: 36,
@@ -262,7 +261,7 @@ class ViewControls extends StatelessWidget {
           ),
           divider,
           _square(
-            'Zoom in (+)',
+            app.intl.canvas.view.zoomIn,
             Text(
               '+',
               style: TextStyle(fontSize: 16, color: colors.text.secondary),
@@ -321,15 +320,15 @@ class CanvasSettingsPopover extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 6, 8, 4),
             child: Text(
-              'CANVAS',
+              app.intl.canvas.view.settingsTitle.toUpperCase(),
               style: AppText.overline.copyWith(color: app.colors.brand.primary),
             ),
           ),
           AppSwitchTile(
-            title: 'Hold Ctrl to zoom',
+            title: app.intl.canvas.view.ctrlZoom,
             subtitle: ctrlZoom
-                ? 'Scroll moves the canvas, Ctrl + scroll zooms'
-                : 'Scroll always zooms',
+                ? app.intl.canvas.view.ctrlZoomOn
+                : app.intl.canvas.view.ctrlZoomOff,
             value: ctrlZoom,
             onChanged: onCtrlZoom,
           ),

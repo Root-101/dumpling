@@ -238,7 +238,7 @@ class SourceNodeView extends StatelessWidget {
           top: size.height / 2 - 9,
           child: NodePort(
             size: 18,
-            tooltip: 'Drag to a destination',
+            tooltip: app.intl.canvas.dragToDestination,
             fill: selected
                 ? colors.brand.primary
                 : used
@@ -285,9 +285,9 @@ class ConfigNodeView extends StatelessWidget {
       RunStatus.running || null => colors.status.pending,
     };
     final lastLabel = switch (last?.status) {
-      RunStatus.success => 'Success',
-      RunStatus.failed => 'Failed',
-      RunStatus.running => 'Running',
+      RunStatus.success => app.intl.canvas.runStatus.success,
+      RunStatus.failed => app.intl.canvas.runStatus.failed,
+      RunStatus.running => app.intl.canvas.runStatus.running,
       null => '',
     };
     final schedule = config.schedule;
@@ -405,7 +405,7 @@ class ConfigNodeView extends StatelessWidget {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            'Last',
+                            app.intl.canvas.last,
                             style: rowStyle.copyWith(color: colors.text.subtle),
                           ),
                           const SizedBox(width: 6),
@@ -446,7 +446,7 @@ class ConfigNodeView extends StatelessWidget {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            'Next',
+                            app.intl.canvas.next,
                             style: rowStyle.copyWith(color: colors.text.subtle),
                           ),
                           const SizedBox(width: 6),
@@ -493,7 +493,7 @@ class ConfigNodeView extends StatelessWidget {
           top: portY - 9,
           child: NodePort(
             size: 18,
-            tooltip: 'Drag to a destination',
+            tooltip: app.intl.canvas.dragToDestination,
             // amber: free port, like an unconnected source
             fill: selected
                 ? colors.brand.primary
@@ -522,7 +522,7 @@ class ConfigNodeView extends StatelessWidget {
                 ),
                 child: AppIconButton(
                   size: 24,
-                  tooltip: 'Delete config',
+                  tooltip: app.intl.canvas.deleteConfig,
                   onPressed: onDelete,
                   icon: app.assets.icons.actions.delete.build(
                     size: 13,
@@ -553,6 +553,7 @@ class DestinationNodeView extends StatelessWidget {
   /// No config writes here
   final bool orphan;
   final NodeHandlers handlers;
+  final VoidCallback onAddFolder;
 
   const DestinationNodeView({
     required this.destination,
@@ -562,6 +563,7 @@ class DestinationNodeView extends StatelessWidget {
     required this.rootUsed,
     required this.orphan,
     required this.handlers,
+    required this.onAddFolder,
     super.key,
   });
 
@@ -666,6 +668,37 @@ class DestinationNodeView extends StatelessWidget {
                       style: AppText.meta,
                     ),
                   ),
+                Listener(
+                  onPointerDown: (_) => handlers.claim(),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 4, 10, 2),
+                    child: DashedBorder(
+                      color: colors.surface.border,
+                      strokeWidth: 1,
+                      radius: 8,
+                      dash: 4,
+                      gap: 3,
+                      child: SizedBox(
+                        height: 30,
+                        width: double.infinity,
+                        child: TextButton(
+                          onPressed: onAddFolder,
+                          style: TextButton.styleFrom(
+                            foregroundColor: colors.text.muted,
+                            textStyle: const TextStyle(
+                              fontFamily: AppText.sans,
+                              fontSize: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: app.dimensions.radius.s,
+                            ),
+                          ),
+                          child: Text(app.intl.canvas.addFolder),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

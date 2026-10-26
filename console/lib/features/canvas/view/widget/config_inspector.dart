@@ -18,15 +18,19 @@ class ConfigInspector extends StatelessWidget {
     final dest = data.destination(c.destinationId);
     final folder = c.folderId == null ? null : FolderPath.show(c.folderId!);
     final base = '${dest?.bucket ?? ''}${folder ?? ''}';
-    final dbName = db?.name ?? 'no source';
+    final t = app.intl.canvas.inspector;
+    final dbName = db?.name ?? t.noSource;
     final schedule = c.schedule;
     final defaults = app.intl.canvas.workspaceDefault;
     final next = c.nextRun;
     // an orphan config (no source or no destination) never runs
-    final missing = [
-      if (db == null) 'a source',
-      if (dest == null) 'a destination',
-    ];
+    final missing = db == null && dest == null
+        ? t.missingBoth
+        : db == null
+        ? t.missingSource
+        : dest == null
+        ? t.missingDestination
+        : null;
     final section = AppText.overline.copyWith(
       fontSize: 12,
       color: colors.brand.primary,
@@ -58,7 +62,7 @@ class ConfigInspector extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'CONFIG',
+                        t.title.toUpperCase(),
                         style: AppText.overline.copyWith(
                           color: colors.brand.primary,
                         ),
@@ -74,7 +78,7 @@ class ConfigInspector extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '$dbName → ${dest == null ? 'no destination' : base}',
+                        '$dbName → ${dest == null ? t.noDestination : base}',
                         style: AppText.mono.copyWith(
                           fontSize: 12,
                           color: colors.text.muted,
@@ -84,7 +88,7 @@ class ConfigInspector extends StatelessWidget {
                   ),
                 ),
                 AppIconButton(
-                  tooltip: 'Close (Esc)',
+                  tooltip: t.close,
                   background: colors.surface.control.withValues(alpha: 0.75),
                   onPressed: () => cubit.select(null),
                   icon: app.assets.icons.actions.close.build(
@@ -99,7 +103,7 @@ class ConfigInspector extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(20),
               children: [
-                Text('01 SCHEDULE', style: section),
+                Text(t.schedule.toUpperCase(), style: section),
                 const SizedBox(height: 12),
                 _FrequencyPicker(
                   value: schedule == null ? null : Frequency.of(schedule),
@@ -109,11 +113,11 @@ class ConfigInspector extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: _Field(label: 'Cron', value: schedule ?? defaults),
+                      child: _Field(label: t.cron, value: schedule ?? defaults),
                     ),
                     const SizedBox(width: 10),
-                    const Expanded(
-                      child: _Field(label: 'Time zone', value: 'UTC'),
+                    Expanded(
+                      child: _Field(label: t.timeZone, value: 'UTC'),
                     ),
                   ],
                 ),
@@ -124,7 +128,7 @@ class ConfigInspector extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            'NEXT RUN',
+                            t.nextRun.toUpperCase(),
                             style: AppText.overline.copyWith(
                               letterSpacing: 0.6,
                               fontWeight: FontWeight.w600,
@@ -151,9 +155,9 @@ class ConfigInspector extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 22),
-                Text('02 OUTPUT', style: section),
+                Text(t.output.toUpperCase(), style: section),
                 const SizedBox(height: 12),
-                const _Label('Object key'),
+                _Label(t.objectKey),
                 const SizedBox(height: 6),
                 TextFormField(
                   // a new config gets a new field with its key
@@ -189,8 +193,10 @@ class ConfigInspector extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   dest == null
-                      ? 'Connect a destination to choose where it goes.'
-                      : 'Relative to ${folder != null ? 'the folder $folder' : 'the root of ${dest.bucket}'}. The extension is added from the format and the compression.',
+                      ? t.connectDestination
+                      : folder != null
+                      ? t.relativeToFolder(folder: folder)
+                      : t.relativeToRoot(bucket: dest.bucket),
                   style: TextStyle(fontSize: 12, color: colors.text.subtle),
                 ),
                 const SizedBox(height: 12),
@@ -198,20 +204,20 @@ class ConfigInspector extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _Field(
-                        label: 'Compression',
+                        label: t.compression,
                         value: c.compression ?? defaults,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 22),
-                Text('03 NEXT RUN WRITES', style: section),
+                Text(t.writes.toUpperCase(), style: section),
                 const SizedBox(height: 10),
                 _Box(
                   children: [
-                    if (missing.isNotEmpty)
+                    if (missing != null)
                       Text(
-                        'Nothing: connect ${missing.join(' and ')}.',
+                        missing,
                         style: TextStyle(
                           fontSize: 12,
                           color: colors.brand.accent,
@@ -254,7 +260,7 @@ class ConfigInspector extends StatelessWidget {
             child: Row(
               children: [
                 AppButton(
-                  label: 'Delete config',
+                  label: app.intl.canvas.deleteConfig,
                   type: AppButtonType.danger,
                   onPressed: () => cubit.deleteConfig(c.id),
                 ),
@@ -341,7 +347,7 @@ class _Label extends StatelessWidget {
   );
 }
 
-/// Read only value with its label (the PoC doesn't edit it)
+/// Read only value with its label
 class _Field extends StatelessWidget {
   final String label;
   final String value;

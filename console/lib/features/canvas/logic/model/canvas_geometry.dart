@@ -15,6 +15,7 @@ class CanvasGeometry {
   static const double folderRow = 40;
   static const double rootNote = 30;
   static const double destinationPadding = 6;
+  static const double addFolderArea = 36;
 
   /// Port y inside a config (center of its in and out ports)
   static const double configPortY = 76;
@@ -23,7 +24,8 @@ class CanvasGeometry {
       2 + // border
       destinationHeader +
       destinationPadding * 2 +
-      (d.folders.isEmpty ? rootNote : d.folders.length * folderRow);
+      (d.folders.isEmpty ? rootNote : d.folders.length * folderRow) +
+      addFolderArea;
 
   static Offset sourceOut(SourceNode s) =>
       s.pos + Offset(sourceSize.width, sourceSize.height / 2);

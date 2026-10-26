@@ -937,6 +937,81 @@ class AppMessages$canvas$en {
   /// en: 'Only complete flows (source → config → destination) are saved. The configs in amber are discarded on save; sources and destinations stay.'
   String get orphansHelp =>
       'Only complete flows (source → config → destination) are saved. The configs in amber are discarded on save; sources and destinations stay.';
+
+  /// en: 'Canvas. Hold Space and drag to move it; right click for options; arrow keys pan; Ctrl and scroll zooms; F centers; click a connection and press Delete to remove it; Escape closes the config'
+  String get semantics =>
+      'Canvas. Hold Space and drag to move it; right click for options; arrow keys pan; Ctrl and scroll zooms; F centers; click a connection and press Delete to remove it; Escape closes the config';
+
+  /// en: 'Source'
+  String get addSource => 'Source';
+
+  /// en: 'Destination'
+  String get addDestination => 'Destination';
+
+  /// en: 'Delete config'
+  String get deleteConfig => 'Delete config';
+
+  /// en: 'Remove connection'
+  String get removeConnection => 'Remove connection';
+
+  /// en: 'Remove connection (Del)'
+  String get removeConnectionKey => 'Remove connection (Del)';
+
+  /// en: 'Config is created here'
+  String get configHere => 'Config is created here';
+
+  /// en: 'Release to create the config'
+  String get releaseToCreate => 'Release to create the config';
+
+  /// en: 'Drag to a destination'
+  String get dragToDestination => 'Drag to a destination';
+
+  /// en: 'Last'
+  String get last => 'Last';
+
+  /// en: 'Next'
+  String get next => 'Next';
+
+  late final AppMessages$canvas$runStatus$en runStatus =
+      AppMessages$canvas$runStatus$en._(_root);
+  late final AppMessages$canvas$frequency$en frequency =
+      AppMessages$canvas$frequency$en._(_root);
+
+  /// en: '+ Add folder'
+  String get addFolder => '+ Add folder';
+
+  /// en: 'Add a folder to {name: String}'
+  String addFolderTitle({required String name}) => 'Add a folder to ${name}';
+
+  /// en: 'Each folder is a connection point. It is created in the bucket when the canvas is saved.'
+  String get addFolderDescription =>
+      'Each folder is a connection point. It is created in the bucket when the canvas is saved.';
+
+  /// en: 'With the first folder the bucket root stops being a connection point: the configs that write to it are disconnected.'
+  String get addFolderRoot =>
+      'With the first folder the bucket root stops being a connection point: the configs that write to it are disconnected.';
+
+  late final AppMessages$canvas$keys$en keys = AppMessages$canvas$keys$en._(
+    _root,
+  );
+  late final AppMessages$canvas$shortcuts$en shortcuts =
+      AppMessages$canvas$shortcuts$en._(_root);
+  late final AppMessages$canvas$view$en view = AppMessages$canvas$view$en._(
+    _root,
+  );
+  late final AppMessages$canvas$inspector$en inspector =
+      AppMessages$canvas$inspector$en._(_root);
+  late final AppMessages$canvas$columns$en columns =
+      AppMessages$canvas$columns$en._(_root);
+  late final AppMessages$canvas$hints$en hints = AppMessages$canvas$hints$en._(
+    _root,
+  );
+
+  /// en: 'Folder'
+  String get folder => 'Folder';
+
+  late final AppMessages$canvas$testRun$en testRun =
+      AppMessages$canvas$testRun$en._(_root);
 }
 
 // Path: destinations.typeSub
@@ -961,6 +1036,293 @@ class AppMessages$destinations$typeSub$en {
 
   /// en: 'Any SSH server'
   String get sftp => 'Any SSH server';
+}
+
+// Path: canvas.runStatus
+class AppMessages$canvas$runStatus$en {
+  AppMessages$canvas$runStatus$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Success'
+  String get success => 'Success';
+
+  /// en: 'Failed'
+  String get failed => 'Failed';
+
+  /// en: 'Running'
+  String get running => 'Running';
+}
+
+// Path: canvas.frequency
+class AppMessages$canvas$frequency$en {
+  AppMessages$canvas$frequency$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Hourly'
+  String get hourly => 'Hourly';
+
+  /// en: 'Daily'
+  String get daily => 'Daily';
+
+  /// en: 'Weekly'
+  String get weekly => 'Weekly';
+
+  /// en: 'Cron'
+  String get cron => 'Cron';
+}
+
+// Path: canvas.keys
+class AppMessages$canvas$keys$en {
+  AppMessages$canvas$keys$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Space'
+  String get space => 'Space';
+
+  /// en: 'Del'
+  String get del => 'Del';
+
+  /// en: 'Ctrl'
+  String get ctrl => 'Ctrl';
+
+  /// en: 'Esc'
+  String get esc => 'Esc';
+}
+
+// Path: canvas.shortcuts
+class AppMessages$canvas$shortcuts$en {
+  AppMessages$canvas$shortcuts$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Shortcuts'
+  String get title => 'Shortcuts';
+
+  /// en: 'Hide shortcuts'
+  String get hide => 'Hide shortcuts';
+
+  /// en: 'Move canvas'
+  String get moveCanvas => 'Move canvas';
+
+  /// en: ' + drag'
+  String get drag => ' + drag';
+
+  /// en: 'Connect'
+  String get connect => 'Connect';
+
+  /// en: 'drag from a port'
+  String get dragFromPort => 'drag from a port';
+
+  /// en: 'Options'
+  String get options => 'Options';
+
+  /// en: 'right click'
+  String get rightClick => 'right click';
+
+  /// en: 'click it + '
+  String get clickIt => 'click it + ';
+
+  /// en: 'Zoom'
+  String get zoom => 'Zoom';
+
+  /// en: 'scroll'
+  String get scroll => 'scroll';
+
+  /// en: 'Zoom in / out'
+  String get zoomInOut => 'Zoom in / out';
+
+  /// en: 'Center canvas'
+  String get center => 'Center canvas';
+
+  /// en: 'Reset to 100%'
+  String get reset => 'Reset to 100%';
+
+  /// en: 'Move with keys'
+  String get moveWithKeys => 'Move with keys';
+
+  /// en: 'Close config'
+  String get closeConfig => 'Close config';
+
+  /// en: 'Show / hide shortcuts'
+  String get toggle => 'Show / hide shortcuts';
+}
+
+// Path: canvas.view
+class AppMessages$canvas$view$en {
+  AppMessages$canvas$view$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Canvas settings'
+  String get settings => 'Canvas settings';
+
+  /// en: 'Show or hide shortcuts (?)'
+  String get toggleShortcuts => 'Show or hide shortcuts (?)';
+
+  /// en: 'Center'
+  String get center => 'Center';
+
+  /// en: 'Center canvas (F)'
+  String get centerTooltip => 'Center canvas (F)';
+
+  /// en: 'Zoom out (−)'
+  String get zoomOut => 'Zoom out (−)';
+
+  /// en: 'Reset to 100% (0)'
+  String get reset => 'Reset to 100% (0)';
+
+  /// en: 'Zoom in (+)'
+  String get zoomIn => 'Zoom in (+)';
+
+  /// en: 'Canvas'
+  String get settingsTitle => 'Canvas';
+
+  /// en: 'Hold Ctrl to zoom'
+  String get ctrlZoom => 'Hold Ctrl to zoom';
+
+  /// en: 'Scroll moves the canvas, Ctrl + scroll zooms'
+  String get ctrlZoomOn => 'Scroll moves the canvas, Ctrl + scroll zooms';
+
+  /// en: 'Scroll always zooms'
+  String get ctrlZoomOff => 'Scroll always zooms';
+}
+
+// Path: canvas.inspector
+class AppMessages$canvas$inspector$en {
+  AppMessages$canvas$inspector$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Config'
+  String get title => 'Config';
+
+  /// en: 'Close (Esc)'
+  String get close => 'Close (Esc)';
+
+  /// en: '01 Schedule'
+  String get schedule => '01 Schedule';
+
+  /// en: 'Cron'
+  String get cron => 'Cron';
+
+  /// en: 'Time zone'
+  String get timeZone => 'Time zone';
+
+  /// en: 'Next run'
+  String get nextRun => 'Next run';
+
+  /// en: '02 Output'
+  String get output => '02 Output';
+
+  /// en: 'Object key'
+  String get objectKey => 'Object key';
+
+  /// en: 'Connect a destination to choose where it goes.'
+  String get connectDestination =>
+      'Connect a destination to choose where it goes.';
+
+  /// en: 'Relative to the folder {folder: String}. The extension is added from the dump format and the compression.'
+  String relativeToFolder({required String folder}) =>
+      'Relative to the folder ${folder}. The extension is added from the dump format and the compression.';
+
+  /// en: 'Relative to the root of {bucket: String}. The extension is added from the dump format and the compression.'
+  String relativeToRoot({required String bucket}) =>
+      'Relative to the root of ${bucket}. The extension is added from the dump format and the compression.';
+
+  /// en: 'Compression'
+  String get compression => 'Compression';
+
+  /// en: '03 Next run writes'
+  String get writes => '03 Next run writes';
+
+  /// en: 'Nothing: connect a source.'
+  String get missingSource => 'Nothing: connect a source.';
+
+  /// en: 'Nothing: connect a destination.'
+  String get missingDestination => 'Nothing: connect a destination.';
+
+  /// en: 'Nothing: connect a source and a destination.'
+  String get missingBoth => 'Nothing: connect a source and a destination.';
+
+  /// en: 'no source'
+  String get noSource => 'no source';
+
+  /// en: 'no destination'
+  String get noDestination => 'no destination';
+}
+
+// Path: canvas.columns
+class AppMessages$canvas$columns$en {
+  AppMessages$canvas$columns$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Sources'
+  String get sources => 'Sources';
+
+  /// en: 'Config · one per connection'
+  String get configs => 'Config · one per connection';
+
+  /// en: 'Destinations'
+  String get destinations => 'Destinations';
+}
+
+// Path: canvas.hints
+class AppMessages$canvas$hints$en {
+  AppMessages$canvas$hints$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Drag from a source port'
+  String get dragFromSource => 'Drag from a source port';
+
+  /// en: 'Drop on a folder or bucket'
+  String get dropOnDestination => 'Drop on a folder or bucket';
+}
+
+// Path: canvas.testRun
+class AppMessages$canvas$testRun$en {
+  AppMessages$canvas$testRun$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Test run'
+  String get button => 'Test run';
+
+  /// en: 'Checks that every complete flow could run, without backing anything up: each source connects and pg_dump can dump it, each destination takes a write in its folders.'
+  String get help =>
+      'Checks that every complete flow could run, without backing anything up: each source connects and pg_dump can dump it, each destination takes a write in its folders.';
+
+  /// en: 'Everything works: {n: int} checks passed'
+  String ok({required int n}) => 'Everything works: ${n} checks passed';
+
+  /// en: 'Some checks failed: {list: String}'
+  String failed({required String list}) => 'Some checks failed: ${list}';
+
+  /// en: 'Nothing to test: connect a source to a destination first.'
+  String get nothing =>
+      'Nothing to test: connect a source to a destination first.';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -1303,6 +1665,104 @@ extension on AppMessages {
               other: '${n} incomplete configs',
             ),
       'canvas.orphansHelp' => 'Only complete flows (source → config → destination) are saved. The configs in amber are discarded on save; sources and destinations stay.',
+      'canvas.semantics' => 'Canvas. Hold Space and drag to move it; right click for options; arrow keys pan; Ctrl and scroll zooms; F centers; click a connection and press Delete to remove it; Escape closes the config',
+      'canvas.addSource' => 'Source',
+      'canvas.addDestination' => 'Destination',
+      'canvas.deleteConfig' => 'Delete config',
+      'canvas.removeConnection' => 'Remove connection',
+      'canvas.removeConnectionKey' => 'Remove connection (Del)',
+      'canvas.configHere' => 'Config is created here',
+      'canvas.releaseToCreate' => 'Release to create the config',
+      'canvas.dragToDestination' => 'Drag to a destination',
+      'canvas.last' => 'Last',
+      'canvas.next' => 'Next',
+      'canvas.runStatus.success' => 'Success',
+      'canvas.runStatus.failed' => 'Failed',
+      'canvas.runStatus.running' => 'Running',
+      'canvas.frequency.hourly' => 'Hourly',
+      'canvas.frequency.daily' => 'Daily',
+      'canvas.frequency.weekly' => 'Weekly',
+      'canvas.frequency.cron' => 'Cron',
+      'canvas.addFolder' => '+ Add folder',
+      'canvas.addFolderTitle' => ({
+        required String name,
+      }) => 'Add a folder to ${name}',
+      'canvas.addFolderDescription' => 'Each folder is a connection point. It is created in the bucket when the canvas is saved.',
+      'canvas.addFolderRoot' => 'With the first folder the bucket root stops being a connection point: the configs that write to it are disconnected.',
+      'canvas.keys.space' => 'Space',
+      'canvas.keys.del' => 'Del',
+      'canvas.keys.ctrl' => 'Ctrl',
+      'canvas.keys.esc' => 'Esc',
+      'canvas.shortcuts.title' => 'Shortcuts',
+      'canvas.shortcuts.hide' => 'Hide shortcuts',
+      'canvas.shortcuts.moveCanvas' => 'Move canvas',
+      'canvas.shortcuts.drag' => ' + drag',
+      'canvas.shortcuts.connect' => 'Connect',
+      'canvas.shortcuts.dragFromPort' => 'drag from a port',
+      'canvas.shortcuts.options' => 'Options',
+      'canvas.shortcuts.rightClick' => 'right click',
+      'canvas.shortcuts.clickIt' => 'click it + ',
+      'canvas.shortcuts.zoom' => 'Zoom',
+      'canvas.shortcuts.scroll' => 'scroll',
+      'canvas.shortcuts.zoomInOut' => 'Zoom in / out',
+      'canvas.shortcuts.center' => 'Center canvas',
+      'canvas.shortcuts.reset' => 'Reset to 100%',
+      'canvas.shortcuts.moveWithKeys' => 'Move with keys',
+      'canvas.shortcuts.closeConfig' => 'Close config',
+      'canvas.shortcuts.toggle' => 'Show / hide shortcuts',
+      'canvas.view.settings' => 'Canvas settings',
+      'canvas.view.toggleShortcuts' => 'Show or hide shortcuts (?)',
+      'canvas.view.center' => 'Center',
+      'canvas.view.centerTooltip' => 'Center canvas (F)',
+      'canvas.view.zoomOut' => 'Zoom out (−)',
+      'canvas.view.reset' => 'Reset to 100% (0)',
+      'canvas.view.zoomIn' => 'Zoom in (+)',
+      'canvas.view.settingsTitle' => 'Canvas',
+      'canvas.view.ctrlZoom' => 'Hold Ctrl to zoom',
+      'canvas.view.ctrlZoomOn' =>
+        'Scroll moves the canvas, Ctrl + scroll zooms',
+      'canvas.view.ctrlZoomOff' => 'Scroll always zooms',
+      'canvas.inspector.title' => 'Config',
+      'canvas.inspector.close' => 'Close (Esc)',
+      'canvas.inspector.schedule' => '01 Schedule',
+      'canvas.inspector.cron' => 'Cron',
+      'canvas.inspector.timeZone' => 'Time zone',
+      'canvas.inspector.nextRun' => 'Next run',
+      'canvas.inspector.output' => '02 Output',
+      'canvas.inspector.objectKey' => 'Object key',
+      'canvas.inspector.connectDestination' =>
+        'Connect a destination to choose where it goes.',
+      'canvas.inspector.relativeToFolder' => ({
+        required String folder,
+      }) => 'Relative to the folder ${folder}. The extension is added from the dump format and the compression.',
+      'canvas.inspector.relativeToRoot' => ({
+        required String bucket,
+      }) => 'Relative to the root of ${bucket}. The extension is added from the dump format and the compression.',
+      'canvas.inspector.compression' => 'Compression',
+      'canvas.inspector.writes' => '03 Next run writes',
+      'canvas.inspector.missingSource' => 'Nothing: connect a source.',
+      'canvas.inspector.missingDestination' =>
+        'Nothing: connect a destination.',
+      'canvas.inspector.missingBoth' =>
+        'Nothing: connect a source and a destination.',
+      'canvas.inspector.noSource' => 'no source',
+      'canvas.inspector.noDestination' => 'no destination',
+      'canvas.columns.sources' => 'Sources',
+      'canvas.columns.configs' => 'Config · one per connection',
+      'canvas.columns.destinations' => 'Destinations',
+      'canvas.hints.dragFromSource' => 'Drag from a source port',
+      'canvas.hints.dropOnDestination' => 'Drop on a folder or bucket',
+      'canvas.folder' => 'Folder',
+      'canvas.testRun.button' => 'Test run',
+      'canvas.testRun.help' => 'Checks that every complete flow could run, without backing anything up: each source connects and pg_dump can dump it, each destination takes a write in its folders.',
+      'canvas.testRun.ok' => ({
+        required int n,
+      }) => 'Everything works: ${n} checks passed',
+      'canvas.testRun.failed' => ({
+        required String list,
+      }) => 'Some checks failed: ${list}',
+      'canvas.testRun.nothing' =>
+        'Nothing to test: connect a source to a destination first.',
       _ => null,
     };
   }

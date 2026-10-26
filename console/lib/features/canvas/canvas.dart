@@ -6,6 +6,7 @@ export 'logic/cubit/canvas_state.dart';
 export 'logic/model/canvas_geometry.dart';
 export 'logic/model/canvas_models.dart';
 export 'view/canvas_screen.dart';
+export 'view/widget/add_folder_dialog.dart';
 export 'view/widget/canvas_editor.dart';
 export 'view/widget/canvas_overlays.dart';
 export 'view/widget/config_inspector.dart';

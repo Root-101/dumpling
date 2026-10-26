@@ -8,7 +8,12 @@ class CanvasInit {
     CanvasRepo repo = CanvasRepo(client);
     app.di.put(repo);
 
-    CanvasCubit cubit = CanvasCubit(repo, app.di.find());
+    CanvasCubit cubit = CanvasCubit(
+      repo,
+      app.di.find(),
+      app.di.find(),
+      app.di.find(),
+    );
     app.di.put(cubit);
   }
 }

@@ -144,6 +144,14 @@ class CanvasProcessingOKState extends CanvasState {
   const CanvasProcessingOKState({required super.data});
 }
 
+/// A test run is over: [checks] says how each source and destination did;
+/// empty when there was no complete flow to test
+class CanvasTestedState extends CanvasState {
+  final List<CanvasCheck> checks;
+
+  const CanvasTestedState(this.checks, {required super.data});
+}
+
 class CanvasProcessingErrorState extends CanvasState {
   final String message;
 

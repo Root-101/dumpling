@@ -724,6 +724,72 @@ class AppMessages$canvas$es implements AppMessages$canvas$en {
   @override
   String get orphansHelp =>
       'Solo se guardan los flujos completos (origen → config → destino). Las configs en ámbar se descartan al guardar; los orígenes y destinos se quedan.';
+  @override
+  String get semantics =>
+      'Canvas. Mantén Espacio y arrastra para moverlo; clic derecho para opciones; las flechas lo mueven; Ctrl y la rueda hacen zoom; F lo centra; haz clic en una conexión y pulsa Supr para quitarla; Escape cierra la config';
+  @override
+  String get addSource => 'Origen';
+  @override
+  String get addDestination => 'Destino';
+  @override
+  String get deleteConfig => 'Eliminar config';
+  @override
+  String get removeConnection => 'Quitar conexión';
+  @override
+  String get removeConnectionKey => 'Quitar conexión (Supr)';
+  @override
+  String get configHere => 'La config se crea aquí';
+  @override
+  String get releaseToCreate => 'Suelta para crear la config';
+  @override
+  String get dragToDestination => 'Arrastra hasta un destino';
+  @override
+  String get last => 'Última';
+  @override
+  String get next => 'Próxima';
+  @override
+  late final AppMessages$canvas$runStatus$es runStatus =
+      AppMessages$canvas$runStatus$es._(_root);
+  @override
+  late final AppMessages$canvas$frequency$es frequency =
+      AppMessages$canvas$frequency$es._(_root);
+  @override
+  String get addFolder => '+ Agregar carpeta';
+  @override
+  String addFolderTitle({required String name}) =>
+      'Agregar una carpeta a ${name}';
+  @override
+  String get addFolderDescription =>
+      'Cada carpeta es un punto de conexión. Se crea en el bucket al guardar el canvas.';
+  @override
+  String get addFolderRoot =>
+      'Con la primera carpeta, la raíz del bucket deja de ser un punto de conexión: las configs que escriben ahí se desconectan.';
+  @override
+  late final AppMessages$canvas$keys$es keys = AppMessages$canvas$keys$es._(
+    _root,
+  );
+  @override
+  late final AppMessages$canvas$shortcuts$es shortcuts =
+      AppMessages$canvas$shortcuts$es._(_root);
+  @override
+  late final AppMessages$canvas$view$es view = AppMessages$canvas$view$es._(
+    _root,
+  );
+  @override
+  late final AppMessages$canvas$inspector$es inspector =
+      AppMessages$canvas$inspector$es._(_root);
+  @override
+  late final AppMessages$canvas$columns$es columns =
+      AppMessages$canvas$columns$es._(_root);
+  @override
+  late final AppMessages$canvas$hints$es hints = AppMessages$canvas$hints$es._(
+    _root,
+  );
+  @override
+  String get folder => 'Carpeta';
+  @override
+  late final AppMessages$canvas$testRun$es testRun =
+      AppMessages$canvas$testRun$es._(_root);
 }
 
 // Path: destinations.typeSub
@@ -744,6 +810,231 @@ class AppMessages$destinations$typeSub$es
   String get azure => 'Contenedor de almacenamiento';
   @override
   String get sftp => 'Cualquier servidor SSH';
+}
+
+// Path: canvas.runStatus
+class AppMessages$canvas$runStatus$es
+    implements AppMessages$canvas$runStatus$en {
+  AppMessages$canvas$runStatus$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get success => 'Correcta';
+  @override
+  String get failed => 'Fallida';
+  @override
+  String get running => 'En curso';
+}
+
+// Path: canvas.frequency
+class AppMessages$canvas$frequency$es
+    implements AppMessages$canvas$frequency$en {
+  AppMessages$canvas$frequency$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get hourly => 'Cada hora';
+  @override
+  String get daily => 'Diaria';
+  @override
+  String get weekly => 'Semanal';
+  @override
+  String get cron => 'Cron';
+}
+
+// Path: canvas.keys
+class AppMessages$canvas$keys$es implements AppMessages$canvas$keys$en {
+  AppMessages$canvas$keys$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get space => 'Espacio';
+  @override
+  String get del => 'Supr';
+  @override
+  String get ctrl => 'Ctrl';
+  @override
+  String get esc => 'Esc';
+}
+
+// Path: canvas.shortcuts
+class AppMessages$canvas$shortcuts$es
+    implements AppMessages$canvas$shortcuts$en {
+  AppMessages$canvas$shortcuts$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get title => 'Atajos';
+  @override
+  String get hide => 'Ocultar atajos';
+  @override
+  String get moveCanvas => 'Mover el canvas';
+  @override
+  String get drag => ' + arrastrar';
+  @override
+  String get connect => 'Conectar';
+  @override
+  String get dragFromPort => 'arrastra desde un puerto';
+  @override
+  String get options => 'Opciones';
+  @override
+  String get rightClick => 'clic derecho';
+  @override
+  String get clickIt => 'clic en ella + ';
+  @override
+  String get zoom => 'Zoom';
+  @override
+  String get scroll => 'rueda';
+  @override
+  String get zoomInOut => 'Acercar / alejar';
+  @override
+  String get center => 'Centrar el canvas';
+  @override
+  String get reset => 'Volver a 100%';
+  @override
+  String get moveWithKeys => 'Mover con teclas';
+  @override
+  String get closeConfig => 'Cerrar la config';
+  @override
+  String get toggle => 'Mostrar / ocultar atajos';
+}
+
+// Path: canvas.view
+class AppMessages$canvas$view$es implements AppMessages$canvas$view$en {
+  AppMessages$canvas$view$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get settings => 'Ajustes del canvas';
+  @override
+  String get toggleShortcuts => 'Mostrar u ocultar atajos (?)';
+  @override
+  String get center => 'Centrar';
+  @override
+  String get centerTooltip => 'Centrar el canvas (F)';
+  @override
+  String get zoomOut => 'Alejar (−)';
+  @override
+  String get reset => 'Volver a 100% (0)';
+  @override
+  String get zoomIn => 'Acercar (+)';
+  @override
+  String get settingsTitle => 'Canvas';
+  @override
+  String get ctrlZoom => 'Mantén Ctrl para hacer zoom';
+  @override
+  String get ctrlZoomOn => 'La rueda mueve el canvas, Ctrl + rueda hace zoom';
+  @override
+  String get ctrlZoomOff => 'La rueda siempre hace zoom';
+}
+
+// Path: canvas.inspector
+class AppMessages$canvas$inspector$es
+    implements AppMessages$canvas$inspector$en {
+  AppMessages$canvas$inspector$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get title => 'Config';
+  @override
+  String get close => 'Cerrar (Esc)';
+  @override
+  String get schedule => '01 Programación';
+  @override
+  String get cron => 'Cron';
+  @override
+  String get timeZone => 'Zona horaria';
+  @override
+  String get nextRun => 'Próxima ejecución';
+  @override
+  String get output => '02 Salida';
+  @override
+  String get objectKey => 'Object key';
+  @override
+  String get connectDestination =>
+      'Conecta un destino para elegir dónde se guarda.';
+  @override
+  String relativeToFolder({required String folder}) =>
+      'Relativa a la carpeta ${folder}. La extensión se agrega según el formato del dump y la compresión.';
+  @override
+  String relativeToRoot({required String bucket}) =>
+      'Relativa a la raíz de ${bucket}. La extensión se agrega según el formato del dump y la compresión.';
+  @override
+  String get compression => 'Compresión';
+  @override
+  String get writes => '03 La próxima ejecución escribe';
+  @override
+  String get missingSource => 'Nada: conecta un origen.';
+  @override
+  String get missingDestination => 'Nada: conecta un destino.';
+  @override
+  String get missingBoth => 'Nada: conecta un origen y un destino.';
+  @override
+  String get noSource => 'sin origen';
+  @override
+  String get noDestination => 'sin destino';
+}
+
+// Path: canvas.columns
+class AppMessages$canvas$columns$es implements AppMessages$canvas$columns$en {
+  AppMessages$canvas$columns$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get sources => 'Orígenes';
+  @override
+  String get configs => 'Config · una por conexión';
+  @override
+  String get destinations => 'Destinos';
+}
+
+// Path: canvas.hints
+class AppMessages$canvas$hints$es implements AppMessages$canvas$hints$en {
+  AppMessages$canvas$hints$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get dragFromSource => 'Arrastra desde el puerto de un origen';
+  @override
+  String get dropOnDestination => 'Suelta en una carpeta o bucket';
+}
+
+// Path: canvas.testRun
+class AppMessages$canvas$testRun$es implements AppMessages$canvas$testRun$en {
+  AppMessages$canvas$testRun$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get button => 'Probar';
+  @override
+  String get help =>
+      'Comprueba que cada flujo completo podría ejecutarse, sin hacer backups: cada origen conecta y pg_dump puede respaldarlo, cada destino acepta escrituras en sus carpetas.';
+  @override
+  String ok({required int n}) => 'Todo funciona: ${n} comprobaciones correctas';
+  @override
+  String failed({required String list}) =>
+      'Fallaron algunas comprobaciones: ${list}';
+  @override
+  String get nothing =>
+      'Nada que probar: primero conecta un origen a un destino.';
 }
 
 /// The flat map containing all translations for locale <es>.
@@ -1095,6 +1386,102 @@ extension on AppMessagesEs {
               other: '${n} configs incompletas',
             ),
       'canvas.orphansHelp' => 'Solo se guardan los flujos completos (origen → config → destino). Las configs en ámbar se descartan al guardar; los orígenes y destinos se quedan.',
+      'canvas.semantics' => 'Canvas. Mantén Espacio y arrastra para moverlo; clic derecho para opciones; las flechas lo mueven; Ctrl y la rueda hacen zoom; F lo centra; haz clic en una conexión y pulsa Supr para quitarla; Escape cierra la config',
+      'canvas.addSource' => 'Origen',
+      'canvas.addDestination' => 'Destino',
+      'canvas.deleteConfig' => 'Eliminar config',
+      'canvas.removeConnection' => 'Quitar conexión',
+      'canvas.removeConnectionKey' => 'Quitar conexión (Supr)',
+      'canvas.configHere' => 'La config se crea aquí',
+      'canvas.releaseToCreate' => 'Suelta para crear la config',
+      'canvas.dragToDestination' => 'Arrastra hasta un destino',
+      'canvas.last' => 'Última',
+      'canvas.next' => 'Próxima',
+      'canvas.runStatus.success' => 'Correcta',
+      'canvas.runStatus.failed' => 'Fallida',
+      'canvas.runStatus.running' => 'En curso',
+      'canvas.frequency.hourly' => 'Cada hora',
+      'canvas.frequency.daily' => 'Diaria',
+      'canvas.frequency.weekly' => 'Semanal',
+      'canvas.frequency.cron' => 'Cron',
+      'canvas.addFolder' => '+ Agregar carpeta',
+      'canvas.addFolderTitle' => ({
+        required String name,
+      }) => 'Agregar una carpeta a ${name}',
+      'canvas.addFolderDescription' => 'Cada carpeta es un punto de conexión. Se crea en el bucket al guardar el canvas.',
+      'canvas.addFolderRoot' => 'Con la primera carpeta, la raíz del bucket deja de ser un punto de conexión: las configs que escriben ahí se desconectan.',
+      'canvas.keys.space' => 'Espacio',
+      'canvas.keys.del' => 'Supr',
+      'canvas.keys.ctrl' => 'Ctrl',
+      'canvas.keys.esc' => 'Esc',
+      'canvas.shortcuts.title' => 'Atajos',
+      'canvas.shortcuts.hide' => 'Ocultar atajos',
+      'canvas.shortcuts.moveCanvas' => 'Mover el canvas',
+      'canvas.shortcuts.drag' => ' + arrastrar',
+      'canvas.shortcuts.connect' => 'Conectar',
+      'canvas.shortcuts.dragFromPort' => 'arrastra desde un puerto',
+      'canvas.shortcuts.options' => 'Opciones',
+      'canvas.shortcuts.rightClick' => 'clic derecho',
+      'canvas.shortcuts.clickIt' => 'clic en ella + ',
+      'canvas.shortcuts.zoom' => 'Zoom',
+      'canvas.shortcuts.scroll' => 'rueda',
+      'canvas.shortcuts.zoomInOut' => 'Acercar / alejar',
+      'canvas.shortcuts.center' => 'Centrar el canvas',
+      'canvas.shortcuts.reset' => 'Volver a 100%',
+      'canvas.shortcuts.moveWithKeys' => 'Mover con teclas',
+      'canvas.shortcuts.closeConfig' => 'Cerrar la config',
+      'canvas.shortcuts.toggle' => 'Mostrar / ocultar atajos',
+      'canvas.view.settings' => 'Ajustes del canvas',
+      'canvas.view.toggleShortcuts' => 'Mostrar u ocultar atajos (?)',
+      'canvas.view.center' => 'Centrar',
+      'canvas.view.centerTooltip' => 'Centrar el canvas (F)',
+      'canvas.view.zoomOut' => 'Alejar (−)',
+      'canvas.view.reset' => 'Volver a 100% (0)',
+      'canvas.view.zoomIn' => 'Acercar (+)',
+      'canvas.view.settingsTitle' => 'Canvas',
+      'canvas.view.ctrlZoom' => 'Mantén Ctrl para hacer zoom',
+      'canvas.view.ctrlZoomOn' =>
+        'La rueda mueve el canvas, Ctrl + rueda hace zoom',
+      'canvas.view.ctrlZoomOff' => 'La rueda siempre hace zoom',
+      'canvas.inspector.title' => 'Config',
+      'canvas.inspector.close' => 'Cerrar (Esc)',
+      'canvas.inspector.schedule' => '01 Programación',
+      'canvas.inspector.cron' => 'Cron',
+      'canvas.inspector.timeZone' => 'Zona horaria',
+      'canvas.inspector.nextRun' => 'Próxima ejecución',
+      'canvas.inspector.output' => '02 Salida',
+      'canvas.inspector.objectKey' => 'Object key',
+      'canvas.inspector.connectDestination' =>
+        'Conecta un destino para elegir dónde se guarda.',
+      'canvas.inspector.relativeToFolder' => ({
+        required String folder,
+      }) => 'Relativa a la carpeta ${folder}. La extensión se agrega según el formato del dump y la compresión.',
+      'canvas.inspector.relativeToRoot' => ({
+        required String bucket,
+      }) => 'Relativa a la raíz de ${bucket}. La extensión se agrega según el formato del dump y la compresión.',
+      'canvas.inspector.compression' => 'Compresión',
+      'canvas.inspector.writes' => '03 La próxima ejecución escribe',
+      'canvas.inspector.missingSource' => 'Nada: conecta un origen.',
+      'canvas.inspector.missingDestination' => 'Nada: conecta un destino.',
+      'canvas.inspector.missingBoth' => 'Nada: conecta un origen y un destino.',
+      'canvas.inspector.noSource' => 'sin origen',
+      'canvas.inspector.noDestination' => 'sin destino',
+      'canvas.columns.sources' => 'Orígenes',
+      'canvas.columns.configs' => 'Config · una por conexión',
+      'canvas.columns.destinations' => 'Destinos',
+      'canvas.hints.dragFromSource' => 'Arrastra desde el puerto de un origen',
+      'canvas.hints.dropOnDestination' => 'Suelta en una carpeta o bucket',
+      'canvas.folder' => 'Carpeta',
+      'canvas.testRun.button' => 'Probar',
+      'canvas.testRun.help' => 'Comprueba que cada flujo completo podría ejecutarse, sin hacer backups: cada origen conecta y pg_dump puede respaldarlo, cada destino acepta escrituras en sus carpetas.',
+      'canvas.testRun.ok' => ({
+        required int n,
+      }) => 'Todo funciona: ${n} comprobaciones correctas',
+      'canvas.testRun.failed' => ({
+        required String list,
+      }) => 'Fallaron algunas comprobaciones: ${list}',
+      'canvas.testRun.nothing' =>
+        'Nada que probar: primero conecta un origen a un destino.',
       _ => null,
     };
   }

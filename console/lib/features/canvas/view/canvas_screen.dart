@@ -54,6 +54,30 @@ class _CanvasScreenState extends State<CanvasScreen> {
         context: app.context,
       );
     }
+    if (state is CanvasTestedState) {
+      final failed = state.checks.where((c) => !c.ok);
+      if (state.checks.isEmpty) {
+        app.snack.showError(
+          message: app.intl.canvas.testRun.nothing,
+          context: app.context,
+        );
+      } else if (failed.isEmpty) {
+        app.snack.showSuccess(
+          message: app.intl.canvas.testRun.ok(n: state.checks.length),
+          context: app.context,
+        );
+      } else {
+        app.snack.showError(
+          message: app.intl.canvas.testRun.failed(
+            list: [
+              for (final c in failed)
+                '${c.name}: ${c.error ?? ConnectionStatusLabel.labelOf(c.check)}',
+            ].join(' · '),
+          ),
+          context: app.context,
+        );
+      }
+    }
     if (state is CanvasProcessingErrorState) {
       app.snack.showError(message: state.message, context: app.context);
     }
@@ -72,6 +96,18 @@ class _CanvasScreenState extends State<CanvasScreen> {
             title: app.intl.nav.canvas,
             description: app.intl.canvas.description(workspace: workspaceName),
             actions: [
+              BlocBuilder<CanvasCubit, CanvasState>(
+                builder: (context, state) => Tooltip(
+                  message: app.intl.canvas.testRun.help,
+                  child: PrimaryButton.secondary(
+                    onPressed: state.data.loaded ? cubit.testRun : null,
+                    title: app.intl.canvas.testRun.button,
+                    h: 40,
+                    w: 120,
+                  ),
+                ),
+              ),
+              app.dimensions.padding.sm.gap(),
               BlocBuilder<CanvasCubit, CanvasState>(
                 builder: (context, state) => PrimaryButton.primary(
                   onPressed: state.data.loaded ? cubit.save : null,

@@ -8,16 +8,27 @@ class _MockRepo extends Mock implements CanvasRepo {}
 
 class _MockAuth extends Mock implements AuthCubit {}
 
+class _MockSources extends Mock implements SourceRepo {}
+
+class _MockDestinations extends Mock implements DestinationRepo {}
+
 void main() {
   // the texts of a new config come from app.intl, which reads the navigator
   TestWidgetsFlutterBinding.ensureInitialized();
   late _MockRepo repo;
+  late _MockSources sources;
+  late _MockDestinations destinations;
   late _MockAuth auth;
 
-  setUpAll(() => registerFallbackValue(const CanvasData.empty()));
+  setUpAll(() {
+    registerFallbackValue(const CanvasData.empty());
+    registerFallbackValue(const DestinationDraft(name: '', type: ''));
+  });
 
   setUp(() {
     repo = _MockRepo();
+    sources = _MockSources();
+    destinations = _MockDestinations();
     auth = _MockAuth();
     when(() => auth.auth).thenReturn(session());
     when(() => repo.get(workspace: 'production', token: 'jwt'))
@@ -26,7 +37,7 @@ void main() {
 
   /// The cubit with [demoCanvas] loaded
   Future<CanvasCubit> loaded() async {
-    final cubit = CanvasCubit(repo, auth);
+    final cubit = CanvasCubit(repo, sources, destinations, auth);
     await cubit.load('production');
     return cubit;
   }
@@ -42,7 +53,7 @@ void main() {
   test('a load that fails keeps what there was and says why', () async {
     when(() => repo.get(workspace: 'production', token: 'jwt'))
         .thenThrow(apiError('down'));
-    final cubit = CanvasCubit(repo, auth);
+    final cubit = CanvasCubit(repo, sources, destinations, auth);
     await cubit.load('production');
     expect(cubit.state, isA<CanvasLoadingErrorState>());
     expect(cubit.state.data.loaded, isFalse);
@@ -273,5 +284,78 @@ void main() {
       ),
     );
     expect(cubit.state.data.source('media'), isNull);
+  });
+
+  test(
+    'the first folder of a bucket disconnects the configs on its root',
+    () async {
+      final cubit = (await loaded())..addFolder('ca', 'media');
+      var s = cubit.state.data;
+      expect(s.destination('ca')!.folders, ['media']);
+      expect(s.config('j3')!.destinationId, isNull);
+
+      cubit.addFolder('bb', 'billing'); // bb has folders: nothing moves
+      s = cubit.state.data;
+      expect(s.destination('bb')!.folders, ['orders', 'users', 'billing']);
+      expect(s.config('j1')!.destinationId, 'bb');
+      final bb = (s.toRequest().toJson()['destinations'] as List).first;
+      expect(bb['folders'], ['orders', 'users', 'billing']);
+    },
+  );
+
+  test('a test run checks what a complete flow uses, the folders not saved yet too', () async {
+    final now = DateTime.utc(2026, 10, 26);
+    when(
+      () => sources.testSaved(
+        workspace: 'production',
+        id: any(named: 'id'),
+        token: 'jwt',
+      ),
+    ).thenAnswer(
+      (_) async =>
+          ConnectionCheckModel(status: CheckStatus.connected, checkedAt: now),
+    );
+    when(
+      () => destinations.testUnsaved(
+        workspace: 'production',
+        draft: any(named: 'draft'),
+        destinationId: any(named: 'destinationId'),
+        token: 'jwt',
+      ),
+    ).thenAnswer((i) async {
+      final draft = i.namedArguments[#draft] as DestinationDraft;
+      if (draft.bucket == 'ca') throw apiError('AccessDenied');
+      return ConnectionCheckModel(
+        status: CheckStatus.connected,
+        checkedAt: now,
+      );
+    });
+    final cubit = (await loaded())
+      ..disconnect('j2', WireEnd.source) // users is left out
+      ..addFolder('bb', 'billing');
+    await cubit.testRun();
+
+    final state = cubit.state as CanvasTestedState;
+    expect(
+      [for (final c in state.checks) (c.name, c.ok, c.error)],
+      [
+        ('orders-db', true, null),
+        ('media-db', true, null),
+        ('bb', true, null),
+        ('ca', false, 'AccessDenied'),
+      ],
+    );
+    final bb =
+        verify(
+              () => destinations.testUnsaved(
+                workspace: 'production',
+                draft: captureAny(named: 'draft'),
+                destinationId: 'bb',
+                token: 'jwt',
+              ),
+            ).captured.single
+            as DestinationDraft;
+    expect(bb.folders, ['orders', 'users', 'billing']);
+    expect(bb.secretKey, isNull);
   });
 }
