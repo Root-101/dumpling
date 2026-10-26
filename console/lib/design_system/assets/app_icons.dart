@@ -78,6 +78,23 @@ class ActionsIcons {
   SvgAsset get refresh => const SvgAsset('$_actions/refresh.svg');
 
   SvgAsset get search => const SvgAsset('$_actions/search.svg');
+
+  SvgAsset get filter => const SvgAsset('$_actions/filter.svg');
+
+  SvgAsset get duplicate => const SvgAsset('$_actions/duplicate.svg');
+
+  /// A bolt: test a connection
+  SvgAsset get test => const SvgAsset('$_actions/test.svg');
+
+  SvgAsset get check => const SvgAsset('$_actions/check.svg');
+
+  SvgAsset get info => const SvgAsset('$_actions/info.svg');
+
+  /// An eye: show a password
+  SvgAsset get view => const SvgAsset('$_actions/view.svg');
+
+  /// Points right; rotate it for the other directions
+  SvgAsset get chevron => const SvgAsset('$_actions/chevron.svg');
 }
 
 class SvgAsset {

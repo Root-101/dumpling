@@ -9,6 +9,8 @@ class AppFormPasswordInput extends StatefulWidget {
   final ValueChanged<String>? onChange;
   final ValueChanged<String>? onSubmitted;
   final Iterable<String>? autofillHints;
+  final String? helperText;
+  final String? errorText;
 
   const AppFormPasswordInput({
     required this.controller,
@@ -18,6 +20,8 @@ class AppFormPasswordInput extends StatefulWidget {
     this.onChange,
     this.onSubmitted,
     this.autofillHints,
+    this.helperText,
+    this.errorText,
     super.key,
   });
 
@@ -38,6 +42,8 @@ class _AppFormPasswordInputState extends State<AppFormPasswordInput> {
       onChange: widget.onChange,
       onSubmitted: widget.onSubmitted,
       autofillHints: widget.autofillHints,
+      helperText: widget.helperText,
+      errorText: widget.errorText,
       textInputAction: TextInputAction.done,
       obscureText: _obscureText,
       suffix: IconButton(

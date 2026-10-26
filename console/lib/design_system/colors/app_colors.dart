@@ -191,4 +191,10 @@ class StatusColor {
   Color get error => const Color(0xFFEC6A66);
 
   Color get pending => const Color(0xFF8C8A98);
+
+  /// Works, but needs a look (a server newer than its dump tool)
+  Color get warning => const Color(0xFFFDCA3C);
+
+  /// In progress (running, testing)
+  Color get running => const Color(0xFFB4A8E6);
 }

@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:console/app_exporter.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:material_ui/material_ui.dart' show Size;
+import 'package:material_ui/material_ui.dart' show Size, TextField;
 import 'package:mocktail/mocktail.dart';
 
 import '../support/fixtures.dart';
@@ -15,8 +16,12 @@ class _MockLanguage extends MockCubit<LanguageState> implements LanguageCubit {}
 
 class _MockRepo extends Mock implements WorkspaceRepo {}
 
+class _MockSourceRepo extends Mock implements SourceRepo {}
+
 class _MockWorkspaces extends MockCubit<WorkspaceState>
     implements WorkspaceCubit {}
+
+class _MockSources extends MockCubit<SourceState> implements SourceCubit {}
 
 /// The app as `main` runs it, at the size of a laptop screen, with the cubits
 /// the router and the rail read in DI. A layout that overflows fails the test
@@ -24,6 +29,7 @@ void main() {
   final auth = _MockAuth();
   final language = _MockLanguage();
   final workspaces = _MockWorkspaces();
+  final sources = _MockSources();
   final authStates = StreamController<AuthState>.broadcast();
 
   final english = LanguageModel(
@@ -61,13 +67,30 @@ void main() {
             .withCurrent('production'),
       ),
     );
+    whenListen(
+      sources,
+      const Stream<SourceState>.empty(),
+      initialState: SourceLoadingSuccessState(
+        data: const SourceData.empty('production').withList(
+          sourceTypes,
+          [
+            source('orders', lastCheck: check(CheckStatus.connected)),
+            source('users', lastCheck: check(CheckStatus.failed)),
+          ],
+          [config('orders', 'bucket'), config('orders', 'bucket')],
+        ),
+      ),
+    );
+    when(() => sources.load(any())).thenAnswer((_) async {});
     when(() => workspaces.load()).thenAnswer((_) async {});
     when(() => workspaces.select(any())).thenReturn(null);
     app.di.put<AuthCubit>(auth);
     app.di.put<LanguageCubit>(language);
     app.di.put<WorkspaceCubit>(workspaces);
-    // the dialog of a new workspace makes its own cubit with it
+    app.di.put<SourceCubit>(sources);
+    // the dialogs and drawers make their own cubit with them
     app.di.put<WorkspaceRepo>(_MockRepo());
+    app.di.put<SourceRepo>(_MockSourceRepo());
   });
 
   tearDownAll(authStates.close);
@@ -91,6 +114,7 @@ void main() {
           BlocProvider<AuthCubit>.value(value: auth),
           BlocProvider<LanguageCubit>.value(value: language),
           BlocProvider<WorkspaceCubit>.value(value: workspaces),
+          BlocProvider<SourceCubit>.value(value: sources),
         ],
         child: const App(),
       ),
@@ -170,5 +194,49 @@ void main() {
     );
     expect(find.text('This screen comes next.'), findsOneWidget);
     verify(() => workspaces.select('production')).called(greaterThan(0));
+  });
+
+  testWidgets('Sources: usage, status, a locked delete and the drawer', (
+    tester,
+  ) async {
+    when(() => auth.auth).thenReturn(session());
+    // straight from its URL, like a reload of the page
+    RouteConfig.router.go('/workspaces/production/sources');
+    await pumpApp(tester);
+    await settle(tester);
+
+    expect(find.text('orders-db'), findsOneWidget);
+    expect(find.text('PostgreSQL 16'), findsNWidgets(2));
+    expect(find.text('orders.internal:5432/orders'), findsOneWidget);
+    expect(find.text('Connected'), findsOneWidget);
+    expect(find.text('Unreachable'), findsOneWidget);
+    verify(() => sources.load('production')).called(greaterThan(0));
+
+    // used by 2 backups: it can't be deleted, and the menu says why
+    await tester.tap(find.byTooltip('Options for orders-db'));
+    await settle(tester);
+    expect(find.text('Used by 2 backups. Remove them first.'), findsOneWidget);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await settle(tester);
+
+    await tester.tap(find.widgetWithText(PrimaryButton, 'New source'));
+    await settle(tester);
+    expect(find.text('Connect what you want to back up.'), findsOneWidget);
+    expect(find.text('02 CONNECTION'), findsOneWidget);
+    expect(find.text('Soon'), findsOneWidget);
+    expect(find.text('Not tested yet'), findsOneWidget);
+
+    await tester.tap(find.text('Connection URL').first);
+    await settle(tester);
+    await tester.enterText(
+      find.ancestor(
+        of: find.text('postgresql://user:password@host:5432/database'),
+        matching: find.byType(TextField),
+      ),
+      'postgresql://dumpling_backup:pw@pg-billing.internal/billing',
+    );
+    await settle(tester);
+    expect(find.text('pg-billing.internal'), findsOneWidget);
+    expect(find.text('5432'), findsOneWidget);
   });
 }

@@ -23,6 +23,43 @@ WorkspaceModel workspace(
   ),
 );
 
+const sourceTypes = [
+  SourceTypeModel(type: SourceTypes.postgres, enabled: true),
+  SourceTypeModel(type: 'mysql', enabled: false),
+];
+
+/// A PostgreSQL source whose id, name and database are [id]
+SourceModel source(String id, {ConnectionCheckModel? lastCheck}) => SourceModel(
+  id: id,
+  name: '$id-db',
+  type: SourceTypes.postgres,
+  postgres: PostgresSettingsModel(
+    host: '$id.internal',
+    port: 5432,
+    database: id,
+    username: 'dumpling_backup',
+    dumpFormat: PostgresSettingsModel.custom,
+  ),
+  lastCheck: lastCheck,
+);
+
+/// A backup of [sourceId] into [destinationId]
+ConfigModel config(String sourceId, String destinationId, {String? folder}) =>
+    ConfigModel(
+      id: 'cfg_$sourceId',
+      name: sourceId,
+      sourceId: sourceId,
+      destinationId: destinationId,
+      folder: folder,
+    );
+
+ConnectionCheckModel check(CheckStatus status) => ConnectionCheckModel(
+  status: status,
+  checkedAt: DateTime.utc(2026, 10, 20),
+  serverVersion: '16.4',
+  message: status == CheckStatus.failed ? 'connection refused' : null,
+);
+
 /// The session every cubit reads its token from
 AuthModel session() => AuthModel(accessToken: 'jwt', expireAt: DateTime(2100));
 

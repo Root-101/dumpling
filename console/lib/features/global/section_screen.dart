@@ -7,7 +7,6 @@ class SectionScreen extends StatelessWidget {
   static const List<String> sections = [
     RouteNames.backups,
     RouteNames.canvas,
-    RouteNames.sources,
     RouteNames.destinations,
     RouteNames.runs,
     RouteNames.settings,

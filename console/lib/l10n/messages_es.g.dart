@@ -70,6 +70,11 @@ class AppMessagesEs
   late final AppMessages$workspaces$es workspaces = AppMessages$workspaces$es._(
     _root,
   );
+  @override
+  late final AppMessages$connections$es connections =
+      AppMessages$connections$es._(_root);
+  @override
+  late final AppMessages$sources$es sources = AppMessages$sources$es._(_root);
 }
 
 // Path: app
@@ -112,6 +117,39 @@ class AppMessages$common$es implements AppMessages$common$en {
   String get required => 'Requerido';
   @override
   String get optional => '(opcional)';
+  @override
+  String get filters => 'Filtros';
+  @override
+  String get clearAll => 'Limpiar todo';
+  @override
+  String get done => 'Listo';
+  @override
+  String get all => 'Todos';
+  @override
+  String get selected => 'Elegido';
+  @override
+  String get soon => 'Pronto';
+  @override
+  String get edit => 'Editar';
+  @override
+  String get duplicate => 'Duplicar';
+  @override
+  String get delete => 'Eliminar';
+  @override
+  String get add => 'Agregar';
+  @override
+  String get saving => 'Guardando…';
+  @override
+  String get saveChanges => 'Guardar cambios';
+  @override
+  String get noMatches => 'Nada coincide con tu búsqueda';
+  @override
+  String get clearSearch => 'Limpiar búsqueda y filtros';
+  @override
+  String shownOf({required Object shown, required Object total}) =>
+      '${shown} de ${total}';
+  @override
+  String optionsFor({required Object name}) => 'Opciones de ${name}';
 }
 
 // Path: time
@@ -342,6 +380,154 @@ class AppMessages$workspaces$es implements AppMessages$workspaces$en {
   String created({required Object name}) => 'Workspace ${name} creado';
 }
 
+// Path: connections
+class AppMessages$connections$es implements AppMessages$connections$en {
+  AppMessages$connections$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get notTested => 'Sin probar';
+  @override
+  String get notTestedYet => 'Todavía sin probar';
+  @override
+  String get testing => 'Probando…';
+  @override
+  String get test => 'Probar conexión';
+  @override
+  String get connected => 'Conectado';
+  @override
+  String get incompatible => 'Incompatible';
+  @override
+  String get incompatibleTitle =>
+      'Conectó, pero el servidor es más nuevo que la herramienta de dump';
+  @override
+  String incompatibleSub({required Object server, required Object tool}) =>
+      'Servidor ${server} · ${tool}. Actualiza la herramienta de dump donde corre Dumpling.';
+  @override
+  String get toolMissing => 'Falta la herramienta';
+  @override
+  String get toolMissingTitle =>
+      'Conectó, pero la herramienta de dump no está instalada donde corre Dumpling';
+  @override
+  String get unreachable => 'Sin conexión';
+  @override
+  String get failedTitle => 'No se pudo conectar';
+}
+
+// Path: sources
+class AppMessages$sources$es implements AppMessages$sources$en {
+  AppMessages$sources$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get title => 'Sources';
+  @override
+  String description({required Object workspace}) =>
+      'Lo que respalda el workspace ${workspace}: bases de datos PostgreSQL.';
+  @override
+  String get create => 'Nuevo source';
+  @override
+  String get search => 'Buscar sources';
+  @override
+  String get columnName => 'Nombre';
+  @override
+  String get columnType => 'Tipo';
+  @override
+  String get columnHost => 'Host';
+  @override
+  String get columnBackups => 'Backups';
+  @override
+  String get columnStatus => 'Estado';
+  @override
+  String get emptyTitle => 'Todavía no hay sources';
+  @override
+  String get emptyDescription => 'Conecta una base de datos para respaldarla.';
+  @override
+  String inUse({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: 'Lo usa ${n} backup. Quítalo primero.',
+        other: 'Lo usan ${n} backups. Quítalos primero.',
+      );
+  @override
+  String deleteTitle({required Object name}) => '¿Eliminar el source ${name}?';
+  @override
+  String get deleteConfirm =>
+      'Ningún backup lo usa. Su conexión y su contraseña guardadas se borran de este workspace.';
+  @override
+  String deleted({required Object name}) => 'Source ${name} eliminado';
+  @override
+  String get newTitle => 'Nuevo source';
+  @override
+  String get editTitle => 'Editar source';
+  @override
+  String get formDescription => 'Conecta lo que quieres respaldar.';
+  @override
+  String get sectionType => '01 Tipo';
+  @override
+  String get sectionConnection => '02 Conexión';
+  @override
+  String get name => 'Nombre';
+  @override
+  String get nameHint => 'p. ej. orders-db';
+  @override
+  String copyName({required Object name}) => '${name}-copia';
+  @override
+  String get connectWith => 'Conectar con';
+  @override
+  String get byFields => 'Campos';
+  @override
+  String get byUrl => 'URL de conexión';
+  @override
+  String get host => 'Host';
+  @override
+  String get port => 'Puerto';
+  @override
+  String get portInvalid => 'De 1 a 65535';
+  @override
+  String get database => 'Base de datos';
+  @override
+  String get username => 'Usuario';
+  @override
+  String get password => 'Contraseña';
+  @override
+  String get passwordKeepHint => 'Déjala vacía para mantener la guardada';
+  @override
+  String get passwordHelp =>
+      'Usa un rol de solo lectura. Se guarda cifrada y no se vuelve a mostrar.';
+  @override
+  String get connectionUrl => 'URL de conexión';
+  @override
+  String get urlHelp =>
+      'La contraseña de la URL se guarda cifrada y no se vuelve a mostrar.';
+  @override
+  String get urlHelpEditing =>
+      'Si la URL no trae contraseña, se mantiene la guardada.';
+  @override
+  String get urlInvalid =>
+      'Usa el formato postgresql://usuario:contraseña@host:5432/base';
+  @override
+  String get dumpFormat => 'Formato del dump';
+  @override
+  String get formatCustom => 'Custom (pg_dump -Fc)';
+  @override
+  String get formatPlain => 'SQL plano';
+  @override
+  String get testIdle => 'Revisa la conexión antes de guardar el source.';
+  @override
+  String connectedAs({required Object user}) => 'Conectado como ${user}';
+  @override
+  String get createButton => 'Crear source';
+  @override
+  String created({required Object name}) => 'Source ${name} creado';
+  @override
+  String saved({required Object name}) => 'Source ${name} guardado';
+}
+
 /// The flat map containing all translations for locale <es>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -362,6 +548,25 @@ extension on AppMessagesEs {
       'common.close' => 'Cerrar',
       'common.required' => 'Requerido',
       'common.optional' => '(opcional)',
+      'common.filters' => 'Filtros',
+      'common.clearAll' => 'Limpiar todo',
+      'common.done' => 'Listo',
+      'common.all' => 'Todos',
+      'common.selected' => 'Elegido',
+      'common.soon' => 'Pronto',
+      'common.edit' => 'Editar',
+      'common.duplicate' => 'Duplicar',
+      'common.delete' => 'Eliminar',
+      'common.add' => 'Agregar',
+      'common.saving' => 'Guardando…',
+      'common.saveChanges' => 'Guardar cambios',
+      'common.noMatches' => 'Nada coincide con tu búsqueda',
+      'common.clearSearch' => 'Limpiar búsqueda y filtros',
+      'common.shownOf' => ({
+        required Object shown,
+        required Object total,
+      }) => '${shown} de ${total}',
+      'common.optionsFor' => ({required Object name}) => 'Opciones de ${name}',
       'time.utc' => ({required Object time}) => '${time} UTC',
       'time.local' => ({required Object time}) => '${time} local',
       'errors.requestCancelled' => 'La petición al servidor fue cancelada',
@@ -464,6 +669,86 @@ extension on AppMessagesEs {
       'workspaces.created' => ({
         required Object name,
       }) => 'Workspace ${name} creado',
+      'connections.notTested' => 'Sin probar',
+      'connections.notTestedYet' => 'Todavía sin probar',
+      'connections.testing' => 'Probando…',
+      'connections.test' => 'Probar conexión',
+      'connections.connected' => 'Conectado',
+      'connections.incompatible' => 'Incompatible',
+      'connections.incompatibleTitle' =>
+        'Conectó, pero el servidor es más nuevo que la herramienta de dump',
+      'connections.incompatibleSub' => ({
+        required Object server,
+        required Object tool,
+      }) => 'Servidor ${server} · ${tool}. Actualiza la herramienta de dump donde corre Dumpling.',
+      'connections.toolMissing' => 'Falta la herramienta',
+      'connections.toolMissingTitle' => 'Conectó, pero la herramienta de dump no está instalada donde corre Dumpling',
+      'connections.unreachable' => 'Sin conexión',
+      'connections.failedTitle' => 'No se pudo conectar',
+      'sources.title' => 'Sources',
+      'sources.description' => ({
+        required Object workspace,
+      }) => 'Lo que respalda el workspace ${workspace}: bases de datos PostgreSQL.',
+      'sources.create' => 'Nuevo source',
+      'sources.search' => 'Buscar sources',
+      'sources.columnName' => 'Nombre',
+      'sources.columnType' => 'Tipo',
+      'sources.columnHost' => 'Host',
+      'sources.columnBackups' => 'Backups',
+      'sources.columnStatus' => 'Estado',
+      'sources.emptyTitle' => 'Todavía no hay sources',
+      'sources.emptyDescription' =>
+        'Conecta una base de datos para respaldarla.',
+      'sources.inUse' =>
+        ({required num n}) =>
+            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+              n,
+              one: 'Lo usa ${n} backup. Quítalo primero.',
+              other: 'Lo usan ${n} backups. Quítalos primero.',
+            ),
+      'sources.deleteTitle' => ({
+        required Object name,
+      }) => '¿Eliminar el source ${name}?',
+      'sources.deleteConfirm' => 'Ningún backup lo usa. Su conexión y su contraseña guardadas se borran de este workspace.',
+      'sources.deleted' => ({
+        required Object name,
+      }) => 'Source ${name} eliminado',
+      'sources.newTitle' => 'Nuevo source',
+      'sources.editTitle' => 'Editar source',
+      'sources.formDescription' => 'Conecta lo que quieres respaldar.',
+      'sources.sectionType' => '01 Tipo',
+      'sources.sectionConnection' => '02 Conexión',
+      'sources.name' => 'Nombre',
+      'sources.nameHint' => 'p. ej. orders-db',
+      'sources.copyName' => ({required Object name}) => '${name}-copia',
+      'sources.connectWith' => 'Conectar con',
+      'sources.byFields' => 'Campos',
+      'sources.byUrl' => 'URL de conexión',
+      'sources.host' => 'Host',
+      'sources.port' => 'Puerto',
+      'sources.portInvalid' => 'De 1 a 65535',
+      'sources.database' => 'Base de datos',
+      'sources.username' => 'Usuario',
+      'sources.password' => 'Contraseña',
+      'sources.passwordKeepHint' => 'Déjala vacía para mantener la guardada',
+      'sources.passwordHelp' => 'Usa un rol de solo lectura. Se guarda cifrada y no se vuelve a mostrar.',
+      'sources.connectionUrl' => 'URL de conexión',
+      'sources.urlHelp' =>
+        'La contraseña de la URL se guarda cifrada y no se vuelve a mostrar.',
+      'sources.urlHelpEditing' =>
+        'Si la URL no trae contraseña, se mantiene la guardada.',
+      'sources.urlInvalid' =>
+        'Usa el formato postgresql://usuario:contraseña@host:5432/base',
+      'sources.dumpFormat' => 'Formato del dump',
+      'sources.formatCustom' => 'Custom (pg_dump -Fc)',
+      'sources.formatPlain' => 'SQL plano',
+      'sources.testIdle' => 'Revisa la conexión antes de guardar el source.',
+      'sources.connectedAs' => ({
+        required Object user,
+      }) => 'Conectado como ${user}',
+      'sources.createButton' => 'Crear source',
+      'sources.created' => ({required Object name}) => 'Source ${name} creado',
+      'sources.saved' => ({required Object name}) => 'Source ${name} guardado',
       _ => null,
     };
   }

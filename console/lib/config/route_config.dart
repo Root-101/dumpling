@@ -64,6 +64,11 @@ class RouteConfig {
                 ? '${state.matchedLocation}/${RouteNames.backups}'
                 : null,
             routes: [
+              GoRoute(
+                name: SourcesScreen.navigator.name,
+                path: SourcesScreen.navigator.path,
+                builder: SourcesScreen.navigator.builder,
+              ),
               for (final section in SectionScreen.sections)
                 GoRoute(
                   name: section,

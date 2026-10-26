@@ -57,6 +57,9 @@ class AppMessages with BaseTranslations<AppMessagesLocale, AppMessages> {
   late final AppMessages$workspaces$en workspaces = AppMessages$workspaces$en._(
     _root,
   );
+  late final AppMessages$connections$en connections =
+      AppMessages$connections$en._(_root);
+  late final AppMessages$sources$en sources = AppMessages$sources$en._(_root);
 }
 
 // Path: app
@@ -111,6 +114,55 @@ class AppMessages$common$en {
 
   /// en: '(optional)'
   String get optional => '(optional)';
+
+  /// en: 'Filters'
+  String get filters => 'Filters';
+
+  /// en: 'Clear all'
+  String get clearAll => 'Clear all';
+
+  /// en: 'Done'
+  String get done => 'Done';
+
+  /// en: 'All'
+  String get all => 'All';
+
+  /// en: 'Selected'
+  String get selected => 'Selected';
+
+  /// en: 'Soon'
+  String get soon => 'Soon';
+
+  /// en: 'Edit'
+  String get edit => 'Edit';
+
+  /// en: 'Duplicate'
+  String get duplicate => 'Duplicate';
+
+  /// en: 'Delete'
+  String get delete => 'Delete';
+
+  /// en: 'Add'
+  String get add => 'Add';
+
+  /// en: 'Saving…'
+  String get saving => 'Saving…';
+
+  /// en: 'Save changes'
+  String get saveChanges => 'Save changes';
+
+  /// en: 'Nothing matches your search'
+  String get noMatches => 'Nothing matches your search';
+
+  /// en: 'Clear search and filters'
+  String get clearSearch => 'Clear search and filters';
+
+  /// en: '{shown: int} of {total: int}'
+  String shownOf({required int shown, required int total}) =>
+      '${shown} of ${total}';
+
+  /// en: 'Options for {name: String}'
+  String optionsFor({required String name}) => 'Options for ${name}';
 }
 
 // Path: time
@@ -418,6 +470,212 @@ class AppMessages$workspaces$en {
   String created({required String name}) => 'Workspace ${name} created';
 }
 
+// Path: connections
+class AppMessages$connections$en {
+  AppMessages$connections$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Not tested'
+  String get notTested => 'Not tested';
+
+  /// en: 'Not tested yet'
+  String get notTestedYet => 'Not tested yet';
+
+  /// en: 'Testing…'
+  String get testing => 'Testing…';
+
+  /// en: 'Test connection'
+  String get test => 'Test connection';
+
+  /// en: 'Connected'
+  String get connected => 'Connected';
+
+  /// en: 'Incompatible'
+  String get incompatible => 'Incompatible';
+
+  /// en: 'Connected, but the server is newer than the dump tool'
+  String get incompatibleTitle =>
+      'Connected, but the server is newer than the dump tool';
+
+  /// en: 'Server {server: String} · {tool: String}. Update the dump tool where Dumpling runs.'
+  String incompatibleSub({required String server, required String tool}) =>
+      'Server ${server} · ${tool}. Update the dump tool where Dumpling runs.';
+
+  /// en: 'Tool missing'
+  String get toolMissing => 'Tool missing';
+
+  /// en: 'Connected, but the dump tool is not installed where Dumpling runs'
+  String get toolMissingTitle =>
+      'Connected, but the dump tool is not installed where Dumpling runs';
+
+  /// en: 'Unreachable'
+  String get unreachable => 'Unreachable';
+
+  /// en: 'Couldn't connect'
+  String get failedTitle => 'Couldn\'t connect';
+}
+
+// Path: sources
+class AppMessages$sources$en {
+  AppMessages$sources$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Sources'
+  String get title => 'Sources';
+
+  /// en: 'What the {workspace: String} workspace backs up: PostgreSQL databases.'
+  String description({required String workspace}) =>
+      'What the ${workspace} workspace backs up: PostgreSQL databases.';
+
+  /// en: 'New source'
+  String get create => 'New source';
+
+  /// en: 'Search sources'
+  String get search => 'Search sources';
+
+  /// en: 'Name'
+  String get columnName => 'Name';
+
+  /// en: 'Type'
+  String get columnType => 'Type';
+
+  /// en: 'Host'
+  String get columnHost => 'Host';
+
+  /// en: 'Backups'
+  String get columnBackups => 'Backups';
+
+  /// en: 'Status'
+  String get columnStatus => 'Status';
+
+  /// en: 'No sources yet'
+  String get emptyTitle => 'No sources yet';
+
+  /// en: 'Connect a database to back it up.'
+  String get emptyDescription => 'Connect a database to back it up.';
+
+  /// en: '(one) {Used by {n} backup. Remove it first.} (other) {Used by {n} backups. Remove them first.}'
+  String inUse({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: 'Used by ${n} backup. Remove it first.',
+        other: 'Used by ${n} backups. Remove them first.',
+      );
+
+  /// en: 'Delete the source {name: String}?'
+  String deleteTitle({required String name}) => 'Delete the source ${name}?';
+
+  /// en: 'It isn't used by any backup. Its saved connection and password are removed from this workspace.'
+  String get deleteConfirm =>
+      'It isn\'t used by any backup. Its saved connection and password are removed from this workspace.';
+
+  /// en: 'Source {name: String} deleted'
+  String deleted({required String name}) => 'Source ${name} deleted';
+
+  /// en: 'New source'
+  String get newTitle => 'New source';
+
+  /// en: 'Edit source'
+  String get editTitle => 'Edit source';
+
+  /// en: 'Connect what you want to back up.'
+  String get formDescription => 'Connect what you want to back up.';
+
+  /// en: '01 Type'
+  String get sectionType => '01 Type';
+
+  /// en: '02 Connection'
+  String get sectionConnection => '02 Connection';
+
+  /// en: 'Name'
+  String get name => 'Name';
+
+  /// en: 'e.g. orders-db'
+  String get nameHint => 'e.g. orders-db';
+
+  /// en: '{name: String}-copy'
+  String copyName({required String name}) => '${name}-copy';
+
+  /// en: 'Connect with'
+  String get connectWith => 'Connect with';
+
+  /// en: 'Fields'
+  String get byFields => 'Fields';
+
+  /// en: 'Connection URL'
+  String get byUrl => 'Connection URL';
+
+  /// en: 'Host'
+  String get host => 'Host';
+
+  /// en: 'Port'
+  String get port => 'Port';
+
+  /// en: 'From 1 to 65535'
+  String get portInvalid => 'From 1 to 65535';
+
+  /// en: 'Database'
+  String get database => 'Database';
+
+  /// en: 'User'
+  String get username => 'User';
+
+  /// en: 'Password'
+  String get password => 'Password';
+
+  /// en: 'Leave empty to keep the saved one'
+  String get passwordKeepHint => 'Leave empty to keep the saved one';
+
+  /// en: 'Use a read-only role. Stored encrypted; never shown again after saving.'
+  String get passwordHelp =>
+      'Use a read-only role. Stored encrypted; never shown again after saving.';
+
+  /// en: 'Connection URL'
+  String get connectionUrl => 'Connection URL';
+
+  /// en: 'The password in the URL is stored encrypted and never shown again.'
+  String get urlHelp =>
+      'The password in the URL is stored encrypted and never shown again.';
+
+  /// en: 'Without a password in the URL, the saved one is kept.'
+  String get urlHelpEditing =>
+      'Without a password in the URL, the saved one is kept.';
+
+  /// en: 'Use the format postgresql://user:password@host:5432/database'
+  String get urlInvalid =>
+      'Use the format postgresql://user:password@host:5432/database';
+
+  /// en: 'Dump format'
+  String get dumpFormat => 'Dump format';
+
+  /// en: 'Custom (pg_dump -Fc)'
+  String get formatCustom => 'Custom (pg_dump -Fc)';
+
+  /// en: 'Plain SQL'
+  String get formatPlain => 'Plain SQL';
+
+  /// en: 'Check the connection before saving the source.'
+  String get testIdle => 'Check the connection before saving the source.';
+
+  /// en: 'Connected as {user: String}'
+  String connectedAs({required String user}) => 'Connected as ${user}';
+
+  /// en: 'Create source'
+  String get createButton => 'Create source';
+
+  /// en: 'Source {name: String} created'
+  String created({required String name}) => 'Source ${name} created';
+
+  /// en: 'Source {name: String} saved'
+  String saved({required String name}) => 'Source ${name} saved';
+}
+
 /// The flat map containing all translations for locale <en>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -438,6 +696,25 @@ extension on AppMessages {
       'common.close' => 'Close',
       'common.required' => 'Required',
       'common.optional' => '(optional)',
+      'common.filters' => 'Filters',
+      'common.clearAll' => 'Clear all',
+      'common.done' => 'Done',
+      'common.all' => 'All',
+      'common.selected' => 'Selected',
+      'common.soon' => 'Soon',
+      'common.edit' => 'Edit',
+      'common.duplicate' => 'Duplicate',
+      'common.delete' => 'Delete',
+      'common.add' => 'Add',
+      'common.saving' => 'Saving…',
+      'common.saveChanges' => 'Save changes',
+      'common.noMatches' => 'Nothing matches your search',
+      'common.clearSearch' => 'Clear search and filters',
+      'common.shownOf' => ({
+        required int shown,
+        required int total,
+      }) => '${shown} of ${total}',
+      'common.optionsFor' => ({required String name}) => 'Options for ${name}',
       'time.utc' => ({required String time}) => '${time} UTC',
       'time.local' => ({required String time}) => '${time} local',
       'errors.requestCancelled' => 'Request to API server was cancelled',
@@ -534,6 +811,84 @@ extension on AppMessages {
       'workspaces.created' => ({
         required String name,
       }) => 'Workspace ${name} created',
+      'connections.notTested' => 'Not tested',
+      'connections.notTestedYet' => 'Not tested yet',
+      'connections.testing' => 'Testing…',
+      'connections.test' => 'Test connection',
+      'connections.connected' => 'Connected',
+      'connections.incompatible' => 'Incompatible',
+      'connections.incompatibleTitle' =>
+        'Connected, but the server is newer than the dump tool',
+      'connections.incompatibleSub' => ({
+        required String server,
+        required String tool,
+      }) => 'Server ${server} · ${tool}. Update the dump tool where Dumpling runs.',
+      'connections.toolMissing' => 'Tool missing',
+      'connections.toolMissingTitle' =>
+        'Connected, but the dump tool is not installed where Dumpling runs',
+      'connections.unreachable' => 'Unreachable',
+      'connections.failedTitle' => 'Couldn\'t connect',
+      'sources.title' => 'Sources',
+      'sources.description' => ({
+        required String workspace,
+      }) => 'What the ${workspace} workspace backs up: PostgreSQL databases.',
+      'sources.create' => 'New source',
+      'sources.search' => 'Search sources',
+      'sources.columnName' => 'Name',
+      'sources.columnType' => 'Type',
+      'sources.columnHost' => 'Host',
+      'sources.columnBackups' => 'Backups',
+      'sources.columnStatus' => 'Status',
+      'sources.emptyTitle' => 'No sources yet',
+      'sources.emptyDescription' => 'Connect a database to back it up.',
+      'sources.inUse' =>
+        ({required num n}) =>
+            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+              n,
+              one: 'Used by ${n} backup. Remove it first.',
+              other: 'Used by ${n} backups. Remove them first.',
+            ),
+      'sources.deleteTitle' => ({
+        required String name,
+      }) => 'Delete the source ${name}?',
+      'sources.deleteConfirm' => 'It isn\'t used by any backup. Its saved connection and password are removed from this workspace.',
+      'sources.deleted' => ({required String name}) => 'Source ${name} deleted',
+      'sources.newTitle' => 'New source',
+      'sources.editTitle' => 'Edit source',
+      'sources.formDescription' => 'Connect what you want to back up.',
+      'sources.sectionType' => '01 Type',
+      'sources.sectionConnection' => '02 Connection',
+      'sources.name' => 'Name',
+      'sources.nameHint' => 'e.g. orders-db',
+      'sources.copyName' => ({required String name}) => '${name}-copy',
+      'sources.connectWith' => 'Connect with',
+      'sources.byFields' => 'Fields',
+      'sources.byUrl' => 'Connection URL',
+      'sources.host' => 'Host',
+      'sources.port' => 'Port',
+      'sources.portInvalid' => 'From 1 to 65535',
+      'sources.database' => 'Database',
+      'sources.username' => 'User',
+      'sources.password' => 'Password',
+      'sources.passwordKeepHint' => 'Leave empty to keep the saved one',
+      'sources.passwordHelp' => 'Use a read-only role. Stored encrypted; never shown again after saving.',
+      'sources.connectionUrl' => 'Connection URL',
+      'sources.urlHelp' =>
+        'The password in the URL is stored encrypted and never shown again.',
+      'sources.urlHelpEditing' =>
+        'Without a password in the URL, the saved one is kept.',
+      'sources.urlInvalid' =>
+        'Use the format postgresql://user:password@host:5432/database',
+      'sources.dumpFormat' => 'Dump format',
+      'sources.formatCustom' => 'Custom (pg_dump -Fc)',
+      'sources.formatPlain' => 'Plain SQL',
+      'sources.testIdle' => 'Check the connection before saving the source.',
+      'sources.connectedAs' => ({
+        required String user,
+      }) => 'Connected as ${user}',
+      'sources.createButton' => 'Create source',
+      'sources.created' => ({required String name}) => 'Source ${name} created',
+      'sources.saved' => ({required String name}) => 'Source ${name} saved',
       _ => null,
     };
   }
