@@ -101,14 +101,14 @@ class _DestinationsScreenState extends State<DestinationsScreen> {
       (c) => c.state.data.current?.name ?? widget.workspace,
     );
     return Scaffold(
+      backgroundColor: app.colors.primary.background2,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           PageHeader(
             title: app.intl.destinations.title,
-            description: app.intl.destinations.description(
-              workspace: workspaceName,
-            ),
+            workspace: workspaceName,
+            description: app.intl.destinations.description,
             actions: [
               BlocBuilder<DestinationCubit, DestinationState>(
                 builder: (context, state) => PrimaryButton.primary(
@@ -124,22 +124,24 @@ class _DestinationsScreenState extends State<DestinationsScreen> {
             ],
           ),
           Expanded(
-            child: BlocConsumer<DestinationCubit, DestinationState>(
-              listener: _onState,
-              builder: (context, state) {
-                if (!state.data.loaded) {
-                  return state is DestinationLoadingErrorState
-                      ? ErrorPage.of(state.exception, onRetry: cubit.reload)
-                      : const LoadingPage();
-                }
-                return SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: app.dimensions.padding.xxl,
-                    vertical: app.dimensions.padding.xl,
-                  ),
-                  child: _buildTable(state.data),
-                );
-              },
+            child: PagePanel(
+              child: BlocConsumer<DestinationCubit, DestinationState>(
+                listener: _onState,
+                builder: (context, state) {
+                  if (!state.data.loaded) {
+                    return state is DestinationLoadingErrorState
+                        ? ErrorPage.of(state.exception, onRetry: cubit.reload)
+                        : const LoadingPage();
+                  }
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: app.dimensions.padding.xxl,
+                      vertical: app.dimensions.padding.xl,
+                    ),
+                    child: _buildTable(state.data),
+                  );
+                },
+              ),
             ),
           ),
         ],

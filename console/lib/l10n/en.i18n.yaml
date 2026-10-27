@@ -60,6 +60,7 @@ nav:
   runs: 'Run log'
   failedRuns: '{count: int} failing'
   settings: 'Workspace settings'
+  settingsDescription: 'Applies only to this workspace'
   language: 'Language: {name: String}'
   logout: 'Sign out'
   comingSoon: 'This screen comes next.'
@@ -78,6 +79,11 @@ login:
   failedHint: 'Check both and try again.'
   envHint: 'The username and password are set on the server with'
   envHintAnd: 'and'
+  tagline: 'Backups made'
+  taglineAccent: 'easy'
+  tagLightweight: 'Lightweight'
+  tagCanvas: 'Drag & Drop Canvas'
+  tagWinter: 'Powered by Winter'
 
 colors:
   none: 'No color'
@@ -143,7 +149,7 @@ connections:
 
 sources:
   title: 'Sources'
-  description: 'What the {workspace: String} workspace backs up: PostgreSQL databases.'
+  description: 'What this workspace backs up: PostgreSQL databases.'
   create: 'New source'
   search: 'Search sources'
   columnName: 'Name'
@@ -193,7 +199,7 @@ sources:
 
 destinations:
   title: 'Destinations'
-  description: 'Where the {workspace: String} workspace writes backups: S3 buckets.'
+  description: 'Where this workspace writes backups: S3 buckets.'
   create: 'New destination'
   search: 'Search destinations'
   columnName: 'Name'
@@ -263,7 +269,7 @@ destinations:
     sftp: 'Any SSH server'
 
 canvas:
-  description: 'Connect the sources and destinations of {workspace: String}. Nothing changes until you save.'
+  description: "Connect sources to destinations to build this workspace's backups."
   save: 'Save canvas'
   saved: 'Canvas saved'
   newConfig: 'New config'
@@ -397,7 +403,7 @@ canvas:
 
 runs:
   title: 'Run log'
-  description: 'Every backup the {workspace: String} workspace ran, newest first.'
+  description: 'Every backup run in this workspace, scheduled or manual. Times in UTC, your local time below.'
   refresh: 'Refresh'
   search: 'Search by backup, source or destination'
   columnStatus: 'Status'
@@ -424,7 +430,7 @@ runs:
 
 backups:
   title: 'Backups'
-  description: 'How the backups of the {workspace: String} workspace are doing.'
+  description: 'Every backup in this workspace, its last run and the next one.'
   openEditor: 'Open pipeline editor'
   healthy: 'Healthy'
   failing: 'Failing'

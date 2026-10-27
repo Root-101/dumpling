@@ -11,4 +11,7 @@ class AppAssets {
 
   /// The mark with the name, from the design canvas
   final String wordmark = 'assets/brand/wordmark.svg';
+
+  /// The name alone (`dump.ling`), without the mark
+  final String name = 'assets/brand/name.svg';
 }

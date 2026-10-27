@@ -1,4 +1,5 @@
 import 'package:console/app_exporter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The screens of a workspace that aren't built yet: each one has its route,
@@ -21,9 +22,31 @@ class SectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NoDataPage(
-      title: titleOf(section),
-      description: app.intl.nav.comingSoon,
+    final workspace = context.select<WorkspaceCubit, String?>(
+      (c) => c.state.data.current?.name,
+    );
+    return ColoredBox(
+      color: app.colors.primary.background2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          PageHeader(
+            title: titleOf(section),
+            workspace: workspace,
+            description: section == RouteNames.settings
+                ? app.intl.nav.settingsDescription
+                : null,
+          ),
+          Expanded(
+            child: PagePanel(
+              child: NoDataPage(
+                title: titleOf(section),
+                description: app.intl.nav.comingSoon,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

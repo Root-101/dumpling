@@ -1,6 +1,7 @@
 import 'package:console/app_exporter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -64,50 +65,90 @@ class _LoginScreenState extends State<LoginScreen> {
       },
       child: Scaffold(
         backgroundColor: app.colors.primary.background1,
-        // Scaffold gives its body loose constraints: the dots cover it all
-        body: SizedBox.expand(
-          child: CustomPaint(
-            painter: GridDotPainter(
-              offset: Offset.zero,
-              scale: 1,
-              color: app.colors.neutral.white.withValues(alpha: 0.11),
-            ),
-            child: Stack(
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            final narrow = constraints.maxWidth < 900;
+            return Stack(
               fit: StackFit.expand,
               children: [
-                Center(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.all(app.dimensions.padding.xxl),
+                if (narrow)
+                  SingleChildScrollView(
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const DumplingWordmark(height: 40),
-                        app.dimensions.padding.xxl.gap(),
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 400),
-                          child: _buildPanel(),
-                        ),
-                        app.dimensions.padding.xxl.gap(),
-                        Text(
-                          app.intl.app.version(version: AppGlobal.version),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: app.colors.neutral.grey4,
+                        const _Identity(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 40,
                           ),
+                          tags: false,
                         ),
+                        _buildForm(),
                       ],
                     ),
+                  )
+                else
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        flex: 5,
+                        child: _Identity(
+                          // 8% of its column, as on the canvas
+                          padding: EdgeInsets.symmetric(
+                            horizontal: constraints.maxWidth * 5 / 9 * 0.08,
+                            vertical: 64,
+                          ),
+                          tags: true,
+                        ),
+                      ),
+                      Expanded(
+                        flex: 4,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            border: Border(
+                              left: BorderSide(
+                                color: app.colors.surface.control,
+                              ),
+                            ),
+                          ),
+                          child: Center(
+                            child: SingleChildScrollView(child: _buildForm()),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
                 Positioned(
                   top: app.dimensions.padding.xxl,
                   right: app.dimensions.padding.xxl,
                   child: const LanguageWidget(),
                 ),
               ],
-            ),
-          ),
+            );
+          },
         ),
+      ),
+    );
+  }
+
+  /// The panel with the version under it
+  Widget _buildForm() {
+    return Padding(
+      padding: EdgeInsets.all(app.dimensions.padding.xxl),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: _buildPanel(),
+          ),
+          app.dimensions.padding.xxl.gap(),
+          Text(
+            app.intl.app.version(version: AppGlobal.version),
+            style: TextStyle(fontSize: 12, color: app.colors.neutral.grey4),
+          ),
+        ],
       ),
     );
   }
@@ -236,4 +277,188 @@ class _EnvHint extends StatelessWidget {
       textAlign: TextAlign.center,
     );
   }
+}
+
+/// Left of the login: the mark, the name with its tagline and what dumpling
+/// is, over a faint grid
+class _Identity extends StatelessWidget {
+  final EdgeInsets padding;
+  final bool tags;
+
+  const _Identity({required this.padding, required this.tags});
+
+  @override
+  Widget build(BuildContext context) {
+    final glow = app.colors.brand.primaryDeep;
+    return CustomPaint(
+      painter: _GridPainter(
+        color: app.colors.primary.primaryFaded.withValues(alpha: 0.05),
+      ),
+      child: Padding(
+        padding: padding,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Row(
+                children: [
+                  const DumplingLogo(height: 127),
+                  34.gap(),
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      // the violet glow behind "dump"
+                      Positioned(
+                        left: 89 - 108,
+                        top: 46 - 108,
+                        width: 216,
+                        height: 216,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                glow.withValues(alpha: 0.30),
+                                glow.withValues(alpha: 0),
+                              ],
+                              stops: const [0, 0.65],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SvgPicture.asset(
+                            app.assets.name,
+                            width: 296.4,
+                            height: 79.2,
+                            semanticsLabel: 'Dumpling',
+                          ),
+                          12.gap(),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 1),
+                            child: Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(text: '${app.intl.login.tagline} '),
+                                  TextSpan(
+                                    text: app.intl.login.taglineAccent,
+                                    style: TextStyle(
+                                      color: app.colors.primary.secondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              style: TextStyle(
+                                fontSize: 32,
+                                height: 1,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: -0.6,
+                                color: app.colors.text.brand,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            if (tags) ...[
+              32.gap(),
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    _Tag(
+                      label: app.intl.login.tagLightweight,
+                      color: app.colors.primary.secondary,
+                    ),
+                    _Tag(
+                      label: app.intl.login.tagCanvas,
+                      color: app.colors.primary.primaryFaded,
+                    ),
+                    _Tag(
+                      label: app.intl.login.tagWinter,
+                      color: app.colors.primary.primaryFaded,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Tag extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const _Tag({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 36,
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: app.colors.surface.surface1,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: app.colors.surface.control),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 7,
+            height: 7,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          8.gap(),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: app.colors.text.brand,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Lines every 48 px, the first ones just off the top left
+class _GridPainter extends CustomPainter {
+  final Color color;
+
+  const _GridPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    for (double x = 47; x < size.width; x += 48) {
+      canvas.drawRect(Rect.fromLTWH(x, 0, 1, size.height), paint);
+    }
+    for (double y = 47; y < size.height; y += 48) {
+      canvas.drawRect(Rect.fromLTWH(0, y, size.width, 1), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _GridPainter old) => old.color != color;
 }

@@ -243,6 +243,8 @@ class AppMessages$nav$es implements AppMessages$nav$en {
   @override
   String get settings => 'Ajustes del workspace';
   @override
+  String get settingsDescription => 'Aplica solo a este workspace';
+  @override
   String language({required Object name}) => 'Idioma: ${name}';
   @override
   String get logout => 'Cerrar sesión';
@@ -284,6 +286,16 @@ class AppMessages$login$es implements AppMessages$login$en {
       'El usuario y la contraseña se definen en el servidor con';
   @override
   String get envHintAnd => 'y';
+  @override
+  String get tagline => 'Respaldos';
+  @override
+  String get taglineAccent => 'sin esfuerzo';
+  @override
+  String get tagLightweight => 'Ligero';
+  @override
+  String get tagCanvas => 'Canvas drag & drop';
+  @override
+  String get tagWinter => 'Hecho con Winter';
 }
 
 // Path: colors
@@ -444,8 +456,8 @@ class AppMessages$sources$es implements AppMessages$sources$en {
   @override
   String get title => 'Sources';
   @override
-  String description({required Object workspace}) =>
-      'Lo que respalda el workspace ${workspace}: bases de datos PostgreSQL.';
+  String get description =>
+      'Lo que respalda este workspace: bases de datos PostgreSQL.';
   @override
   String get create => 'Nuevo source';
   @override
@@ -556,8 +568,8 @@ class AppMessages$destinations$es implements AppMessages$destinations$en {
   @override
   String get title => 'Destinations';
   @override
-  String description({required Object workspace}) =>
-      'Donde el workspace ${workspace} escribe los backups: buckets S3.';
+  String get description =>
+      'Donde este workspace escribe los backups: buckets S3.';
   @override
   String get create => 'Nuevo destination';
   @override
@@ -707,8 +719,8 @@ class AppMessages$canvas$es implements AppMessages$canvas$en {
 
   // Translations
   @override
-  String description({required String workspace}) =>
-      'Conecta los orígenes y destinos de ${workspace}. Nada cambia hasta que guardes.';
+  String get description =>
+      'Conecta orígenes con destinos para armar los respaldos de este workspace.';
   @override
   String get save => 'Guardar canvas';
   @override
@@ -821,8 +833,8 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   @override
   String get title => 'Registro de ejecuciones';
   @override
-  String description({required String workspace}) =>
-      'Cada respaldo que ejecutó el workspace ${workspace}, del más reciente al más antiguo.';
+  String get description =>
+      'Cada ejecución de respaldo de este workspace, programada o manual. Horas en UTC, tu hora local debajo.';
   @override
   String get refresh => 'Actualizar';
   @override
@@ -884,8 +896,8 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   @override
   String get title => 'Respaldos';
   @override
-  String description({required String workspace}) =>
-      'Cómo van los respaldos del workspace ${workspace}.';
+  String get description =>
+      'Cada respaldo de este workspace, su última ejecución y la siguiente.';
   @override
   String get openEditor => 'Abrir el editor';
   @override
@@ -1324,6 +1336,7 @@ extension on AppMessagesEs {
       'nav.runs' => 'Registro de ejecuciones',
       'nav.failedRuns' => ({required Object count}) => '${count} con fallos',
       'nav.settings' => 'Ajustes del workspace',
+      'nav.settingsDescription' => 'Aplica solo a este workspace',
       'nav.language' => ({required Object name}) => 'Idioma: ${name}',
       'nav.logout' => 'Cerrar sesión',
       'nav.comingSoon' => 'Esta pantalla viene después.',
@@ -1341,6 +1354,11 @@ extension on AppMessagesEs {
       'login.envHint' =>
         'El usuario y la contraseña se definen en el servidor con',
       'login.envHintAnd' => 'y',
+      'login.tagline' => 'Respaldos',
+      'login.taglineAccent' => 'sin esfuerzo',
+      'login.tagLightweight' => 'Ligero',
+      'login.tagCanvas' => 'Canvas drag & drop',
+      'login.tagWinter' => 'Hecho con Winter',
       'colors.none' => 'Sin color',
       'colors.custom' => 'Color personalizado',
       'colors.apply' => 'Aplicar',
@@ -1417,9 +1435,8 @@ extension on AppMessagesEs {
       'connections.unreachable' => 'Sin conexión',
       'connections.failedTitle' => 'No se pudo conectar',
       'sources.title' => 'Sources',
-      'sources.description' => ({
-        required Object workspace,
-      }) => 'Lo que respalda el workspace ${workspace}: bases de datos PostgreSQL.',
+      'sources.description' =>
+        'Lo que respalda este workspace: bases de datos PostgreSQL.',
       'sources.create' => 'Nuevo source',
       'sources.search' => 'Buscar sources',
       'sources.columnName' => 'Nombre',
@@ -1481,9 +1498,8 @@ extension on AppMessagesEs {
       'sources.created' => ({required Object name}) => 'Source ${name} creado',
       'sources.saved' => ({required Object name}) => 'Source ${name} guardado',
       'destinations.title' => 'Destinations',
-      'destinations.description' => ({
-        required Object workspace,
-      }) => 'Donde el workspace ${workspace} escribe los backups: buckets S3.',
+      'destinations.description' =>
+        'Donde este workspace escribe los backups: buckets S3.',
       'destinations.create' => 'Nuevo destination',
       'destinations.search' => 'Buscar destinations',
       'destinations.columnName' => 'Nombre',
@@ -1588,9 +1604,7 @@ extension on AppMessagesEs {
       'destinations.typeSub.dropbox' => 'Carpeta de la app',
       'destinations.typeSub.azure' => 'Contenedor de almacenamiento',
       'destinations.typeSub.sftp' => 'Cualquier servidor SSH',
-      'canvas.description' => ({
-        required String workspace,
-      }) => 'Conecta los orígenes y destinos de ${workspace}. Nada cambia hasta que guardes.',
+      'canvas.description' => 'Conecta orígenes con destinos para armar los respaldos de este workspace.',
       'canvas.save' => 'Guardar canvas',
       'canvas.saved' => 'Canvas guardado',
       'canvas.newConfig' => 'Nueva config',
@@ -1737,9 +1751,7 @@ extension on AppMessagesEs {
       'canvas.guide.create' => 'Crear uno',
       'canvas.guide.place' => ({required String name}) => 'Colocar ${name}',
       'runs.title' => 'Registro de ejecuciones',
-      'runs.description' => ({
-        required String workspace,
-      }) => 'Cada respaldo que ejecutó el workspace ${workspace}, del más reciente al más antiguo.',
+      'runs.description' => 'Cada ejecución de respaldo de este workspace, programada o manual. Horas en UTC, tu hora local debajo.',
       'runs.refresh' => 'Actualizar',
       'runs.search' => 'Buscar por respaldo, origen o destino',
       'runs.columnStatus' => 'Estado',
@@ -1766,9 +1778,8 @@ extension on AppMessagesEs {
         'El log se escribe cuando termina la ejecución. Actualiza para verlo.',
       'runs.noLog' => 'Esta ejecución no tiene log.',
       'backups.title' => 'Respaldos',
-      'backups.description' => ({
-        required String workspace,
-      }) => 'Cómo van los respaldos del workspace ${workspace}.',
+      'backups.description' =>
+        'Cada respaldo de este workspace, su última ejecución y la siguiente.',
       'backups.openEditor' => 'Abrir el editor',
       'backups.healthy' => 'Correctos',
       'backups.failing' => 'Con fallas',

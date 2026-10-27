@@ -60,6 +60,7 @@ nav:
   runs: 'Registro de ejecuciones'
   failedRuns: '{count} con fallos'
   settings: 'Ajustes del workspace'
+  settingsDescription: 'Aplica solo a este workspace'
   language: 'Idioma: {name}'
   logout: 'Cerrar sesión'
   comingSoon: 'Esta pantalla viene después.'
@@ -78,6 +79,11 @@ login:
   failedHint: 'Revisa ambos e inténtalo de nuevo.'
   envHint: 'El usuario y la contraseña se definen en el servidor con'
   envHintAnd: 'y'
+  tagline: 'Respaldos'
+  taglineAccent: 'sin esfuerzo'
+  tagLightweight: 'Ligero'
+  tagCanvas: 'Canvas drag & drop'
+  tagWinter: 'Hecho con Winter'
 
 colors:
   none: 'Sin color'
@@ -143,7 +149,7 @@ connections:
 
 sources:
   title: 'Sources'
-  description: 'Lo que respalda el workspace {workspace}: bases de datos PostgreSQL.'
+  description: 'Lo que respalda este workspace: bases de datos PostgreSQL.'
   create: 'Nuevo source'
   search: 'Buscar sources'
   columnName: 'Nombre'
@@ -193,7 +199,7 @@ sources:
 
 destinations:
   title: 'Destinations'
-  description: 'Donde el workspace {workspace} escribe los backups: buckets S3.'
+  description: 'Donde este workspace escribe los backups: buckets S3.'
   create: 'Nuevo destination'
   search: 'Buscar destinations'
   columnName: 'Nombre'
@@ -263,7 +269,7 @@ destinations:
     sftp: 'Cualquier servidor SSH'
 
 canvas:
-  description: 'Conecta los orígenes y destinos de {workspace: String}. Nada cambia hasta que guardes.'
+  description: 'Conecta orígenes con destinos para armar los respaldos de este workspace.'
   save: 'Guardar canvas'
   saved: 'Canvas guardado'
   newConfig: 'Nueva config'
@@ -397,7 +403,7 @@ canvas:
 
 runs:
   title: 'Registro de ejecuciones'
-  description: 'Cada respaldo que ejecutó el workspace {workspace: String}, del más reciente al más antiguo.'
+  description: 'Cada ejecución de respaldo de este workspace, programada o manual. Horas en UTC, tu hora local debajo.'
   refresh: 'Actualizar'
   search: 'Buscar por respaldo, origen o destino'
   columnStatus: 'Estado'
@@ -424,7 +430,7 @@ runs:
 
 backups:
   title: 'Respaldos'
-  description: 'Cómo van los respaldos del workspace {workspace: String}.'
+  description: 'Cada respaldo de este workspace, su última ejecución y la siguiente.'
   openEditor: 'Abrir el editor'
   healthy: 'Correctos'
   failing: 'Con fallas'

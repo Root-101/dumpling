@@ -109,12 +109,14 @@ class _CanvasScreenState extends State<CanvasScreen> {
       (c) => c.state.data.current?.name ?? widget.workspace,
     );
     return Scaffold(
+      backgroundColor: app.colors.primary.background2,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           PageHeader(
             title: app.intl.nav.canvas,
-            description: app.intl.canvas.description(workspace: workspaceName),
+            workspace: workspaceName,
+            description: app.intl.canvas.description,
             actions: [
               BlocBuilder<CanvasCubit, CanvasState>(
                 builder: (context, state) => Tooltip(
@@ -140,37 +142,39 @@ class _CanvasScreenState extends State<CanvasScreen> {
             ],
           ),
           Expanded(
-            child: BlocConsumer<CanvasCubit, CanvasState>(
-              listener: _onState,
-              // the editor keeps its viewport: only built again when the
-              // canvas of another workspace is loaded
-              buildWhen: (a, b) =>
-                  a.data.loaded != b.data.loaded ||
-                  a.data.workspace != b.data.workspace ||
-                  (b is CanvasLoadingErrorState) !=
-                      (a is CanvasLoadingErrorState),
-              builder: (context, state) {
-                if (!state.data.loaded) {
-                  return state is CanvasLoadingErrorState
-                      ? ErrorPage.of(state.exception, onRetry: cubit.reload)
-                      : const LoadingPage();
-                }
-                return Row(
-                  key: ValueKey(state.data.workspace),
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Expanded(child: CanvasEditor()),
-                    BlocBuilder<CanvasCubit, CanvasState>(
-                      builder: (context, s) {
-                        final sel = s.data.selected;
-                        return sel == null
-                            ? const SizedBox.shrink()
-                            : ConfigInspector(data: s.data, config: sel);
-                      },
-                    ),
-                  ],
-                );
-              },
+            child: PagePanel(
+              child: BlocConsumer<CanvasCubit, CanvasState>(
+                listener: _onState,
+                // the editor keeps its viewport: only built again when the
+                // canvas of another workspace is loaded
+                buildWhen: (a, b) =>
+                    a.data.loaded != b.data.loaded ||
+                    a.data.workspace != b.data.workspace ||
+                    (b is CanvasLoadingErrorState) !=
+                        (a is CanvasLoadingErrorState),
+                builder: (context, state) {
+                  if (!state.data.loaded) {
+                    return state is CanvasLoadingErrorState
+                        ? ErrorPage.of(state.exception, onRetry: cubit.reload)
+                        : const LoadingPage();
+                  }
+                  return Row(
+                    key: ValueKey(state.data.workspace),
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Expanded(child: CanvasEditor()),
+                      BlocBuilder<CanvasCubit, CanvasState>(
+                        builder: (context, s) {
+                          final sel = s.data.selected;
+                          return sel == null
+                              ? const SizedBox.shrink()
+                              : ConfigInspector(data: s.data, config: sel);
+                        },
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ],

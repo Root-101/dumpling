@@ -90,12 +90,14 @@ class _RunsScreenState extends State<RunsScreen> {
       (c) => c.state.data.current?.name ?? widget.workspace,
     );
     return Scaffold(
+      backgroundColor: app.colors.primary.background2,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           PageHeader(
             title: app.intl.runs.title,
-            description: app.intl.runs.description(workspace: workspaceName),
+            workspace: workspaceName,
+            description: app.intl.runs.description,
             actions: [
               BlocBuilder<RunCubit, RunState>(
                 builder: (context, state) => PrimaryButton.secondary(
@@ -111,29 +113,31 @@ class _RunsScreenState extends State<RunsScreen> {
             ],
           ),
           Expanded(
-            child: BlocConsumer<RunCubit, RunState>(
-              listener: (context, state) {
-                if (state is RunProcessingErrorState) {
-                  app.snack.showError(
-                    message: state.message,
-                    context: app.context,
+            child: PagePanel(
+              child: BlocConsumer<RunCubit, RunState>(
+                listener: (context, state) {
+                  if (state is RunProcessingErrorState) {
+                    app.snack.showError(
+                      message: state.message,
+                      context: app.context,
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  if (!state.data.loaded) {
+                    return state is RunLoadingErrorState
+                        ? ErrorPage.of(state.exception, onRetry: cubit.reload)
+                        : const LoadingPage();
+                  }
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: app.dimensions.padding.xxl,
+                      vertical: app.dimensions.padding.xl,
+                    ),
+                    child: _buildTable(state.data),
                   );
-                }
-              },
-              builder: (context, state) {
-                if (!state.data.loaded) {
-                  return state is RunLoadingErrorState
-                      ? ErrorPage.of(state.exception, onRetry: cubit.reload)
-                      : const LoadingPage();
-                }
-                return SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: app.dimensions.padding.xxl,
-                    vertical: app.dimensions.padding.xl,
-                  ),
-                  child: _buildTable(state.data),
-                );
-              },
+                },
+              ),
             ),
           ),
         ],

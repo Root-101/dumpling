@@ -181,6 +181,9 @@ class TextColor {
 
   /// Labels and meta: 5.3:1 over surface1
   Color get subtle => const Color(0xFF8C8A98);
+
+  /// Brand copy, lilac tinted (login's tagline and tags): d9d2f2
+  Color get brand => const Color(0xFFD9D2F2);
 }
 
 class StatusColor {

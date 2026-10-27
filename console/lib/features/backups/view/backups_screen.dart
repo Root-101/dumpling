@@ -87,12 +87,14 @@ class _BackupsScreenState extends State<BackupsScreen> {
       (c) => c.state.data.current?.name ?? widget.workspace,
     );
     return Scaffold(
+      backgroundColor: app.colors.primary.background2,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           PageHeader(
             title: app.intl.backups.title,
-            description: app.intl.backups.description(workspace: workspaceName),
+            workspace: workspaceName,
+            description: app.intl.backups.description,
             actions: [
               PrimaryButton.primary(
                 onPressed: () => _open(RouteNames.canvas),
@@ -104,29 +106,31 @@ class _BackupsScreenState extends State<BackupsScreen> {
             ],
           ),
           Expanded(
-            child: BlocConsumer<BackupCubit, BackupState>(
-              listener: _onState,
-              builder: (context, state) {
-                if (!state.data.loaded) {
-                  return state is BackupLoadingErrorState
-                      ? ErrorPage.of(state.exception, onRetry: cubit.reload)
-                      : const LoadingPage();
-                }
-                return SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: app.dimensions.padding.xxl,
-                    vertical: app.dimensions.padding.xl,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildSummary(state.data),
-                      SizedBox(height: app.dimensions.padding.l),
-                      _buildTable(state.data),
-                    ],
-                  ),
-                );
-              },
+            child: PagePanel(
+              child: BlocConsumer<BackupCubit, BackupState>(
+                listener: _onState,
+                builder: (context, state) {
+                  if (!state.data.loaded) {
+                    return state is BackupLoadingErrorState
+                        ? ErrorPage.of(state.exception, onRetry: cubit.reload)
+                        : const LoadingPage();
+                  }
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: app.dimensions.padding.xxl,
+                      vertical: app.dimensions.padding.xl,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildSummary(state.data),
+                        SizedBox(height: app.dimensions.padding.l),
+                        _buildTable(state.data),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],

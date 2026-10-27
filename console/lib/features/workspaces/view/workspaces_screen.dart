@@ -38,6 +38,7 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: app.colors.primary.background2,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -56,15 +57,17 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
             ],
           ),
           Expanded(
-            child: BlocBuilder<WorkspaceCubit, WorkspaceState>(
-              builder: (context, state) {
-                if (!state.data.loaded) {
-                  return state is WorkspaceLoadingErrorState
-                      ? ErrorPage.of(state.exception, onRetry: cubit.load)
-                      : const LoadingPage();
-                }
-                return _buildGrid(state.data);
-              },
+            child: PagePanel(
+              child: BlocBuilder<WorkspaceCubit, WorkspaceState>(
+                builder: (context, state) {
+                  if (!state.data.loaded) {
+                    return state is WorkspaceLoadingErrorState
+                        ? ErrorPage.of(state.exception, onRetry: cubit.load)
+                        : const LoadingPage();
+                  }
+                  return _buildGrid(state.data);
+                },
+              ),
             ),
           ),
         ],

@@ -55,6 +55,7 @@ class _BaseScreenState extends State<BaseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: app.colors.primary.background2,
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -105,24 +106,10 @@ class _Rail extends StatelessWidget {
     return Container(
       width: 64,
       padding: const EdgeInsets.symmetric(vertical: 14),
-      decoration: BoxDecoration(
-        color: app.colors.primary.background2,
-        border: Border(right: BorderSide(color: app.colors.neutral.grey5)),
-      ),
+      color: app.colors.primary.background2,
       child: Column(
         spacing: app.dimensions.padding.s,
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            margin: const EdgeInsets.only(bottom: 6),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: app.colors.primary.primaryFaded.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const DumplingLogo(height: 21),
-          ),
           _WorkspaceSwitcher(workspace: workspace, selected: onWorkspaces),
           if (workspace != null) ...[
             item(
@@ -195,7 +182,7 @@ class _WorkspaceSwitcher extends StatelessWidget {
     }
     final radius = BorderRadius.circular(10);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 14),
       child: Tooltip(
         message: app.intl.nav.switchWorkspace(name: current.name),
         child: AppFocusRing(

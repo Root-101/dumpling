@@ -89,12 +89,14 @@ class _SourcesScreenState extends State<SourcesScreen> {
       (c) => c.state.data.current?.name ?? widget.workspace,
     );
     return Scaffold(
+      backgroundColor: app.colors.primary.background2,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           PageHeader(
             title: app.intl.sources.title,
-            description: app.intl.sources.description(workspace: workspaceName),
+            workspace: workspaceName,
+            description: app.intl.sources.description,
             actions: [
               BlocBuilder<SourceCubit, SourceState>(
                 builder: (context, state) => PrimaryButton.primary(
@@ -110,22 +112,24 @@ class _SourcesScreenState extends State<SourcesScreen> {
             ],
           ),
           Expanded(
-            child: BlocConsumer<SourceCubit, SourceState>(
-              listener: _onState,
-              builder: (context, state) {
-                if (!state.data.loaded) {
-                  return state is SourceLoadingErrorState
-                      ? ErrorPage.of(state.exception, onRetry: cubit.reload)
-                      : const LoadingPage();
-                }
-                return SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: app.dimensions.padding.xxl,
-                    vertical: app.dimensions.padding.xl,
-                  ),
-                  child: _buildTable(state.data),
-                );
-              },
+            child: PagePanel(
+              child: BlocConsumer<SourceCubit, SourceState>(
+                listener: _onState,
+                builder: (context, state) {
+                  if (!state.data.loaded) {
+                    return state is SourceLoadingErrorState
+                        ? ErrorPage.of(state.exception, onRetry: cubit.reload)
+                        : const LoadingPage();
+                  }
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: app.dimensions.padding.xxl,
+                      vertical: app.dimensions.padding.xl,
+                    ),
+                    child: _buildTable(state.data),
+                  );
+                },
+              ),
             ),
           ),
         ],

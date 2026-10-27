@@ -275,6 +275,9 @@ class AppMessages$nav$en {
   /// en: 'Workspace settings'
   String get settings => 'Workspace settings';
 
+  /// en: 'Applies only to this workspace'
+  String get settingsDescription => 'Applies only to this workspace';
+
   /// en: 'Language: {name: String}'
   String language({required String name}) => 'Language: ${name}';
 
@@ -331,6 +334,21 @@ class AppMessages$login$en {
 
   /// en: 'and'
   String get envHintAnd => 'and';
+
+  /// en: 'Backups made'
+  String get tagline => 'Backups made';
+
+  /// en: 'easy'
+  String get taglineAccent => 'easy';
+
+  /// en: 'Lightweight'
+  String get tagLightweight => 'Lightweight';
+
+  /// en: 'Drag & Drop Canvas'
+  String get tagCanvas => 'Drag & Drop Canvas';
+
+  /// en: 'Powered by Winter'
+  String get tagWinter => 'Powered by Winter';
 }
 
 // Path: colors
@@ -547,9 +565,9 @@ class AppMessages$sources$en {
   /// en: 'Sources'
   String get title => 'Sources';
 
-  /// en: 'What the {workspace: String} workspace backs up: PostgreSQL databases.'
-  String description({required String workspace}) =>
-      'What the ${workspace} workspace backs up: PostgreSQL databases.';
+  /// en: 'What this workspace backs up: PostgreSQL databases.'
+  String get description =>
+      'What this workspace backs up: PostgreSQL databases.';
 
   /// en: 'New source'
   String get create => 'New source';
@@ -705,9 +723,8 @@ class AppMessages$destinations$en {
   /// en: 'Destinations'
   String get title => 'Destinations';
 
-  /// en: 'Where the {workspace: String} workspace writes backups: S3 buckets.'
-  String description({required String workspace}) =>
-      'Where the ${workspace} workspace writes backups: S3 buckets.';
+  /// en: 'Where this workspace writes backups: S3 buckets.'
+  String get description => 'Where this workspace writes backups: S3 buckets.';
 
   /// en: 'New destination'
   String get create => 'New destination';
@@ -910,9 +927,9 @@ class AppMessages$canvas$en {
 
   // Translations
 
-  /// en: 'Connect the sources and destinations of {workspace: String}. Nothing changes until you save.'
-  String description({required String workspace}) =>
-      'Connect the sources and destinations of ${workspace}. Nothing changes until you save.';
+  /// en: 'Connect sources to destinations to build this workspace's backups.'
+  String get description =>
+      'Connect sources to destinations to build this workspace\'s backups.';
 
   /// en: 'Save canvas'
   String get save => 'Save canvas';
@@ -1044,9 +1061,9 @@ class AppMessages$runs$en {
   /// en: 'Run log'
   String get title => 'Run log';
 
-  /// en: 'Every backup the {workspace: String} workspace ran, newest first.'
-  String description({required String workspace}) =>
-      'Every backup the ${workspace} workspace ran, newest first.';
+  /// en: 'Every backup run in this workspace, scheduled or manual. Times in UTC, your local time below.'
+  String get description =>
+      'Every backup run in this workspace, scheduled or manual. Times in UTC, your local time below.';
 
   /// en: 'Refresh'
   String get refresh => 'Refresh';
@@ -1131,9 +1148,9 @@ class AppMessages$backups$en {
   /// en: 'Backups'
   String get title => 'Backups';
 
-  /// en: 'How the backups of the {workspace: String} workspace are doing.'
-  String description({required String workspace}) =>
-      'How the backups of the ${workspace} workspace are doing.';
+  /// en: 'Every backup in this workspace, its last run and the next one.'
+  String get description =>
+      'Every backup in this workspace, its last run and the next one.';
 
   /// en: 'Open pipeline editor'
   String get openEditor => 'Open pipeline editor';
@@ -1681,6 +1698,7 @@ extension on AppMessages {
       'nav.runs' => 'Run log',
       'nav.failedRuns' => ({required int count}) => '${count} failing',
       'nav.settings' => 'Workspace settings',
+      'nav.settingsDescription' => 'Applies only to this workspace',
       'nav.language' => ({required String name}) => 'Language: ${name}',
       'nav.logout' => 'Sign out',
       'nav.comingSoon' => 'This screen comes next.',
@@ -1697,6 +1715,11 @@ extension on AppMessages {
       'login.failedHint' => 'Check both and try again.',
       'login.envHint' => 'The username and password are set on the server with',
       'login.envHintAnd' => 'and',
+      'login.tagline' => 'Backups made',
+      'login.taglineAccent' => 'easy',
+      'login.tagLightweight' => 'Lightweight',
+      'login.tagCanvas' => 'Drag & Drop Canvas',
+      'login.tagWinter' => 'Powered by Winter',
       'colors.none' => 'No color',
       'colors.custom' => 'Custom color',
       'colors.apply' => 'Apply',
@@ -1769,9 +1792,8 @@ extension on AppMessages {
       'connections.unreachable' => 'Unreachable',
       'connections.failedTitle' => 'Couldn\'t connect',
       'sources.title' => 'Sources',
-      'sources.description' => ({
-        required String workspace,
-      }) => 'What the ${workspace} workspace backs up: PostgreSQL databases.',
+      'sources.description' =>
+        'What this workspace backs up: PostgreSQL databases.',
       'sources.create' => 'New source',
       'sources.search' => 'Search sources',
       'sources.columnName' => 'Name',
@@ -1830,9 +1852,8 @@ extension on AppMessages {
       'sources.created' => ({required String name}) => 'Source ${name} created',
       'sources.saved' => ({required String name}) => 'Source ${name} saved',
       'destinations.title' => 'Destinations',
-      'destinations.description' => ({
-        required String workspace,
-      }) => 'Where the ${workspace} workspace writes backups: S3 buckets.',
+      'destinations.description' =>
+        'Where this workspace writes backups: S3 buckets.',
       'destinations.create' => 'New destination',
       'destinations.search' => 'Search destinations',
       'destinations.columnName' => 'Name',
@@ -1936,9 +1957,8 @@ extension on AppMessages {
       'destinations.typeSub.dropbox' => 'App folder',
       'destinations.typeSub.azure' => 'Storage container',
       'destinations.typeSub.sftp' => 'Any SSH server',
-      'canvas.description' => ({
-        required String workspace,
-      }) => 'Connect the sources and destinations of ${workspace}. Nothing changes until you save.',
+      'canvas.description' =>
+        'Connect sources to destinations to build this workspace\'s backups.',
       'canvas.save' => 'Save canvas',
       'canvas.saved' => 'Canvas saved',
       'canvas.newConfig' => 'New config',
@@ -2086,9 +2106,7 @@ extension on AppMessages {
       'canvas.guide.create' => 'Create one',
       'canvas.guide.place' => ({required String name}) => 'Place ${name}',
       'runs.title' => 'Run log',
-      'runs.description' => ({
-        required String workspace,
-      }) => 'Every backup the ${workspace} workspace ran, newest first.',
+      'runs.description' => 'Every backup run in this workspace, scheduled or manual. Times in UTC, your local time below.',
       'runs.refresh' => 'Refresh',
       'runs.search' => 'Search by backup, source or destination',
       'runs.columnStatus' => 'Status',
@@ -2114,9 +2132,8 @@ extension on AppMessages {
         'The log is written when the run ends. Refresh to see it.',
       'runs.noLog' => 'This run has no log.',
       'backups.title' => 'Backups',
-      'backups.description' => ({
-        required String workspace,
-      }) => 'How the backups of the ${workspace} workspace are doing.',
+      'backups.description' =>
+        'Every backup in this workspace, its last run and the next one.',
       'backups.openEditor' => 'Open pipeline editor',
       'backups.healthy' => 'Healthy',
       'backups.failing' => 'Failing',
