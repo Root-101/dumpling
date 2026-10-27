@@ -340,7 +340,9 @@ class CanvasSettingsPopover extends StatelessWidget {
 
 class ContextMenuItem {
   final String label;
-  final SvgAsset icon;
+
+  /// null: [ContextMenuItem.header]
+  final SvgAsset? icon;
 
   /// null: disabled (shown greyed out)
   final VoidCallback? onTap;
@@ -352,6 +354,12 @@ class ContextMenuItem {
     this.onTap, {
     this.danger = false,
   });
+
+  /// The title of the items under it, e.g. SOURCES
+  const ContextMenuItem.header(this.label)
+    : icon = null,
+      onTap = null,
+      danger = false;
 }
 
 /// The right-click menu of the canvas
@@ -372,40 +380,56 @@ class CanvasContextMenu extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          for (final item in items)
-            Builder(
-              builder: (context) {
-                final color = item.onTap == null
-                    ? colors.text.subtle
-                    : item.danger
-                    ? colors.status.error
-                    : colors.text.secondary;
-                return TextButton(
-                  onPressed: item.onTap,
-                  style: TextButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 36),
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    alignment: Alignment.centerLeft,
-                    foregroundColor: color,
-                    disabledForegroundColor: color,
-                    textStyle: const TextStyle(
-                      fontFamily: AppText.sans,
-                      fontSize: 13,
+          for (final (i, item) in items.indexed)
+            if (item.icon == null)
+              Container(
+                width: double.infinity,
+                margin: EdgeInsets.only(top: i == 0 ? 0 : 4),
+                padding: const EdgeInsets.fromLTRB(10, 8, 10, 4),
+                // the headers after the first one part the groups
+                decoration: i == 0
+                    ? null
+                    : BoxDecoration(
+                        border: Border(
+                          top: BorderSide(color: colors.neutral.grey5),
+                        ),
+                      ),
+                child: Text(item.label.toUpperCase(), style: AppText.overline),
+              )
+            else
+              Builder(
+                builder: (context) {
+                  final color = item.onTap == null
+                      ? colors.text.subtle
+                      : item.danger
+                      ? colors.status.error
+                      : colors.text.secondary;
+                  return TextButton(
+                    onPressed: item.onTap,
+                    style: TextButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 36),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      alignment: Alignment.centerLeft,
+                      foregroundColor: color,
+                      disabledForegroundColor: color,
+                      textStyle: const TextStyle(
+                        fontFamily: AppText.sans,
+                        fontSize: 13,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: app.dimensions.radius.xs,
+                      ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: app.dimensions.radius.xs,
+                    child: Row(
+                      children: [
+                        item.icon!.build(size: 15, color: color),
+                        const SizedBox(width: 10),
+                        Expanded(child: Text(item.label)),
+                      ],
                     ),
-                  ),
-                  child: Row(
-                    children: [
-                      item.icon.build(size: 15, color: color),
-                      const SizedBox(width: 10),
-                      Expanded(child: Text(item.label)),
-                    ],
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
         ],
       ),
     );

@@ -1,26 +1,20 @@
-import 'dart:math' as math;
-
+import 'package:flutter/foundation.dart';
 import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// The sketch of a canvas at the top of a workspace card: up to 4 configs,
-/// each one wired from a source to one of up to 3 destinations; the configs
-/// that fail have a red border. Only the counts, not the real canvas
+/// The sketch of a canvas at the top of a workspace card: its first configs
+/// ([links], 3 at most), each wired from its source to its destination, and
+/// only the sources and destinations they connect; the configs that fail
+/// have a red border. Empty without configs
 class WorkspacePreviewPainter extends CustomPainter {
   static const double height = 112;
   static const double _width = 300;
   static const Size _box = Size(60, 16);
   static const double _row = 22;
 
-  final int configs;
-  final int destinations;
-  final int failing;
+  final List<WorkspacePreviewLink> links;
 
-  WorkspacePreviewPainter({
-    required this.configs,
-    required this.destinations,
-    required this.failing,
-  });
+  WorkspacePreviewPainter({required this.links});
 
   /// Top of the row [i] of [count], centered in the height
   static double _top(int i, int count) =>
@@ -28,12 +22,17 @@ class WorkspacePreviewPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (links.isEmpty) return;
     final colors = app.colors;
     // the sketch is 300 wide, centered in the card
     canvas.translate((size.width - _width) / 2, 0);
 
-    final rows = math.min(configs, 4);
-    final columns = math.min(destinations, 3);
+    final sources = [
+      ...{for (final l in links) l.source},
+    ];
+    final destinations = [
+      ...{for (final l in links) l.destination},
+    ];
     final wire = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.2
@@ -53,30 +52,40 @@ class WorkspacePreviewPainter extends CustomPainter {
       );
     }
 
-    for (var i = 0; i < rows; i++) {
-      final y = _top(i, rows);
-      final target = math.max(math.min(i, columns - 1), 0);
-      final dy = _top(target, math.max(columns, 1)) + 8;
-      canvas.drawLine(Offset(90, y + 8), Offset(120, y + 8), wire);
-      if (columns > 0) {
-        canvas.drawPath(
-          Path()
-            ..moveTo(180, y + 8)
-            ..cubicTo(195, y + 8, 195, dy, 210, dy),
-          wire,
-        );
-      }
-      box(30, y, colors.surface.border);
-      box(120, y, i < failing ? colors.status.error : colors.surface.wire);
+    void curve(double x1, double y1, double x2, double y2) {
+      final mid = (x1 + x2) / 2;
+      canvas.drawPath(
+        Path()
+          ..moveTo(x1, y1)
+          ..cubicTo(mid, y1, mid, y2, x2, y2),
+        wire,
+      );
     }
-    for (var j = 0; j < columns; j++) {
-      box(210, _top(j, columns), colors.brand.accent);
+
+    for (final (i, l) in links.indexed) {
+      final y = _top(i, links.length) + 8;
+      final sy = _top(sources.indexOf(l.source), sources.length) + 8;
+      final dy =
+          _top(destinations.indexOf(l.destination), destinations.length) + 8;
+      curve(90, sy, 120, y);
+      curve(180, y, 210, dy);
+    }
+    for (final (j, _) in sources.indexed) {
+      box(30, _top(j, sources.length), colors.surface.border);
+    }
+    for (final (i, l) in links.indexed) {
+      box(
+        120,
+        _top(i, links.length),
+        l.failing ? colors.status.error : colors.surface.wire,
+      );
+    }
+    for (final (k, _) in destinations.indexed) {
+      box(210, _top(k, destinations.length), colors.brand.accent);
     }
   }
 
   @override
   bool shouldRepaint(covariant WorkspacePreviewPainter old) =>
-      old.configs != configs ||
-      old.destinations != destinations ||
-      old.failing != failing;
+      !listEquals(old.links, links);
 }

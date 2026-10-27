@@ -230,8 +230,12 @@ class StepsDialogTemplate extends StatelessWidget {
         selected: on,
         child: Row(
           children: [
-            // the label before the line: it only shrinks when there is no room
-            Flexible(flex: 4, child: step),
+            // the label as wide as it is (long ones end in …), the line
+            // takes the rest, up to the next step
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 220),
+              child: step,
+            ),
             10.gap(),
             Expanded(
               child: Container(

@@ -30,7 +30,10 @@ typedef _Menu = ({Offset at, List<ContextMenuItem> items});
 /// The interactive canvas editor. World coordinates are those of the
 /// nodes; the view shows them translated by [_pan] and scaled by [_zoom]
 class CanvasEditor extends StatefulWidget {
-  const CanvasEditor({super.key});
+  /// Opens with the nodes centered (at most at 100 %); off, at the origin
+  final bool center;
+
+  const CanvasEditor({this.center = true, super.key});
 
   @override
   State<CanvasEditor> createState() => _CanvasEditorState();
@@ -73,6 +76,17 @@ class _CanvasEditorState extends State<CanvasEditor>
   CanvasCubit get _cubit => context.read<CanvasCubit>();
 
   @override
+  void initState() {
+    super.initState();
+    // after the first frame: the view has its size
+    if (widget.center) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _fit(maxZoom: 1);
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _flow.dispose();
     _focus.dispose();
@@ -109,9 +123,21 @@ class _CanvasEditorState extends State<CanvasEditor>
     _pan = Offset.zero;
   });
 
-  void _fit() {
+  /// From the first column label to the end of the last one
+  static const double _labelsLeft = 40, _labelsRight = 880;
+
+  void _fit({double maxZoom = 1.25}) {
     final b = CanvasGeometry.bounds(_cubit.state.data);
-    if (b.isEmpty) return;
+    // nothing yet: the column labels centered across, at their height
+    if (b.isEmpty) {
+      return setState(() {
+        _zoom = 1;
+        _pan = Offset(
+          (_viewSize.width - (_labelsRight - _labelsLeft)) / 2 - _labelsLeft,
+          0,
+        );
+      });
+    }
     const pad = 64.0;
     final size = _viewSize;
     final z = math
@@ -119,7 +145,7 @@ class _CanvasEditorState extends State<CanvasEditor>
           (size.width - pad * 2) / b.width,
           (size.height - pad * 2) / b.height,
         )
-        .clamp(_minZoom, 1.25);
+        .clamp(_minZoom, maxZoom);
     setState(() {
       _zoom = z;
       _pan = Offset(
@@ -313,7 +339,13 @@ class _CanvasEditorState extends State<CanvasEditor>
   /// Add a node of the pool where the menu was opened
   List<ContextMenuItem> _emptyMenu(Offset world) {
     final at = Offset(world.dx.roundToDouble(), world.dy.roundToDouble());
-    return [..._sourceItems(at), ..._destinationItems(at)];
+    final columns = app.intl.canvas.columns;
+    return [
+      ContextMenuItem.header(columns.sources),
+      ..._sourceItems(at),
+      ContextMenuItem.header(columns.destinations),
+      ..._destinationItems(at),
+    ];
   }
 
   /// One item per source off the canvas; [at] null: stacked in its column
@@ -579,10 +611,13 @@ class _CanvasEditorState extends State<CanvasEditor>
                     child: ColoredBox(
                       color: colors.surface.background,
                       child: CustomPaint(
-                        painter: GridDotPainter(
+                        // the lines of the login, following the pan and zoom
+                        painter: GridLinePainter(
                           offset: _pan,
                           scale: _zoom,
-                          color: Colors.white.withValues(alpha: 0.11),
+                          color: colors.primary.primaryFaded.withValues(
+                            alpha: 0.05,
+                          ),
                         ),
                       ),
                     ),
@@ -838,90 +873,11 @@ class _CanvasEditorState extends State<CanvasEditor>
       top: 60,
       child: Text(text, style: AppText.overline),
     );
-    Widget hint(
-      double left,
-      double width,
-      String text,
-      Color border,
-      Color color, {
-      bool dot = false,
-    }) => Positioned(
-      left: left,
-      top: 760,
-      child: IgnorePointer(
-        child: DashedBorder(
-          color: border,
-          child: Container(
-            width: width,
-            height: 44,
-            alignment: Alignment.center,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (dot) ...[
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: color,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                ],
-                Text(
-                  text,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: color,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-
     return UnboundedStack(
       children: [
         label(40, app.intl.canvas.columns.sources.toUpperCase()),
         label(380, app.intl.canvas.columns.configs.toUpperCase()),
         label(760, app.intl.canvas.columns.destinations.toUpperCase()),
-        hint(
-          40,
-          200,
-          app.intl.canvas.hints.dragFromSource,
-          colors.brand.accent.withValues(alpha: 0.75),
-          colors.brand.accent,
-          dot: true,
-        ),
-        hint(
-          380,
-          240,
-          app.intl.canvas.configHere,
-          colors.brand.primary.withValues(alpha: 0.6),
-          colors.text.muted,
-        ),
-        hint(
-          760,
-          256,
-          app.intl.canvas.hints.dropOnDestination,
-          colors.brand.accent.withValues(alpha: 0.75),
-          colors.brand.accent,
-        ),
-        Positioned(
-          left: 0,
-          top: 0,
-          child: IgnorePointer(
-            child: CustomPaint(
-              painter: _HintArrowsPainter(
-                colors.brand.accent.withValues(alpha: 0.7),
-              ),
-            ),
-          ),
-        ),
         Positioned(
           left: 0,
           top: 0,
@@ -1011,29 +967,4 @@ class _CanvasEditorState extends State<CanvasEditor>
       ],
     );
   }
-}
-
-/// The dotted arrows between the hints at the bottom
-class _HintArrowsPainter extends CustomPainter {
-  final Color color;
-
-  _HintArrowsPainter(this.color);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 1.5
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-    final path = Path()
-      ..moveTo(246, 782)
-      ..lineTo(374, 782)
-      ..moveTo(626, 782)
-      ..lineTo(754, 782);
-    drawDashedPath(canvas, path, paint, dash: 2, gap: 5);
-  }
-
-  @override
-  bool shouldRepaint(covariant _HintArrowsPainter old) => old.color != color;
 }

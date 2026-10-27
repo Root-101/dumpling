@@ -84,17 +84,12 @@ class _WorkspaceCardState extends State<WorkspaceCard> {
         border: Border(bottom: BorderSide(color: border)),
       ),
       child: CustomPaint(
-        painter: GridDotPainter(
-          offset: Offset.zero,
-          scale: 1,
+        // the grid of the canvas, smaller like the preview
+        painter: GridLinePainter(
           spacing: 12,
-          color: app.colors.neutral.white.withValues(alpha: 0.10),
+          color: app.colors.primary.primaryFaded.withValues(alpha: 0.05),
         ),
-        foregroundPainter: WorkspacePreviewPainter(
-          configs: _stats.configs,
-          destinations: _stats.destinations,
-          failing: _stats.failing,
-        ),
+        foregroundPainter: WorkspacePreviewPainter(links: _stats.preview),
       ),
     );
   }

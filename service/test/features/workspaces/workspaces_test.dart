@@ -85,6 +85,7 @@ void main() {
         'failing': 0,
         'running': 0,
         'last_run_at': null,
+        'preview': [],
       });
     });
 

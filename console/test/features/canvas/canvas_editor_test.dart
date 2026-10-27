@@ -61,7 +61,8 @@ void main() {
         home: BlocProvider.value(
           value: cubit,
           // a config opens in its dialog, over the editor
-          child: const Scaffold(body: CanvasEditor()),
+          // at the origin, so world() maps the nodes as they are
+          child: const Scaffold(body: CanvasEditor(center: false)),
         ),
       ),
     );
@@ -105,9 +106,12 @@ void main() {
     final from = CanvasGeometry.sourceOut(s.source('users')!);
     final to = s.destination('ca')!.pos + const Offset(100, 40);
     final gesture = await tester.startGesture(world(tester, from));
-    await gesture.moveTo(world(tester, (from + to) / 2));
+    await gesture.moveTo(world(tester, from + const Offset(20, 0)));
     await tester.pump();
-    expect(find.text('Config is created here'), findsWidgets);
+    await gesture.moveTo(world(tester, from + const Offset(160, 420)));
+    await tester.pump();
+    // over empty space, the box of the config to be, halfway along the wire
+    expect(find.text('Config is created here'), findsOneWidget);
     await gesture.moveTo(world(tester, to));
     await tester.pump();
     expect(find.text('Release to create the config'), findsOneWidget);

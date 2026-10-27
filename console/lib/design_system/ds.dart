@@ -16,7 +16,7 @@ export 'customs/app_switch.dart';
 export 'customs/app_view_toggle.dart';
 export 'customs/dashed.dart';
 export 'customs/dumpling_logo.dart';
-export 'customs/grid_dot_painter.dart';
+export 'customs/grid_line_painter.dart';
 export 'customs/key_cap.dart';
 export 'customs/page_header.dart';
 export 'customs/type_badge.dart';

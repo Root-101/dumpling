@@ -291,7 +291,7 @@ class _Identity extends StatelessWidget {
   Widget build(BuildContext context) {
     final glow = app.colors.brand.primaryDeep;
     return CustomPaint(
-      painter: _GridPainter(
+      painter: GridLinePainter(
         color: app.colors.primary.primaryFaded.withValues(alpha: 0.05),
       ),
       child: Padding(
@@ -440,25 +440,4 @@ class _Tag extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Lines every 48 px, the first ones just off the top left
-class _GridPainter extends CustomPainter {
-  final Color color;
-
-  const _GridPainter({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = color;
-    for (double x = 47; x < size.width; x += 48) {
-      canvas.drawRect(Rect.fromLTWH(x, 0, 1, size.height), paint);
-    }
-    for (double y = 47; y < size.height; y += 48) {
-      canvas.drawRect(Rect.fromLTWH(0, y, size.width, 1), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _GridPainter old) => old.color != color;
 }

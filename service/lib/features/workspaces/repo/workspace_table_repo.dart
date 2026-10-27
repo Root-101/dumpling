@@ -36,6 +36,31 @@ class WorkspaceTableRepo {
           },
         )
         .get();
+    // the first configs of each workspace, for the sketch of its canvas
+    final links = <String, List<WorkspacePreviewLink>>{};
+    final configs = await _db
+        .customSelect(
+          'SELECT c.workspace_slug, c.source_id, c.destination_id, '
+          '(SELECT status FROM run WHERE config_id = c.id '
+          'ORDER BY started_at DESC LIMIT 1) AS last_status '
+          'FROM config c ORDER BY c.created_at, c.id',
+          readsFrom: {_db.configTable, _db.runTable},
+        )
+        .get();
+    for (final row in configs) {
+      final list = links.putIfAbsent(
+        row.read<String>('workspace_slug'),
+        () => [],
+      );
+      if (list.length == WorkspaceStats.previewConfigs) continue;
+      list.add(
+        WorkspacePreviewLink(
+          source: row.read<String>('source_id'),
+          destination: row.read<String>('destination_id'),
+          failing: row.readNullable<String>('last_status') == 'failed',
+        ),
+      );
+    }
     return {
       for (final row in rows)
         row.read<String>('slug'): WorkspaceStats(
@@ -45,6 +70,7 @@ class WorkspaceTableRepo {
           failing: row.read<int>('failing'),
           running: row.read<int>('running'),
           lastRunAt: row.readNullable<DateTime>('last_run_at'),
+          preview: links[row.read<String>('slug')] ?? const [],
         ),
     };
   }

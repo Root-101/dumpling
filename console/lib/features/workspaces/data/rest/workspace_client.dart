@@ -83,6 +83,7 @@ class WorkspaceStatsResponse {
   final int failing;
   final int running;
   final DateTime? lastRunAt;
+  final List<WorkspacePreviewLink> preview;
 
   WorkspaceStatsResponse({
     required this.sources,
@@ -91,6 +92,7 @@ class WorkspaceStatsResponse {
     required this.failing,
     required this.running,
     required this.lastRunAt,
+    required this.preview,
   });
 
   factory WorkspaceStatsResponse.fromJson(Map<String, dynamic> json) {
@@ -103,6 +105,14 @@ class WorkspaceStatsResponse {
       lastRunAt: json['last_run_at'] == null
           ? null
           : DateTime.parse(json['last_run_at']),
+      preview: [
+        for (final l in (json['preview'] as List? ?? const []))
+          (
+            source: l['source'] as String,
+            destination: l['destination'] as String,
+            failing: l['failing'] as bool,
+          ),
+      ],
     );
   }
 }

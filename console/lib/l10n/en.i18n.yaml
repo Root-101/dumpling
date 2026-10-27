@@ -430,9 +430,6 @@ canvas:
     sources: 'Sources'
     configs: 'Config · one per connection'
     destinations: 'Destinations'
-  hints:
-    dragFromSource: 'Drag from a source port'
-    dropOnDestination: 'Drop on a folder or bucket'
   folder: 'Folder'
   testRun:
     button: 'Test run'

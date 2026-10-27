@@ -67,6 +67,7 @@ extension WorkspaceResponseMapping on WorkspaceResponse {
               failing: stats!.failing,
               running: stats!.running,
               lastRunAt: stats!.lastRunAt,
+              preview: stats!.preview,
             ),
     );
   }

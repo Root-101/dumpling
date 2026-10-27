@@ -56,12 +56,18 @@ class WorkspaceModel {
 /// What a workspace has: its nodes, the configs whose last run failed, the
 /// runs in progress and when the last one started.
 class WorkspaceStats {
+  /// The most configs [preview] has.
+  static const int previewConfigs = 3;
+
   final int sources;
   final int destinations;
   final int configs;
   final int failing;
   final int running;
   final DateTime? lastRunAt;
+
+  /// The first configs (the oldest), with what they connect.
+  final List<WorkspacePreviewLink> preview;
 
   WorkspaceStats({
     required this.sources,
@@ -70,6 +76,7 @@ class WorkspaceStats {
     required this.failing,
     required this.running,
     this.lastRunAt,
+    this.preview = const [],
   });
 
   Map<String, Object?> toJson() => {
@@ -79,6 +86,27 @@ class WorkspaceStats {
     'failing': failing,
     'running': running,
     'last_run_at': lastRunAt?.toUtc().toIso8601String(),
+    'preview': preview,
+  };
+}
+
+/// A config of [WorkspaceStats.preview]: its source, its destination and
+/// whether its last run failed.
+class WorkspacePreviewLink {
+  final String source;
+  final String destination;
+  final bool failing;
+
+  const WorkspacePreviewLink({
+    required this.source,
+    required this.destination,
+    required this.failing,
+  });
+
+  Map<String, Object?> toJson() => {
+    'source': source,
+    'destination': destination,
+    'failing': failing,
   };
 }
 

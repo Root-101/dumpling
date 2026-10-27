@@ -263,6 +263,11 @@ void main() {
       expect(stats['failing'], 2);
       expect(stats['running'], 0);
       expect(stats['last_run_at'], isNotNull);
+      // and the sketch of its canvas: its first configs, what they connect
+      final preview = stats['preview'] as List;
+      expect(preview, hasLength(2));
+      expect({for (final l in preview) l['source']}, hasLength(1));
+      expect(preview.every((l) => l['failing'] == true), isTrue);
     });
   });
 

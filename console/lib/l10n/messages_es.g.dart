@@ -916,10 +916,6 @@ class AppMessages$canvas$es implements AppMessages$canvas$en {
   late final AppMessages$canvas$columns$es columns =
       AppMessages$canvas$columns$es._(_root);
   @override
-  late final AppMessages$canvas$hints$es hints = AppMessages$canvas$hints$es._(
-    _root,
-  );
-  @override
   String get folder => 'Carpeta';
   @override
   late final AppMessages$canvas$testRun$es testRun =
@@ -1386,19 +1382,6 @@ class AppMessages$canvas$columns$es implements AppMessages$canvas$columns$en {
   String get configs => 'Config · una por conexión';
   @override
   String get destinations => 'Destinos';
-}
-
-// Path: canvas.hints
-class AppMessages$canvas$hints$es implements AppMessages$canvas$hints$en {
-  AppMessages$canvas$hints$es._(this._root);
-
-  final AppMessagesEs _root; // ignore: unused_field
-
-  // Translations
-  @override
-  String get dragFromSource => 'Arrastra desde el puerto de un origen';
-  @override
-  String get dropOnDestination => 'Suelta en una carpeta o bucket';
 }
 
 // Path: canvas.testRun
@@ -1995,8 +1978,6 @@ extension on AppMessagesEs {
       'canvas.columns.sources' => 'Orígenes',
       'canvas.columns.configs' => 'Config · una por conexión',
       'canvas.columns.destinations' => 'Destinos',
-      'canvas.hints.dragFromSource' => 'Arrastra desde el puerto de un origen',
-      'canvas.hints.dropOnDestination' => 'Suelta en una carpeta o bucket',
       'canvas.folder' => 'Carpeta',
       'canvas.testRun.button' => 'Probar',
       'canvas.testRun.help' => 'Comprueba que cada flujo completo podría ejecutarse, sin hacer backups: cada origen conecta y pg_dump puede respaldarlo, cada destino acepta escrituras en sus carpetas.',

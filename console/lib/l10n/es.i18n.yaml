@@ -430,9 +430,6 @@ canvas:
     sources: 'Orígenes'
     configs: 'Config · una por conexión'
     destinations: 'Destinos'
-  hints:
-    dragFromSource: 'Arrastra desde el puerto de un origen'
-    dropOnDestination: 'Suelta en una carpeta o bucket'
   folder: 'Carpeta'
   testRun:
     button: 'Probar'

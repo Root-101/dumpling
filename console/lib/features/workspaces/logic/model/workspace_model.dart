@@ -25,6 +25,13 @@ class WorkspaceModel {
 }
 
 /// What a workspace has. [failing] counts the configs whose last run failed
+/// A config of [WorkspaceStatsModel.preview]: what it connects, by id
+typedef WorkspacePreviewLink = ({
+  String source,
+  String destination,
+  bool failing,
+});
+
 class WorkspaceStatsModel {
   final int sources;
   final int destinations;
@@ -33,6 +40,9 @@ class WorkspaceStatsModel {
   final int running;
   final DateTime? lastRunAt;
 
+  /// The first 3 configs (the oldest), for the sketch of the canvas
+  final List<WorkspacePreviewLink> preview;
+
   const WorkspaceStatsModel({
     required this.sources,
     required this.destinations,
@@ -40,6 +50,7 @@ class WorkspaceStatsModel {
     required this.failing,
     required this.running,
     this.lastRunAt,
+    this.preview = const [],
   });
 }
 

@@ -1190,9 +1190,6 @@ class AppMessages$canvas$en {
       AppMessages$canvas$inspector$en._(_root);
   late final AppMessages$canvas$columns$en columns =
       AppMessages$canvas$columns$en._(_root);
-  late final AppMessages$canvas$hints$en hints = AppMessages$canvas$hints$en._(
-    _root,
-  );
 
   /// en: 'Folder'
   String get folder => 'Folder';
@@ -1824,21 +1821,6 @@ class AppMessages$canvas$columns$en {
   String get destinations => 'Destinations';
 }
 
-// Path: canvas.hints
-class AppMessages$canvas$hints$en {
-  AppMessages$canvas$hints$en._(this._root);
-
-  final AppMessages _root; // ignore: unused_field
-
-  // Translations
-
-  /// en: 'Drag from a source port'
-  String get dragFromSource => 'Drag from a source port';
-
-  /// en: 'Drop on a folder or bucket'
-  String get dropOnDestination => 'Drop on a folder or bucket';
-}
-
 // Path: canvas.testRun
 class AppMessages$canvas$testRun$en {
   AppMessages$canvas$testRun$en._(this._root);
@@ -2444,8 +2426,6 @@ extension on AppMessages {
       'canvas.columns.sources' => 'Sources',
       'canvas.columns.configs' => 'Config · one per connection',
       'canvas.columns.destinations' => 'Destinations',
-      'canvas.hints.dragFromSource' => 'Drag from a source port',
-      'canvas.hints.dropOnDestination' => 'Drop on a folder or bucket',
       'canvas.folder' => 'Folder',
       'canvas.testRun.button' => 'Test run',
       'canvas.testRun.help' => 'Checks that every complete flow could run, without backing anything up: each source connects and pg_dump can dump it, each destination takes a write in its folders.',
