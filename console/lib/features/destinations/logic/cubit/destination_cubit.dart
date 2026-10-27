@@ -191,13 +191,14 @@ enum DestinationAction { tested, folderAdded, folderDeleted, deleted }
 /// The loaded destinations and what the search and the filter leave
 /// ([visibleDestinations], filled on every change). [usage] counts the
 /// backups of each destination by its id, and within it by folder (null: the
-/// bucket root)
+/// bucket root); [configs] are those backups, for the detail
 class DestinationData {
   final String? workspace;
   final bool loaded;
   final List<DestinationTypeModel> types;
   final List<DestinationModel> destinations;
   final Map<String, Map<String?, int>> usage;
+  final List<ConfigModel> configs;
   final String query;
 
   /// Null: every type
@@ -213,6 +214,7 @@ class DestinationData {
     required this.types,
     required this.destinations,
     required this.usage,
+    required this.configs,
     required this.query,
     required this.type,
     required this.testing,
@@ -226,6 +228,7 @@ class DestinationData {
         types: const [],
         destinations: const [],
         usage: const {},
+        configs: const [],
         query: '',
         type: null,
         testing: const {},
@@ -238,6 +241,7 @@ class DestinationData {
     required List<DestinationTypeModel> types,
     required List<DestinationModel> destinations,
     required Map<String, Map<String?, int>> usage,
+    required List<ConfigModel> configs,
     required String query,
     required String? type,
     required Set<String> testing,
@@ -260,6 +264,7 @@ class DestinationData {
       types: types,
       destinations: destinations,
       usage: usage,
+      configs: configs,
       query: query,
       type: type,
       testing: testing,
@@ -272,6 +277,7 @@ class DestinationData {
     List<DestinationTypeModel>? types,
     List<DestinationModel>? destinations,
     Map<String, Map<String?, int>>? usage,
+    List<ConfigModel>? configs,
     String? query,
     String? Function()? type,
     Set<String>? testing,
@@ -281,6 +287,7 @@ class DestinationData {
     types: types ?? this.types,
     destinations: destinations ?? this.destinations,
     usage: usage ?? this.usage,
+    configs: configs ?? this.configs,
     query: query ?? this.query,
     type: type == null ? this.type : type(),
     testing: testing ?? this.testing,
@@ -302,6 +309,7 @@ class DestinationData {
       types: types,
       destinations: destinations,
       usage: usage,
+      configs: configs,
     );
   }
 
@@ -326,6 +334,12 @@ class DestinationData {
   /// How many backups write to [folder] of [destination] (null: its root)
   int folderUsageOf(DestinationModel destination, String? folder) =>
       usage[destination.id]?[folder] ?? 0;
+
+  /// The backups that write to [folder] of [destination] (null: its root)
+  List<ConfigModel> writersOf(DestinationModel destination, String? folder) =>
+      configs
+          .where((c) => c.destinationId == destination.id && c.folder == folder)
+          .toList();
 
   /// How many filters are on (the search box apart)
   int get activeFilters => type == null ? 0 : 1;

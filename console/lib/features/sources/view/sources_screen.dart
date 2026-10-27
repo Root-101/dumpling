@@ -15,8 +15,9 @@ class SourcesScreenNavigator {
   }
 }
 
-/// The sources of a workspace: what it backs up, how many backups use each
-/// one and how its last connection test went
+/// The sources of a workspace, as rows or cards: what it backs up, how many
+/// backups use each one and how its last connection test went. One opens in a
+/// dialog with its detail
 class SourcesScreen extends StatefulWidget {
   static final SourcesScreenNavigator navigator = SourcesScreenNavigator();
 
@@ -31,6 +32,8 @@ class SourcesScreen extends StatefulWidget {
 class _SourcesScreenState extends State<SourcesScreen> {
   late final SourceCubit cubit;
   final _searchController = TextEditingController();
+
+  AppView _view = AppView.list;
 
   @override
   void initState() {
@@ -73,6 +76,10 @@ class _SourcesScreenState extends State<SourcesScreen> {
     );
   }
 
+  void _openDetail(SourceModel source) {
+    SourceDialog.open(source, onEdit: (s) => _openForm(source: s));
+  }
+
   void _confirmDelete(SourceModel source) {
     ConfirmDialog.show(
       title: app.intl.sources.deleteTitle(name: source.name),
@@ -98,6 +105,14 @@ class _SourcesScreenState extends State<SourcesScreen> {
             workspace: workspaceName,
             description: app.intl.sources.description,
             actions: [
+              BlocBuilder<SourceCubit, SourceState>(
+                builder: (context, state) => AppRefreshButton(
+                  onPressed: cubit.reload,
+                  loading:
+                      state is SourceLoadingInProgressState &&
+                      state.data.loaded,
+                ),
+              ),
               BlocBuilder<SourceCubit, SourceState>(
                 builder: (context, state) => PrimaryButton.primary(
                   // the form needs the types
@@ -170,8 +185,16 @@ class _SourcesScreenState extends State<SourcesScreen> {
           ),
           app.dimensions.padding.sm.gap(),
           _buildFilter(data),
+          app.dimensions.padding.sm.gap(),
+          Container(width: 1, height: 28, color: app.colors.neutral.grey5),
+          app.dimensions.padding.sm.gap(),
+          AppViewToggle(
+            value: _view,
+            onChanged: (view) => setState(() => _view = view),
+          ),
         ],
       ),
+      body: _view == AppView.grid ? _buildGrid(data) : null,
       columns: [
         AppTableColumn(app.intl.sources.columnName, flex: 13),
         AppTableColumn(app.intl.sources.columnType, flex: 10),
@@ -209,6 +232,8 @@ class _SourcesScreenState extends State<SourcesScreen> {
       for (final s in data.sources) s.type,
     };
     return AppFilterButton(
+      // one group: the 280 of the design
+      columnWidth: 264,
       activeCount: data.activeFilters,
       onClear: _clearFilters,
       note: app.intl.common.shownOf(
@@ -242,7 +267,6 @@ class _SourcesScreenState extends State<SourcesScreen> {
   List<Widget> _buildCells(SourceData data, SourceModel source) {
     final used = data.usageOf(source);
     final testing = data.testing.contains(source.id);
-    final major = source.lastCheck?.serverMajor;
     final muted = TextStyle(fontSize: 14, color: app.colors.neutral.grey3);
     return [
       Row(
@@ -251,7 +275,7 @@ class _SourcesScreenState extends State<SourcesScreen> {
           const SizedBox(width: 10),
           Flexible(
             child: InkWell(
-              onTap: () => _openForm(source: source),
+              onTap: () => _openDetail(source),
               child: Text(
                 source.name,
                 maxLines: 1,
@@ -263,7 +287,7 @@ class _SourcesScreenState extends State<SourcesScreen> {
         ],
       ),
       Text(
-        [SourceTypeLook.labelOf(source.type), ?major].join(' '),
+        _typeLabel(source),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: muted,
@@ -279,36 +303,162 @@ class _SourcesScreenState extends State<SourcesScreen> {
         style: const TextStyle(fontFeatures: [FontFeature.tabularFigures()]),
       ),
       ConnectionStatusLabel(check: source.lastCheck, testing: testing),
-      AppRowMenu(
-        tooltip: app.intl.common.optionsFor(name: source.name),
-        items: [
-          AppRowMenuItem(
-            label: app.intl.common.edit,
-            icon: app.assets.icons.actions.edit,
-            onTap: () => _openForm(source: source),
+      _buildMenu(data, source),
+    ];
+  }
+
+  /// `PostgreSQL 16`
+  String _typeLabel(SourceModel source) => [
+    SourceTypeLook.labelOf(source.type),
+    ?source.lastCheck?.serverMajor,
+  ].join(' ');
+
+  Widget _buildMenu(SourceData data, SourceModel source) {
+    final used = data.usageOf(source);
+    final testing = data.testing.contains(source.id);
+    return AppRowMenu(
+      tooltip: app.intl.common.optionsFor(name: source.name),
+      items: [
+        AppRowMenuItem(
+          label: app.intl.common.viewDetails,
+          icon: app.assets.icons.actions.view,
+          onTap: () => _openDetail(source),
+        ),
+        AppRowMenuItem(
+          label: app.intl.common.edit,
+          icon: app.assets.icons.actions.edit,
+          onTap: () => _openForm(source: source),
+        ),
+        AppRowMenuItem(
+          label: app.intl.common.duplicate,
+          icon: app.assets.icons.actions.duplicate,
+          onTap: () => _openForm(source: source, duplicate: true),
+        ),
+        AppRowMenuItem(
+          label: app.intl.connections.test,
+          icon: app.assets.icons.actions.test,
+          enabled: !testing,
+          onTap: () => cubit.test(source),
+        ),
+        AppRowMenuItem(
+          label: app.intl.common.delete,
+          icon: app.assets.icons.actions.delete,
+          danger: true,
+          divided: true,
+          enabled: used == 0,
+          sub: used == 0 ? null : app.intl.sources.inUse(n: used),
+          onTap: () => _confirmDelete(source),
+        ),
+      ],
+    );
+  }
+
+  /// The same sources as cards, three in a row when there is room
+  Widget _buildGrid(SourceData data) {
+    const gap = 12.0;
+    return Padding(
+      padding: EdgeInsets.all(app.dimensions.padding.l),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final columns = constraints.maxWidth >= 900
+              ? 3
+              : constraints.maxWidth >= 560
+              ? 2
+              : 1;
+          final width = (constraints.maxWidth - (columns - 1) * gap) / columns;
+          return Wrap(
+            spacing: gap,
+            runSpacing: gap,
+            children: [
+              for (final source in data.visibleSources)
+                SizedBox(width: width, child: _buildCard(data, source)),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildCard(SourceData data, SourceModel source) {
+    final colors = app.colors;
+    return Container(
+      padding: EdgeInsets.all(app.dimensions.padding.l),
+      decoration: BoxDecoration(
+        color: colors.primary.backgroundForm,
+        borderRadius: app.dimensions.border.borderRadius.m,
+        border: Border.all(color: colors.neutral.grey5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 14,
+        children: [
+          Row(
+            children: [
+              TypeBadge(look: SourceTypeLook.lookOf(source.type), size: 36),
+              10.gap(),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    InkWell(
+                      onTap: () => _openDetail(source),
+                      child: Text(
+                        source.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    Text(
+                      _typeLabel(source),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colors.neutral.grey4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              _buildMenu(data, source),
+            ],
           ),
-          AppRowMenuItem(
-            label: app.intl.common.duplicate,
-            icon: app.assets.icons.actions.duplicate,
-            onTap: () => _openForm(source: source, duplicate: true),
+          Text(
+            source.postgres?.address ?? '—',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppText.mono.copyWith(
+              fontSize: 12,
+              color: colors.neutral.grey3,
+            ),
           ),
-          AppRowMenuItem(
-            label: app.intl.connections.test,
-            icon: app.assets.icons.actions.test,
-            enabled: !testing,
-            onTap: () => cubit.test(source),
-          ),
-          AppRowMenuItem(
-            label: app.intl.common.delete,
-            icon: app.assets.icons.actions.delete,
-            danger: true,
-            divided: true,
-            enabled: used == 0,
-            sub: used == 0 ? null : app.intl.sources.inUse(n: used),
-            onTap: () => _confirmDelete(source),
+          Container(
+            padding: const EdgeInsets.only(top: 12),
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: colors.neutral.grey5.withValues(alpha: 0.5),
+                ),
+              ),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    app.intl.common.backupCount(n: data.usageOf(source)),
+                    style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+                  ),
+                ),
+                Flexible(
+                  child: ConnectionStatusLabel(
+                    check: source.lastCheck,
+                    testing: data.testing.contains(source.id),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
-    ];
+    );
   }
 }

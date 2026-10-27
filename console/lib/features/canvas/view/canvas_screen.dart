@@ -129,7 +129,6 @@ class _CanvasScreenState extends State<CanvasScreen> {
                   ),
                 ),
               ),
-              app.dimensions.padding.sm.gap(),
               BlocBuilder<CanvasCubit, CanvasState>(
                 builder: (context, state) => PrimaryButton.primary(
                   onPressed: state.data.loaded ? cubit.save : null,

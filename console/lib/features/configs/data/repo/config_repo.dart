@@ -26,6 +26,10 @@ extension ConfigResponseMapping on ConfigResponse {
       sourceId: sourceId,
       destinationId: destinationId,
       folder: folder,
+      schedule: schedule,
+      enabled: enabled,
+      nextRun: nextRun,
+      lastRun: lastRun,
     );
   }
 }

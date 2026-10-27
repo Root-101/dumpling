@@ -34,54 +34,54 @@ class _RunDialogState extends State<RunDialog> {
     final run = detail ?? widget.run;
     final colors = app.colors;
     return Dialog(
-      backgroundColor: colors.primary.backgroundForm,
-      shape: RoundedRectangleBorder(
-        borderRadius: app.dimensions.border.borderRadius.m,
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: SizedBox(
-        width: 920,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _Header(run: run),
-            Flexible(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _Result(run: run),
-                    20.gap(),
-                    _Meta(run: run),
-                    22.gap(),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final steps = _Steps(run: run);
-                        final log = _Log(run: run, loaded: detail != null);
-                        // side by side when there is room
-                        if (constraints.maxWidth < 640) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [steps, 22.gap(), log],
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      child: AppDialogFrame(
+        color: colors.primary.backgroundForm,
+        child: SizedBox(
+          width: 920,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _Header(run: run),
+              Flexible(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _Result(run: run),
+                      20.gap(),
+                      _Meta(run: run),
+                      22.gap(),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final steps = _Steps(run: run);
+                          final log = _Log(run: run, loaded: detail != null);
+                          // side by side when there is room
+                          if (constraints.maxWidth < 640) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [steps, 22.gap(), log],
+                            );
+                          }
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(width: 280, child: steps),
+                              24.gap(),
+                              Expanded(child: log),
+                            ],
                           );
-                        }
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(width: 280, child: steps),
-                            24.gap(),
-                            Expanded(child: log),
-                          ],
-                        );
-                      },
-                    ),
-                  ],
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -97,7 +97,7 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = app.colors;
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 18, 12, 18),
+      padding: const EdgeInsets.fromLTRB(20, 18, 24, 18),
       decoration: BoxDecoration(
         color: colors.surface.surface1,
         border: Border(
@@ -152,14 +152,6 @@ class _Header extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-          ),
-          IconButton(
-            tooltip: app.intl.common.close,
-            onPressed: () => app.navigator.pop(),
-            icon: app.assets.icons.actions.close.build(
-              size: 18,
-              color: colors.neutral.grey2,
             ),
           ),
         ],
@@ -343,7 +335,14 @@ class _Steps extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(t.steps),
+        // as tall as the title row of the log, so both titles line up
+        SizedBox(
+          height: 30,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: _SectionTitle(t.steps),
+          ),
+        ),
         10.gap(),
         for (final (i, step) in steps.indexed)
           IntrinsicHeight(

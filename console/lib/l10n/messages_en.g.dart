@@ -168,6 +168,36 @@ class AppMessages$common$en {
 
   /// en: 'Options for {name: String}'
   String optionsFor({required String name}) => 'Options for ${name}';
+
+  /// en: 'View details'
+  String get viewDetails => 'View details';
+
+  /// en: 'Refresh'
+  String get refresh => 'Refresh';
+
+  /// en: 'List'
+  String get listView => 'List';
+
+  /// en: 'Grid'
+  String get gridView => 'Grid';
+
+  /// en: 'Back'
+  String get back => 'Back';
+
+  /// en: 'Next'
+  String get next => 'Next';
+
+  /// en: 'Step {n: int} of {total: int}'
+  String stepOf({required int n, required int total}) =>
+      'Step ${n} of ${total}';
+
+  /// en: '(one) {{n} backup} (other) {{n} backups}'
+  String backupCount({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} backup',
+        other: '${n} backups',
+      );
 }
 
 // Path: time
@@ -552,6 +582,21 @@ class AppMessages$connections$en {
 
   /// en: 'Couldn't connect'
   String get failedTitle => 'Couldn\'t connect';
+
+  /// en: 'Last check'
+  String get lastCheck => 'Last check';
+
+  /// en: 'Connection check'
+  String get checkTitle => 'Connection check';
+
+  /// en: 'Before every run and when you test'
+  String get checkNote => 'Before every run and when you test';
+
+  /// en: 'Connection'
+  String get connection => 'Connection';
+
+  /// en: 'Edit connection'
+  String get editConnection => 'Edit connection';
 }
 
 // Path: sources
@@ -623,11 +668,23 @@ class AppMessages$sources$en {
   /// en: 'Connect what you want to back up.'
   String get formDescription => 'Connect what you want to back up.';
 
-  /// en: '01 Type'
-  String get sectionType => '01 Type';
+  /// en: 'Type'
+  String get stepType => 'Type';
 
-  /// en: '02 Connection'
-  String get sectionConnection => '02 Connection';
+  /// en: 'Connection'
+  String get stepConnection => 'Connection';
+
+  /// en: 'Check & save'
+  String get stepCheck => 'Check & save';
+
+  /// en: 'What do you want to back up?'
+  String get typeTitle => 'What do you want to back up?';
+
+  /// en: 'How should Dumpling connect?'
+  String get connectionTitle => 'How should Dumpling connect?';
+
+  /// en: 'Check and save'
+  String get checkTitle => 'Check and save';
 
   /// en: 'Name'
   String get name => 'Name';
@@ -710,6 +767,59 @@ class AppMessages$sources$en {
 
   /// en: 'Source {name: String} saved'
   String saved({required String name}) => 'Source ${name} saved';
+
+  /// en: 'A {type: String} database this workspace backs up.'
+  String detailDescription({required String type}) =>
+      'A ${type} database this workspace backs up.';
+
+  /// en: 'Backups'
+  String get statBackups => 'Backups';
+
+  /// en: '(zero) {none yet} (one) {in {n} destination} (other) {in {n} destinations}'
+  String statDestinations({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        zero: 'none yet',
+        one: 'in ${n} destination',
+        other: 'in ${n} destinations',
+      );
+
+  /// en: 'Last backup'
+  String get statLastBackup => 'Last backup';
+
+  /// en: 'Backups using this source'
+  String get sectionUses => 'Backups using this source';
+
+  /// en: 'Open editor'
+  String get openEditor => 'Open editor';
+
+  /// en: 'No backup uses it yet. Connect it to a destination in the pipeline editor.'
+  String get noUses =>
+      'No backup uses it yet. Connect it to a destination in the pipeline editor.';
+
+  /// en: 'Backup'
+  String get columnBackup => 'Backup';
+
+  /// en: 'Schedule'
+  String get columnSchedule => 'Schedule';
+
+  /// en: 'Last run'
+  String get columnLastRun => 'Last run';
+
+  /// en: 'Next run'
+  String get columnNextRun => 'Next run';
+
+  /// en: 'cron · UTC'
+  String get cronUtc => 'cron · UTC';
+
+  /// en: 'Paused'
+  String get paused => 'Paused';
+
+  /// en: 'Not run yet'
+  String get neverRun => 'Not run yet';
+
+  /// en: '•••••••• · stored encrypted'
+  String get passwordStored => '•••••••• · stored encrypted';
 }
 
 // Path: destinations
@@ -841,14 +951,23 @@ class AppMessages$destinations$en {
   /// en: 'Choose where backups are written.'
   String get formDescription => 'Choose where backups are written.';
 
-  /// en: '01 Type'
-  String get sectionType => '01 Type';
+  /// en: 'Type'
+  String get stepType => 'Type';
 
-  /// en: '02 Connection'
-  String get sectionConnection => '02 Connection';
+  /// en: 'Connection'
+  String get stepConnection => 'Connection';
 
-  /// en: '03 Folders'
-  String get sectionFolders => '03 Folders';
+  /// en: 'Folders & check'
+  String get stepFolders => 'Folders & check';
+
+  /// en: 'Where should backups go?'
+  String get typeTitle => 'Where should backups go?';
+
+  /// en: 'How should Dumpling connect?'
+  String get connectionTitle => 'How should Dumpling connect?';
+
+  /// en: 'Folders and connection check'
+  String get foldersTitle => 'Folders and connection check';
 
   /// en: 'Name'
   String get name => 'Name';
@@ -914,6 +1033,39 @@ class AppMessages$destinations$en {
 
   /// en: 'Destination {name: String} saved'
   String saved({required String name}) => 'Destination ${name} saved';
+
+  /// en: 'A bucket this workspace writes backups to.'
+  String get detailDescription => 'A bucket this workspace writes backups to.';
+
+  /// en: 'Backups'
+  String get statBackups => 'Backups';
+
+  /// en: 'write here'
+  String get statBackupsSub => 'write here';
+
+  /// en: 'Folders'
+  String get statFolders => 'Folders';
+
+  /// en: 'connection points'
+  String get statFoldersSub => 'connection points';
+
+  /// en: 'Folders'
+  String get sectionFolders => 'Folders';
+
+  /// en: 'Folder'
+  String get columnFolder => 'Folder';
+
+  /// en: 'Written by'
+  String get columnWrittenBy => 'Written by';
+
+  /// en: 'Access key'
+  String get accessKey => 'Access key';
+
+  /// en: 'On'
+  String get on => 'On';
+
+  /// en: 'Off'
+  String get off => 'Off';
 
   late final AppMessages$destinations$typeSub$en typeSub =
       AppMessages$destinations$typeSub$en._(_root);
@@ -1064,9 +1216,6 @@ class AppMessages$runs$en {
   /// en: 'Every backup run in this workspace, scheduled or manual. Times in UTC, your local time below.'
   String get description =>
       'Every backup run in this workspace, scheduled or manual. Times in UTC, your local time below.';
-
-  /// en: 'Refresh'
-  String get refresh => 'Refresh';
 
   /// en: 'Search by backup, source or destination'
   String get search => 'Search by backup, source or destination';
@@ -1706,6 +1855,23 @@ extension on AppMessages {
         required int total,
       }) => '${shown} of ${total}',
       'common.optionsFor' => ({required String name}) => 'Options for ${name}',
+      'common.viewDetails' => 'View details',
+      'common.refresh' => 'Refresh',
+      'common.listView' => 'List',
+      'common.gridView' => 'Grid',
+      'common.back' => 'Back',
+      'common.next' => 'Next',
+      'common.stepOf' => ({
+        required int n,
+        required int total,
+      }) => 'Step ${n} of ${total}',
+      'common.backupCount' =>
+        ({required num n}) =>
+            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+              n,
+              one: '${n} backup',
+              other: '${n} backups',
+            ),
       'time.utc' => ({required String time}) => '${time} UTC',
       'time.local' => ({required String time}) => '${time} local',
       'errors.requestCancelled' => 'Request to API server was cancelled',
@@ -1831,6 +1997,11 @@ extension on AppMessages {
         'Connected, but the dump tool is not installed where Dumpling runs',
       'connections.unreachable' => 'Unreachable',
       'connections.failedTitle' => 'Couldn\'t connect',
+      'connections.lastCheck' => 'Last check',
+      'connections.checkTitle' => 'Connection check',
+      'connections.checkNote' => 'Before every run and when you test',
+      'connections.connection' => 'Connection',
+      'connections.editConnection' => 'Edit connection',
       'sources.title' => 'Sources',
       'sources.description' =>
         'What this workspace backs up: PostgreSQL databases.',
@@ -1858,8 +2029,12 @@ extension on AppMessages {
       'sources.newTitle' => 'New source',
       'sources.editTitle' => 'Edit source',
       'sources.formDescription' => 'Connect what you want to back up.',
-      'sources.sectionType' => '01 Type',
-      'sources.sectionConnection' => '02 Connection',
+      'sources.stepType' => 'Type',
+      'sources.stepConnection' => 'Connection',
+      'sources.stepCheck' => 'Check & save',
+      'sources.typeTitle' => 'What do you want to back up?',
+      'sources.connectionTitle' => 'How should Dumpling connect?',
+      'sources.checkTitle' => 'Check and save',
       'sources.name' => 'Name',
       'sources.nameHint' => 'e.g. orders-db',
       'sources.copyName' => ({required String name}) => '${name}-copy',
@@ -1891,6 +2066,30 @@ extension on AppMessages {
       'sources.createButton' => 'Create source',
       'sources.created' => ({required String name}) => 'Source ${name} created',
       'sources.saved' => ({required String name}) => 'Source ${name} saved',
+      'sources.detailDescription' => ({
+        required String type,
+      }) => 'A ${type} database this workspace backs up.',
+      'sources.statBackups' => 'Backups',
+      'sources.statDestinations' =>
+        ({required num n}) =>
+            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+              n,
+              zero: 'none yet',
+              one: 'in ${n} destination',
+              other: 'in ${n} destinations',
+            ),
+      'sources.statLastBackup' => 'Last backup',
+      'sources.sectionUses' => 'Backups using this source',
+      'sources.openEditor' => 'Open editor',
+      'sources.noUses' => 'No backup uses it yet. Connect it to a destination in the pipeline editor.',
+      'sources.columnBackup' => 'Backup',
+      'sources.columnSchedule' => 'Schedule',
+      'sources.columnLastRun' => 'Last run',
+      'sources.columnNextRun' => 'Next run',
+      'sources.cronUtc' => 'cron · UTC',
+      'sources.paused' => 'Paused',
+      'sources.neverRun' => 'Not run yet',
+      'sources.passwordStored' => '•••••••• · stored encrypted',
       'destinations.title' => 'Destinations',
       'destinations.description' =>
         'Where this workspace writes backups: S3 buckets.',
@@ -1960,9 +2159,12 @@ extension on AppMessages {
       'destinations.newTitle' => 'New destination',
       'destinations.editTitle' => 'Edit destination',
       'destinations.formDescription' => 'Choose where backups are written.',
-      'destinations.sectionType' => '01 Type',
-      'destinations.sectionConnection' => '02 Connection',
-      'destinations.sectionFolders' => '03 Folders',
+      'destinations.stepType' => 'Type',
+      'destinations.stepConnection' => 'Connection',
+      'destinations.stepFolders' => 'Folders & check',
+      'destinations.typeTitle' => 'Where should backups go?',
+      'destinations.connectionTitle' => 'How should Dumpling connect?',
+      'destinations.foldersTitle' => 'Folders and connection check',
       'destinations.name' => 'Name',
       'destinations.nameHint' => 'e.g. bucket-backups',
       'destinations.copyName' => ({required String name}) => '${name}-copy',
@@ -1992,6 +2194,18 @@ extension on AppMessages {
       'destinations.saved' => ({
         required String name,
       }) => 'Destination ${name} saved',
+      'destinations.detailDescription' =>
+        'A bucket this workspace writes backups to.',
+      'destinations.statBackups' => 'Backups',
+      'destinations.statBackupsSub' => 'write here',
+      'destinations.statFolders' => 'Folders',
+      'destinations.statFoldersSub' => 'connection points',
+      'destinations.sectionFolders' => 'Folders',
+      'destinations.columnFolder' => 'Folder',
+      'destinations.columnWrittenBy' => 'Written by',
+      'destinations.accessKey' => 'Access key',
+      'destinations.on' => 'On',
+      'destinations.off' => 'Off',
       'destinations.typeSub.s3' => 'Any S3-compatible storage',
       'destinations.typeSub.gdrive' => 'Shared drive or folder',
       'destinations.typeSub.dropbox' => 'App folder',
@@ -2147,7 +2361,6 @@ extension on AppMessages {
       'canvas.guide.place' => ({required String name}) => 'Place ${name}',
       'runs.title' => 'Run log',
       'runs.description' => 'Every backup run in this workspace, scheduled or manual. Times in UTC, your local time below.',
-      'runs.refresh' => 'Refresh',
       'runs.search' => 'Search by backup, source or destination',
       'runs.columnStatus' => 'Status',
       'runs.columnSource' => 'Source',

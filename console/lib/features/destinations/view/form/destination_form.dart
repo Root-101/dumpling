@@ -2,11 +2,11 @@ import 'package:console/app_exporter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Drawer of a destination: its type, the bucket, its folders and the test
-/// of that connection, always run by the service. Once saved it reloads the
-/// list
+/// Dialog of a destination in three steps: its type, the connection, and its
+/// folders with the test of that connection (always run by the service). Once
+/// saved it reloads the list
 class DestinationForm extends StatefulWidget {
-  /// Opens the drawer with its own [DestinationFormCubit]. With [destination]
+  /// Opens the dialog with its own [DestinationFormCubit]. With [destination]
   /// it edits it; with [duplicate] too it creates a copy (the secret key isn't
   /// copied: the API never returns it). [folderUsage] locks the folders a
   /// backup writes to
@@ -19,7 +19,6 @@ class DestinationForm extends StatefulWidget {
     Map<String?, int> folderUsage = const {},
   }) async {
     final editing = destination != null && !duplicate;
-    final formKey = GlobalKey<_DestinationFormState>();
     final formCubit = DestinationFormCubit(
       app.di.find(),
       app.di.find(),
@@ -27,33 +26,11 @@ class DestinationForm extends StatefulWidget {
       destinationId: editing ? destination.id : null,
     );
 
-    await FormDrawerTemplate.showAsDialog(
+    await StepsDialogTemplate.show(
       context: context,
-      title: editing
-          ? app.intl.destinations.editTitle
-          : app.intl.destinations.newTitle,
-      description: app.intl.destinations.formDescription,
-      icon: app.assets.icons.nodes.bucket,
-      loadingId: loadingId,
-      footerActions: [
-        PrimaryButton.secondary(
-          onPressed: () => Navigator.of(context).pop(),
-          title: app.intl.common.cancel,
-          h: 40,
-          w: 100,
-        ),
-        BlocProvider.value(
-          value: formCubit,
-          child: _SaveButton(
-            editing: editing,
-            onPressed: () => formKey.currentState?.submit(),
-          ),
-        ),
-      ],
-      child: BlocProvider.value(
+      dialog: BlocProvider.value(
         value: formCubit,
         child: DestinationForm(
-          key: formKey,
           types: types,
           destination: destination,
           duplicate: duplicate,
@@ -64,7 +41,7 @@ class DestinationForm extends StatefulWidget {
     await formCubit.close();
   }
 
-  /// Id of the drawer's [LoadingOverlay]
+  /// Id of the dialog's [LoadingOverlay]
   static const String loadingId = 'destination-form';
 
   final List<DestinationTypeModel> types;
@@ -96,6 +73,9 @@ class _DestinationFormState extends State<DestinationForm> {
   final _accessKeyController = TextEditingController();
   final _secretController = TextEditingController();
   final _folderController = TextEditingController();
+
+  /// 0: type, 1: connection, 2: folders and the test
+  int _step = 0;
 
   late String _type;
   bool _pathStyle = false;
@@ -179,9 +159,40 @@ class _DestinationFormState extends State<DestinationForm> {
       cubit.state is DestinationFormProcessInProgressState ||
       cubit.state is DestinationFormTestInProgressState;
 
-  void submit() {
+  /// The fields of the connection step; an error of the service in one of
+  /// them takes the form back there
+  static const Set<String> _connectionFields = {
+    DestinationFormField.name,
+    DestinationFormField.endpoint,
+    DestinationFormField.region,
+    DestinationFormField.bucket,
+    DestinationFormField.accessKeyId,
+    DestinationFormField.secretKey,
+    'settings.path_style',
+  };
+
+  static const int _lastStep = 2;
+
+  /// *Next* checks the fields of the step on screen; on the last one it saves
+  void _next() {
     if (_busy || !_validate()) return;
-    cubit.save(_draft());
+    if (_step == _lastStep) {
+      cubit.save(_draft());
+      return;
+    }
+    setState(() {
+      _step++;
+      // the next step validates once its own Next is pressed
+      _submitted = false;
+    });
+  }
+
+  void _back() {
+    if (_step == 0) {
+      Navigator.of(context).pop();
+      return;
+    }
+    setState(() => _step--);
   }
 
   void _test() {
@@ -244,6 +255,12 @@ class _DestinationFormState extends State<DestinationForm> {
             _formError = state.fieldErrors.isEmpty
                 ? state.exception.message
                 : null;
+            final fields = state.fieldErrors.keys;
+            if (fields.contains(DestinationFormField.type)) {
+              _step = 0;
+            } else if (fields.any(_connectionFields.contains)) {
+              _step = 1;
+            }
           });
         }
         if (state is DestinationFormProcessingOKState) {
@@ -258,44 +275,78 @@ class _DestinationFormState extends State<DestinationForm> {
           );
         }
       },
-      child: Form(
-        key: _formKey,
-        autovalidateMode: _submitted
-            ? AutovalidateMode.always
-            : AutovalidateMode.disabled,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (_formError != null) ...[
-              AppFormAlert(title: _formError!),
-              app.dimensions.padding.l.gap(),
-            ],
-            FormSectionTitle(app.intl.destinations.sectionType),
-            app.dimensions.padding.m.gap(),
-            _buildTypes(),
-            if (_type == DestinationTypes.s3) ...[
-              app.dimensions.padding.xxl.gap(),
-              FormSectionTitle(app.intl.destinations.sectionConnection),
-              app.dimensions.padding.m.gap(),
-              ..._buildS3(),
-              app.dimensions.padding.xxl.gap(),
-              FormSectionTitle(app.intl.destinations.sectionFolders),
-              app.dimensions.padding.m.gap(),
-              ..._buildFolders(),
-              app.dimensions.padding.xxl.gap(),
-              BlocBuilder<DestinationFormCubit, DestinationFormState>(
-                builder: (context, state) => ConnectionTestBanner(
-                  check: _check,
-                  testing: state is DestinationFormTestInProgressState,
-                  onTest: _test,
-                  idleSub: app.intl.destinations.testIdle,
-                  connectedSub: (_) => app.intl.destinations.connectedSub(
-                    bucket: _bucketController.text.trim(),
+      child: StepsDialogTemplate(
+        title: _editing
+            ? app.intl.destinations.editTitle
+            : app.intl.destinations.newTitle,
+        description: app.intl.destinations.formDescription,
+        icon: app.assets.icons.nodes.bucket,
+        loadingId: DestinationForm.loadingId,
+        steps: [
+          app.intl.destinations.stepType,
+          app.intl.destinations.stepConnection,
+          app.intl.destinations.stepFolders,
+        ],
+        current: _step,
+        actions: [
+          PrimaryButton.secondary(
+            onPressed: _back,
+            title: _step == 0 ? app.intl.common.cancel : app.intl.common.back,
+            h: 40,
+            horizontalPadding: 16,
+          ),
+          _NextButton(
+            title: _step < _lastStep
+                ? app.intl.common.next
+                : _editing
+                ? app.intl.common.saveChanges
+                : app.intl.destinations.createButton,
+            onPressed: _next,
+          ),
+        ],
+        child: Form(
+          key: _formKey,
+          autovalidateMode: _submitted
+              ? AutovalidateMode.always
+              : AutovalidateMode.disabled,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (_formError != null) ...[
+                AppFormAlert(title: _formError!),
+                app.dimensions.padding.l.gap(),
+              ],
+              ...switch (_step) {
+                0 => [
+                  StepTitle(app.intl.destinations.typeTitle),
+                  app.dimensions.padding.m.gap(),
+                  _buildTypes(),
+                ],
+                1 => [
+                  StepTitle(app.intl.destinations.connectionTitle),
+                  app.dimensions.padding.l.gap(),
+                  if (_type == DestinationTypes.s3) ..._buildS3(),
+                ],
+                _ => [
+                  StepTitle(app.intl.destinations.foldersTitle),
+                  app.dimensions.padding.m.gap(),
+                  ..._buildFolders(),
+                  app.dimensions.padding.xl.gap(),
+                  BlocBuilder<DestinationFormCubit, DestinationFormState>(
+                    builder: (context, state) => ConnectionTestBanner(
+                      check: _check,
+                      testing: state is DestinationFormTestInProgressState,
+                      onTest: _test,
+                      idleSub: app.intl.destinations.testIdle,
+                      connectedSub: (_) => app.intl.destinations.connectedSub(
+                        bucket: _bucketController.text.trim(),
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                ],
+              },
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -346,7 +397,7 @@ class _DestinationFormState extends State<DestinationForm> {
         errorText: _serverErrors[DestinationFormField.name],
         validator: _required,
         onChange: (_) => _changed(DestinationFormField.name),
-        onSubmitted: (_) => submit(),
+        onSubmitted: (_) => _next(),
       ),
       app.dimensions.padding.l.gap(),
       AppFormInput(
@@ -365,7 +416,7 @@ class _DestinationFormState extends State<DestinationForm> {
                   : app.intl.destinations.endpointHelp);
         },
         onChange: (_) => _changed(DestinationFormField.endpoint),
-        onSubmitted: (_) => submit(),
+        onSubmitted: (_) => _next(),
       ),
       app.dimensions.padding.l.gap(),
       Row(
@@ -379,7 +430,7 @@ class _DestinationFormState extends State<DestinationForm> {
               errorText: _serverErrors[DestinationFormField.bucket],
               validator: _required,
               onChange: (_) => _changed(DestinationFormField.bucket),
-              onSubmitted: (_) => submit(),
+              onSubmitted: (_) => _next(),
             ),
           ),
           gap.gap(),
@@ -391,7 +442,7 @@ class _DestinationFormState extends State<DestinationForm> {
               hint: 'us-east-1',
               errorText: _serverErrors[DestinationFormField.region],
               onChange: (_) => _changed(DestinationFormField.region),
-              onSubmitted: (_) => submit(),
+              onSubmitted: (_) => _next(),
             ),
           ),
         ],
@@ -407,7 +458,7 @@ class _DestinationFormState extends State<DestinationForm> {
               errorText: _serverErrors[DestinationFormField.accessKeyId],
               validator: _required,
               onChange: (_) => _changed(DestinationFormField.accessKeyId),
-              onSubmitted: (_) => submit(),
+              onSubmitted: (_) => _next(),
             ),
           ),
           gap.gap(),
@@ -421,7 +472,7 @@ class _DestinationFormState extends State<DestinationForm> {
               // editing, an empty one keeps the saved secret key
               validator: _editing ? null : _required,
               onChange: (_) => _changed(DestinationFormField.secretKey),
-              onSubmitted: (_) => submit(),
+              onSubmitted: (_) => _next(),
             ),
           ),
         ],
@@ -568,12 +619,13 @@ class _FolderChip extends StatelessWidget {
   }
 }
 
-/// *Create destination* / *Save changes*, disabled while it is being saved
-class _SaveButton extends StatelessWidget {
-  final bool editing;
+/// *Next*, and on the last step *Create destination* / *Save changes*,
+/// disabled while it is being tested or saved
+class _NextButton extends StatelessWidget {
+  final String title;
   final VoidCallback onPressed;
 
-  const _SaveButton({required this.editing, required this.onPressed});
+  const _NextButton({required this.title, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -585,14 +637,10 @@ class _SaveButton extends StatelessWidget {
               ? null
               : onPressed,
           isLoading: loading,
-          title: loading
-              ? app.intl.common.saving
-              : editing
-              ? app.intl.common.saveChanges
-              : app.intl.destinations.createButton,
+          title: loading ? app.intl.common.saving : title,
           color: app.colors.primary.primaryAction,
           h: 40,
-          w: 180,
+          horizontalPadding: 20,
         );
       },
     );

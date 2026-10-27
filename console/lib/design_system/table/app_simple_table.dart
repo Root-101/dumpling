@@ -59,6 +59,9 @@ class AppSimpleTable extends StatelessWidget {
 
   final double minWidth;
 
+  /// Replaces the column titles and the rows, e.g. the same items as cards
+  final Widget? body;
+
   const AppSimpleTable({
     required this.columns,
     required this.rows,
@@ -66,6 +69,7 @@ class AppSimpleTable extends StatelessWidget {
     this.placeholder,
     this.hint,
     this.minWidth = 760,
+    this.body,
     super.key,
   });
 
@@ -131,15 +135,17 @@ class AppSimpleTable extends StatelessWidget {
               ),
               child: toolbar,
             ),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              if (constraints.maxWidth >= minWidth) return table;
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: SizedBox(width: minWidth, child: table),
-              );
-            },
-          ),
+          if (body != null) ...[body!, ?placeholder],
+          if (body == null)
+            LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth >= minWidth) return table;
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: SizedBox(width: minWidth, child: table),
+                );
+              },
+            ),
         ],
       ),
     );

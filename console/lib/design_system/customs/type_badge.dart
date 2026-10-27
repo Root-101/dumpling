@@ -157,23 +157,3 @@ class TypeTile extends StatelessWidget {
     );
   }
 }
-
-/// Title of a section of a form drawer: `01 TYPE`
-class FormSectionTitle extends StatelessWidget {
-  final String text;
-
-  const FormSectionTitle(this.text, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text.toUpperCase(),
-      style: TextStyle(
-        fontSize: 14,
-        letterSpacing: 1.2,
-        fontWeight: FontWeight.w700,
-        color: app.colors.primary.primaryFaded,
-      ),
-    );
-  }
-}

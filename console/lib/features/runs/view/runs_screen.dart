@@ -89,14 +89,10 @@ class _RunsScreenState extends State<RunsScreen> {
             description: app.intl.runs.description,
             actions: [
               BlocBuilder<RunCubit, RunState>(
-                builder: (context, state) => PrimaryButton.secondary(
-                  onPressed: state is RunLoadingInProgressState
-                      ? null
-                      : cubit.reload,
-                  title: app.intl.runs.refresh,
-                  icon: app.assets.icons.actions.refresh,
-                  h: 40,
-                  w: 120,
+                builder: (context, state) => AppRefreshButton(
+                  onPressed: cubit.reload,
+                  loading:
+                      state is RunLoadingInProgressState && state.data.loaded,
                 ),
               ),
             ],

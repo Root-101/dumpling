@@ -1,7 +1,8 @@
 import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Top of a screen: its title, what it is for and its main [actions]. Inside
+/// Top of a screen: its title, what it is for and its main [actions] (spaced
+/// apart here, not by the screens). Inside
 /// a workspace the title reads `Workspace › Screen`
 class PageHeader extends StatelessWidget {
   final String title;
@@ -71,7 +72,10 @@ class PageHeader extends StatelessWidget {
               ],
             ),
           ),
-          ...actions,
+          if (actions.isNotEmpty) ...[
+            app.dimensions.padding.l.gap(),
+            Row(spacing: app.dimensions.padding.sm, children: actions),
+          ],
         ],
       ),
     );

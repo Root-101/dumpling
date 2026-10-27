@@ -6,4 +6,5 @@ export 'logic/model/source_model.dart';
 export 'sources_init.dart';
 export 'view/form/source_form.dart';
 export 'view/sources_screen.dart';
+export 'view/widget/source_detail.dart';
 export 'view/widget/source_type_look.dart';

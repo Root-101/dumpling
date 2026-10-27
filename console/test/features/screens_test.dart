@@ -272,53 +272,91 @@ void main() {
     verify(() => backups.load('production')).called(greaterThan(0));
   });
 
-  testWidgets('Sources: usage, status, a locked delete and the drawer', (
-    tester,
-  ) async {
-    when(() => auth.auth).thenReturn(session());
-    // straight from its URL, like a reload of the page
-    RouteConfig.router.go('/workspaces/production/sources');
-    await pumpApp(tester);
-    await settle(tester);
+  testWidgets(
+    'Sources: usage, status, a locked delete, grid, detail and the form in steps',
+    (tester) async {
+      when(() => auth.auth).thenReturn(session());
+      // straight from its URL, like a reload of the page
+      RouteConfig.router.go('/workspaces/production/sources');
+      await pumpApp(tester);
+      await settle(tester);
 
-    expect(find.text('orders-db'), findsOneWidget);
-    expect(find.text('PostgreSQL 16'), findsNWidgets(2));
-    expect(find.text('orders.internal:5432/orders'), findsOneWidget);
-    expect(find.text('Connected'), findsOneWidget);
-    expect(find.text('Unreachable'), findsOneWidget);
-    verify(() => sources.load('production')).called(greaterThan(0));
+      expect(find.text('orders-db'), findsOneWidget);
+      expect(find.text('PostgreSQL 16'), findsNWidgets(2));
+      expect(find.text('orders.internal:5432/orders'), findsOneWidget);
+      expect(find.text('Connected'), findsOneWidget);
+      expect(find.text('Unreachable'), findsOneWidget);
+      verify(() => sources.load('production')).called(greaterThan(0));
 
-    // used by 2 backups: it can't be deleted, and the menu says why
-    await tester.tap(find.byTooltip('Options for orders-db'));
-    await settle(tester);
-    expect(find.text('Used by 2 backups. Remove them first.'), findsOneWidget);
-    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-    await settle(tester);
+      // used by 2 backups: it can't be deleted, and the menu says why
+      await tester.tap(find.byTooltip('Options for orders-db'));
+      await settle(tester);
+      expect(
+        find.text('Used by 2 backups. Remove them first.'),
+        findsOneWidget,
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await settle(tester);
 
-    await tester.tap(find.widgetWithText(PrimaryButton, 'New source'));
-    await settle(tester);
-    expect(find.text('Connect what you want to back up.'), findsOneWidget);
-    expect(find.text('02 CONNECTION'), findsOneWidget);
-    expect(find.text('Soon'), findsOneWidget);
-    expect(find.text('Not tested yet'), findsOneWidget);
+      // the same sources as cards
+      await tester.tap(find.byTooltip('Grid'));
+      await settle(tester);
+      expect(find.text('2 backups'), findsOneWidget);
 
-    await tester.tap(find.text('Connection URL').first);
-    await settle(tester);
-    await tester.enterText(
-      find.ancestor(
-        of: find.text('postgresql://user:password@host:5432/database'),
-        matching: find.byType(TextField),
-      ),
-      'postgresql://dumpling_backup:pw@pg-billing.internal/billing',
-    );
-    await settle(tester);
-    expect(find.text('pg-billing.internal'), findsOneWidget);
-    expect(find.text('5432'), findsOneWidget);
-  });
+      // its detail in a dialog: the backups that dump it
+      await tester.tap(find.text('orders-db'));
+      await settle(tester);
+      expect(
+        find.text('A PostgreSQL database this workspace backs up.'),
+        findsOne,
+      );
+      expect(find.text('BACKUPS USING THIS SOURCE'), findsOneWidget);
+      expect(find.text('Not run yet'), findsNWidgets(2));
+      expect(find.text('Edit connection'), findsOneWidget);
+      await tester.tap(find.byTooltip('Close').last);
+      await settle(tester);
 
-  testWidgets('Destinations: folders open under the row, and the drawer', (
-    tester,
-  ) async {
+      // the form: type, connection, then the summary with the test
+      await tester.tap(find.widgetWithText(PrimaryButton, 'New source'));
+      await settle(tester);
+      expect(find.text('Connect what you want to back up.'), findsOneWidget);
+      expect(find.text('What do you want to back up?'), findsOneWidget);
+      expect(find.text('Soon'), findsOneWidget);
+      await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));
+      await settle(tester);
+      expect(find.text('Step 2 of 3'), findsOneWidget);
+
+      await tester.tap(find.text('Connection URL').first);
+      await settle(tester);
+      await tester.enterText(
+        find.ancestor(
+          of: find.text('postgresql://user:password@host:5432/database'),
+          matching: find.byType(TextField),
+        ),
+        'postgresql://dumpling_backup:pw@pg-billing.internal/billing',
+      );
+      await settle(tester);
+      expect(find.text('pg-billing.internal'), findsOneWidget);
+      expect(find.text('5432'), findsOneWidget);
+
+      await tester.enterText(
+        find.ancestor(
+          of: find.text('e.g. orders-db'),
+          matching: find.byType(TextField),
+        ),
+        'billing-db',
+      );
+      await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));
+      await settle(tester);
+      expect(find.text('Check and save'), findsOneWidget);
+      expect(find.text('pg-billing.internal:5432'), findsOneWidget);
+      expect(find.text('Dump format'), findsOneWidget);
+      expect(find.text('Not tested yet'), findsOneWidget);
+    },
+  );
+
+  testWidgets('Destinations: folders open under the row, grid, detail and '
+      'the form in steps', (tester) async {
     when(() => auth.auth).thenReturn(session());
     await pumpApp(tester);
     RouteConfig.router.go('/workspaces/production/destinations');
@@ -336,10 +374,37 @@ void main() {
     expect(find.text('Not used yet'), findsOneWidget);
     expect(find.text('Add folder'), findsOneWidget);
 
+    // the same destination as a card
+    await tester.tap(find.byTooltip('Grid'));
+    await settle(tester);
+    expect(find.text('Show the folders of bucket'), findsNothing);
+    expect(find.text('2 backups'), findsOneWidget);
+
+    // its detail in a dialog: who writes to each folder
+    await tester.tap(find.text('bucket'));
+    await settle(tester);
+    expect(find.text('A bucket this workspace writes backups to.'), findsOne);
+    expect(find.text('Written by'), findsOneWidget);
+    expect(find.text('orders, orders'), findsOneWidget);
+    expect(find.text('Edit connection'), findsOneWidget);
+    await tester.tap(find.byTooltip('Close').last);
+    await settle(tester);
+
+    // the form: type, then the connection, which Next checks
     await tester.tap(find.widgetWithText(PrimaryButton, 'New destination'));
     await settle(tester);
-    expect(find.text('03 FOLDERS'), findsOneWidget);
+    expect(find.text('Where should backups go?'), findsOneWidget);
+    expect(find.text('Step 1 of 3'), findsOneWidget);
+    await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));
+    await settle(tester);
     expect(find.text('Path-style addressing'), findsOneWidget);
+    await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));
+    await settle(tester);
+    expect(find.text('Step 2 of 3'), findsOneWidget);
+    expect(find.text('Required'), findsWidgets);
+    await tester.tap(find.widgetWithText(PrimaryButton, 'Back'));
+    await settle(tester);
+    expect(find.text('Where should backups go?'), findsOneWidget);
   });
 
   testWidgets('Run log: the runs by day, and a run opens in a dialog', (

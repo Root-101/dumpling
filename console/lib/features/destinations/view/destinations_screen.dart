@@ -17,9 +17,9 @@ class DestinationsScreenNavigator {
   }
 }
 
-/// The destinations of a workspace: where it writes backups, the folders of
-/// each bucket, how many backups use them and how the last connection test
-/// went
+/// The destinations of a workspace, as rows or cards: where it writes
+/// backups, the folders of each bucket, how many backups use them and how the
+/// last connection test went. One opens in a dialog with its detail
 class DestinationsScreen extends StatefulWidget {
   static final DestinationsScreenNavigator navigator =
       DestinationsScreenNavigator();
@@ -38,6 +38,8 @@ class _DestinationsScreenState extends State<DestinationsScreen> {
 
   /// The ids of the rows with their folders open
   final Set<String> _open = {};
+
+  AppView _view = AppView.list;
 
   @override
   void initState() {
@@ -85,6 +87,13 @@ class _DestinationsScreenState extends State<DestinationsScreen> {
     );
   }
 
+  void _openDetail(DestinationModel destination) {
+    DestinationDialog.open(
+      destination,
+      onEdit: (d) => _openForm(destination: d),
+    );
+  }
+
   void _confirmDelete(DestinationModel destination) {
     ConfirmDialog.show(
       title: app.intl.destinations.deleteTitle(name: destination.name),
@@ -110,6 +119,14 @@ class _DestinationsScreenState extends State<DestinationsScreen> {
             workspace: workspaceName,
             description: app.intl.destinations.description,
             actions: [
+              BlocBuilder<DestinationCubit, DestinationState>(
+                builder: (context, state) => AppRefreshButton(
+                  onPressed: cubit.reload,
+                  loading:
+                      state is DestinationLoadingInProgressState &&
+                      state.data.loaded,
+                ),
+              ),
               BlocBuilder<DestinationCubit, DestinationState>(
                 builder: (context, state) => PrimaryButton.primary(
                   // the form needs the types
@@ -194,8 +211,16 @@ class _DestinationsScreenState extends State<DestinationsScreen> {
           ),
           app.dimensions.padding.sm.gap(),
           _buildFilter(data),
+          app.dimensions.padding.sm.gap(),
+          Container(width: 1, height: 28, color: app.colors.neutral.grey5),
+          app.dimensions.padding.sm.gap(),
+          AppViewToggle(
+            value: _view,
+            onChanged: (view) => setState(() => _view = view),
+          ),
         ],
       ),
+      body: _view == AppView.grid ? _buildGrid(data) : null,
       columns: [
         const AppTableColumn.actions(width: 40),
         AppTableColumn(app.intl.destinations.columnName, flex: 13),
@@ -246,6 +271,8 @@ class _DestinationsScreenState extends State<DestinationsScreen> {
       for (final d in data.destinations) d.type,
     };
     return AppFilterButton(
+      // one group: the 280 of the design
+      columnWidth: 264,
       activeCount: data.activeFilters,
       onClear: _clearFilters,
       note: app.intl.common.shownOf(
@@ -311,7 +338,7 @@ class _DestinationsScreenState extends State<DestinationsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 InkWell(
-                  onTap: () => _openForm(destination: destination),
+                  onTap: () => _openDetail(destination),
                   child: Text(
                     destination.name,
                     maxLines: 1,
@@ -350,36 +377,179 @@ class _DestinationsScreenState extends State<DestinationsScreen> {
         style: const TextStyle(fontFeatures: [FontFeature.tabularFigures()]),
       ),
       ConnectionStatusLabel(check: destination.lastCheck, testing: testing),
-      AppRowMenu(
-        tooltip: app.intl.common.optionsFor(name: destination.name),
-        items: [
-          AppRowMenuItem(
-            label: app.intl.common.edit,
-            icon: app.assets.icons.actions.edit,
-            onTap: () => _openForm(destination: destination),
+      _buildMenu(data, destination),
+    ];
+  }
+
+  Widget _buildMenu(DestinationData data, DestinationModel destination) {
+    final used = data.usageOf(destination);
+    final testing = data.testing.contains(destination.id);
+    return AppRowMenu(
+      tooltip: app.intl.common.optionsFor(name: destination.name),
+      items: [
+        AppRowMenuItem(
+          label: app.intl.common.viewDetails,
+          icon: app.assets.icons.actions.view,
+          onTap: () => _openDetail(destination),
+        ),
+        AppRowMenuItem(
+          label: app.intl.common.edit,
+          icon: app.assets.icons.actions.edit,
+          onTap: () => _openForm(destination: destination),
+        ),
+        AppRowMenuItem(
+          label: app.intl.common.duplicate,
+          icon: app.assets.icons.actions.duplicate,
+          onTap: () => _openForm(destination: destination, duplicate: true),
+        ),
+        AppRowMenuItem(
+          label: app.intl.connections.test,
+          icon: app.assets.icons.actions.test,
+          enabled: !testing,
+          onTap: () => cubit.test(destination),
+        ),
+        AppRowMenuItem(
+          label: app.intl.common.delete,
+          icon: app.assets.icons.actions.delete,
+          danger: true,
+          divided: true,
+          enabled: used == 0,
+          sub: used == 0 ? null : app.intl.destinations.inUse(n: used),
+          onTap: () => _confirmDelete(destination),
+        ),
+      ],
+    );
+  }
+
+  /// The same destinations as cards, three in a row when there is room
+  Widget _buildGrid(DestinationData data) {
+    const gap = 12.0;
+    return Padding(
+      padding: EdgeInsets.all(app.dimensions.padding.l),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final columns = constraints.maxWidth >= 900
+              ? 3
+              : constraints.maxWidth >= 560
+              ? 2
+              : 1;
+          final width = (constraints.maxWidth - (columns - 1) * gap) / columns;
+          return Wrap(
+            spacing: gap,
+            runSpacing: gap,
+            children: [
+              for (final destination in data.visibleDestinations)
+                SizedBox(width: width, child: _buildCard(data, destination)),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildCard(DestinationData data, DestinationModel destination) {
+    final colors = app.colors;
+    final folders = destination.folders.length;
+    final muted = TextStyle(fontSize: 12, color: colors.neutral.grey4);
+    return Container(
+      padding: EdgeInsets.all(app.dimensions.padding.l),
+      decoration: BoxDecoration(
+        color: colors.primary.backgroundForm,
+        borderRadius: app.dimensions.border.borderRadius.m,
+        border: Border.all(color: colors.neutral.grey5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 14,
+        children: [
+          Row(
+            children: [
+              TypeBadge(
+                look: DestinationTypeLook.lookOf(destination.type),
+                size: 36,
+              ),
+              10.gap(),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    InkWell(
+                      onTap: () => _openDetail(destination),
+                      child: Text(
+                        destination.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    Text(
+                      DestinationTypeLook.labelOf(destination.type),
+                      style: muted,
+                    ),
+                  ],
+                ),
+              ),
+              _buildMenu(data, destination),
+            ],
           ),
-          AppRowMenuItem(
-            label: app.intl.common.duplicate,
-            icon: app.assets.icons.actions.duplicate,
-            onTap: () => _openForm(destination: destination, duplicate: true),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 4,
+            children: [
+              Text(
+                destination.s3?.address ?? '—',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppText.mono.copyWith(
+                  fontSize: 12,
+                  color: colors.neutral.grey3,
+                ),
+              ),
+              Row(
+                spacing: 6,
+                children: [
+                  app.assets.icons.nodes.folder.build(
+                    size: 13,
+                    color: colors.primary.primaryFaded,
+                  ),
+                  Text(
+                    folders == 0
+                        ? app.intl.destinations.bucketRoot
+                        : app.intl.destinations.folderCount(n: folders),
+                    style: muted,
+                  ),
+                ],
+              ),
+            ],
           ),
-          AppRowMenuItem(
-            label: app.intl.connections.test,
-            icon: app.assets.icons.actions.test,
-            enabled: !testing,
-            onTap: () => cubit.test(destination),
-          ),
-          AppRowMenuItem(
-            label: app.intl.common.delete,
-            icon: app.assets.icons.actions.delete,
-            danger: true,
-            divided: true,
-            enabled: used == 0,
-            sub: used == 0 ? null : app.intl.destinations.inUse(n: used),
-            onTap: () => _confirmDelete(destination),
+          Container(
+            padding: const EdgeInsets.only(top: 12),
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: colors.neutral.grey5.withValues(alpha: 0.5),
+                ),
+              ),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    app.intl.common.backupCount(n: data.usageOf(destination)),
+                    style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+                  ),
+                ),
+                Flexible(
+                  child: ConnectionStatusLabel(
+                    check: destination.lastCheck,
+                    testing: data.testing.contains(destination.id),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
-    ];
+    );
   }
 }

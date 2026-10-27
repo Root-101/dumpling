@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Drawer of a source: its type, how it connects (fields or a connection URL)
-/// and the test of that connection, always run by the service. Once saved it
-/// reloads the list
+/// Dialog of a source in three steps: its type, how it connects (fields or a
+/// connection URL), and a summary with the dump format and the test of that
+/// connection (always run by the service). Once saved it reloads the list
 class SourceForm extends StatefulWidget {
-  /// Opens the drawer with its own [SourceFormCubit]. With [source] it edits
+  /// Opens the dialog with its own [SourceFormCubit]. With [source] it edits
   /// it; with [duplicate] too it creates a copy (the password isn't copied:
   /// the API never returns it)
   static Future<void> open(
@@ -18,7 +18,6 @@ class SourceForm extends StatefulWidget {
     bool duplicate = false,
   }) async {
     final editing = source != null && !duplicate;
-    final formKey = GlobalKey<_SourceFormState>();
     final formCubit = SourceFormCubit(
       app.di.find(),
       app.di.find(),
@@ -26,41 +25,17 @@ class SourceForm extends StatefulWidget {
       sourceId: editing ? source.id : null,
     );
 
-    await FormDrawerTemplate.showAsDialog(
+    await StepsDialogTemplate.show(
       context: context,
-      title: editing ? app.intl.sources.editTitle : app.intl.sources.newTitle,
-      description: app.intl.sources.formDescription,
-      icon: app.assets.icons.nodes.database,
-      loadingId: loadingId,
-      footerActions: [
-        PrimaryButton.secondary(
-          onPressed: () => Navigator.of(context).pop(),
-          title: app.intl.common.cancel,
-          h: 40,
-          w: 100,
-        ),
-        BlocProvider.value(
-          value: formCubit,
-          child: _SaveButton(
-            editing: editing,
-            onPressed: () => formKey.currentState?.submit(),
-          ),
-        ),
-      ],
-      child: BlocProvider.value(
+      dialog: BlocProvider.value(
         value: formCubit,
-        child: SourceForm(
-          key: formKey,
-          types: types,
-          source: source,
-          duplicate: duplicate,
-        ),
+        child: SourceForm(types: types, source: source, duplicate: duplicate),
       ),
     );
     await formCubit.close();
   }
 
-  /// Id of the drawer's [LoadingOverlay]
+  /// Id of the dialog's [LoadingOverlay]
   static const String loadingId = 'source-form';
 
   final List<SourceTypeModel> types;
@@ -89,6 +64,9 @@ class _SourceFormState extends State<SourceForm> {
   final _databaseController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  /// 0: type, 1: connection, 2: summary, dump format and the test
+  int _step = 0;
 
   late String _type;
   bool _byUrl = false;
@@ -170,9 +148,28 @@ class _SourceFormState extends State<SourceForm> {
       cubit.state is SourceFormProcessInProgressState ||
       cubit.state is SourceFormTestInProgressState;
 
-  void submit() {
+  static const int _lastStep = 2;
+
+  /// *Next* checks the fields of the step on screen; on the last one it saves
+  void _next() {
     if (_busy || !_validate()) return;
-    cubit.save(_draft());
+    if (_step == _lastStep) {
+      cubit.save(_draft());
+      return;
+    }
+    setState(() {
+      _step++;
+      // the next step validates once its own Next is pressed
+      _submitted = false;
+    });
+  }
+
+  void _back() {
+    if (_step == 0) {
+      Navigator.of(context).pop();
+      return;
+    }
+    setState(() => _step--);
   }
 
   void _test() {
@@ -214,6 +211,13 @@ class _SourceFormState extends State<SourceForm> {
             _formError = state.fieldErrors.isEmpty
                 ? state.exception.message
                 : null;
+            // back to the step of the field the service refused
+            final fields = state.fieldErrors.keys;
+            if (fields.contains(SourceFormField.type)) {
+              _step = 0;
+            } else if (fields.any((f) => f != SourceFormField.dumpFormat)) {
+              _step = 1;
+            }
           });
         }
         if (state is SourceFormProcessingOKState) {
@@ -227,49 +231,114 @@ class _SourceFormState extends State<SourceForm> {
           );
         }
       },
-      child: Form(
-        key: _formKey,
-        autovalidateMode: _submitted
-            ? AutovalidateMode.always
-            : AutovalidateMode.disabled,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (_formError != null) ...[
-              AppFormAlert(title: _formError!),
-              app.dimensions.padding.l.gap(),
-            ],
-            FormSectionTitle(app.intl.sources.sectionType),
-            app.dimensions.padding.m.gap(),
-            _buildTypes(),
-            if (_type == SourceTypes.postgres) ...[
-              app.dimensions.padding.xxl.gap(),
-              FormSectionTitle(app.intl.sources.sectionConnection),
-              app.dimensions.padding.m.gap(),
-              ..._buildPostgres(),
-              app.dimensions.padding.xxl.gap(),
-              BlocBuilder<SourceFormCubit, SourceFormState>(
-                builder: (context, state) => ConnectionTestBanner(
-                  check: _check,
-                  testing: state is SourceFormTestInProgressState,
-                  onTest: _test,
-                  idleSub: app.intl.sources.testIdle,
-                  connectedSub: (check) => [
-                    app.intl.sources.connectedAs(
-                      user: _byUrl
-                          ? _urlParts()?.username ?? ''
-                          : _usernameController.text.trim(),
+      child: StepsDialogTemplate(
+        title: _editing
+            ? app.intl.sources.editTitle
+            : app.intl.sources.newTitle,
+        description: app.intl.sources.formDescription,
+        icon: app.assets.icons.nodes.database,
+        loadingId: SourceForm.loadingId,
+        steps: [
+          app.intl.sources.stepType,
+          app.intl.sources.stepConnection,
+          app.intl.sources.stepCheck,
+        ],
+        current: _step,
+        actions: [
+          PrimaryButton.secondary(
+            onPressed: _back,
+            title: _step == 0 ? app.intl.common.cancel : app.intl.common.back,
+            h: 40,
+            horizontalPadding: 16,
+          ),
+          _NextButton(
+            title: _step < _lastStep
+                ? app.intl.common.next
+                : _editing
+                ? app.intl.common.saveChanges
+                : app.intl.sources.createButton,
+            onPressed: _next,
+          ),
+        ],
+        child: Form(
+          key: _formKey,
+          autovalidateMode: _submitted
+              ? AutovalidateMode.always
+              : AutovalidateMode.disabled,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (_formError != null) ...[
+                AppFormAlert(title: _formError!),
+                app.dimensions.padding.l.gap(),
+              ],
+              ...switch (_step) {
+                0 => [
+                  StepTitle(app.intl.sources.typeTitle),
+                  app.dimensions.padding.m.gap(),
+                  _buildTypes(),
+                ],
+                1 => [
+                  StepTitle(app.intl.sources.connectionTitle),
+                  app.dimensions.padding.l.gap(),
+                  if (_type == SourceTypes.postgres) ..._buildPostgres(),
+                ],
+                _ => [
+                  StepTitle(app.intl.sources.checkTitle),
+                  app.dimensions.padding.m.gap(),
+                  _buildSummary(),
+                  if (_type == SourceTypes.postgres) ...[
+                    app.dimensions.padding.l.gap(),
+                    ..._buildDumpFormat(),
+                    app.dimensions.padding.xl.gap(),
+                    BlocBuilder<SourceFormCubit, SourceFormState>(
+                      builder: (context, state) => ConnectionTestBanner(
+                        check: _check,
+                        testing: state is SourceFormTestInProgressState,
+                        onTest: _test,
+                        idleSub: app.intl.sources.testIdle,
+                        connectedSub: (check) => [
+                          app.intl.sources.connectedAs(
+                            user: _byUrl
+                                ? _urlParts()?.username ?? ''
+                                : _usernameController.text.trim(),
+                          ),
+                          if (check.serverVersion != null)
+                            'PostgreSQL ${check.serverVersion}',
+                          ?check.toolVersion,
+                        ].join(' · '),
+                      ),
                     ),
-                    if (check.serverVersion != null)
-                      'PostgreSQL ${check.serverVersion}',
-                    ?check.toolVersion,
-                  ].join(' · '),
-                ),
-              ),
+                  ],
+                ],
+              },
             ],
-          ],
+          ),
         ),
       ),
+    );
+  }
+
+  /// What the last step saves: type, name and where it connects
+  Widget _buildSummary() {
+    final parts = _byUrl ? _urlParts() : null;
+    final host = _byUrl
+        ? (parts == null ? '—' : '${parts.host}:${parts.port}')
+        : '${_hostController.text.trim()}:'
+              '${_portController.text.trim().isEmpty ? PostgresSettingsModel.defaultPort : _portController.text.trim()}';
+    final name = _nameController.text.trim();
+    return Row(
+      spacing: app.dimensions.padding.sm,
+      children: [
+        for (final (label, value) in [
+          (app.intl.sources.columnType, SourceTypeLook.labelOf(_type)),
+          (app.intl.sources.name, name.isEmpty ? '—' : name),
+          (app.intl.sources.host, host),
+        ])
+          Expanded(
+            child: _UrlPart(label: label, value: value),
+          ),
+      ],
     );
   }
 
@@ -317,7 +386,7 @@ class _SourceFormState extends State<SourceForm> {
         errorText: _serverErrors[SourceFormField.name],
         validator: _required,
         onChange: (_) => _changed(SourceFormField.name),
-        onSubmitted: (_) => submit(),
+        onSubmitted: (_) => _next(),
       ),
       app.dimensions.padding.l.gap(),
       _label(app.intl.sources.connectWith),
@@ -346,7 +415,7 @@ class _SourceFormState extends State<SourceForm> {
                 errorText: _serverErrors[SourceFormField.host],
                 validator: _required,
                 onChange: (_) => _changed(SourceFormField.host),
-                onSubmitted: (_) => submit(),
+                onSubmitted: (_) => _next(),
               ),
             ),
             gap.gap(),
@@ -367,7 +436,7 @@ class _SourceFormState extends State<SourceForm> {
                       : app.intl.sources.portInvalid;
                 },
                 onChange: (_) => _changed(SourceFormField.port),
-                onSubmitted: (_) => submit(),
+                onSubmitted: (_) => _next(),
               ),
             ),
           ],
@@ -384,7 +453,7 @@ class _SourceFormState extends State<SourceForm> {
                 errorText: _serverErrors[SourceFormField.database],
                 validator: _required,
                 onChange: (_) => _changed(SourceFormField.database),
-                onSubmitted: (_) => submit(),
+                onSubmitted: (_) => _next(),
               ),
             ),
             gap.gap(),
@@ -396,7 +465,7 @@ class _SourceFormState extends State<SourceForm> {
                 errorText: _serverErrors[SourceFormField.username],
                 validator: _required,
                 onChange: (_) => _changed(SourceFormField.username),
-                onSubmitted: (_) => submit(),
+                onSubmitted: (_) => _next(),
               ),
             ),
           ],
@@ -411,10 +480,14 @@ class _SourceFormState extends State<SourceForm> {
           // editing, an empty one keeps the saved password
           validator: _editing ? null : _required,
           onChange: (_) => _changed(SourceFormField.password),
-          onSubmitted: (_) => submit(),
+          onSubmitted: (_) => _next(),
         ),
       ],
-      app.dimensions.padding.l.gap(),
+    ];
+  }
+
+  List<Widget> _buildDumpFormat() {
+    return [
       _label(app.intl.sources.dumpFormat),
       app.dimensions.padding.s.gap(),
       _Segmented(
@@ -459,7 +532,7 @@ class _SourceFormState extends State<SourceForm> {
             _required(v) ??
             (_urlParts() == null ? app.intl.sources.urlInvalid : null),
         onChange: (_) => _changed(SourceFormField.connectionUrl),
-        onSubmitted: (_) => submit(),
+        onSubmitted: (_) => _next(),
       ),
       if (parts != null) ...[
         app.dimensions.padding.m.gap(),
@@ -625,12 +698,13 @@ class _UrlPart extends StatelessWidget {
   }
 }
 
-/// *Create source* / *Save changes*, disabled while it is being saved
-class _SaveButton extends StatelessWidget {
-  final bool editing;
+/// *Next*, and on the last step *Create source* / *Save changes*, disabled
+/// while it is being tested or saved
+class _NextButton extends StatelessWidget {
+  final String title;
   final VoidCallback onPressed;
 
-  const _SaveButton({required this.editing, required this.onPressed});
+  const _NextButton({required this.title, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -640,14 +714,10 @@ class _SaveButton extends StatelessWidget {
         return PrimaryButton.primary(
           onPressed: state is SourceFormTestInProgressState ? null : onPressed,
           isLoading: loading,
-          title: loading
-              ? app.intl.common.saving
-              : editing
-              ? app.intl.common.saveChanges
-              : app.intl.sources.createButton,
+          title: loading ? app.intl.common.saving : title,
           color: app.colors.primary.primaryAction,
           h: 40,
-          w: 160,
+          horizontalPadding: 20,
         );
       },
     );

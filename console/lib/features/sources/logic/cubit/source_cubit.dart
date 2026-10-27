@@ -132,13 +132,14 @@ enum SourceAction { tested, deleted }
 
 /// The loaded sources and what the search and the filter leave
 /// ([visibleSources], filled on every change). [usage] counts the backups of
-/// each source by its id
+/// each source by its id; [configs] are those backups, for the detail
 class SourceData {
   final String? workspace;
   final bool loaded;
   final List<SourceTypeModel> types;
   final List<SourceModel> sources;
   final Map<String, int> usage;
+  final List<ConfigModel> configs;
   final String query;
 
   /// Null: every type
@@ -154,6 +155,7 @@ class SourceData {
     required this.types,
     required this.sources,
     required this.usage,
+    required this.configs,
     required this.query,
     required this.type,
     required this.testing,
@@ -167,6 +169,7 @@ class SourceData {
         types: const [],
         sources: const [],
         usage: const {},
+        configs: const [],
         query: '',
         type: null,
         testing: const {},
@@ -179,6 +182,7 @@ class SourceData {
     required List<SourceTypeModel> types,
     required List<SourceModel> sources,
     required Map<String, int> usage,
+    required List<ConfigModel> configs,
     required String query,
     required String? type,
     required Set<String> testing,
@@ -200,6 +204,7 @@ class SourceData {
       types: types,
       sources: sources,
       usage: usage,
+      configs: configs,
       query: query,
       type: type,
       testing: testing,
@@ -212,6 +217,7 @@ class SourceData {
     List<SourceTypeModel>? types,
     List<SourceModel>? sources,
     Map<String, int>? usage,
+    List<ConfigModel>? configs,
     String? query,
     String? Function()? type,
     Set<String>? testing,
@@ -221,6 +227,7 @@ class SourceData {
     types: types ?? this.types,
     sources: sources ?? this.sources,
     usage: usage ?? this.usage,
+    configs: configs ?? this.configs,
     query: query ?? this.query,
     type: type == null ? this.type : type(),
     testing: testing ?? this.testing,
@@ -235,7 +242,13 @@ class SourceData {
     for (final config in configs) {
       usage.update(config.sourceId, (n) => n + 1, ifAbsent: () => 1);
     }
-    return _copy(loaded: true, types: types, sources: sources, usage: usage);
+    return _copy(
+      loaded: true,
+      types: types,
+      sources: sources,
+      usage: usage,
+      configs: configs,
+    );
   }
 
   SourceData withQuery(String query) => _copy(query: query);
@@ -252,6 +265,10 @@ class SourceData {
 
   /// How many backups dump [source]
   int usageOf(SourceModel source) => usage[source.id] ?? 0;
+
+  /// The backups that dump [source]
+  List<ConfigModel> usesOf(SourceModel source) =>
+      configs.where((c) => c.sourceId == source.id).toList();
 
   /// How many filters are on (the search box apart)
   int get activeFilters => type == null ? 0 : 1;

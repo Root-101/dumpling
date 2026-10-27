@@ -26,7 +26,8 @@ class PrimaryButton extends StatelessWidget {
         color: app.colors.neutral.white,
       ),
       h: h ?? 50,
-      w: w ?? double.infinity,
+      // with a margin and no width, as wide as its content
+      w: w ?? (horizontalPadding == null ? double.infinity : null),
       horizontalPadding: horizontalPadding,
       borderRadius: borderRadius,
     );

@@ -55,7 +55,6 @@ class FormDialogTemplate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = app.dimensions.border.borderRadius.m;
     final padding = app.dimensions.padding.xxl;
     final content = Column(
       mainAxisSize: MainAxisSize.min,
@@ -91,12 +90,6 @@ class FormDialogTemplate extends StatelessWidget {
                   ],
                 ),
               ),
-              app.dimensions.padding.m.gap(),
-              PrimaryButton.svgIcon(
-                icon: app.assets.icons.actions.close,
-                tooltipMessage: app.intl.common.close,
-                onPressed: () => Navigator.of(context).pop(),
-              ),
             ],
           ),
         ),
@@ -127,14 +120,9 @@ class FormDialogTemplate extends StatelessWidget {
       alignment: Alignment.topCenter,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 84, 16, 16),
-        child: Material(
+        child: AppDialogFrame(
           color: app.colors.primary.backgroundForm,
-          elevation: 8,
-          shape: RoundedRectangleBorder(
-            borderRadius: radius,
-            side: BorderSide(color: app.colors.neutral.grey5),
-          ),
-          clipBehavior: Clip.antiAlias,
+          radius: 12,
           child: SizedBox(
             width: width,
             child: loadingId == null

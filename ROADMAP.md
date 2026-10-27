@@ -95,9 +95,10 @@ Screens: Sources · List / New source / Row options / Delete confirmation, Sourc
   newer than `pg_dump` is reported as not compatible. Checked again before every run.
 - [x] List, detail, edit, delete only when no config uses it (the console searches and filters the
   list).
-- [ ] Console: list with search and type filter, create (by fields or URL), edit (an empty
-  password keeps the saved one), duplicate, test, delete only when no backup uses it. All done
-  but the Source detail screen.
+- [x] Console: list (rows or cards) with search and type filter, create (by fields or URL) and
+  edit (an empty password keeps the saved one) in a dialog in steps, duplicate, test, delete only
+  when no backup uses it, and the detail in a dialog: the backups that dump it (schedule, last
+  and next run), the last check, the connection.
 
 ## M4 · Destinations
 
@@ -114,8 +115,9 @@ Screens: Destinations · List / New destination / Row options / Delete confirmat
   in each folder (or the root) and abort it, which proves the credentials, the bucket and the
   write permission there.
 - [x] List, detail, edit, delete only when no config writes to it.
-- [ ] Console: list with search and type filter, create, edit, duplicate, test, delete, and the
-  folders of each bucket added or deleted from its row. All done but the detail screen.
+- [x] Console: list (rows or cards) with search and type filter, create and edit in a dialog in
+  steps, duplicate, test, delete, the folders of each bucket added or deleted from its row, and
+  the detail in a dialog: the backups that write to each folder, the last check, the connection.
 
 ## M5 · Canvas
 
@@ -213,6 +215,10 @@ Applied on the canvas on 2026-10-25:
 ## 0.2.0
 
 - Retention (needs ListObjects and DeleteObject in the destination).
+- Destination detail with what is in the bucket (ListObjects): used space, objects, and the files,
+  size and last write of each folder; and the history of its connection checks, not only the last.
+- Source detail with the size of the database, the copies stored and the success rate of its
+  runs; and the history of its connection checks, not only the last.
 - SSL for PostgreSQL sources: `ssl_mode` in the API and the console (`require`; `verify-full`
   with a CA).
 - Download a backup from the console.

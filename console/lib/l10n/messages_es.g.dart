@@ -159,6 +159,28 @@ class AppMessages$common$es implements AppMessages$common$en {
       '${shown} de ${total}';
   @override
   String optionsFor({required Object name}) => 'Opciones de ${name}';
+  @override
+  String get viewDetails => 'Ver detalle';
+  @override
+  String get refresh => 'Actualizar';
+  @override
+  String get listView => 'Lista';
+  @override
+  String get gridView => 'Cuadrícula';
+  @override
+  String get back => 'Atrás';
+  @override
+  String get next => 'Siguiente';
+  @override
+  String stepOf({required Object n, required Object total}) =>
+      'Paso ${n} de ${total}';
+  @override
+  String backupCount({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: '${n} backup',
+        other: '${n} backups',
+      );
 }
 
 // Path: time
@@ -444,6 +466,16 @@ class AppMessages$connections$es implements AppMessages$connections$en {
   String get unreachable => 'Sin conexión';
   @override
   String get failedTitle => 'No se pudo conectar';
+  @override
+  String get lastCheck => 'Última prueba';
+  @override
+  String get checkTitle => 'Prueba de conexión';
+  @override
+  String get checkNote => 'Antes de cada ejecución y al probarla';
+  @override
+  String get connection => 'Conexión';
+  @override
+  String get editConnection => 'Editar conexión';
 }
 
 // Path: sources
@@ -497,9 +529,17 @@ class AppMessages$sources$es implements AppMessages$sources$en {
   @override
   String get formDescription => 'Conecta lo que quieres respaldar.';
   @override
-  String get sectionType => '01 Tipo';
+  String get stepType => 'Tipo';
   @override
-  String get sectionConnection => '02 Conexión';
+  String get stepConnection => 'Conexión';
+  @override
+  String get stepCheck => 'Revisar y guardar';
+  @override
+  String get typeTitle => '¿Qué quieres respaldar?';
+  @override
+  String get connectionTitle => '¿Cómo se conecta Dumpling?';
+  @override
+  String get checkTitle => 'Revisa y guarda';
   @override
   String get name => 'Nombre';
   @override
@@ -556,6 +596,44 @@ class AppMessages$sources$es implements AppMessages$sources$en {
   String created({required Object name}) => 'Source ${name} creado';
   @override
   String saved({required Object name}) => 'Source ${name} guardado';
+  @override
+  String detailDescription({required Object type}) =>
+      'Una base de datos ${type} que este workspace respalda.';
+  @override
+  String get statBackups => 'Backups';
+  @override
+  String statDestinations({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        zero: 'ninguno aún',
+        one: 'en ${n} destination',
+        other: 'en ${n} destinations',
+      );
+  @override
+  String get statLastBackup => 'Último backup';
+  @override
+  String get sectionUses => 'Backups de este source';
+  @override
+  String get openEditor => 'Abrir editor';
+  @override
+  String get noUses =>
+      'Ningún backup lo usa todavía. Conéctalo a un destination en el editor de pipelines.';
+  @override
+  String get columnBackup => 'Backup';
+  @override
+  String get columnSchedule => 'Horario';
+  @override
+  String get columnLastRun => 'Última ejecución';
+  @override
+  String get columnNextRun => 'Siguiente';
+  @override
+  String get cronUtc => 'cron · UTC';
+  @override
+  String get paused => 'En pausa';
+  @override
+  String get neverRun => 'Aún no se ejecuta';
+  @override
+  String get passwordStored => '•••••••• · guardada cifrada';
 }
 
 // Path: destinations
@@ -655,11 +733,17 @@ class AppMessages$destinations$es implements AppMessages$destinations$en {
   @override
   String get formDescription => 'Elige dónde se escriben los backups.';
   @override
-  String get sectionType => '01 Tipo';
+  String get stepType => 'Tipo';
   @override
-  String get sectionConnection => '02 Conexión';
+  String get stepConnection => 'Conexión';
   @override
-  String get sectionFolders => '03 Carpetas';
+  String get stepFolders => 'Carpetas y prueba';
+  @override
+  String get typeTitle => '¿A dónde van los backups?';
+  @override
+  String get connectionTitle => '¿Cómo se conecta Dumpling?';
+  @override
+  String get foldersTitle => 'Carpetas y prueba de conexión';
   @override
   String get name => 'Nombre';
   @override
@@ -706,6 +790,29 @@ class AppMessages$destinations$es implements AppMessages$destinations$en {
   String created({required Object name}) => 'Destination ${name} creado';
   @override
   String saved({required Object name}) => 'Destination ${name} guardado';
+  @override
+  String get detailDescription =>
+      'Un bucket donde este workspace escribe backups.';
+  @override
+  String get statBackups => 'Backups';
+  @override
+  String get statBackupsSub => 'escriben aquí';
+  @override
+  String get statFolders => 'Carpetas';
+  @override
+  String get statFoldersSub => 'puntos de conexión';
+  @override
+  String get sectionFolders => 'Carpetas';
+  @override
+  String get columnFolder => 'Carpeta';
+  @override
+  String get columnWrittenBy => 'Lo escribe';
+  @override
+  String get accessKey => 'Access key';
+  @override
+  String get on => 'Sí';
+  @override
+  String get off => 'No';
   @override
   late final AppMessages$destinations$typeSub$es typeSub =
       AppMessages$destinations$typeSub$es._(_root);
@@ -835,8 +942,6 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   @override
   String get description =>
       'Cada ejecución de respaldo de este workspace, programada o manual. Horas en UTC, tu hora local debajo.';
-  @override
-  String get refresh => 'Actualizar';
   @override
   String get search => 'Buscar por respaldo, origen o destino';
   @override
@@ -1331,6 +1436,23 @@ extension on AppMessagesEs {
         required Object total,
       }) => '${shown} de ${total}',
       'common.optionsFor' => ({required Object name}) => 'Opciones de ${name}',
+      'common.viewDetails' => 'Ver detalle',
+      'common.refresh' => 'Actualizar',
+      'common.listView' => 'Lista',
+      'common.gridView' => 'Cuadrícula',
+      'common.back' => 'Atrás',
+      'common.next' => 'Siguiente',
+      'common.stepOf' => ({
+        required Object n,
+        required Object total,
+      }) => 'Paso ${n} de ${total}',
+      'common.backupCount' =>
+        ({required num n}) =>
+            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+              n,
+              one: '${n} backup',
+              other: '${n} backups',
+            ),
       'time.utc' => ({required Object time}) => '${time} UTC',
       'time.local' => ({required Object time}) => '${time} local',
       'errors.requestCancelled' => 'La petición al servidor fue cancelada',
@@ -1461,6 +1583,11 @@ extension on AppMessagesEs {
       'connections.toolMissingTitle' => 'Conectó, pero la herramienta de dump no está instalada donde corre Dumpling',
       'connections.unreachable' => 'Sin conexión',
       'connections.failedTitle' => 'No se pudo conectar',
+      'connections.lastCheck' => 'Última prueba',
+      'connections.checkTitle' => 'Prueba de conexión',
+      'connections.checkNote' => 'Antes de cada ejecución y al probarla',
+      'connections.connection' => 'Conexión',
+      'connections.editConnection' => 'Editar conexión',
       'sources.title' => 'Sources',
       'sources.description' =>
         'Lo que respalda este workspace: bases de datos PostgreSQL.',
@@ -1491,8 +1618,12 @@ extension on AppMessagesEs {
       'sources.newTitle' => 'Nuevo source',
       'sources.editTitle' => 'Editar source',
       'sources.formDescription' => 'Conecta lo que quieres respaldar.',
-      'sources.sectionType' => '01 Tipo',
-      'sources.sectionConnection' => '02 Conexión',
+      'sources.stepType' => 'Tipo',
+      'sources.stepConnection' => 'Conexión',
+      'sources.stepCheck' => 'Revisar y guardar',
+      'sources.typeTitle' => '¿Qué quieres respaldar?',
+      'sources.connectionTitle' => '¿Cómo se conecta Dumpling?',
+      'sources.checkTitle' => 'Revisa y guarda',
       'sources.name' => 'Nombre',
       'sources.nameHint' => 'p. ej. orders-db',
       'sources.copyName' => ({required Object name}) => '${name}-copia',
@@ -1524,6 +1655,30 @@ extension on AppMessagesEs {
       'sources.createButton' => 'Crear source',
       'sources.created' => ({required Object name}) => 'Source ${name} creado',
       'sources.saved' => ({required Object name}) => 'Source ${name} guardado',
+      'sources.detailDescription' => ({
+        required Object type,
+      }) => 'Una base de datos ${type} que este workspace respalda.',
+      'sources.statBackups' => 'Backups',
+      'sources.statDestinations' =>
+        ({required num n}) =>
+            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+              n,
+              zero: 'ninguno aún',
+              one: 'en ${n} destination',
+              other: 'en ${n} destinations',
+            ),
+      'sources.statLastBackup' => 'Último backup',
+      'sources.sectionUses' => 'Backups de este source',
+      'sources.openEditor' => 'Abrir editor',
+      'sources.noUses' => 'Ningún backup lo usa todavía. Conéctalo a un destination en el editor de pipelines.',
+      'sources.columnBackup' => 'Backup',
+      'sources.columnSchedule' => 'Horario',
+      'sources.columnLastRun' => 'Última ejecución',
+      'sources.columnNextRun' => 'Siguiente',
+      'sources.cronUtc' => 'cron · UTC',
+      'sources.paused' => 'En pausa',
+      'sources.neverRun' => 'Aún no se ejecuta',
+      'sources.passwordStored' => '•••••••• · guardada cifrada',
       'destinations.title' => 'Destinations',
       'destinations.description' =>
         'Donde este workspace escribe los backups: buckets S3.',
@@ -1594,9 +1749,12 @@ extension on AppMessagesEs {
       'destinations.newTitle' => 'Nuevo destination',
       'destinations.editTitle' => 'Editar destination',
       'destinations.formDescription' => 'Elige dónde se escriben los backups.',
-      'destinations.sectionType' => '01 Tipo',
-      'destinations.sectionConnection' => '02 Conexión',
-      'destinations.sectionFolders' => '03 Carpetas',
+      'destinations.stepType' => 'Tipo',
+      'destinations.stepConnection' => 'Conexión',
+      'destinations.stepFolders' => 'Carpetas y prueba',
+      'destinations.typeTitle' => '¿A dónde van los backups?',
+      'destinations.connectionTitle' => '¿Cómo se conecta Dumpling?',
+      'destinations.foldersTitle' => 'Carpetas y prueba de conexión',
       'destinations.name' => 'Nombre',
       'destinations.nameHint' => 'p. ej. bucket-backups',
       'destinations.copyName' => ({required Object name}) => '${name}-copia',
@@ -1626,6 +1784,18 @@ extension on AppMessagesEs {
       'destinations.saved' => ({
         required Object name,
       }) => 'Destination ${name} guardado',
+      'destinations.detailDescription' =>
+        'Un bucket donde este workspace escribe backups.',
+      'destinations.statBackups' => 'Backups',
+      'destinations.statBackupsSub' => 'escriben aquí',
+      'destinations.statFolders' => 'Carpetas',
+      'destinations.statFoldersSub' => 'puntos de conexión',
+      'destinations.sectionFolders' => 'Carpetas',
+      'destinations.columnFolder' => 'Carpeta',
+      'destinations.columnWrittenBy' => 'Lo escribe',
+      'destinations.accessKey' => 'Access key',
+      'destinations.on' => 'Sí',
+      'destinations.off' => 'No',
       'destinations.typeSub.s3' => 'Cualquier almacenamiento compatible con S3',
       'destinations.typeSub.gdrive' => 'Unidad o carpeta compartida',
       'destinations.typeSub.dropbox' => 'Carpeta de la app',
@@ -1779,7 +1949,6 @@ extension on AppMessagesEs {
       'canvas.guide.place' => ({required String name}) => 'Colocar ${name}',
       'runs.title' => 'Registro de ejecuciones',
       'runs.description' => 'Cada ejecución de respaldo de este workspace, programada o manual. Horas en UTC, tu hora local debajo.',
-      'runs.refresh' => 'Actualizar',
       'runs.search' => 'Buscar por respaldo, origen o destino',
       'runs.columnStatus' => 'Estado',
       'runs.columnSource' => 'Origen',

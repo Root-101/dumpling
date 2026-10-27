@@ -81,6 +81,12 @@ class ActionsIcons {
 
   SvgAsset get filter => const SvgAsset('$_actions/filter.svg');
 
+  /// Three lines: the list view
+  SvgAsset get list => const SvgAsset('$_actions/list.svg');
+
+  /// Four squares: the grid view
+  SvgAsset get grid => const SvgAsset('$_actions/grid.svg');
+
   SvgAsset get duplicate => const SvgAsset('$_actions/duplicate.svg');
 
   /// A bolt: test a connection

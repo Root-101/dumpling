@@ -28,6 +28,10 @@ class ConfigResponse {
   final String sourceId;
   final String destinationId;
   final String? folder;
+  final String schedule;
+  final bool enabled;
+  final DateTime? nextRun;
+  final RunModel? lastRun;
 
   ConfigResponse({
     required this.id,
@@ -35,6 +39,10 @@ class ConfigResponse {
     required this.sourceId,
     required this.destinationId,
     required this.folder,
+    required this.schedule,
+    required this.enabled,
+    required this.nextRun,
+    required this.lastRun,
   });
 
   factory ConfigResponse.fromJson(Map<String, dynamic> json) {
@@ -44,6 +52,14 @@ class ConfigResponse {
       sourceId: json['source_id'],
       destinationId: json['destination_id'],
       folder: json['folder'],
+      schedule: json['schedule'] ?? '',
+      enabled: json['enabled'] ?? true,
+      nextRun: json['next_run'] == null
+          ? null
+          : DateTime.parse(json['next_run']),
+      lastRun: json['last_run'] == null
+          ? null
+          : RunModel.fromJson(json['last_run']),
     );
   }
 }
