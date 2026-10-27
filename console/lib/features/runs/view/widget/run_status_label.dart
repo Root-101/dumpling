@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -19,12 +21,22 @@ class RunStatusLabel extends StatelessWidget {
     RunStatus.running => app.intl.canvas.runStatus.running,
   };
 
-  /// Check, cross, or a triangle while it runs
-  static SvgAsset iconOf(RunStatus status) => switch (status) {
-    RunStatus.success => app.assets.icons.actions.check,
-    RunStatus.failed => app.assets.icons.actions.close,
-    RunStatus.running => app.assets.icons.actions.play,
-  };
+  /// Check, cross, or the [RunProgressRing] while it runs, in [color]; [size]
+  /// is the icon's, the ring is a bit bigger (22 for 17, as in the design)
+  static Widget glyphOf(RunStatus status, {required double size}) {
+    final color = colorOf(status);
+    return switch (status) {
+      RunStatus.success => app.assets.icons.actions.check.build(
+        size: size,
+        color: color,
+      ),
+      RunStatus.failed => app.assets.icons.actions.close.build(
+        size: size,
+        color: color,
+      ),
+      RunStatus.running => RunProgressRing(size: size * 22 / 17, color: color),
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,9 +83,121 @@ class RunStatusIcon extends StatelessWidget {
           color: color.withValues(alpha: 0.14),
           shape: BoxShape.circle,
         ),
-        child: RunStatusLabel.iconOf(status)
-            .build(size: size / 2, color: color),
+        child: RunStatusLabel.glyphOf(status, size: size / 2),
       ),
     );
   }
+}
+
+/// A run in progress: a ring whose arc fills from the top and fades, with a
+/// dot pulsing in the middle (the design's `run-ring`, 1.6 s). Still, with
+/// the arc at 60%, when the system asks for less motion
+class RunProgressRing extends StatefulWidget {
+  final double size;
+  final Color color;
+
+  const RunProgressRing({required this.size, required this.color, super.key});
+
+  @override
+  State<RunProgressRing> createState() => _RunProgressRingState();
+}
+
+class _RunProgressRingState extends State<RunProgressRing>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1600),
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _controller.stop();
+    } else if (!_controller.isAnimating) {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final still = MediaQuery.disableAnimationsOf(context);
+    return Semantics(
+      label: app.intl.canvas.runStatus.running,
+      child: RepaintBoundary(
+        child: CustomPaint(
+          size: Size.square(widget.size),
+          painter: _RingPainter(
+            progress: _controller,
+            color: widget.color,
+            still: still,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RingPainter extends CustomPainter {
+  final Animation<double> progress;
+  final Color color;
+  final bool still;
+
+  _RingPainter({
+    required this.progress,
+    required this.color,
+    required this.still,
+  }) : super(repaint: progress);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // the design's 22 px viewBox: radius 8, stroke 3, dot 2.5
+    final unit = size.width / 22;
+    final center = size.center(Offset.zero);
+    final rect = Rect.fromCircle(center: center, radius: 8 * unit);
+    final stroke = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3 * unit
+      ..strokeCap = StrokeCap.round;
+    canvas.drawCircle(
+      center,
+      8 * unit,
+      stroke..color = color.withValues(alpha: 0.25),
+    );
+
+    final t = progress.value;
+    // fills during the first 70%, then fades out
+    final fill = still
+        ? 0.6
+        : const Cubic(0.4, 0, 0.2, 1).transform((t / 0.7).clamp(0.0, 1.0));
+    final fade = still || t <= 0.7 ? 1.0 : 1 - (t - 0.7) / 0.3;
+    if (fill > 0) {
+      canvas.drawArc(
+        rect,
+        -math.pi / 2,
+        2 * math.pi * fill,
+        false,
+        stroke..color = color.withValues(alpha: fade),
+      );
+    }
+
+    final pulse = still
+        ? 1.0
+        : 0.35 + 0.65 * Curves.easeInOut.transform(1 - (2 * t - 1).abs());
+    canvas.drawCircle(
+      center,
+      2.5 * unit,
+      Paint()..color = color.withValues(alpha: pulse),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _RingPainter old) =>
+      old.color != color || old.still != still;
 }

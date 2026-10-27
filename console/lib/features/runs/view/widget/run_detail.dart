@@ -238,7 +238,10 @@ class _Result extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          RunStatusLabel.iconOf(run.status).build(size: 18, color: color),
+          SizedBox.square(
+            dimension: 18,
+            child: Center(child: RunStatusLabel.glyphOf(run.status, size: 14)),
+          ),
           10.gap(),
           Expanded(
             child: Column(
@@ -419,13 +422,14 @@ class _StepDot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = app.colors;
-    final icons = app.assets.icons.actions;
-    final (Color? color, SvgAsset? icon) = switch (state) {
-      RunStepState.done => (colors.status.success, icons.check),
-      RunStepState.failed => (colors.status.error, icons.close),
-      RunStepState.running => (colors.status.running, icons.play),
-      _ => (null, null),
+    // a step looks like a run with its state
+    final status = switch (state) {
+      RunStepState.done => RunStatus.success,
+      RunStepState.failed => RunStatus.failed,
+      RunStepState.running => RunStatus.running,
+      _ => null,
     };
+    final color = status == null ? null : RunStatusLabel.colorOf(status);
     return Container(
       width: 24,
       height: 24,
@@ -435,7 +439,7 @@ class _StepDot extends StatelessWidget {
         color: color?.withValues(alpha: 0.14),
         border: Border.all(color: color ?? colors.neutral.grey5),
       ),
-      child: icon?.build(size: 12, color: color),
+      child: status == null ? null : RunStatusLabel.glyphOf(status, size: 12),
     );
   }
 }
