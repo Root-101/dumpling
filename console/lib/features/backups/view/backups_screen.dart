@@ -1049,14 +1049,22 @@ class _RunLine extends StatelessWidget {
               width: 110,
               child: Align(
                 alignment: Alignment.centerRight,
-                child: PrimaryButton.secondary(
+                child: TextButton(
                   onPressed: open,
-                  title: run.status == RunStatus.failed
-                      ? t.viewLog
-                      : t.viewDetails,
-                  color: colors.neutral.transparent,
-                  h: 28,
-                  horizontalPadding: 10,
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(0, 28),
+                    fixedSize: const Size.fromHeight(28),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    foregroundColor: colors.neutral.grey2,
+                    textStyle: const TextStyle(fontSize: 12),
+                    side: BorderSide(color: colors.neutral.grey5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                  child: Text(
+                    run.status == RunStatus.failed ? t.viewLog : t.viewDetails,
+                  ),
                 ),
               ),
             ),
