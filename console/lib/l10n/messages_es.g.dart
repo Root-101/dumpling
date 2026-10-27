@@ -842,8 +842,6 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   @override
   String get columnStatus => 'Estado';
   @override
-  String get columnConfig => 'Respaldo';
-  @override
   String get columnSource => 'Origen';
   @override
   String get columnDestination => 'Destino';
@@ -856,11 +854,7 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   @override
   String get scheduled => 'Programada';
   @override
-  String get manual => 'Ejecutar ahora';
-  @override
-  String get showDetail => 'Ver el detalle';
-  @override
-  String get hideDetail => 'Ocultar el detalle';
+  String get manual => 'Manual';
   @override
   String get emptyTitle => 'Aún no hay ejecuciones';
   @override
@@ -869,10 +863,6 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   @override
   String get newestOnly =>
       'Solo se muestran las 200 ejecuciones más recientes.';
-  @override
-  String get location => 'Archivo';
-  @override
-  String get error => 'Error';
   @override
   String get log => 'Log (UTC)';
   @override
@@ -884,6 +874,43 @@ class AppMessages$runs$es implements AppMessages$runs$en {
       'El log se escribe cuando termina la ejecución. Actualiza para verlo.';
   @override
   String get noLog => 'Esta ejecución no tiene log.';
+  @override
+  String today({required String date}) => 'Hoy · ${date} (UTC)';
+  @override
+  String yesterday({required String date}) => 'Ayer · ${date} (UTC)';
+  @override
+  String day({required String date}) => '${date} (UTC)';
+  @override
+  String succeeded({required int n}) => '${n} correctas';
+  @override
+  String failedCount({required int n}) => '${n} fallidas';
+  @override
+  String savedIn({required String size, required String duration}) =>
+      '${size} en ${duration}';
+  @override
+  String get inProgress => 'En curso';
+  @override
+  String soFar({required String size}) => 'En curso · ${size} hasta ahora';
+  @override
+  String get columnTrigger => 'Tipo';
+  @override
+  String get viewRun => 'Ver ejecución';
+  @override
+  String get steps => 'Pasos';
+  @override
+  String stepConnect({required String name}) => 'Conectar con ${name}';
+  @override
+  String stepDump({required String name}) => 'Volcar y subir a ${name}';
+  @override
+  String get stepSkipped => 'Omitido';
+  @override
+  String get stepWaiting => 'En espera';
+  @override
+  String get resultSuccess => 'Respaldo guardado';
+  @override
+  String get resultFailed => 'El respaldo falló';
+  @override
+  String get resultRunning => 'En curso. Actualiza para ver cuánto avanzó.';
 }
 
 // Path: backups
@@ -1755,28 +1782,46 @@ extension on AppMessagesEs {
       'runs.refresh' => 'Actualizar',
       'runs.search' => 'Buscar por respaldo, origen o destino',
       'runs.columnStatus' => 'Estado',
-      'runs.columnConfig' => 'Respaldo',
       'runs.columnSource' => 'Origen',
       'runs.columnDestination' => 'Destino',
       'runs.columnStarted' => 'Inicio',
       'runs.columnDuration' => 'Duración',
       'runs.columnSize' => 'Tamaño',
       'runs.scheduled' => 'Programada',
-      'runs.manual' => 'Ejecutar ahora',
-      'runs.showDetail' => 'Ver el detalle',
-      'runs.hideDetail' => 'Ocultar el detalle',
+      'runs.manual' => 'Manual',
       'runs.emptyTitle' => 'Aún no hay ejecuciones',
       'runs.emptyDescription' => 'Los respaldos se ejecutan según su programación, o con Ejecutar ahora en el editor.',
       'runs.newestOnly' =>
         'Solo se muestran las 200 ejecuciones más recientes.',
-      'runs.location' => 'Archivo',
-      'runs.error' => 'Error',
       'runs.log' => 'Log (UTC)',
       'runs.copyLog' => 'Copiar log',
       'runs.logCopied' => 'Log copiado',
       'runs.logWhenDone' =>
         'El log se escribe cuando termina la ejecución. Actualiza para verlo.',
       'runs.noLog' => 'Esta ejecución no tiene log.',
+      'runs.today' => ({required String date}) => 'Hoy · ${date} (UTC)',
+      'runs.yesterday' => ({required String date}) => 'Ayer · ${date} (UTC)',
+      'runs.day' => ({required String date}) => '${date} (UTC)',
+      'runs.succeeded' => ({required int n}) => '${n} correctas',
+      'runs.failedCount' => ({required int n}) => '${n} fallidas',
+      'runs.savedIn' => ({
+        required String size,
+        required String duration,
+      }) => '${size} en ${duration}',
+      'runs.inProgress' => 'En curso',
+      'runs.soFar' => ({
+        required String size,
+      }) => 'En curso · ${size} hasta ahora',
+      'runs.columnTrigger' => 'Tipo',
+      'runs.viewRun' => 'Ver ejecución',
+      'runs.steps' => 'Pasos',
+      'runs.stepConnect' => ({required String name}) => 'Conectar con ${name}',
+      'runs.stepDump' => ({required String name}) => 'Volcar y subir a ${name}',
+      'runs.stepSkipped' => 'Omitido',
+      'runs.stepWaiting' => 'En espera',
+      'runs.resultSuccess' => 'Respaldo guardado',
+      'runs.resultFailed' => 'El respaldo falló',
+      'runs.resultRunning' => 'En curso. Actualiza para ver cuánto avanzó.',
       'backups.title' => 'Respaldos',
       'backups.description' =>
         'Cada respaldo de este workspace, su última ejecución y la siguiente.',

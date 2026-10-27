@@ -88,6 +88,9 @@ class ActionsIcons {
 
   SvgAsset get check => const SvgAsset('$_actions/check.svg');
 
+  /// A triangle: a run in progress
+  SvgAsset get play => const SvgAsset('$_actions/play.svg');
+
   SvgAsset get info => const SvgAsset('$_actions/info.svg');
 
   /// An eye: show a password

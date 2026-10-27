@@ -47,14 +47,16 @@ class AppFilterButton extends StatefulWidget {
   /// Footer of the panel, e.g. how many items the filters leave
   final String? note;
 
-  final double panelWidth;
+  /// Width of each group's column: the panel grows with the groups, and a
+  /// longer name is cut with an ellipsis
+  final double columnWidth;
 
   const AppFilterButton({
     required this.activeCount,
     required this.groups,
     required this.onClear,
     this.note,
-    this.panelWidth = 280,
+    this.columnWidth = 200,
     super.key,
   });
 
@@ -200,7 +202,16 @@ class _AppFilterButtonState extends State<AppFilterButton> {
                   onClear: widget.onClear,
                   onDone: _close,
                   note: widget.note,
-                  width: widget.panelWidth,
+                  // never wider than the window
+                  width:
+                      (widget.groups.length * widget.columnWidth +
+                              (widget.groups.length + 1) *
+                                  app.dimensions.padding.s)
+                          .clamp(
+                            0.0,
+                            MediaQuery.sizeOf(context).width -
+                                2 * app.dimensions.padding.l,
+                          ),
                   maxHeight: maxHeight,
                 ),
               ),

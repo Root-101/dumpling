@@ -342,23 +342,28 @@ void main() {
     expect(find.text('Path-style addressing'), findsOneWidget);
   });
 
-  testWidgets('Run log: the runs, and a row opens on its log', (tester) async {
+  testWidgets('Run log: the runs by day, and a run opens in a dialog', (
+    tester,
+  ) async {
     when(() => auth.auth).thenReturn(session());
     await pumpApp(tester);
     RouteConfig.router.go('/workspaces/production/runs');
     await settle(tester);
 
     expect(find.text('Hourly users'), findsOneWidget);
-    expect(find.text('Failed'), findsOneWidget);
-    expect(find.text('Success'), findsOneWidget);
-    expect(find.text('3 min 5 s'), findsNWidgets(2));
-    expect(find.text('5.00 MB'), findsOneWidget);
+    expect(find.textContaining('Tue 20 Oct (UTC)'), findsOneWidget);
+    expect(find.text('1 succeeded · 1 failed'), findsOneWidget);
+    expect(find.text('5.00 MB in 3 min 5 s'), findsOneWidget);
+    expect(find.text('pg_dump: connection refused'), findsOneWidget);
+    expect(find.text('By schedule'), findsNWidgets(2));
     verify(() => runs.load('production')).called(greaterThan(0));
 
-    await tester.tap(find.byTooltip('Show the detail').first);
+    await tester.tap(find.text('View run').first);
     await settle(tester);
-    expect(find.text('s3://bucket/orders/r2.dump.gz'), findsOneWidget);
-    expect(find.text('pg_dump: connection refused'), findsOneWidget);
+    verify(() => runs.detail(any())).called(1);
+    expect(find.text('The backup failed'), findsOneWidget);
+    expect(find.text('Connect to orders-db'), findsOneWidget);
+    expect(find.text('Skipped'), findsOneWidget);
     expect(
       find.textContaining('Failed: boom', findRichText: true),
       findsOneWidget,

@@ -1074,9 +1074,6 @@ class AppMessages$runs$en {
   /// en: 'Status'
   String get columnStatus => 'Status';
 
-  /// en: 'Backup'
-  String get columnConfig => 'Backup';
-
   /// en: 'Source'
   String get columnSource => 'Source';
 
@@ -1092,17 +1089,11 @@ class AppMessages$runs$en {
   /// en: 'Size'
   String get columnSize => 'Size';
 
-  /// en: 'On schedule'
-  String get scheduled => 'On schedule';
+  /// en: 'By schedule'
+  String get scheduled => 'By schedule';
 
-  /// en: 'Run now'
-  String get manual => 'Run now';
-
-  /// en: 'Show the detail'
-  String get showDetail => 'Show the detail';
-
-  /// en: 'Hide the detail'
-  String get hideDetail => 'Hide the detail';
+  /// en: 'Manual'
+  String get manual => 'Manual';
 
   /// en: 'No runs yet'
   String get emptyTitle => 'No runs yet';
@@ -1113,12 +1104,6 @@ class AppMessages$runs$en {
 
   /// en: 'Only the 200 newest runs are shown.'
   String get newestOnly => 'Only the 200 newest runs are shown.';
-
-  /// en: 'File'
-  String get location => 'File';
-
-  /// en: 'Error'
-  String get error => 'Error';
 
   /// en: 'Log (UTC)'
   String get log => 'Log (UTC)';
@@ -1135,6 +1120,61 @@ class AppMessages$runs$en {
 
   /// en: 'This run has no log.'
   String get noLog => 'This run has no log.';
+
+  /// en: 'Today · {date: String} (UTC)'
+  String today({required String date}) => 'Today · ${date} (UTC)';
+
+  /// en: 'Yesterday · {date: String} (UTC)'
+  String yesterday({required String date}) => 'Yesterday · ${date} (UTC)';
+
+  /// en: '{date: String} (UTC)'
+  String day({required String date}) => '${date} (UTC)';
+
+  /// en: '{n: int} succeeded'
+  String succeeded({required int n}) => '${n} succeeded';
+
+  /// en: '{n: int} failed'
+  String failedCount({required int n}) => '${n} failed';
+
+  /// en: '{size: String} in {duration: String}'
+  String savedIn({required String size, required String duration}) =>
+      '${size} in ${duration}';
+
+  /// en: 'In progress'
+  String get inProgress => 'In progress';
+
+  /// en: 'In progress · {size: String} so far'
+  String soFar({required String size}) => 'In progress · ${size} so far';
+
+  /// en: 'Trigger'
+  String get columnTrigger => 'Trigger';
+
+  /// en: 'View run'
+  String get viewRun => 'View run';
+
+  /// en: 'Steps'
+  String get steps => 'Steps';
+
+  /// en: 'Connect to {name: String}'
+  String stepConnect({required String name}) => 'Connect to ${name}';
+
+  /// en: 'Dump and upload to {name: String}'
+  String stepDump({required String name}) => 'Dump and upload to ${name}';
+
+  /// en: 'Skipped'
+  String get stepSkipped => 'Skipped';
+
+  /// en: 'Waiting'
+  String get stepWaiting => 'Waiting';
+
+  /// en: 'Backup saved'
+  String get resultSuccess => 'Backup saved';
+
+  /// en: 'The backup failed'
+  String get resultFailed => 'The backup failed';
+
+  /// en: 'Running. Refresh to see how far it got.'
+  String get resultRunning => 'Running. Refresh to see how far it got.';
 }
 
 // Path: backups
@@ -2110,27 +2150,49 @@ extension on AppMessages {
       'runs.refresh' => 'Refresh',
       'runs.search' => 'Search by backup, source or destination',
       'runs.columnStatus' => 'Status',
-      'runs.columnConfig' => 'Backup',
       'runs.columnSource' => 'Source',
       'runs.columnDestination' => 'Destination',
       'runs.columnStarted' => 'Started',
       'runs.columnDuration' => 'Duration',
       'runs.columnSize' => 'Size',
-      'runs.scheduled' => 'On schedule',
-      'runs.manual' => 'Run now',
-      'runs.showDetail' => 'Show the detail',
-      'runs.hideDetail' => 'Hide the detail',
+      'runs.scheduled' => 'By schedule',
+      'runs.manual' => 'Manual',
       'runs.emptyTitle' => 'No runs yet',
       'runs.emptyDescription' => 'Backups run on their schedule, or with Run now in the pipeline editor.',
       'runs.newestOnly' => 'Only the 200 newest runs are shown.',
-      'runs.location' => 'File',
-      'runs.error' => 'Error',
       'runs.log' => 'Log (UTC)',
       'runs.copyLog' => 'Copy log',
       'runs.logCopied' => 'Log copied',
       'runs.logWhenDone' =>
         'The log is written when the run ends. Refresh to see it.',
       'runs.noLog' => 'This run has no log.',
+      'runs.today' => ({required String date}) => 'Today · ${date} (UTC)',
+      'runs.yesterday' => ({
+        required String date,
+      }) => 'Yesterday · ${date} (UTC)',
+      'runs.day' => ({required String date}) => '${date} (UTC)',
+      'runs.succeeded' => ({required int n}) => '${n} succeeded',
+      'runs.failedCount' => ({required int n}) => '${n} failed',
+      'runs.savedIn' => ({
+        required String size,
+        required String duration,
+      }) => '${size} in ${duration}',
+      'runs.inProgress' => 'In progress',
+      'runs.soFar' => ({
+        required String size,
+      }) => 'In progress · ${size} so far',
+      'runs.columnTrigger' => 'Trigger',
+      'runs.viewRun' => 'View run',
+      'runs.steps' => 'Steps',
+      'runs.stepConnect' => ({required String name}) => 'Connect to ${name}',
+      'runs.stepDump' => ({
+        required String name,
+      }) => 'Dump and upload to ${name}',
+      'runs.stepSkipped' => 'Skipped',
+      'runs.stepWaiting' => 'Waiting',
+      'runs.resultSuccess' => 'Backup saved',
+      'runs.resultFailed' => 'The backup failed',
+      'runs.resultRunning' => 'Running. Refresh to see how far it got.',
       'backups.title' => 'Backups',
       'backups.description' =>
         'Every backup in this workspace, its last run and the next one.',

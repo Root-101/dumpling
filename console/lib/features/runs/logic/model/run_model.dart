@@ -11,6 +11,16 @@ class RunLogLine {
       RunLogLine(DateTime.parse(json['at']), json['message']);
 }
 
+enum RunStepState { done, failed, running, waiting, skipped }
+
+/// A step of a run ([RunModel.steps]) and how long it took, when known
+class RunStep {
+  final RunStepState state;
+  final Duration? duration;
+
+  const RunStep(this.state, [this.duration]);
+}
+
 /// A backup that ran (or runs): the names of its config, source and
 /// destination are those it had then
 class RunModel {
@@ -79,6 +89,48 @@ class RunModel {
   bool get manual => trigger == 'manual';
 
   Duration? get duration => finishedAt?.difference(startedAt);
+
+  /// Connect, then dump and upload (one stream), read from the lines the
+  /// service writes. While it runs there is no log yet (written at the end):
+  /// bytes uploaded mean it got past connecting
+  List<RunStep> get steps {
+    final lines = log ?? const <RunLogLine>[];
+    RunLogLine? find(String start) =>
+        lines.where((l) => l.message.startsWith(start)).firstOrNull;
+    final checking = find('Checking the connection');
+    final connected = find('Connected:');
+    final dumping = find('Dumping into');
+    final uploaded = find('Uploaded');
+    final failure = find('Failed:');
+    Duration? between(RunLogLine? a, RunLogLine? b) =>
+        a == null || b == null ? null : b.at.difference(a.at);
+
+    switch (status) {
+      case RunStatus.success:
+        return [
+          RunStep(RunStepState.done, between(checking, connected)),
+          RunStep(RunStepState.done, between(dumping, uploaded)),
+        ];
+      case RunStatus.running:
+        final pastConnect = connected != null || (sizeBytes ?? 0) > 0;
+        return pastConnect
+            ? const [RunStep(RunStepState.done), RunStep(RunStepState.running)]
+            : const [
+                RunStep(RunStepState.running),
+                RunStep(RunStepState.waiting),
+              ];
+      case RunStatus.failed:
+        return connected == null
+            ? [
+                RunStep(RunStepState.failed, between(checking, failure)),
+                const RunStep(RunStepState.skipped),
+              ]
+            : [
+                RunStep(RunStepState.done, between(checking, connected)),
+                RunStep(RunStepState.failed, between(dumping, failure)),
+              ];
+    }
+  }
 
   /// The log as text, to copy: one `time  message` per line
   String get logText => [

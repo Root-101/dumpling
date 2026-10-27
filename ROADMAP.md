@@ -217,6 +217,9 @@ Applied on the canvas on 2026-10-25:
   with a CA).
 - Download a backup from the console.
 - Events feed (changes, connection checks) and alerts.
+- Live runs over a websocket: the service pushes each run's step, bytes and percentage as it goes,
+  and the run log and its dialog update without Refresh. Until then a run in progress shows a
+  generic bar and the bytes uploaded so far, and its log appears only when it ends.
 - Account screen; users and changing the password.
 - Copying connections between workspaces; zstd compression.
 - More sources (MySQL, MariaDB, MongoDB) and destinations (Google Drive, SFTP, local download).
