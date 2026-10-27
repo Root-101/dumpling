@@ -288,7 +288,7 @@ class AppMessages$login$es implements AppMessages$login$en {
   @override
   String get username => 'Usuario';
   @override
-  String get usernameHint => 'admin';
+  String get usernameHint => 'Escribe tu usuario';
   @override
   String get password => 'Contraseña';
   @override
@@ -866,6 +866,8 @@ class AppMessages$canvas$es implements AppMessages$canvas$en {
   @override
   String get deleteConfig => 'Eliminar config';
   @override
+  String get editConfig => 'Editar config';
+  @override
   String get removeConnection => 'Quitar conexión';
   @override
   String get removeConnectionKey => 'Quitar conexión (Supr)';
@@ -1031,53 +1033,119 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   String get description =>
       'Cada respaldo de este workspace, su última ejecución y la siguiente.';
   @override
-  String get openEditor => 'Abrir el editor';
+  String get openEditor => 'Abrir editor';
+  @override
+  String get newBackup => 'Nuevo respaldo';
   @override
   String get healthy => 'Correctos';
   @override
+  String get healthySub => 'la última ejecución salió bien';
+  @override
   String get failing => 'Con fallas';
+  @override
+  String get failingSub => 'requieren atención';
   @override
   String get paused => 'Pausado';
   @override
-  String get nextRun => 'Próxima ejecución';
+  String get nextBackup => 'Próximo respaldo';
   @override
-  String ofTotal({required num n}) =>
-      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
-        n,
-        one: 'de ${n} respaldo',
-        other: 'de ${n} respaldos',
-      );
-  @override
-  String get noFailures => 'Nada falla';
-  @override
-  String get seeFailing => 'Su última ejecución falló';
+  String get nextBackupIn => 'Próximo respaldo en';
   @override
   String get nothingScheduled => 'Nada programado';
   @override
-  String get search => 'Buscar por respaldo, origen o destino';
+  String get search => 'Buscar respaldos';
   @override
   String get columnStatus => 'Estado';
   @override
-  String get columnBackup => 'Respaldo';
+  String get columnSource => 'Origen';
   @override
-  String get columnRoute => 'Origen → destino';
+  String get columnDestination => 'Destino';
   @override
-  String get columnLastRun => 'Última ejecución';
+  String get columnSchedule => 'Programación';
   @override
-  String get columnNextRun => 'Próxima ejecución';
+  String get columnLastRun => 'Último respaldo';
+  @override
+  String get columnNextRun => 'Próximo respaldo';
+  @override
+  String get allSources => 'Todos los orígenes';
+  @override
+  String get allDestinations => 'Todos los destinos';
+  @override
+  String shown({required Object shown, required Object total}) =>
+      '${shown} de ${total} respaldos';
+  @override
+  String showing({required Object shown, required Object total}) =>
+      'Mostrando ${shown} de ${total} respaldos';
+  @override
+  String timesNote({required Object utc, required Object local}) =>
+      'Horas en UTC · ahora ${utc} (${local})';
+  @override
+  String get sort => 'Orden:';
   @override
   String get sortBy => 'Ordenar por';
   @override
-  String get sortName => 'Nombre';
+  String get sortLast => 'Último respaldo';
   @override
-  String get sortLastRun => 'Última ejecución, la más reciente primero';
+  String get sortLastSub => 'El más reciente primero';
   @override
-  String get sortNextRun => 'Próxima ejecución, la más cercana primero';
+  String get sortLastOld => 'Último respaldo (antiguo)';
+  @override
+  String get sortLastOldSub => 'El más antiguo primero';
+  @override
+  String get sortNext => 'Próximo respaldo';
+  @override
+  String get sortNextSub => 'El más cercano primero';
+  @override
+  String get sortName => 'Nombre del origen';
+  @override
+  String get sortNameSub => 'De la A a la Z';
+  @override
+  String inTime({required Object time}) => 'en ${time}';
+  @override
+  String startedAgo({required Object time}) => 'Empezó hace ${time}';
+  @override
+  String runNowFor({required Object name}) => 'Ejecutar ${name} ahora';
+  @override
+  String get showRuns => 'Ver las ejecuciones';
+  @override
+  String get hideRuns => 'Ocultar las ejecuciones';
+  @override
+  String moreFor({required Object name}) => 'Más acciones de ${name}';
+  @override
+  String get viewLastRun => 'Ver la última ejecución';
+  @override
+  String get editConfig => 'Editar config';
+  @override
+  String get deleteBackup => 'Eliminar respaldo';
+  @override
+  String get recentRuns => 'Ejecuciones recientes';
+  @override
+  String get noRuns => 'Aún no hay ejecuciones';
+  @override
+  String get viewLog => 'Ver log';
+  @override
+  String get viewDetails => 'Ver detalle';
+  @override
+  String get noFile => 'No se escribió archivo';
+  @override
+  String get uploading => 'Subiendo…';
+  @override
+  String get manual => 'Manual';
+  @override
+  String get scheduled => 'Programada';
+  @override
+  String deleteTitle({required Object name}) =>
+      '¿Eliminar el respaldo ${name}?';
+  @override
+  String get deleteConfirm =>
+      'Su programación se detiene. Sus ejecuciones quedan en el registro y los archivos que ya están en el destino se quedan ahí.';
+  @override
+  String deleted({required Object name}) => 'Respaldo ${name} eliminado';
+  @override
+  String saved({required Object name}) => 'Respaldo ${name} guardado';
   @override
   String get emptyDescription =>
       'Conecta un origen con un destino en el editor para crear uno.';
-  @override
-  String get seeRuns => 'Ver el registro de ejecuciones';
 }
 
 // Path: destinations.typeSub
@@ -1235,7 +1303,20 @@ class AppMessages$canvas$inspector$es
 
   // Translations
   @override
-  String get name => 'Nombre';
+  String get configName => 'Nombre de la config';
+  @override
+  String get nameHelp =>
+      'Se muestra en el canvas, en Respaldos y en el registro de ejecuciones.';
+  @override
+  String get frequency => 'Frecuencia';
+  @override
+  String get review => 'Revisión';
+  @override
+  String get source => 'Origen';
+  @override
+  String get destination => 'Destino';
+  @override
+  String get nextRunOnSave => 'Se calcula al guardar';
   @override
   String get cronHelp =>
       'minuto hora día mes día-de-la-semana, en UTC. Cada hora, diaria y semanal lo escriben por ti.';
@@ -1256,11 +1337,7 @@ class AppMessages$canvas$inspector$es
   String get objectKeyExtension =>
       'Omite la extensión: se agrega según el formato del dump y la compresión';
   @override
-  String get title => 'Config';
-  @override
-  String get close => 'Cerrar (Esc)';
-  @override
-  String get schedule => '01 Programación';
+  String get schedule => 'Nombre y programación';
   @override
   String get cron => 'Cron';
   @override
@@ -1268,7 +1345,7 @@ class AppMessages$canvas$inspector$es
   @override
   String get nextRun => 'Próxima ejecución';
   @override
-  String get output => '02 Salida';
+  String get output => 'Salida';
   @override
   String get objectKey => 'Object key';
   @override
@@ -1283,7 +1360,7 @@ class AppMessages$canvas$inspector$es
   @override
   String get compression => 'Compresión';
   @override
-  String get writes => '03 La próxima ejecución escribe';
+  String get writes => 'La próxima ejecución escribe';
   @override
   String get missingSource => 'Nada: conecta un origen.';
   @override
@@ -1492,7 +1569,7 @@ extension on AppMessagesEs {
       'login.title' => 'Inicia sesión',
       'login.description' => 'Gestiona los backups de tus bases de datos.',
       'login.username' => 'Usuario',
-      'login.usernameHint' => 'admin',
+      'login.usernameHint' => 'Escribe tu usuario',
       'login.password' => 'Contraseña',
       'login.passwordHint' => 'Escribe tu contraseña',
       'login.showPassword' => 'Mostrar contraseña',
@@ -1823,6 +1900,7 @@ extension on AppMessagesEs {
       'canvas.addSource' => 'Origen',
       'canvas.addDestination' => 'Destino',
       'canvas.deleteConfig' => 'Eliminar config',
+      'canvas.editConfig' => 'Editar config',
       'canvas.removeConnection' => 'Quitar conexión',
       'canvas.removeConnectionKey' => 'Quitar conexión (Supr)',
       'canvas.configHere' => 'La config se crea aquí',
@@ -1876,7 +1954,13 @@ extension on AppMessagesEs {
       'canvas.view.ctrlZoomOn' =>
         'La rueda mueve el canvas, Ctrl + rueda hace zoom',
       'canvas.view.ctrlZoomOff' => 'La rueda siempre hace zoom',
-      'canvas.inspector.name' => 'Nombre',
+      'canvas.inspector.configName' => 'Nombre de la config',
+      'canvas.inspector.nameHelp' => 'Se muestra en el canvas, en Respaldos y en el registro de ejecuciones.',
+      'canvas.inspector.frequency' => 'Frecuencia',
+      'canvas.inspector.review' => 'Revisión',
+      'canvas.inspector.source' => 'Origen',
+      'canvas.inspector.destination' => 'Destino',
+      'canvas.inspector.nextRunOnSave' => 'Se calcula al guardar',
       'canvas.inspector.cronHelp' => 'minuto hora día mes día-de-la-semana, en UTC. Cada hora, diaria y semanal lo escriben por ti.',
       'canvas.inspector.cronInvalid' => 'No es una expresión cron válida (minuto hora día mes día-de-la-semana)',
       'canvas.inspector.enabled' => 'Activa',
@@ -1887,13 +1971,11 @@ extension on AppMessagesEs {
       'canvas.inspector.objectKeySlash' =>
         'El object key no puede empezar con /',
       'canvas.inspector.objectKeyExtension' => 'Omite la extensión: se agrega según el formato del dump y la compresión',
-      'canvas.inspector.title' => 'Config',
-      'canvas.inspector.close' => 'Cerrar (Esc)',
-      'canvas.inspector.schedule' => '01 Programación',
+      'canvas.inspector.schedule' => 'Nombre y programación',
       'canvas.inspector.cron' => 'Cron',
       'canvas.inspector.timeZone' => 'Zona horaria',
       'canvas.inspector.nextRun' => 'Próxima ejecución',
-      'canvas.inspector.output' => '02 Salida',
+      'canvas.inspector.output' => 'Salida',
       'canvas.inspector.objectKey' => 'Object key',
       'canvas.inspector.connectDestination' =>
         'Conecta un destino para elegir dónde se guarda.',
@@ -1904,7 +1986,7 @@ extension on AppMessagesEs {
         required String bucket,
       }) => 'Relativa a la raíz de ${bucket}. La extensión se agrega según el formato del dump y la compresión.',
       'canvas.inspector.compression' => 'Compresión',
-      'canvas.inspector.writes' => '03 La próxima ejecución escribe',
+      'canvas.inspector.writes' => 'La próxima ejecución escribe',
       'canvas.inspector.missingSource' => 'Nada: conecta un origen.',
       'canvas.inspector.missingDestination' => 'Nada: conecta un destino.',
       'canvas.inspector.missingBoth' => 'Nada: conecta un origen y un destino.',
@@ -1994,34 +2076,80 @@ extension on AppMessagesEs {
       'backups.title' => 'Respaldos',
       'backups.description' =>
         'Cada respaldo de este workspace, su última ejecución y la siguiente.',
-      'backups.openEditor' => 'Abrir el editor',
+      'backups.openEditor' => 'Abrir editor',
+      'backups.newBackup' => 'Nuevo respaldo',
       'backups.healthy' => 'Correctos',
+      'backups.healthySub' => 'la última ejecución salió bien',
       'backups.failing' => 'Con fallas',
+      'backups.failingSub' => 'requieren atención',
       'backups.paused' => 'Pausado',
-      'backups.nextRun' => 'Próxima ejecución',
-      'backups.ofTotal' =>
-        ({required num n}) =>
-            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
-              n,
-              one: 'de ${n} respaldo',
-              other: 'de ${n} respaldos',
-            ),
-      'backups.noFailures' => 'Nada falla',
-      'backups.seeFailing' => 'Su última ejecución falló',
+      'backups.nextBackup' => 'Próximo respaldo',
+      'backups.nextBackupIn' => 'Próximo respaldo en',
       'backups.nothingScheduled' => 'Nada programado',
-      'backups.search' => 'Buscar por respaldo, origen o destino',
+      'backups.search' => 'Buscar respaldos',
       'backups.columnStatus' => 'Estado',
-      'backups.columnBackup' => 'Respaldo',
-      'backups.columnRoute' => 'Origen → destino',
-      'backups.columnLastRun' => 'Última ejecución',
-      'backups.columnNextRun' => 'Próxima ejecución',
+      'backups.columnSource' => 'Origen',
+      'backups.columnDestination' => 'Destino',
+      'backups.columnSchedule' => 'Programación',
+      'backups.columnLastRun' => 'Último respaldo',
+      'backups.columnNextRun' => 'Próximo respaldo',
+      'backups.allSources' => 'Todos los orígenes',
+      'backups.allDestinations' => 'Todos los destinos',
+      'backups.shown' => ({
+        required Object shown,
+        required Object total,
+      }) => '${shown} de ${total} respaldos',
+      'backups.showing' => ({
+        required Object shown,
+        required Object total,
+      }) => 'Mostrando ${shown} de ${total} respaldos',
+      'backups.timesNote' => ({
+        required Object utc,
+        required Object local,
+      }) => 'Horas en UTC · ahora ${utc} (${local})',
+      'backups.sort' => 'Orden:',
       'backups.sortBy' => 'Ordenar por',
-      'backups.sortName' => 'Nombre',
-      'backups.sortLastRun' => 'Última ejecución, la más reciente primero',
-      'backups.sortNextRun' => 'Próxima ejecución, la más cercana primero',
+      'backups.sortLast' => 'Último respaldo',
+      'backups.sortLastSub' => 'El más reciente primero',
+      'backups.sortLastOld' => 'Último respaldo (antiguo)',
+      'backups.sortLastOldSub' => 'El más antiguo primero',
+      'backups.sortNext' => 'Próximo respaldo',
+      'backups.sortNextSub' => 'El más cercano primero',
+      'backups.sortName' => 'Nombre del origen',
+      'backups.sortNameSub' => 'De la A a la Z',
+      'backups.inTime' => ({required Object time}) => 'en ${time}',
+      'backups.startedAgo' => ({required Object time}) => 'Empezó hace ${time}',
+      'backups.runNowFor' => ({
+        required Object name,
+      }) => 'Ejecutar ${name} ahora',
+      'backups.showRuns' => 'Ver las ejecuciones',
+      'backups.hideRuns' => 'Ocultar las ejecuciones',
+      'backups.moreFor' => ({
+        required Object name,
+      }) => 'Más acciones de ${name}',
+      'backups.viewLastRun' => 'Ver la última ejecución',
+      'backups.editConfig' => 'Editar config',
+      'backups.deleteBackup' => 'Eliminar respaldo',
+      'backups.recentRuns' => 'Ejecuciones recientes',
+      'backups.noRuns' => 'Aún no hay ejecuciones',
+      'backups.viewLog' => 'Ver log',
+      'backups.viewDetails' => 'Ver detalle',
+      'backups.noFile' => 'No se escribió archivo',
+      'backups.uploading' => 'Subiendo…',
+      'backups.manual' => 'Manual',
+      'backups.scheduled' => 'Programada',
+      'backups.deleteTitle' => ({
+        required Object name,
+      }) => '¿Eliminar el respaldo ${name}?',
+      'backups.deleteConfirm' => 'Su programación se detiene. Sus ejecuciones quedan en el registro y los archivos que ya están en el destino se quedan ahí.',
+      'backups.deleted' => ({
+        required Object name,
+      }) => 'Respaldo ${name} eliminado',
+      'backups.saved' => ({
+        required Object name,
+      }) => 'Respaldo ${name} guardado',
       'backups.emptyDescription' =>
         'Conecta un origen con un destino en el editor para crear uno.',
-      'backups.seeRuns' => 'Ver el registro de ejecuciones',
       _ => null,
     };
   }

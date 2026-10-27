@@ -406,22 +406,27 @@ class CanvasCubit extends Cubit<CanvasState> {
     );
   }
 
-  /// Hourly, daily and weekly keep the minute and hour of the schedule
-  /// (03:00 while it is the default of the workspace); cron keeps it as is
+  /// See [Frequency.apply]
   void setFrequency(Frequency f) {
     final sel = _data.selected;
     if (sel == null || f == Frequency.cron) return;
-    final fields = (sel.schedule ?? '0 3 * * *').trim().split(RegExp(r'\s+'));
-    final m = int.tryParse(fields.first) ?? 0;
-    final h = fields.length > 1 ? int.tryParse(fields[1]) ?? 3 : 3;
-    final cron = switch (f) {
-      Frequency.hourly => '$m * * * *',
-      Frequency.daily => '$m $h * * *',
-      Frequency.weekly => '$m $h * * 0',
-      Frequency.cron => sel.schedule!,
-    };
-    _updateSelected((c) => c.copyWith(schedule: cron));
+    _updateSelected(
+      (c) => c.copyWith(schedule: Frequency.apply(f, c.schedule)),
+    );
   }
+
+  /// What the config dialog left: its name, schedule, output and whether it
+  /// is enabled (its place and its wires stay)
+  void applyConfig(BackupConfig edited) => _update(
+    edited.id,
+    (c) => c.copyWith(
+      name: edited.name,
+      schedule: edited.schedule,
+      compression: edited.compression,
+      objectKey: () => edited.objectKey,
+      enabled: edited.enabled,
+    ),
+  );
 
   /// Empty: the default of the workspace
   void setObjectKey(String key) {

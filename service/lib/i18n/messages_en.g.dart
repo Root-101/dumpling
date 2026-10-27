@@ -178,6 +178,9 @@ class ServiceMessages$errors$runs$en {
   /// en: '{name: String} must be one of: {values: String}'
   String invalidFilter({required String name, required String values}) =>
       '${name} must be one of: ${values}';
+
+  /// en: 'limit must be from 1 to {max: int}'
+  String invalidLimit({required int max}) => 'limit must be from 1 to ${max}';
 }
 
 // Path: errors.validations
@@ -293,6 +296,9 @@ extension on ServiceMessages {
         required String name,
         required String values,
       }) => '${name} must be one of: ${values}',
+      'errors.runs.invalidLimit' => ({
+        required int max,
+      }) => 'limit must be from 1 to ${max}',
       'errors.validations.cron' =>
         'Not a valid cron expression (minute hour day month weekday)',
       'errors.validations.objectKey' => 'The object key cannot start with /',

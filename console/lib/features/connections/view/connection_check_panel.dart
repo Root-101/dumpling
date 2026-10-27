@@ -61,7 +61,7 @@ class ConnectionCheckPanel extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: SelectableText(
+                  child: Text(
                     detail,
                     style: TextStyle(fontSize: 13, color: colors.neutral.grey3),
                   ),

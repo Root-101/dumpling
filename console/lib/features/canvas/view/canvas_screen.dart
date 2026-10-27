@@ -157,21 +157,7 @@ class _CanvasScreenState extends State<CanvasScreen> {
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
                         : const LoadingPage();
                   }
-                  return Row(
-                    key: ValueKey(state.data.workspace),
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Expanded(child: CanvasEditor()),
-                      BlocBuilder<CanvasCubit, CanvasState>(
-                        builder: (context, s) {
-                          final sel = s.data.selected;
-                          return sel == null
-                              ? const SizedBox.shrink()
-                              : ConfigInspector(data: s.data, config: sel);
-                        },
-                      ),
-                    ],
-                  );
+                  return CanvasEditor(key: ValueKey(state.data.workspace));
                 },
               ),
             ),

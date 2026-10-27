@@ -81,6 +81,9 @@ class ActionsIcons {
 
   SvgAsset get filter => const SvgAsset('$_actions/filter.svg');
 
+  /// Two arrows: the sort
+  SvgAsset get sort => const SvgAsset('$_actions/sort.svg');
+
   /// Three lines: the list view
   SvgAsset get list => const SvgAsset('$_actions/list.svg');
 
@@ -91,6 +94,9 @@ class ActionsIcons {
 
   /// A bolt: test a connection
   SvgAsset get test => const SvgAsset('$_actions/test.svg');
+
+  /// A triangle: run now
+  SvgAsset get play => const SvgAsset('$_actions/play.svg');
 
   SvgAsset get check => const SvgAsset('$_actions/check.svg');
 

@@ -9,6 +9,6 @@ export 'view/canvas_screen.dart';
 export 'view/widget/add_folder_dialog.dart';
 export 'view/widget/canvas_editor.dart';
 export 'view/widget/canvas_overlays.dart';
-export 'view/widget/config_inspector.dart';
+export 'view/widget/config_dialog.dart';
 export 'view/widget/nodes.dart';
 export 'view/widget/wires_painter.dart';

@@ -335,8 +335,8 @@ class AppMessages$login$en {
   /// en: 'Username'
   String get username => 'Username';
 
-  /// en: 'admin'
-  String get usernameHint => 'admin';
+  /// en: 'Enter your username'
+  String get usernameHint => 'Enter your username';
 
   /// en: 'Password'
   String get password => 'Password';
@@ -1135,6 +1135,9 @@ class AppMessages$canvas$en {
   /// en: 'Delete config'
   String get deleteConfig => 'Delete config';
 
+  /// en: 'Edit config'
+  String get editConfig => 'Edit config';
+
   /// en: 'Remove connection'
   String get removeConnection => 'Remove connection';
 
@@ -1341,74 +1344,172 @@ class AppMessages$backups$en {
   String get description =>
       'Every backup in this workspace, its last run and the next one.';
 
-  /// en: 'Open pipeline editor'
-  String get openEditor => 'Open pipeline editor';
+  /// en: 'Open editor'
+  String get openEditor => 'Open editor';
+
+  /// en: 'New backup'
+  String get newBackup => 'New backup';
 
   /// en: 'Healthy'
   String get healthy => 'Healthy';
 
+  /// en: 'last run succeeded'
+  String get healthySub => 'last run succeeded';
+
   /// en: 'Failing'
   String get failing => 'Failing';
+
+  /// en: 'need attention'
+  String get failingSub => 'need attention';
 
   /// en: 'Paused'
   String get paused => 'Paused';
 
-  /// en: 'Next run'
-  String get nextRun => 'Next run';
+  /// en: 'Next backup'
+  String get nextBackup => 'Next backup';
 
-  /// en: '(one) {of {n} backup} (other) {of {n} backups}'
-  String ofTotal({required num n}) =>
-      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
-        n,
-        one: 'of ${n} backup',
-        other: 'of ${n} backups',
-      );
-
-  /// en: 'Nothing failing'
-  String get noFailures => 'Nothing failing';
-
-  /// en: 'Their last run failed'
-  String get seeFailing => 'Their last run failed';
+  /// en: 'Next backup in'
+  String get nextBackupIn => 'Next backup in';
 
   /// en: 'Nothing scheduled'
   String get nothingScheduled => 'Nothing scheduled';
 
-  /// en: 'Search by backup, source or destination'
-  String get search => 'Search by backup, source or destination';
+  /// en: 'Search backups'
+  String get search => 'Search backups';
 
   /// en: 'Status'
   String get columnStatus => 'Status';
 
-  /// en: 'Backup'
-  String get columnBackup => 'Backup';
+  /// en: 'Source'
+  String get columnSource => 'Source';
 
-  /// en: 'Source → destination'
-  String get columnRoute => 'Source → destination';
+  /// en: 'Destination'
+  String get columnDestination => 'Destination';
 
-  /// en: 'Last run'
-  String get columnLastRun => 'Last run';
+  /// en: 'Schedule'
+  String get columnSchedule => 'Schedule';
 
-  /// en: 'Next run'
-  String get columnNextRun => 'Next run';
+  /// en: 'Last backup'
+  String get columnLastRun => 'Last backup';
+
+  /// en: 'Next backup'
+  String get columnNextRun => 'Next backup';
+
+  /// en: 'All sources'
+  String get allSources => 'All sources';
+
+  /// en: 'All destinations'
+  String get allDestinations => 'All destinations';
+
+  /// en: '{shown: int} of {total: int} backups'
+  String shown({required int shown, required int total}) =>
+      '${shown} of ${total} backups';
+
+  /// en: 'Showing {shown: int} of {total: int} backups'
+  String showing({required int shown, required int total}) =>
+      'Showing ${shown} of ${total} backups';
+
+  /// en: 'Times in UTC · now {utc: String} ({local: String})'
+  String timesNote({required String utc, required String local}) =>
+      'Times in UTC · now ${utc} (${local})';
+
+  /// en: 'Sort:'
+  String get sort => 'Sort:';
 
   /// en: 'Sort by'
   String get sortBy => 'Sort by';
 
-  /// en: 'Name'
-  String get sortName => 'Name';
+  /// en: 'Last backup'
+  String get sortLast => 'Last backup';
 
-  /// en: 'Last run, newest first'
-  String get sortLastRun => 'Last run, newest first';
+  /// en: 'Most recent first'
+  String get sortLastSub => 'Most recent first';
 
-  /// en: 'Next run, soonest first'
-  String get sortNextRun => 'Next run, soonest first';
+  /// en: 'Last backup (oldest)'
+  String get sortLastOld => 'Last backup (oldest)';
+
+  /// en: 'Oldest first'
+  String get sortLastOldSub => 'Oldest first';
+
+  /// en: 'Next backup'
+  String get sortNext => 'Next backup';
+
+  /// en: 'Soonest first'
+  String get sortNextSub => 'Soonest first';
+
+  /// en: 'Source name'
+  String get sortName => 'Source name';
+
+  /// en: 'A to Z'
+  String get sortNameSub => 'A to Z';
+
+  /// en: 'in {time: String}'
+  String inTime({required String time}) => 'in ${time}';
+
+  /// en: 'Started {time: String} ago'
+  String startedAgo({required String time}) => 'Started ${time} ago';
+
+  /// en: 'Run {name: String} now'
+  String runNowFor({required String name}) => 'Run ${name} now';
+
+  /// en: 'Show run history'
+  String get showRuns => 'Show run history';
+
+  /// en: 'Hide run history'
+  String get hideRuns => 'Hide run history';
+
+  /// en: 'More actions for {name: String}'
+  String moreFor({required String name}) => 'More actions for ${name}';
+
+  /// en: 'View last run'
+  String get viewLastRun => 'View last run';
+
+  /// en: 'Edit config'
+  String get editConfig => 'Edit config';
+
+  /// en: 'Delete backup'
+  String get deleteBackup => 'Delete backup';
+
+  /// en: 'Recent runs'
+  String get recentRuns => 'Recent runs';
+
+  /// en: 'No runs yet'
+  String get noRuns => 'No runs yet';
+
+  /// en: 'View log'
+  String get viewLog => 'View log';
+
+  /// en: 'View details'
+  String get viewDetails => 'View details';
+
+  /// en: 'No file written'
+  String get noFile => 'No file written';
+
+  /// en: 'Uploading…'
+  String get uploading => 'Uploading…';
+
+  /// en: 'Manual'
+  String get manual => 'Manual';
+
+  /// en: 'By schedule'
+  String get scheduled => 'By schedule';
+
+  /// en: 'Delete the backup {name: String}?'
+  String deleteTitle({required String name}) => 'Delete the backup ${name}?';
+
+  /// en: 'Its schedule stops. Its runs stay in the run log, and the files already in the destination stay there.'
+  String get deleteConfirm =>
+      'Its schedule stops. Its runs stay in the run log, and the files already in the destination stay there.';
+
+  /// en: 'Backup {name: String} deleted'
+  String deleted({required String name}) => 'Backup ${name} deleted';
+
+  /// en: 'Backup {name: String} saved'
+  String saved({required String name}) => 'Backup ${name} saved';
 
   /// en: 'Connect a source to a destination in the pipeline editor to create one.'
   String get emptyDescription =>
       'Connect a source to a destination in the pipeline editor to create one.';
-
-  /// en: 'See the run log'
-  String get seeRuns => 'See the run log';
 }
 
 // Path: destinations.typeSub
@@ -1605,8 +1706,26 @@ class AppMessages$canvas$inspector$en {
 
   // Translations
 
-  /// en: 'Name'
-  String get name => 'Name';
+  /// en: 'Config name'
+  String get configName => 'Config name';
+
+  /// en: 'Shown on the canvas, in Backups and in the run log.'
+  String get nameHelp => 'Shown on the canvas, in Backups and in the run log.';
+
+  /// en: 'Frequency'
+  String get frequency => 'Frequency';
+
+  /// en: 'Review'
+  String get review => 'Review';
+
+  /// en: 'Source'
+  String get source => 'Source';
+
+  /// en: 'Destination'
+  String get destination => 'Destination';
+
+  /// en: 'Computed when it is saved'
+  String get nextRunOnSave => 'Computed when it is saved';
 
   /// en: 'minute hour day month weekday, in UTC. Hourly, daily and weekly write it for you.'
   String get cronHelp =>
@@ -1635,14 +1754,8 @@ class AppMessages$canvas$inspector$en {
   String get objectKeyExtension =>
       'Leave out the extension: it is added from the dump format and the compression';
 
-  /// en: 'Config'
-  String get title => 'Config';
-
-  /// en: 'Close (Esc)'
-  String get close => 'Close (Esc)';
-
-  /// en: '01 Schedule'
-  String get schedule => '01 Schedule';
+  /// en: 'Name & schedule'
+  String get schedule => 'Name & schedule';
 
   /// en: 'Cron'
   String get cron => 'Cron';
@@ -1653,8 +1766,8 @@ class AppMessages$canvas$inspector$en {
   /// en: 'Next run'
   String get nextRun => 'Next run';
 
-  /// en: '02 Output'
-  String get output => '02 Output';
+  /// en: 'Output'
+  String get output => 'Output';
 
   /// en: 'Object key'
   String get objectKey => 'Object key';
@@ -1674,8 +1787,8 @@ class AppMessages$canvas$inspector$en {
   /// en: 'Compression'
   String get compression => 'Compression';
 
-  /// en: '03 Next run writes'
-  String get writes => '03 Next run writes';
+  /// en: 'Next run writes'
+  String get writes => 'Next run writes';
 
   /// en: 'Nothing: connect a source.'
   String get missingSource => 'Nothing: connect a source.';
@@ -1911,7 +2024,7 @@ extension on AppMessages {
       'login.title' => 'Sign in',
       'login.description' => 'Manage your database backups.',
       'login.username' => 'Username',
-      'login.usernameHint' => 'admin',
+      'login.usernameHint' => 'Enter your username',
       'login.password' => 'Password',
       'login.passwordHint' => 'Enter your password',
       'login.showPassword' => 'Show password',
@@ -2234,6 +2347,7 @@ extension on AppMessages {
       'canvas.addSource' => 'Source',
       'canvas.addDestination' => 'Destination',
       'canvas.deleteConfig' => 'Delete config',
+      'canvas.editConfig' => 'Edit config',
       'canvas.removeConnection' => 'Remove connection',
       'canvas.removeConnectionKey' => 'Remove connection (Del)',
       'canvas.configHere' => 'Config is created here',
@@ -2287,7 +2401,14 @@ extension on AppMessages {
       'canvas.view.ctrlZoomOn' =>
         'Scroll moves the canvas, Ctrl + scroll zooms',
       'canvas.view.ctrlZoomOff' => 'Scroll always zooms',
-      'canvas.inspector.name' => 'Name',
+      'canvas.inspector.configName' => 'Config name',
+      'canvas.inspector.nameHelp' =>
+        'Shown on the canvas, in Backups and in the run log.',
+      'canvas.inspector.frequency' => 'Frequency',
+      'canvas.inspector.review' => 'Review',
+      'canvas.inspector.source' => 'Source',
+      'canvas.inspector.destination' => 'Destination',
+      'canvas.inspector.nextRunOnSave' => 'Computed when it is saved',
       'canvas.inspector.cronHelp' => 'minute hour day month weekday, in UTC. Hourly, daily and weekly write it for you.',
       'canvas.inspector.cronInvalid' =>
         'Not a valid cron expression (minute hour day month weekday)',
@@ -2297,13 +2418,11 @@ extension on AppMessages {
       'canvas.inspector.compressionNone' => 'None',
       'canvas.inspector.objectKeySlash' => 'The object key cannot start with /',
       'canvas.inspector.objectKeyExtension' => 'Leave out the extension: it is added from the dump format and the compression',
-      'canvas.inspector.title' => 'Config',
-      'canvas.inspector.close' => 'Close (Esc)',
-      'canvas.inspector.schedule' => '01 Schedule',
+      'canvas.inspector.schedule' => 'Name & schedule',
       'canvas.inspector.cron' => 'Cron',
       'canvas.inspector.timeZone' => 'Time zone',
       'canvas.inspector.nextRun' => 'Next run',
-      'canvas.inspector.output' => '02 Output',
+      'canvas.inspector.output' => 'Output',
       'canvas.inspector.objectKey' => 'Object key',
       'canvas.inspector.connectDestination' =>
         'Connect a destination to choose where it goes.',
@@ -2314,7 +2433,7 @@ extension on AppMessages {
         required String bucket,
       }) => 'Relative to the root of ${bucket}. The extension is added from the dump format and the compression.',
       'canvas.inspector.compression' => 'Compression',
-      'canvas.inspector.writes' => '03 Next run writes',
+      'canvas.inspector.writes' => 'Next run writes',
       'canvas.inspector.missingSource' => 'Nothing: connect a source.',
       'canvas.inspector.missingDestination' =>
         'Nothing: connect a destination.',
@@ -2409,33 +2528,73 @@ extension on AppMessages {
       'backups.title' => 'Backups',
       'backups.description' =>
         'Every backup in this workspace, its last run and the next one.',
-      'backups.openEditor' => 'Open pipeline editor',
+      'backups.openEditor' => 'Open editor',
+      'backups.newBackup' => 'New backup',
       'backups.healthy' => 'Healthy',
+      'backups.healthySub' => 'last run succeeded',
       'backups.failing' => 'Failing',
+      'backups.failingSub' => 'need attention',
       'backups.paused' => 'Paused',
-      'backups.nextRun' => 'Next run',
-      'backups.ofTotal' =>
-        ({required num n}) =>
-            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
-              n,
-              one: 'of ${n} backup',
-              other: 'of ${n} backups',
-            ),
-      'backups.noFailures' => 'Nothing failing',
-      'backups.seeFailing' => 'Their last run failed',
+      'backups.nextBackup' => 'Next backup',
+      'backups.nextBackupIn' => 'Next backup in',
       'backups.nothingScheduled' => 'Nothing scheduled',
-      'backups.search' => 'Search by backup, source or destination',
+      'backups.search' => 'Search backups',
       'backups.columnStatus' => 'Status',
-      'backups.columnBackup' => 'Backup',
-      'backups.columnRoute' => 'Source → destination',
-      'backups.columnLastRun' => 'Last run',
-      'backups.columnNextRun' => 'Next run',
+      'backups.columnSource' => 'Source',
+      'backups.columnDestination' => 'Destination',
+      'backups.columnSchedule' => 'Schedule',
+      'backups.columnLastRun' => 'Last backup',
+      'backups.columnNextRun' => 'Next backup',
+      'backups.allSources' => 'All sources',
+      'backups.allDestinations' => 'All destinations',
+      'backups.shown' => ({
+        required int shown,
+        required int total,
+      }) => '${shown} of ${total} backups',
+      'backups.showing' => ({
+        required int shown,
+        required int total,
+      }) => 'Showing ${shown} of ${total} backups',
+      'backups.timesNote' => ({
+        required String utc,
+        required String local,
+      }) => 'Times in UTC · now ${utc} (${local})',
+      'backups.sort' => 'Sort:',
       'backups.sortBy' => 'Sort by',
-      'backups.sortName' => 'Name',
-      'backups.sortLastRun' => 'Last run, newest first',
-      'backups.sortNextRun' => 'Next run, soonest first',
+      'backups.sortLast' => 'Last backup',
+      'backups.sortLastSub' => 'Most recent first',
+      'backups.sortLastOld' => 'Last backup (oldest)',
+      'backups.sortLastOldSub' => 'Oldest first',
+      'backups.sortNext' => 'Next backup',
+      'backups.sortNextSub' => 'Soonest first',
+      'backups.sortName' => 'Source name',
+      'backups.sortNameSub' => 'A to Z',
+      'backups.inTime' => ({required String time}) => 'in ${time}',
+      'backups.startedAgo' => ({required String time}) => 'Started ${time} ago',
+      'backups.runNowFor' => ({required String name}) => 'Run ${name} now',
+      'backups.showRuns' => 'Show run history',
+      'backups.hideRuns' => 'Hide run history',
+      'backups.moreFor' => ({
+        required String name,
+      }) => 'More actions for ${name}',
+      'backups.viewLastRun' => 'View last run',
+      'backups.editConfig' => 'Edit config',
+      'backups.deleteBackup' => 'Delete backup',
+      'backups.recentRuns' => 'Recent runs',
+      'backups.noRuns' => 'No runs yet',
+      'backups.viewLog' => 'View log',
+      'backups.viewDetails' => 'View details',
+      'backups.noFile' => 'No file written',
+      'backups.uploading' => 'Uploading…',
+      'backups.manual' => 'Manual',
+      'backups.scheduled' => 'By schedule',
+      'backups.deleteTitle' => ({
+        required String name,
+      }) => 'Delete the backup ${name}?',
+      'backups.deleteConfirm' => 'Its schedule stops. Its runs stay in the run log, and the files already in the destination stay there.',
+      'backups.deleted' => ({required String name}) => 'Backup ${name} deleted',
+      'backups.saved' => ({required String name}) => 'Backup ${name} saved',
       'backups.emptyDescription' => 'Connect a source to a destination in the pipeline editor to create one.',
-      'backups.seeRuns' => 'See the run log',
       _ => null,
     };
   }

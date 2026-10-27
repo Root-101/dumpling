@@ -7,13 +7,16 @@ import 'package:material_ui/material_ui.dart';
 /// ended (or a generic progress while it runs); when, how long, why and how
 /// big; its steps and its log. It loads the detail (the log) when it opens
 class RunDialog extends StatefulWidget {
-  static void open(RunModel run) =>
-      app.dialog.open(dialog: RunDialog(run: run));
+  /// [workspace]: out of the run log (Backups)
+  static void open(RunModel run, {String? workspace}) => app.dialog.open(
+    dialog: RunDialog(run: run, workspace: workspace),
+  );
 
   /// The run of the list; the detail replaces it once loaded
   final RunModel run;
+  final String? workspace;
 
-  const RunDialog({required this.run, super.key});
+  const RunDialog({required this.run, this.workspace, super.key});
 
   @override
   State<RunDialog> createState() => _RunDialogState();
@@ -23,7 +26,7 @@ class _RunDialogState extends State<RunDialog> {
   @override
   void initState() {
     super.initState();
-    context.read<RunCubit>().detail(widget.run);
+    context.read<RunCubit>().detail(widget.run, workspace: widget.workspace);
   }
 
   @override
@@ -120,7 +123,7 @@ class _Header extends StatelessWidget {
                     RunStatusLabel(run.status),
                     10.gap(),
                     Flexible(
-                      child: SelectableText(
+                      child: Text(
                         run.id,
                         maxLines: 1,
                         style: AppText.mono.copyWith(
@@ -175,7 +178,7 @@ class _Result extends StatelessWidget {
     final (String title, Widget body) = switch (run.status) {
       RunStatus.success => (
         t.resultSuccess,
-        SelectableText(
+        Text(
           run.location ?? '—',
           style: AppText.mono.copyWith(
             fontSize: 12,
@@ -185,7 +188,7 @@ class _Result extends StatelessWidget {
       ),
       RunStatus.failed => (
         t.resultFailed,
-        SelectableText(
+        Text(
           run.error ?? '—',
           style: AppText.mono.copyWith(
             fontSize: 12,
@@ -515,7 +518,7 @@ class _Log extends StatelessWidget {
                   run.status == RunStatus.running ? t.logWhenDone : t.noLog,
                   style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
                 )
-              : SelectableText.rich(
+              : Text.rich(
                   TextSpan(
                     children: [
                       for (final (i, line) in log.indexed)

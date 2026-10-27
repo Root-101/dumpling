@@ -6,13 +6,17 @@ class RunClient extends BaseClient {
 
   String _runsUrl(String workspace) => '$baseUrl/workspaces/$workspace/runs';
 
-  /// The 200 newest runs of [workspace], without their log
+  /// The newest runs of [workspace] (200 at most, or [limit]), without their
+  /// log; with [configId], only the ones of that config
   Future<List<Map<String, dynamic>>> list({
     required String workspace,
+    String? configId,
+    int? limit,
     String? token,
   }) async {
     Response rawResponse = await dio.get(
       _runsUrl(workspace),
+      queryParameters: {'config': ?configId, 'limit': ?limit},
       options: options(token: token),
     );
     return (rawResponse.data as List).cast<Map<String, dynamic>>();

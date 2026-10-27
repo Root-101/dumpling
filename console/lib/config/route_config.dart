@@ -57,7 +57,7 @@ class RouteConfig {
 
           ///   /workspaces/{slug}: its backups. Beside the list, not under
           /// it: as a child, opening a section from its URL would also build
-          /// the list below it, never laid out (it breaks the SelectionArea)
+          /// the list below it, never laid out
           GoRoute(
             path: '${WorkspacesScreen.navigator.path}/:${RouteNames.slugParam}',
             redirect: (context, state) =>

@@ -12,13 +12,18 @@ class RunService {
       workspaces = WorkspaceService(),
       engine = di.find();
 
-  /// The runs of [workspace], newest first, filtered by what is given.
+  /// The most runs a list answers.
+  static const int maxRuns = 200;
+
+  /// The runs of [workspace], newest first, filtered by what is given, at
+  /// most [limit].
   Future<List<RunModel>> list(
     String workspace, {
     SourceType? sourceType,
     DestinationType? destinationType,
     RunStatus? status,
     String? configId,
+    int limit = maxRuns,
   }) async {
     await workspaces.get(workspace);
     final rows = await repo.getAll(
@@ -27,6 +32,7 @@ class RunService {
       destinationType: destinationType,
       status: status,
       configId: configId,
+      limit: limit,
     );
     return [for (final row in rows) RunModel(row)];
   }

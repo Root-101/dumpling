@@ -7,10 +7,17 @@ class RunRepo {
 
   Future<List<RunModel>> list({
     required String workspace,
+    String? configId,
+    int? limit,
     String? token,
   }) async {
     try {
-      final response = await _client.list(workspace: workspace, token: token);
+      final response = await _client.list(
+        workspace: workspace,
+        configId: configId,
+        limit: limit,
+        token: token,
+      );
       return response.map(RunModel.fromJson).toList();
     } catch (e) {
       throw ExceptionConverter.parse(e);

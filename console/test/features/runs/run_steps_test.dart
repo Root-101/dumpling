@@ -67,4 +67,20 @@ void main() {
       RunStepState.running,
     ]);
   });
+
+  test('a run of a deleted config comes without config_id', () {
+    final r = RunModel.fromJson({
+      'id': 'r1',
+      'config_id': null,
+      'config_name': 'shop',
+      'source_name': 'shop',
+      'source_type': 'postgres',
+      'destination_name': 'feather',
+      'destination_type': 's3',
+      'trigger': 'manual',
+      'status': 'success',
+      'started_at': '2026-10-27T04:25:31Z',
+    });
+    expect((r.configId, r.configName), (null, 'shop'));
+  });
 }

@@ -232,9 +232,52 @@ class _CanvasEditorState extends State<CanvasEditor>
     setState(() => _menu = null);
   };
 
+  /// The dialog of config [id]: what it leaves goes to the draft of the
+  /// canvas, saved with the rest
+  Future<void> _openConfig(String id) async {
+    final s = _cubit.state.data;
+    final config = s.config(id);
+    if (config == null) return;
+    await ConfigDialog.open(
+      context: context,
+      config: config,
+      source: config.sourceId == null ? null : s.source(config.sourceId!),
+      destination: config.destinationId == null
+          ? null
+          : s.destination(config.destinationId!),
+      onSave: (edited) async {
+        _cubit.applyConfig(edited);
+        return null;
+      },
+      onDelete: () => _cubit.deleteConfig(id),
+    );
+    if (mounted) _cubit.select(null);
+  }
+
   List<ContextMenuItem> _nodeMenu(NodeKind kind, String id) {
     final icons = app.assets.icons;
+    final config = kind == NodeKind.config
+        ? _cubit.state.data.config(id)
+        : null;
+    // a run uses the saved config, complete and not running already
+    final canRun =
+        config != null &&
+        !config.id.startsWith(CanvasCubit.newPrefix) &&
+        !CanvasData.configOrphan(config) &&
+        !(config.lastRun?.running ?? false);
     return [
+      if (config != null) ...[
+        ContextMenuItem(
+          app.intl.canvas.editConfig,
+          icons.actions.edit,
+          _act(() => _openConfig(id)),
+        ),
+        ContextMenuItem(
+          app.intl.canvas.run.button,
+          icons.actions.play,
+          canRun ? _act(() => _cubit.runNow(id)) : null,
+        ),
+      ],
       switch (kind) {
         NodeKind.source => ContextMenuItem(
           app.intl.canvas.removeFromCanvas,
@@ -369,7 +412,10 @@ class _CanvasEditorState extends State<CanvasEditor>
   void _pointerUp(PointerEvent e) {
     final drag = _drag;
     final link = _link;
-    if (drag != null && !drag.moved) _cubit.tapNode(drag.kind, drag.id);
+    if (drag != null && !drag.moved) {
+      _cubit.tapNode(drag.kind, drag.id);
+      if (drag.kind == NodeKind.config) _openConfig(drag.id);
+    }
     if (link != null) {
       final s = _cubit.state.data;
       final config = link.kind == NodeKind.source
@@ -511,148 +557,144 @@ class _CanvasEditorState extends State<CanvasEditor>
         : _space
         ? SystemMouseCursors.grab
         : MouseCursor.defer;
-    // the app is a SelectionArea: a drag here moves nodes, it doesn't select
-    return SelectionContainer.disabled(
-      child: Focus(
-        focusNode: _focus,
-        autofocus: true,
-        onKeyEvent: _key,
-        child: Semantics(
-          label: app.intl.canvas.semantics,
-          child: MouseRegion(
-            cursor: cursor,
-            child: Listener(
-              onPointerDown: _canvasDown,
-              onPointerMove: _pointerMove,
-              onPointerUp: _pointerUp,
-              onPointerCancel: _pointerUp,
-              onPointerSignal: _pointerSignal,
-              child: ClipRect(
-                key: _viewport,
-                child: Stack(
-                  children: [
-                    Positioned.fill(
-                      child: ColoredBox(
-                        color: colors.surface.background,
-                        child: CustomPaint(
-                          painter: GridDotPainter(
-                            offset: _pan,
-                            scale: _zoom,
-                            color: Colors.white.withValues(alpha: 0.11),
-                          ),
+    return Focus(
+      focusNode: _focus,
+      autofocus: true,
+      onKeyEvent: _key,
+      child: Semantics(
+        label: app.intl.canvas.semantics,
+        child: MouseRegion(
+          cursor: cursor,
+          child: Listener(
+            onPointerDown: _canvasDown,
+            onPointerMove: _pointerMove,
+            onPointerUp: _pointerUp,
+            onPointerCancel: _pointerUp,
+            onPointerSignal: _pointerSignal,
+            child: ClipRect(
+              key: _viewport,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: ColoredBox(
+                      color: colors.surface.background,
+                      child: CustomPaint(
+                        painter: GridDotPainter(
+                          offset: _pan,
+                          scale: _zoom,
+                          color: Colors.white.withValues(alpha: 0.11),
                         ),
                       ),
                     ),
-                    Positioned.fill(
-                      child: Transform(
-                        transform: Matrix4.identity()
-                          ..translateByDouble(_pan.dx, _pan.dy, 0, 1)
-                          ..scaleByDouble(_zoom, _zoom, 1, 1),
-                        child: BlocBuilder<CanvasCubit, CanvasState>(
-                          builder: (context, s) => _world(s.data),
-                        ),
-                      ),
-                    ),
-                    // the cursor of the background (nodes set their own)
-                    if (_space || _panning != null)
-                      Positioned.fill(
-                        child: MouseRegion(cursor: cursor, opaque: false),
-                      ),
-                    Positioned(
-                      left: 16,
-                      top: 16,
-                      child: _overlay(
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AddToolbar(
-                              onAddSource: () =>
-                                  _openToolbarMenu(_sourceItems()),
-                              onAddDestination: () =>
-                                  _openToolbarMenu(_destinationItems()),
-                            ),
-                            BlocBuilder<CanvasCubit, CanvasState>(
-                              buildWhen: (a, b) =>
-                                  a.data.orphans != b.data.orphans,
-                              builder: (context, s) => s.data.orphans == 0
-                                  ? const SizedBox.shrink()
-                                  : Padding(
-                                      padding: const EdgeInsets.only(top: 8),
-                                      child: OrphansWarning(
-                                        count: s.data.orphans,
-                                      ),
-                                    ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    if (_showKeys)
-                      Positioned(
-                        left: 16,
-                        bottom: 62,
-                        child: _overlay(
-                          ShortcutsPanel(
-                            ctrlZoom: _ctrlZoom,
-                            onClose: () => setState(() => _showKeys = false),
-                          ),
-                        ),
-                      ),
-                    if (_showSettings)
-                      Positioned(
-                        left: 16,
-                        bottom: 62,
-                        child: _overlay(
-                          CanvasSettingsPopover(
-                            ctrlZoom: _ctrlZoom,
-                            onCtrlZoom: () =>
-                                setState(() => _ctrlZoom = !_ctrlZoom),
-                          ),
-                        ),
-                      ),
-                    Positioned(
-                      left: 16,
-                      bottom: 16,
-                      child: _overlay(
-                        ViewControls(
-                          zoom: _zoom,
-                          showSettings: _showSettings,
-                          showKeys: _showKeys,
-                          onSettings: _toggleSettings,
-                          onKeys: _toggleKeys,
-                          onFit: _fit,
-                          onZoomIn: () => _zoomBy(1.2),
-                          onZoomOut: () => _zoomBy(1 / 1.2),
-                          onReset: _reset,
-                        ),
-                      ),
-                    ),
-                    // above the view controls, until the first config
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 64,
+                  ),
+                  Positioned.fill(
+                    child: Transform(
+                      transform: Matrix4.identity()
+                        ..translateByDouble(_pan.dx, _pan.dy, 0, 1)
+                        ..scaleByDouble(_zoom, _zoom, 1, 1),
                       child: BlocBuilder<CanvasCubit, CanvasState>(
-                        builder: (context, s) => s.data.configs.isNotEmpty
-                            ? const SizedBox.shrink()
-                            : Center(
-                                child: _overlay(
-                                  CanvasGuide(
-                                    data: s.data,
-                                    onPlaceSource: _cubit.addSource,
-                                    onPlaceDestination: _cubit.addDestination,
-                                    onCreateSource: () =>
-                                        _open(RouteNames.sources),
-                                    onCreateDestination: () =>
-                                        _open(RouteNames.destinations),
+                        builder: (context, s) => _world(s.data),
+                      ),
+                    ),
+                  ),
+                  // the cursor of the background (nodes set their own)
+                  if (_space || _panning != null)
+                    Positioned.fill(
+                      child: MouseRegion(cursor: cursor, opaque: false),
+                    ),
+                  Positioned(
+                    left: 16,
+                    top: 16,
+                    child: _overlay(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AddToolbar(
+                            onAddSource: () => _openToolbarMenu(_sourceItems()),
+                            onAddDestination: () =>
+                                _openToolbarMenu(_destinationItems()),
+                          ),
+                          BlocBuilder<CanvasCubit, CanvasState>(
+                            buildWhen: (a, b) =>
+                                a.data.orphans != b.data.orphans,
+                            builder: (context, s) => s.data.orphans == 0
+                                ? const SizedBox.shrink()
+                                : Padding(
+                                    padding: const EdgeInsets.only(top: 8),
+                                    child: OrphansWarning(
+                                      count: s.data.orphans,
+                                    ),
                                   ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (_showKeys)
+                    Positioned(
+                      left: 16,
+                      bottom: 62,
+                      child: _overlay(
+                        ShortcutsPanel(
+                          ctrlZoom: _ctrlZoom,
+                          onClose: () => setState(() => _showKeys = false),
+                        ),
+                      ),
+                    ),
+                  if (_showSettings)
+                    Positioned(
+                      left: 16,
+                      bottom: 62,
+                      child: _overlay(
+                        CanvasSettingsPopover(
+                          ctrlZoom: _ctrlZoom,
+                          onCtrlZoom: () =>
+                              setState(() => _ctrlZoom = !_ctrlZoom),
+                        ),
+                      ),
+                    ),
+                  Positioned(
+                    left: 16,
+                    bottom: 16,
+                    child: _overlay(
+                      ViewControls(
+                        zoom: _zoom,
+                        showSettings: _showSettings,
+                        showKeys: _showKeys,
+                        onSettings: _toggleSettings,
+                        onKeys: _toggleKeys,
+                        onFit: _fit,
+                        onZoomIn: () => _zoomBy(1.2),
+                        onZoomOut: () => _zoomBy(1 / 1.2),
+                        onReset: _reset,
+                      ),
+                    ),
+                  ),
+                  // above the view controls, until the first config
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 64,
+                    child: BlocBuilder<CanvasCubit, CanvasState>(
+                      builder: (context, s) => s.data.configs.isNotEmpty
+                          ? const SizedBox.shrink()
+                          : Center(
+                              child: _overlay(
+                                CanvasGuide(
+                                  data: s.data,
+                                  onPlaceSource: _cubit.addSource,
+                                  onPlaceDestination: _cubit.addDestination,
+                                  onCreateSource: () =>
+                                      _open(RouteNames.sources),
+                                  onCreateDestination: () =>
+                                      _open(RouteNames.destinations),
                                 ),
                               ),
-                      ),
+                            ),
                     ),
-                    ?_contextMenu(),
-                  ],
-                ),
+                  ),
+                  ?_contextMenu(),
+                ],
               ),
             ),
           ),

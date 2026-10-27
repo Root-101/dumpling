@@ -345,11 +345,40 @@ class ConfigNodeView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              config.name,
-                              style: AppText.nodeTitle,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                            // the cron on the line of the name: the line
+                            // under it has the whole width
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    config.name,
+                                    style: AppText.nodeTitle,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                if (schedule != null) ...[
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    height: 20,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                    ),
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: colors.surface.control,
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: Text(
+                                      schedule,
+                                      style: AppText.mono.copyWith(
+                                        fontSize: 11,
+                                        color: colors.text.secondary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
                             ),
                             Text(
                               schedule == null
@@ -364,24 +393,6 @@ class ConfigNodeView extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 6),
-                      if (schedule != null)
-                        Container(
-                          height: 22,
-                          padding: const EdgeInsets.symmetric(horizontal: 7),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: colors.surface.control,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Text(
-                            schedule,
-                            style: AppText.mono.copyWith(
-                              fontSize: 11,
-                              color: colors.text.secondary,
-                            ),
-                          ),
-                        ),
                     ],
                   ),
                 ),

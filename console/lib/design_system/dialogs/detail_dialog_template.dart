@@ -392,7 +392,7 @@ class DetailFields extends StatelessWidget {
                     color: app.colors.neutral.grey4,
                   ),
                 ),
-                SelectableText(
+                Text(
                   value,
                   style: mono
                       ? AppText.mono.copyWith(fontSize: 13)

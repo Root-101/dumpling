@@ -36,7 +36,19 @@ class AppTableRow {
   /// Shown under the cells, inside the same row (e.g. the folders of a bucket)
   final Widget? expanded;
 
-  const AppTableRow(this.cells, {this.minHeight = 56, this.expanded});
+  /// A click anywhere on the cells, e.g. to open [expanded]
+  final VoidCallback? onTap;
+
+  /// Under the cells while [expanded] is shown
+  final Color? background;
+
+  const AppTableRow(
+    this.cells, {
+    this.minHeight = 56,
+    this.expanded,
+    this.onTap,
+    this.background,
+  });
 }
 
 /// Bordered table for short lists with rich cells (several lines, chips,
@@ -54,8 +66,9 @@ class AppSimpleTable extends StatelessWidget {
   /// Shown after the rows, e.g. an empty state or "no results"
   final Widget? placeholder;
 
-  /// Info line at the bottom of the table
+  /// Info line at the bottom of the table, and [hintEnd] on its right
   final String? hint;
+  final String? hintEnd;
 
   final double minWidth;
 
@@ -68,6 +81,7 @@ class AppSimpleTable extends StatelessWidget {
     this.toolbar,
     this.placeholder,
     this.hint,
+    this.hintEnd,
     this.minWidth = 760,
     this.body,
     super.key,
@@ -95,12 +109,18 @@ class AppSimpleTable extends StatelessWidget {
         ),
         for (final row in rows)
           Container(
-            decoration: BoxDecoration(border: Border(bottom: divider)),
+            decoration: BoxDecoration(
+              color: row.background,
+              border: Border(bottom: divider),
+            ),
             child: Column(
               children: [
-                ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: row.minHeight),
-                  child: _buildRow(row.cells),
+                InkWell(
+                  onTap: row.onTap,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: row.minHeight),
+                    child: _buildRow(row.cells),
+                  ),
                 ),
                 ?row.expanded,
               ],
@@ -185,11 +205,14 @@ class AppSimpleTable extends StatelessWidget {
   }
 
   Widget _buildHint(String text) {
+    final style = TextStyle(fontSize: 12, color: app.colors.neutral.grey4);
     return Padding(
       padding: EdgeInsets.all(app.dimensions.padding.l),
-      child: Text(
-        text,
-        style: TextStyle(fontSize: 12, color: app.colors.neutral.grey4),
+      child: Row(
+        children: [
+          Expanded(child: Text(text, style: style)),
+          if (hintEnd != null) Text(hintEnd!, style: style),
+        ],
       ),
     );
   }

@@ -31,6 +31,22 @@ enum Frequency {
     if (minute && hour && f[4] == '0') return Frequency.weekly;
     return Frequency.cron;
   }
+
+  /// The cron [f] writes from [schedule]: hourly, daily and weekly keep its
+  /// minute and hour (03:00 while it is the default of the workspace); cron
+  /// keeps it as is
+  static String? apply(Frequency f, String? schedule) {
+    if (f == Frequency.cron) return schedule;
+    final fields = (schedule ?? '0 3 * * *').trim().split(RegExp(r'\s+'));
+    final m = int.tryParse(fields.first) ?? 0;
+    final h = fields.length > 1 ? int.tryParse(fields[1]) ?? 3 : 3;
+    return switch (f) {
+      Frequency.hourly => '$m * * * *',
+      Frequency.daily => '$m $h * * *',
+      Frequency.weekly => '$m $h * * 0',
+      Frequency.cron => schedule,
+    };
+  }
 }
 
 /// A database to back up. [settings] are the ones the service returned

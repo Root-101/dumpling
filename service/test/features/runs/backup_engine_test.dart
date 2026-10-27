@@ -232,6 +232,24 @@ void main() {
       );
       expect(invalid.statusCode, 400);
 
+      // the last run of one config: what a row of Backups opens
+      final configId = runs.first['config_id'];
+      final last = jsonDecode(
+        (await http.get(
+          server.url('$base/runs?config=$configId&limit=1'),
+          headers: server.auth(),
+        )).body,
+      ) as List;
+      expect(last, hasLength(1));
+      expect(last.single['config_id'], configId);
+      for (final limit in ['0', '201', 'x']) {
+        final bad = await http.get(
+          server.url('$base/runs?limit=$limit'),
+          headers: server.auth(),
+        );
+        expect(bad.statusCode, 400);
+      }
+
       // The workspace counts the configs whose last run failed
       final workspaces = jsonDecode(
         (await http.get(

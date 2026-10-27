@@ -30,6 +30,9 @@ class StepsDialogTemplate extends StatelessWidget {
   final Widget child;
   final List<Widget> actions;
 
+  /// Set apart on the left of the footer, e.g. *Delete config*
+  final Widget? footerLeading;
+
   /// Id of its [LoadingOverlay], to cover it while the form saves
   final Object? loadingId;
   final double width;
@@ -42,6 +45,7 @@ class StepsDialogTemplate extends StatelessWidget {
     required this.current,
     required this.child,
     required this.actions,
+    this.footerLeading,
     this.loadingId,
     this.width = 720,
     super.key,
@@ -128,9 +132,13 @@ class StepsDialogTemplate extends StatelessWidget {
           child: Row(
             spacing: app.dimensions.padding.sm,
             children: [
+              ?footerLeading,
               Expanded(
                 child: Text(
                   app.intl.common.stepOf(n: current + 1, total: steps.length),
+                  textAlign: footerLeading == null
+                      ? TextAlign.start
+                      : TextAlign.end,
                   style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
                 ),
               ),
@@ -198,16 +206,20 @@ class StepsDialogTemplate extends StatelessWidget {
                 ),
         ),
         10.gap(),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: on ? FontWeight.w600 : FontWeight.w500,
-            color: on
-                ? colors.neutral.white
-                : done
-                ? colors.text.brand
-                : colors.neutral.grey4,
+        Flexible(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: on ? FontWeight.w600 : FontWeight.w500,
+              color: on
+                  ? colors.neutral.white
+                  : done
+                  ? colors.text.brand
+                  : colors.neutral.grey4,
+            ),
           ),
         ),
       ],
@@ -218,7 +230,8 @@ class StepsDialogTemplate extends StatelessWidget {
         selected: on,
         child: Row(
           children: [
-            step,
+            // the label before the line: it only shrinks when there is no room
+            Flexible(flex: 4, child: step),
             10.gap(),
             Expanded(
               child: Container(

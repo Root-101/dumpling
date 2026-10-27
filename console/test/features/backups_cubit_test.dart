@@ -6,16 +6,24 @@ import '../support/fixtures.dart';
 
 class _MockRepo extends Mock implements CanvasRepo {}
 
+class _MockConfigs extends Mock implements ConfigRepo {}
+
+class _MockRuns extends Mock implements RunRepo {}
+
 class _MockAuth extends Mock implements AuthCubit {}
 
 void main() {
   // the labels of the frequencies come from app.intl
   TestWidgetsFlutterBinding.ensureInitialized();
   late _MockRepo repo;
+  late _MockConfigs configs;
+  late _MockRuns runs;
   late _MockAuth auth;
 
   setUp(() {
     repo = _MockRepo();
+    configs = _MockConfigs();
+    runs = _MockRuns();
     auth = _MockAuth();
     when(() => auth.auth).thenReturn(session());
     when(() => repo.get(workspace: 'production', token: 'jwt'))
@@ -23,7 +31,13 @@ void main() {
   });
 
   Future<BackupCubit> loaded() async {
-    final cubit = BackupCubit(repo, auth, pollEvery: Duration.zero);
+    final cubit = BackupCubit(
+      repo,
+      configs,
+      runs,
+      auth,
+      pollEvery: Duration.zero,
+    );
     await cubit.load('production');
     return cubit;
   }
@@ -48,12 +62,20 @@ void main() {
 
   test('the filter, the search and the sort', () async {
     final cubit = await loaded();
-    // by name: Nightly, Nightly full, Weekly archive
+    // the last backup first; one that never ran goes last
     expect(visible(cubit), ['j2', 'j1', 'j3']);
-    cubit.sort(BackupSort.lastRun);
-    expect(visible(cubit), ['j2', 'j1', 'j3']);
+    cubit.sort(BackupSort.lastRunOldest);
+    expect(visible(cubit), ['j1', 'j2', 'j3']);
     cubit.sort(BackupSort.nextRun);
     expect(visible(cubit), ['j1', 'j2', 'j3']);
+    // by the name of the source: media, orders, users
+    cubit.sort(BackupSort.name);
+    expect(visible(cubit), ['j3', 'j1', 'j2']);
+
+    cubit.filterSource('users');
+    expect(visible(cubit), ['j2']);
+    expect(cubit.state.data.activeFilters, 1);
+    cubit.clearFilters();
 
     cubit.filterHealth(BackupHealth.failing);
     expect(visible(cubit), ['j2']);
@@ -61,6 +83,39 @@ void main() {
       ..clearFilters()
       ..search('media');
     expect(visible(cubit), ['j3']);
+  });
+
+  test('an open row loads its recent runs; save and delete reload', () async {
+    when(
+      () => runs.list(
+        workspace: 'production',
+        configId: 'j1',
+        limit: BackupCubit.recentRuns,
+        token: 'jwt',
+      ),
+    ).thenAnswer((_) async => [run('r1')]);
+    final cubit = await loaded();
+    await cubit.loadRecent('j1');
+    expect(cubit.state.data.recent['j1']!.single.id, 'r1');
+
+    final j1 = cubit.state.data.backups.first.config;
+    when(
+      () => configs.update(workspace: 'production', config: j1, token: 'jwt'),
+    ).thenAnswer((_) async {});
+    expect(await cubit.save(j1), isNull);
+    when(
+      () => configs.update(workspace: 'production', config: j1, token: 'jwt'),
+    ).thenThrow(apiError('name is too long'));
+    expect(await cubit.save(j1), 'name is too long');
+
+    when(() => configs.delete(workspace: 'production', id: 'j1', token: 'jwt'))
+        .thenAnswer((_) async {});
+    await cubit.delete(cubit.state.data.backups.first);
+    verify(
+      () => configs.delete(workspace: 'production', id: 'j1', token: 'jwt'),
+    ).called(1);
+    // loaded again after the save and the delete
+    verify(() => repo.get(workspace: 'production', token: 'jwt')).called(3);
   });
 
   test('Run now follows the run until it ends', () async {

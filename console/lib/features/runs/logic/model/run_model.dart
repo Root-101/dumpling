@@ -25,7 +25,9 @@ class RunStep {
 /// destination are those it had then
 class RunModel {
   final String id;
-  final String configId;
+
+  /// Null once its config was deleted
+  final String? configId;
   final String configName;
   final String sourceName;
   final String sourceType;

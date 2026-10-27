@@ -34,8 +34,14 @@ class RunCubit extends Cubit<RunState> {
   }
 
   /// Loads the log of [run]; a run still running is asked again every time
-  Future<void> detail(RunModel run) async {
-    final workspace = state.data.workspace!;
+  ///
+  /// [workspace] when it is opened out of the run log (Backups), whose list
+  /// may be of another workspace or not loaded yet
+  Future<void> detail(RunModel run, {String? workspace}) async {
+    workspace ??= state.data.workspace!;
+    if (state.data.workspace != workspace) {
+      emit(RunLoadingSuccessState(data: RunData.empty(workspace)));
+    }
     try {
       final detail = await _repo.get(
         workspace: workspace,

@@ -77,7 +77,7 @@ class ConnectionTestBanner extends StatelessWidget {
                   ),
                 ),
                 if (sub.isNotEmpty)
-                  SelectableText(
+                  Text(
                     sub,
                     style: TextStyle(
                       fontSize: 12,

@@ -182,6 +182,8 @@ class ServiceMessages$errors$runs$es implements ServiceMessages$errors$runs$en {
   @override
   String invalidFilter({required Object name, required Object values}) =>
       '${name} debe ser uno de: ${values}';
+  @override
+  String invalidLimit({required Object max}) => 'limit debe ir de 1 a ${max}';
 }
 
 // Path: errors.validations
@@ -282,6 +284,9 @@ extension on ServiceMessagesEs {
         required Object name,
         required Object values,
       }) => '${name} debe ser uno de: ${values}',
+      'errors.runs.invalidLimit' => ({
+        required Object max,
+      }) => 'limit debe ir de 1 a ${max}',
       'errors.validations.cron' => 'No es una expresión cron válida (minuto hora día mes día-de-la-semana)',
       'errors.validations.objectKey' =>
         'La clave del objeto no puede empezar por /',

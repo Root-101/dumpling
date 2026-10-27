@@ -17,20 +17,24 @@ class AppDialogFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // the margin keeps the whole ✕ inside the stack: out of it, it would
+    // take neither the mouse nor the click
     return Stack(
-      clipBehavior: Clip.none,
       children: [
-        Material(
-          color: color ?? app.colors.primary.backgroundForm,
-          elevation: 8,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(radius),
-            side: BorderSide(color: app.colors.neutral.grey5),
+        Padding(
+          padding: const EdgeInsets.all(14),
+          child: Material(
+            color: color ?? app.colors.primary.backgroundForm,
+            elevation: 8,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(radius),
+              side: BorderSide(color: app.colors.neutral.grey5),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: child,
           ),
-          clipBehavior: Clip.antiAlias,
-          child: child,
         ),
-        const Positioned(top: -14, right: -14, child: DialogCloseButton()),
+        const Positioned(top: 0, right: 0, child: DialogCloseButton()),
       ],
     );
   }
@@ -65,6 +69,7 @@ class DialogCloseButton extends StatelessWidget {
           child: InkWell(
             borderRadius: radius,
             onTap: () => Navigator.of(context).maybePop(),
+            mouseCursor: SystemMouseCursors.click,
             child: SizedBox.square(
               dimension: 34,
               child: Center(

@@ -60,20 +60,8 @@ void main() {
         theme: ThemeConfig.theme,
         home: BlocProvider.value(
           value: cubit,
-          // the editor and the panel of the selected config, as on the screen
-          child: Scaffold(
-            body: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Expanded(child: CanvasEditor()),
-                BlocBuilder<CanvasCubit, CanvasState>(
-                  builder: (context, s) => s.data.selected == null
-                      ? const SizedBox.shrink()
-                      : ConfigInspector(data: s.data, config: s.data.selected!),
-                ),
-              ],
-            ),
-          ),
+          // a config opens in its dialog, over the editor
+          child: const Scaffold(body: CanvasEditor()),
         ),
       ),
     );
@@ -293,27 +281,35 @@ void main() {
   );
 
   testWidgets(
-    'the panel edits the selected config and checks what it is typed',
+    'a click on a config opens its dialog in steps; Save changes applies it',
     (tester) async {
-      final cubit = (await pump(tester))..select('j1');
-      await tester.pump();
-      final cron = find.widgetWithText(TextField, '0 2 * * *');
-      expect(cron, findsOneWidget);
+      final cubit = await pump(tester);
+      await tester.tapAt(
+        world(
+          tester,
+          cubit.state.data.config('j1')!.pos + const Offset(40, 20),
+        ),
+      );
+      for (var i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      expect(find.text('Step 1 of 3'), findsOneWidget);
+      expect(find.widgetWithText(TextField, '0 2 * * *'), findsOneWidget);
 
-      // the frequency rewrites the cron field
+      // the frequency rewrites the cron field, in the dialog only
       await tester.tap(find.widgetWithText(TextButton, 'Weekly'));
       await tester.pump();
       expect(find.widgetWithText(TextField, '0 2 * * 0'), findsOneWidget);
-      expect(cubit.state.data.config('j1')!.schedule, '0 2 * * 0');
-
-      // the name shows on its node as it is typed
+      expect(cubit.state.data.config('j1')!.schedule, '0 2 * * *');
       await tester.enterText(
         find.widgetWithText(TextField, 'Nightly full'),
         'Orders',
       );
+      await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));
       await tester.pump();
-      expect(find.text('Orders'), findsWidgets);
 
+      // an extension in the key is refused, and Next waits for it
+      expect(find.text('Step 2 of 3'), findsOneWidget);
       await tester.enterText(
         find.widgetWithText(TextField, '{yyyy}/{MM}/{dd}'),
         '{db}/{yyyy}.sql',
@@ -325,13 +321,27 @@ void main() {
         ),
         findsOneWidget,
       );
+      await tester.enterText(
+        find.widgetWithText(TextField, '{db}/{yyyy}.sql'),
+        '{db}/{yyyy}',
+      );
+      await tester.tap(find.widgetWithText(TextButton, 'None'));
+      await tester.pump();
+      await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));
+      await tester.pump();
 
-      final none = find.widgetWithText(TextButton, 'None');
-      await tester.ensureVisible(none);
-      await tester.pump();
-      await tester.tap(none);
-      await tester.pump();
-      expect(cubit.state.data.config('j1')!.compression, 'none');
+      // the review has it all, and Save changes applies it to the canvas
+      expect(find.text('Step 3 of 3'), findsOneWidget);
+      expect(find.text('NEXT RUN WRITES'), findsOneWidget);
+      await tester.tap(find.widgetWithText(PrimaryButton, 'Save changes'));
+      for (var i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      final c = cubit.state.data.config('j1')!;
+      expect(
+        (c.name, c.schedule, c.objectKey, c.compression),
+        ('Orders', '0 2 * * 0', '{db}/{yyyy}', 'none'),
+      );
     },
   );
 

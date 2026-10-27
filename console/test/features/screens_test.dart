@@ -136,8 +136,10 @@ void main() {
       ),
     );
     when(() => backups.load(any())).thenAnswer((_) async {});
+    when(() => backups.loadRecent(any())).thenAnswer((_) async {});
     registerFallbackValue(run('fallback'));
-    when(() => runs.detail(any())).thenAnswer((_) async {});
+    when(() => runs.detail(any(), workspace: any(named: 'workspace')))
+        .thenAnswer((_) async {});
     when(() => sources.load(any())).thenAnswer((_) async {});
     when(() => destinations.load(any())).thenAnswer((_) async {});
     when(() => workspaces.load()).thenAnswer((_) async {});
@@ -259,17 +261,40 @@ void main() {
     );
     verify(() => workspaces.select('production')).called(greaterThan(0));
 
-    // the summary and the table of its backups
-    expect(find.text('HEALTHY'), findsOneWidget);
-    expect(find.text('of 3 backups'), findsOneWidget);
-    expect(find.text('21/Oct 02:00 AM UTC'), findsNWidgets(2));
-    expect(find.text('Nightly full'), findsNWidgets(2));
-    expect(find.text('Daily · 0 2 * * *'), findsOneWidget);
-    expect(find.text('Failing'), findsOneWidget);
-    expect(find.text('Paused'), findsNWidgets(2));
+    // the summary and the table of its backups, as in the design
+    expect(find.text('Healthy'), findsOneWidget);
+    expect(
+      find.textContaining('last run succeeded', findRichText: true),
+      findsOneWidget,
+    );
+    expect(find.text('Next backup in'), findsOneWidget);
+    expect(find.text('Next backup'), findsOneWidget);
+    expect(find.text('orders-db'), findsWidgets);
+    expect(find.text('Nightly full'), findsOneWidget);
+    expect(find.text('0 2 * * *'), findsOneWidget);
+    expect(find.text('Success'), findsOneWidget);
+    expect(find.text('Failed'), findsOneWidget);
     expect(find.text('Never run'), findsOneWidget);
-    expect(find.text('20/Oct 02:14 AM UTC · 5.00 MB'), findsOneWidget);
+    expect(find.text('20/Oct 02:14 AM UTC'), findsOneWidget);
+    expect(find.text('5.00 MB'), findsOneWidget);
+    expect(find.text('pg_dump: connection refused'), findsOneWidget);
+    expect(find.textContaining('Sort: '), findsOneWidget);
     verify(() => backups.load('production')).called(greaterThan(0));
+
+    // a row opens its recent runs
+    await tester.tap(find.text('Nightly full'));
+    await settle(tester);
+    verify(() => backups.loadRecent('j1')).called(1);
+    expect(find.text('RECENT RUNS'), findsOneWidget);
+
+    // its menu edits the config in the dialog of the canvas
+    await tester.tap(find.byTooltip('More actions for orders-db').first);
+    await settle(tester);
+    expect(find.text('Delete backup'), findsOneWidget);
+    await tester.tap(find.text('Edit config').last);
+    await settle(tester);
+    expect(find.text('Step 1 of 3'), findsOneWidget);
+    expect(find.text('Config name'), findsOneWidget);
   });
 
   testWidgets(
@@ -425,7 +450,8 @@ void main() {
 
     await tester.tap(find.text('View run').first);
     await settle(tester);
-    verify(() => runs.detail(any())).called(1);
+    verify(() => runs.detail(any(), workspace: any(named: 'workspace')))
+        .called(1);
     expect(find.text('The backup failed'), findsOneWidget);
     expect(find.text('Connect to orders-db'), findsOneWidget);
     expect(find.text('Skipped'), findsOneWidget);

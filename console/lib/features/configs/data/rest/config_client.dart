@@ -19,6 +19,31 @@ class ConfigClient extends BaseClient {
         .map((e) => ConfigResponse.fromJson(e))
         .toList();
   }
+
+  /// Replaces config [id] with [body] (all its fields)
+  Future<void> update({
+    required String workspace,
+    required String id,
+    required Map<String, dynamic> body,
+    String? token,
+  }) async {
+    await dio.put(
+      '${_configsUrl(workspace)}/$id',
+      data: body,
+      options: options(token: token),
+    );
+  }
+
+  Future<void> delete({
+    required String workspace,
+    required String id,
+    String? token,
+  }) async {
+    await dio.delete(
+      '${_configsUrl(workspace)}/$id',
+      options: options(token: token),
+    );
+  }
 }
 
 //---------- CONFIG RESPONSE ----------

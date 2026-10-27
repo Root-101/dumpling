@@ -12,7 +12,6 @@ export 'colors/darken_extension.dart';
 export 'colors/theme_adapter.dart';
 export 'customs/app_focus_ring.dart';
 export 'customs/app_row_menu.dart';
-export 'customs/app_selection_area.dart';
 export 'customs/app_switch.dart';
 export 'customs/app_view_toggle.dart';
 export 'customs/dashed.dart';

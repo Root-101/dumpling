@@ -20,6 +20,7 @@ errors:
     notFound: 'La ejecución "{id}" no existe en este workspace.'
     alreadyRunning: 'Esta config ya se está ejecutando: espera a que termine.'
     invalidFilter: '{name} debe ser uno de: {values}'
+    invalidLimit: 'limit debe ir de 1 a {max}'
   validations:
     cron: 'No es una expresión cron válida (minuto hora día mes día-de-la-semana)'
     objectKey: 'La clave del objeto no puede empezar por /'

@@ -6,6 +6,7 @@ class RunController {
   RunController() : runService = RunService();
 
   /// `?source_type=postgres&destination_type=s3&status=failed&config=cfg_…`
+  /// and `limit` (1 to 200, the default), e.g. the last runs of one config
   Future<ResponseEntity> list(RequestEntity request) async {
     final runs = await runService.list(
       request.pathParams['slug']!,
@@ -17,6 +18,7 @@ class RunController {
       ),
       status: _enum(request, 'status', RunStatus.values),
       configId: request.queryParam<String>('config'),
+      limit: _limit(request),
     );
     return ResponseEntity.ok(body: runs);
   }
@@ -36,6 +38,19 @@ class RunController {
       request.pathParams['id']!,
     );
     return ResponseEntity(202, body: run);
+  }
+
+  /// `limit`: from 1 to [RunService.maxRuns]; a 400 otherwise.
+  static int _limit(RequestEntity request) {
+    final raw = request.queryParam<String>('limit');
+    if (raw == null) return RunService.maxRuns;
+    final limit = int.tryParse(raw);
+    if (limit == null || limit < 1 || limit > RunService.maxRuns) {
+      throw BadRequestException(
+        detail: intl.errors.runs.invalidLimit(max: RunService.maxRuns),
+      );
+    }
+    return limit;
   }
 
   /// The value of the query parameter [name] among [values]; a 400 if it is
