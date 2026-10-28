@@ -13,7 +13,10 @@ class S3ClientException implements Exception {
   final String? code;
   final String message;
 
-  S3ClientException(this.message, {this.status, this.code});
+  /// [message] and [code] come from the server: cut to [maxServerText].
+  S3ClientException(String message, {this.status, String? code})
+    : message = clipText(message),
+      code = code == null ? null : clipText(code);
 
   /// The network failed, or S3 asked to try again later (5xx, 429)
   bool get transient => status == null || status == 429 || status! >= 500;
@@ -31,6 +34,10 @@ class S3Client {
 
   /// To send a body (a part of up to [S3Uploader.partSize]) and get the answer.
   static const Duration transferTimeout = Duration(minutes: 5);
+
+  /// The largest answer read: S3 answers with a few hundred bytes of XML, and
+  /// a server could send gigabytes (compressed, even) within the timeout.
+  static const int maxAnswer = 1024 * 1024;
 
   /// Tries of a part, and the wait before the second (doubled for the third).
   static const int partTries = 3;
@@ -184,9 +191,14 @@ class S3Client {
     final uri = Uri.parse(
       '${endpoint.scheme}://$authority$path${queryString.isEmpty ? '' : '?$queryString'}',
     );
-    final client = HttpClient()..connectionTimeout = timeout;
+    final client = HttpClient()
+      ..connectionTimeout = timeout
+      // a small compressed answer would grow past [maxAnswer] in memory
+      ..autoUncompress = false;
     try {
       final request = await client.openUrl(method, uri).timeout(timeout);
+      // dart:io asks for gzip; without autoUncompress the answer must come plain
+      request.headers.removeAll(HttpHeaders.acceptEncodingHeader);
       headers.forEach((name, value) {
         if (name != 'host') request.headers.set(name, value);
       });
@@ -200,10 +212,7 @@ class S3Client {
         request.add(body);
       }
       final response = await request.close().timeout(wait);
-      final answer = await response
-          .transform(utf8.decoder)
-          .join()
-          .timeout(wait);
+      final answer = await _read(response).timeout(wait);
       if (response.statusCode >= 300) {
         throw S3ClientException(
           _tag(answer, 'Message') ?? 'HTTP ${response.statusCode}',
@@ -224,6 +233,21 @@ class S3Client {
     } finally {
       client.close(force: true);
     }
+  }
+
+  /// The answer as text, failing past [maxAnswer] bytes.
+  static Future<String> _read(HttpClientResponse response) async {
+    final bytes = BytesBuilder(copy: false);
+    await for (final chunk in response) {
+      bytes.add(chunk);
+      if (bytes.length > maxAnswer) {
+        throw S3ClientException(
+          'The answer is larger than ${maxAnswer ~/ 1024} KiB',
+          status: response.statusCode,
+        );
+      }
+    }
+    return utf8.decode(bytes.takeBytes(), allowMalformed: true);
   }
 
   static String? _tag(String xml, String name) =>

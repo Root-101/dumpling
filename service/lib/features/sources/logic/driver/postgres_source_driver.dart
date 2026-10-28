@@ -53,13 +53,20 @@ class PostgresSourceDriver implements SourceDriver {
           await controller.close();
           return;
         }
-        final stderr = StringBuffer();
+        // Only its end goes into the error: a server can make pg_dump write
+        // without end
+        var stderr = '';
         // Server messages come in the encoding of the database, not always
         // UTF-8; and an error here before it is awaited would end the service
         final errors =
             process!.stderr
                 .transform(const Utf8Decoder(allowMalformed: true))
-                .forEach(stderr.write)
+                .forEach((chunk) {
+                  stderr += chunk;
+                  if (stderr.length > 2 * _stderrTail) {
+                    stderr = stderr.substring(stderr.length - _stderrTail);
+                  }
+                })
               ..ignore();
         try {
           // The stream waits for the upload: pausing it holds pg_dump back
@@ -67,7 +74,7 @@ class PostgresSourceDriver implements SourceDriver {
           final code = await process!.exitCode;
           await errors;
           if (code != 0) {
-            final text = stderr.toString().trim();
+            final text = stderr.trim();
             controller.addError(
               DumpException(
                 'pg_dump exited with code $code: '

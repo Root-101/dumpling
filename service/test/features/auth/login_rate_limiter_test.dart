@@ -65,6 +65,21 @@ void main() {
       expect(limiter.lockedFor('1.1.1.1'), isNull);
     });
 
+    test('Should not scan every client on every failure when there are many', () async {
+      // An attacker with a whole IPv6 range: 20,000 recent ids that can't
+      // be forgotten yet
+      for (var i = 0; i < 20000; i++) {
+        await limiter.failed('2001:db8:$i::/64');
+      }
+      final watch = Stopwatch()..start();
+      for (var i = 0; i < 5000; i++) {
+        await limiter.failed('2001:db9:$i::/64');
+      }
+      // a scan per failure would be 5,000 passes over 20,000 entries
+      // (about 0.4 s); with one scan a minute it takes a few milliseconds
+      expect(watch.elapsed, lessThan(const Duration(milliseconds: 100)));
+    });
+
     test('Should keep each client apart', () async {
       await fail('1.1.1.1', 3);
       expect(limiter.lockedFor('1.1.1.1'), isNotNull);

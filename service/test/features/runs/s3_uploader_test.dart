@@ -1,6 +1,8 @@
 @TestOn('vm')
 library;
 
+import 'dart:io';
+
 import 'package:service/dumpling.dart';
 import 'package:test/test.dart';
 
@@ -105,6 +107,67 @@ void main() {
       expect(s3.objects, isEmpty);
       expect(s3.openUploads, isEmpty);
       expect(s3.requests.last, startsWith('DELETE'));
+    });
+  });
+
+  group('S3Client', () {
+    /// A client of a server that answers every request with [status] and
+    /// [body].
+    Future<S3Client> answering(int status, List<int> body) async {
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(() => server.close(force: true));
+      server.listen((request) async {
+        // its answers are read as they come, so they must come plain
+        expect(request.headers.value('accept-encoding'), isNull);
+        await request.drain<void>();
+        request.response
+          ..statusCode = status
+          ..headers.set('content-encoding', 'gzip')
+          ..add(body);
+        await request.response.close();
+      });
+      return S3Client(
+        endpoint: Uri.parse('http://127.0.0.1:${server.port}'),
+        region: FakeS3.region,
+        bucket: 'backups',
+        accessKeyId: FakeS3.accessKeyId,
+        secretAccessKey: FakeS3.secretAccessKey,
+        pathStyle: true,
+      );
+    }
+
+    test('Should not read an answer larger than an S3 one can be', () async {
+      // Not even decompressed: a few KB of gzip can be gigabytes
+      final client = await answering(
+        200,
+        List.filled(S3Client.maxAnswer + 1, 0x41),
+      );
+      await expectLater(
+        client.createMultipartUpload('k'),
+        throwsA(
+          isA<S3ClientException>().having(
+            (e) => e.message,
+            'message',
+            contains('larger than'),
+          ),
+        ),
+      );
+    });
+
+    test('Should cut the error text a server sends', () async {
+      final client = await answering(
+        403,
+        '<Error><Code>AccessDenied</Code><Message>${'A' * 100000}</Message></Error>'
+            .codeUnits,
+      );
+      await expectLater(
+        client.createMultipartUpload('k'),
+        throwsA(
+          isA<S3ClientException>()
+              .having((e) => e.code, 'code', 'AccessDenied')
+              .having((e) => e.message.length, 'length', maxServerText + 1),
+        ),
+      );
     });
   });
 

@@ -194,7 +194,10 @@ class ConfigTable extends Table {
 ///
 /// The run log lists by workspace, newest first; the history of a config too.
 @TableIndex(name: 'run_config_started', columns: {#configId, #startedAt})
-@TableIndex(name: 'run_workspace_started', columns: {#workspaceSlug, #startedAt})
+@TableIndex(
+  name: 'run_workspace_started',
+  columns: {#workspaceSlug, #startedAt},
+)
 class RunTable extends Table {
   @override
   String get tableName => 'run';

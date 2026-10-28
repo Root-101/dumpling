@@ -21,7 +21,13 @@ class LoginRateLimiter {
   /// Above this many IPs, the ones that no longer count are forgotten.
   static const int _pruneAbove = 10000;
 
+  /// At most once a minute: with many recent IPs (an attacker with a whole
+  /// IPv6 range) nothing is forgotten, and a scan on every failure would make
+  /// each failed login cost as much as the whole map.
+  static const Duration _pruneEvery = Duration(minutes: 1);
+
   final Map<String, _Attempts> _clients = {};
+  DateTime? _lastPrune;
 
   LoginRateLimiter({
     this.maxFailures = 10,
@@ -62,7 +68,11 @@ class LoginRateLimiter {
         fields: {'client': client, 'lockSeconds': lockDuration.inSeconds},
       );
     }
-    if (_clients.length > _pruneAbove) _prune(now);
+    if (_clients.length > _pruneAbove &&
+        (_lastPrune == null || now.difference(_lastPrune!) >= _pruneEvery)) {
+      _lastPrune = now;
+      _prune(now);
+    }
     if (failureDelay > Duration.zero) await _wait(failureDelay);
   }
 

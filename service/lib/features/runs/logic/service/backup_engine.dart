@@ -259,17 +259,19 @@ class BackupEngine {
       if (!expected) {
         logger.error('Run failed', error: e, stackTrace: stackTrace);
       }
-      write('Failed: $e');
+      // Kept in every run that fails, and its text may come from a server
+      final error = clipText('$e');
+      write('Failed: $error');
       await runs.update(
         run.id,
         RunTableCompanion(
           status: const Value(RunStatus.failed),
-          error: Value('$e'),
+          error: Value(error),
           log: Value(logJson()),
           finishedAt: Value(DateTime.now().toUtc()),
         ),
       );
-      logger.warning('Run failed', fields: {'run': run.id, 'error': '$e'});
+      logger.warning('Run failed', fields: {'run': run.id, 'error': error});
     } finally {
       _active.remove(config.id);
     }

@@ -411,6 +411,88 @@ void main() {
   });
 
   group('PostgresSourceDriver', () {
+    /// pg_dump replaced by a script that writes [stderr] and exits with 1.
+    Future<void> fakePgDump(List<int> stderr) async {
+      final dir = await Directory.systemTemp.createTemp('fake_pg_dump');
+      addTearDown(() => dir.delete(recursive: true));
+      await File('${dir.path}/stderr.txt').writeAsBytes(stderr);
+      final String script;
+      if (Platform.isWindows) {
+        script = '${dir.path}\\pg_dump.bat';
+        await File(script)
+            .writeAsString('@type "%~dp0stderr.txt" 1>&2\r\n@exit /b 1\r\n');
+      } else {
+        script = '${dir.path}/pg_dump';
+        await File(script).writeAsString(
+          '#!/bin/sh\ncat "\$(dirname "\$0")/stderr.txt" >&2\nexit 1\n',
+        );
+        await Process.run('chmod', ['+x', script]);
+      }
+      final before = env.pgDumpPath;
+      env.put('PG_DUMP_PATH', script);
+      addTearDown(() => env.put('PG_DUMP_PATH', before));
+    }
+
+    Stream<List<int>> dump() => PostgresSourceDriver().dump(
+      PostgresSettings(host: 'db', database: 'orders', username: 'backup'),
+      {},
+    );
+
+    test('Should keep only the end of what pg_dump writes to stderr', () async {
+      await fakePgDump([...List.filled(100000, 0x78), ...'END'.codeUnits]);
+      await expectLater(
+        dump().drain<void>(),
+        throwsA(
+          isA<DumpException>()
+              .having((e) => e.message, 'message', endsWith('END'))
+              .having((e) => e.message.length, 'length', lessThan(2100)),
+        ),
+      );
+    });
+
+    test(
+      'Should cut the error a server sends to the connection test',
+      () async {
+        // An ErrorResponse whose message is 5 MB long
+        final fake = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+        addTearDown(fake.close);
+        fake.listen((socket) {
+          socket.listen((_) {
+            final fields = [
+              ...'SFATAL'.codeUnits,
+              0,
+              ...'C28P01'.codeUnits,
+              0,
+              ...'M'.codeUnits,
+              ...List.filled(5000000, 0x41),
+              0,
+              0,
+            ];
+            socket.add([
+              ...'E'.codeUnits,
+              ...(ByteData(
+                4,
+              )..setInt32(0, 4 + fields.length)).buffer.asUint8List(),
+              ...fields,
+            ]);
+          });
+        });
+        final check = await PostgresSourceDriver().testConnection(
+          PostgresSettings(
+            host: '127.0.0.1',
+            port: fake.port,
+            database: 'orders',
+            username: 'backup',
+            sslMode: 'disable',
+          ),
+          {PostgresSettings.passwordKey: 'pw'},
+        );
+        expect(check.status, CheckStatus.failed);
+        expect(check.message, startsWith('AAA'));
+        expect(check.message!.length, maxServerText + 1);
+      },
+    );
+
     test(
       'Should give up on a server that makes the password hash run forever',
       () async {
@@ -485,37 +567,9 @@ void main() {
       'Should fail a dump whose errors are not UTF-8, without throwing past it',
       () async {
         // A LATIN1 database names its tables in LATIN1: 'pg' + é + an 0xFF
-        final dir = await Directory.systemTemp.createTemp('fake_pg_dump');
-        addTearDown(() => dir.delete(recursive: true));
-        await File('${dir.path}/bad.txt')
-            .writeAsBytes([0x70, 0x67, 0xE9, 0xFF, 0x0A]);
-        final String script;
-        if (Platform.isWindows) {
-          script = '${dir.path}\\pg_dump.bat';
-          await File(script)
-              .writeAsString('@type "%~dp0bad.txt" 1>&2\r\n@exit /b 1\r\n');
-        } else {
-          script = '${dir.path}/pg_dump';
-          await File(script).writeAsString(
-            '#!/bin/sh\ncat "\$(dirname "\$0")/bad.txt" >&2\nexit 1\n',
-          );
-          await Process.run('chmod', ['+x', script]);
-        }
-        final before = env.pgDumpPath;
-        env.put('PG_DUMP_PATH', script);
-        addTearDown(() => env.put('PG_DUMP_PATH', before));
-
+        await fakePgDump([0x70, 0x67, 0xE9, 0xFF, 0x0A]);
         await expectLater(
-          PostgresSourceDriver()
-              .dump(
-                PostgresSettings(
-                  host: 'db',
-                  database: 'orders',
-                  username: 'backup',
-                ),
-                {},
-              )
-              .drain<void>(),
+          dump().drain<void>(),
           throwsA(
             isA<DumpException>().having(
               (e) => e.message,

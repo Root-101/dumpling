@@ -1,3 +1,13 @@
+/// The most of a text from a server (an error, a version) that is kept: it
+/// goes into the check, the run and the log, on every run, and a server can
+/// make it as long as it likes.
+const int maxServerText = 2000;
+
+/// [text] cut to [maxServerText] characters.
+String clipText(String text) => text.length <= maxServerText
+    ? text
+    : '${text.substring(0, maxServerText)}…';
+
 /// What a connection test found. The console writes the text in its language
 /// from these fields; [message] is the raw error of the server or the network.
 enum CheckStatus {
@@ -29,12 +39,13 @@ class ConnectionCheck {
 
   ConnectionCheck({
     required this.status,
-    this.serverVersion,
+    String? serverVersion,
     this.toolVersion,
-    this.message,
+    String? message,
     required this.durationMs,
     required this.checkedAt,
-  });
+  }) : serverVersion = serverVersion == null ? null : clipText(serverVersion),
+       message = message == null ? null : clipText(message);
 
   factory ConnectionCheck.fromJson(Map<String, dynamic> json) =>
       ConnectionCheck(
