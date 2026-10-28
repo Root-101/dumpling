@@ -170,6 +170,11 @@ void main() {
         ),
         {'schedule', 'object_key'},
       );
+      // It parses, but February has no 30th: it would never run
+      expect(
+        await fieldsOf(config(extra: {'schedule': '0 0 30 2 *'})),
+        {'schedule'},
+      );
     });
 
     test('Should not use a source of another workspace', () async {

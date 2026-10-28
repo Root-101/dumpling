@@ -461,7 +461,7 @@ class CanvasCubit extends Cubit<CanvasState> {
     final sel = _data.selected;
     if (sel == null || f == Frequency.cron) return;
     _updateSelected(
-      (c) => c.copyWith(schedule: Frequency.apply(f, c.schedule)),
+      (c) => c.copyWith(schedule: () => Frequency.apply(f, c.schedule)),
     );
   }
 
@@ -471,7 +471,7 @@ class CanvasCubit extends Cubit<CanvasState> {
     edited.id,
     (c) => c.copyWith(
       name: edited.name,
-      schedule: edited.schedule,
+      schedule: () => edited.schedule,
       compression: edited.compression,
       objectKey: () => edited.objectKey,
       enabled: edited.enabled,
@@ -491,7 +491,7 @@ class CanvasCubit extends Cubit<CanvasState> {
 
   /// A cron in UTC, as typed; the frequency picker follows it
   void setSchedule(String cron) =>
-      _updateSelected((c) => c.copyWith(schedule: cron.trim()));
+      _updateSelected((c) => c.copyWith(schedule: () => cron.trim()));
 
   void setCompression(String compression) =>
       _updateSelected((c) => c.copyWith(compression: compression));

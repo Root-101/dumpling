@@ -233,7 +233,7 @@ class _ConfigDialogState extends State<ConfigDialog> {
         value: schedule == null ? null : Frequency.of(schedule),
         onChanged: (f) {
           if (f == Frequency.cron) return;
-          _set(_c.copyWith(schedule: Frequency.apply(f, schedule)));
+          _set(_c.copyWith(schedule: () => Frequency.apply(f, schedule)));
         },
       ),
       const SizedBox(height: 12),
@@ -252,7 +252,12 @@ class _ConfigDialogState extends State<ConfigDialog> {
                   hint: app.intl.canvas.workspaceDefault,
                   mono: true,
                   error: _cronError,
-                  onChanged: (v) => _set(_c.copyWith(schedule: v.trim())),
+                  // empty: back to the default of the workspace
+                  onChanged: (v) => _set(
+                    _c.copyWith(
+                      schedule: () => v.trim().isEmpty ? null : v.trim(),
+                    ),
+                  ),
                 ),
               ],
             ),

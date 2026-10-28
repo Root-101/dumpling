@@ -11,7 +11,8 @@ extension BackupRules on FieldValidator<String?> {
     '.bak', '.backup',
   ];
 
-  /// A cron expression of 5 fields (always in UTC).
+  /// A cron expression of 5 fields (always in UTC) that is due some day:
+  /// `0 0 30 2 *` parses, but never runs.
   FieldValidator<String?> cron() => custom(
     (value) =>
         value == null || isCron(value) ? null : intl.errors.validations.cron,
@@ -38,8 +39,11 @@ extension BackupRules on FieldValidator<String?> {
 
   static bool isCron(String value) {
     try {
-      CronSchedule.parse(value, utc: true);
-      return true;
+      return CronSchedule.parse(
+            value,
+            utc: true,
+          ).next(DateTime.now().toUtc()) !=
+          null;
     } on FormatException {
       return false;
     }

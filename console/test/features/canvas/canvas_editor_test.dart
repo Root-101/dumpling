@@ -316,6 +316,13 @@ void main() {
       await tester.pump();
       expect(find.widgetWithText(TextField, '0 2 * * 0'), findsOneWidget);
       expect(cubit.state.data.config('j1')!.schedule, '0 2 * * *');
+      // emptied, it is the default of the workspace again: not an error
+      await tester.enterText(find.widgetWithText(TextField, '0 2 * * 0'), '');
+      await tester.pump();
+      expect(
+        find.text('Not a valid cron expression (minute hour day month weekday)'),
+        findsNothing,
+      );
       await tester.enterText(
         find.widgetWithText(TextField, 'Nightly full'),
         'Orders',
@@ -355,7 +362,7 @@ void main() {
       final c = cubit.state.data.config('j1')!;
       expect(
         (c.name, c.schedule, c.objectKey, c.compression),
-        ('Orders', '0 2 * * 0', '{db}/{yyyy}', 'none'),
+        ('Orders', null, '{db}/{yyyy}', 'none'),
       );
     },
   );
