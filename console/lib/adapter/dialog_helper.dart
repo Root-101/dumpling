@@ -8,12 +8,13 @@ class DialogHelper {
 
   factory DialogHelper() => _instance;
 
-  Future open({
+  /// Completes when the dialog closes
+  Future<void> open({
     required Widget dialog,
     BuildContext? context,
     bool barrierDismissible = true,
-  }) async {
-    showGeneralDialog(
+  }) {
+    return showGeneralDialog(
       context: context ?? app.context,
       barrierDismissible: barrierDismissible,
       barrierLabel: '',

@@ -8,9 +8,10 @@ import 'package:material_ui/material_ui.dart';
 /// big; its steps and its log. It loads the detail (the log) when it opens
 class RunDialog extends StatefulWidget {
   /// [workspace]: out of the run log (Backups)
-  static void open(RunModel run, {String? workspace}) => app.dialog.open(
-    dialog: RunDialog(run: run, workspace: workspace),
-  );
+  static Future<void> open(RunModel run, {String? workspace}) =>
+      app.dialog.open(
+        dialog: RunDialog(run: run, workspace: workspace),
+      );
 
   /// The run of the list; the detail replaces it once loaded
   final RunModel run;

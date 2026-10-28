@@ -61,6 +61,23 @@ class RunCubit extends Cubit<RunState> {
     }
   }
 
+  /// The run [id] of [workspace] for its dialog: from what is loaded, or from
+  /// the service (older than the list, or the list not loaded); null when
+  /// there is none
+  Future<RunModel?> find(String workspace, String id) async {
+    final data = state.data;
+    if (data.workspace == workspace) {
+      final known =
+          data.details[id] ?? data.runs.where((r) => r.id == id).firstOrNull;
+      if (known != null) return known;
+    }
+    try {
+      return await _repo.get(workspace: workspace, id: id, token: _token);
+    } catch (_) {
+      return null;
+    }
+  }
+
   /// By config, source or destination name, over the runs already loaded
   void search(String query) =>
       emit(RunLoadingSuccessState(data: state.data.withQuery(query)));

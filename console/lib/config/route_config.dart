@@ -65,14 +65,16 @@ class RouteConfig {
                 ? '${state.matchedLocation}/${RouteNames.backups}'
                 : null,
             routes: [
-              GoRoute(
+              ..._withItem(
                 name: SourcesScreen.navigator.name,
                 path: SourcesScreen.navigator.path,
+                itemName: RouteNames.source,
                 builder: SourcesScreen.navigator.builder,
               ),
-              GoRoute(
+              ..._withItem(
                 name: DestinationsScreen.navigator.name,
                 path: DestinationsScreen.navigator.path,
+                itemName: RouteNames.destination,
                 builder: DestinationsScreen.navigator.builder,
               ),
               GoRoute(
@@ -80,14 +82,17 @@ class RouteConfig {
                 path: CanvasScreen.navigator.path,
                 builder: CanvasScreen.navigator.builder,
               ),
-              GoRoute(
+              ..._withItem(
                 name: BackupsScreen.navigator.name,
                 path: BackupsScreen.navigator.path,
+                itemName: RouteNames.backupRun,
+                itemPath: RouteNames.runs,
                 builder: BackupsScreen.navigator.builder,
               ),
-              GoRoute(
+              ..._withItem(
                 name: RunsScreen.navigator.name,
                 path: RunsScreen.navigator.path,
+                itemName: RouteNames.run,
                 builder: RunsScreen.navigator.builder,
               ),
             ],
@@ -96,6 +101,27 @@ class RouteConfig {
       ),
     ],
   );
+
+  /// [name] at [path] and [itemName] at `[path]/[itemPath]/:id` share one
+  /// page: an id keeps the screen as it is and opens its dialog over it
+  static List<GoRoute> _withItem({
+    required String name,
+    required String path,
+    required String itemName,
+    required GoRouterWidgetBuilder builder,
+    String? itemPath,
+  }) {
+    Page<void> page(BuildContext context, GoRouterState state) =>
+        MaterialPage(key: ValueKey(path), child: builder(context, state));
+    return [
+      GoRoute(name: name, path: path, pageBuilder: page),
+      GoRoute(
+        name: itemName,
+        path: [path, ?itemPath, ':${RouteNames.idParam}'].join('/'),
+        pageBuilder: page,
+      ),
+    ];
+  }
 
   /// The location saved in `?from=` if it is one of ours (a path, not the login
   /// itself); otherwise the workspaces

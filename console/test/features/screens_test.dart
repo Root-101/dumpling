@@ -141,9 +141,16 @@ void main() {
     registerFallbackValue(run('fallback'));
     when(() => runs.detail(any(), workspace: any(named: 'workspace')))
         .thenAnswer((_) async {});
+    // the dialog of a URL takes the run of the log
+    when(() => runs.find(any(), any())).thenAnswer(
+      (i) async => runs.state.data.runs
+          .where((r) => r.id == i.positionalArguments[1])
+          .firstOrNull,
+    );
     when(() => sources.load(any())).thenAnswer((_) async {});
     when(() => destinations.load(any())).thenAnswer((_) async {});
     when(() => workspaces.load()).thenAnswer((_) async {});
+    when(() => auth.expired).thenReturn(false);
     when(() => workspaces.select(any())).thenReturn(null);
     app.di.put<AuthCubit>(auth);
     app.di.put<LanguageCubit>(language);
@@ -459,6 +466,43 @@ void main() {
       expect(find.text('Not tested yet'), findsOneWidget);
     },
   );
+
+  testWidgets('A source opens from its URL, and leaving it closes it', (
+    tester,
+  ) async {
+    when(() => auth.auth).thenReturn(session());
+    String path() =>
+        RouteConfig.router.routerDelegate.currentConfiguration.uri.path;
+    const about = 'A PostgreSQL database this workspace backs up.';
+    await pumpApp(tester);
+    RouteConfig.router.go('/workspaces/production/sources/orders');
+    await settle(tester);
+    expect(find.text(about), findsOneWidget);
+
+    // the browser's back: the list without its dialog
+    RouteConfig.router.go('/workspaces/production/sources');
+    await settle(tester);
+    expect(find.text(about), findsNothing);
+    expect(find.text('orders-db'), findsOneWidget);
+
+    // an id that is not there: a notice, and the list
+    RouteConfig.router.go('/workspaces/production/sources/gone');
+    await settle(tester);
+    expect(find.text('This page does not exist.'), findsOneWidget);
+    expect(path(), '/workspaces/production/sources');
+  });
+
+  testWidgets('The run log takes its filters from the URL', (tester) async {
+    when(() => auth.auth).thenReturn(session());
+    await pumpApp(tester);
+    RouteConfig.router.go(
+      '/workspaces/production/runs?status=failed&source=postgres&destination=nope',
+    );
+    await settle(tester);
+    verify(() => runs.filterStatus(RunStatus.failed)).called(greaterThan(0));
+    verify(() => runs.filterSourceType('postgres')).called(greaterThan(0));
+    verify(() => runs.filterDestinationType('nope')).called(greaterThan(0));
+  });
 
   testWidgets('Destinations: folders open under the row, grid, detail and '
       'the form in steps', (tester) async {

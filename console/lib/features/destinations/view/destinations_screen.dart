@@ -13,6 +13,7 @@ class DestinationsScreenNavigator {
   Widget builder(BuildContext context, GoRouterState state) {
     return DestinationsScreen(
       workspace: state.pathParameters[RouteNames.slugParam]!,
+      openId: state.pathParameters[RouteNames.idParam],
     );
   }
 }
@@ -26,13 +27,17 @@ class DestinationsScreen extends StatefulWidget {
 
   final String workspace;
 
-  const DestinationsScreen({required this.workspace, super.key});
+  /// The destination whose dialog the URL opens (`destinations/{id}`)
+  final String? openId;
+
+  const DestinationsScreen({required this.workspace, this.openId, super.key});
 
   @override
   State<DestinationsScreen> createState() => _DestinationsScreenState();
 }
 
-class _DestinationsScreenState extends State<DestinationsScreen> {
+class _DestinationsScreenState extends State<DestinationsScreen>
+    with UrlDialog {
   late final DestinationCubit cubit;
   final _searchController = TextEditingController();
 
@@ -46,12 +51,15 @@ class _DestinationsScreenState extends State<DestinationsScreen> {
     super.initState();
     cubit = context.read<DestinationCubit>();
     _load();
+    // a list loaded already changes no state
+    WidgetsBinding.instance.addPostFrameCallback((_) => _followUrl());
   }
 
   @override
   void didUpdateWidget(covariant DestinationsScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.workspace != widget.workspace) _load();
+    _followUrl();
   }
 
   @override
@@ -87,10 +95,31 @@ class _DestinationsScreenState extends State<DestinationsScreen> {
     );
   }
 
-  void _openDetail(DestinationModel destination) {
-    DestinationDialog.open(
-      destination,
-      onEdit: (d) => _openForm(destination: d),
+  void _openDetail(DestinationModel destination) => RouteNames.openItem(
+    widget.workspace,
+    RouteNames.destination,
+    destination.id,
+  );
+
+  /// The destination of the URL over the list, once it is loaded
+  void _followUrl() {
+    final data = cubit.state.data;
+    if (!data.loaded || data.workspace != widget.workspace) return;
+    followUrl(
+      widget.openId,
+      show: (id) async {
+        final item = data.destinations.where((e) => e.id == id).firstOrNull;
+        if (item == null) return false;
+        await DestinationDialog.open(
+          item,
+          onEdit: (d) => _openForm(destination: d),
+        );
+        return true;
+      },
+      leave: () => RouteNames.openWorkspace(
+        widget.workspace,
+        section: RouteNames.destinations,
+      ),
     );
   }
 
@@ -167,6 +196,7 @@ class _DestinationsScreenState extends State<DestinationsScreen> {
   }
 
   void _onState(BuildContext context, DestinationState state) {
+    _followUrl();
     if (state is DestinationProcessInProgressState) {
       app.loading.show();
     } else {

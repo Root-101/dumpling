@@ -187,16 +187,17 @@ UX/UI improvements in 0.1.0, not features.
 - [x] Double compression: a PostgreSQL source with the custom format (`pg_dump -Fc`, already
   compressed) and a config with gzip is allowed and compressed twice, but a small warning under
   the compression field says it barely makes the file smaller.
-- [ ] Navigable URLs: every screen has its own path, so it can be bookmarked, shared, reloaded and
+- [x] Navigable URLs: every screen has its own path, so it can be bookmarked, shared, reloaded and
   reached with the browser's back and forward: `/workspaces`, `/workspaces/{slug}/canvas`,
   `/workspaces/{slug}/backups`, `/workspaces/{slug}/backups/runs/{id}`,
   `/workspaces/{slug}/sources/{id}`, `/workspaces/{slug}/destinations/{id}`,
-  `/workspaces/{slug}/runs` (with its filters in the query), `/workspaces/{slug}/settings`. The
-  slug comes from the workspace name when it is created (`test-workspace`), is unique and doesn't
-  change on a rename, so links keep working. An unknown path or slug shows Error · Not found.
-  Done: `/workspaces` and `/workspaces/{slug}/{section}`, reloaded or opened from a link (without
-  a session, the login opens it after signing in). Missing: the paths of the details and of a run,
-  and Error · Not found.
+  `/workspaces/{slug}/runs/{id}` and `/workspaces/{slug}/runs` (its status, source and
+  destination filters in the query). The slug comes from the workspace name when it is created
+  (`test-workspace`), is unique and doesn't change on a rename, so links keep working. An
+  unknown path or slug shows Error · Not found; an unknown id, a notice and its screen. A
+  detail's path opens its dialog over its screen, and leaving the path closes it. The settings
+  of a workspace stay a dialog over the list, without a path; the search of the run log stays
+  out of the query.
 - [ ] Unsaved canvas: leaving the canvas (another screen, another workspace, closing or reloading
   the tab) with changes not saved asks first that they will be discarded.
 - [ ] Save only with changes: the Save button of the canvas is disabled until something changes,

@@ -6,7 +6,7 @@ import 'package:material_ui/material_ui.dart';
 /// each of its folders, its last connection check and the connection itself.
 /// It follows the list, so a test or an edit made from it shows here too
 class DestinationDialog extends StatelessWidget {
-  static void open(
+  static Future<void> open(
     DestinationModel destination, {
     required ValueChanged<DestinationModel> onEdit,
   }) => app.dialog.open(

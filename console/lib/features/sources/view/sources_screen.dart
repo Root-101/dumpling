@@ -11,6 +11,7 @@ class SourcesScreenNavigator {
   Widget builder(BuildContext context, GoRouterState state) {
     return SourcesScreen(
       workspace: state.pathParameters[RouteNames.slugParam]!,
+      openId: state.pathParameters[RouteNames.idParam],
     );
   }
 }
@@ -23,13 +24,16 @@ class SourcesScreen extends StatefulWidget {
 
   final String workspace;
 
-  const SourcesScreen({required this.workspace, super.key});
+  /// The source whose dialog the URL opens (`sources/{id}`)
+  final String? openId;
+
+  const SourcesScreen({required this.workspace, this.openId, super.key});
 
   @override
   State<SourcesScreen> createState() => _SourcesScreenState();
 }
 
-class _SourcesScreenState extends State<SourcesScreen> {
+class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
   late final SourceCubit cubit;
   final _searchController = TextEditingController();
 
@@ -40,12 +44,15 @@ class _SourcesScreenState extends State<SourcesScreen> {
     super.initState();
     cubit = context.read<SourceCubit>();
     _load();
+    // a list loaded already changes no state
+    WidgetsBinding.instance.addPostFrameCallback((_) => _followUrl());
   }
 
   @override
   void didUpdateWidget(covariant SourcesScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.workspace != widget.workspace) _load();
+    _followUrl();
   }
 
   @override
@@ -76,8 +83,26 @@ class _SourcesScreenState extends State<SourcesScreen> {
     );
   }
 
-  void _openDetail(SourceModel source) {
-    SourceDialog.open(source, onEdit: (s) => _openForm(source: s));
+  void _openDetail(SourceModel source) =>
+      RouteNames.openItem(widget.workspace, RouteNames.source, source.id);
+
+  /// The source of the URL over the list, once it is loaded
+  void _followUrl() {
+    final data = cubit.state.data;
+    if (!data.loaded || data.workspace != widget.workspace) return;
+    followUrl(
+      widget.openId,
+      show: (id) async {
+        final item = data.sources.where((e) => e.id == id).firstOrNull;
+        if (item == null) return false;
+        await SourceDialog.open(item, onEdit: (s) => _openForm(source: s));
+        return true;
+      },
+      leave: () => RouteNames.openWorkspace(
+        widget.workspace,
+        section: RouteNames.sources,
+      ),
+    );
   }
 
   void _confirmDelete(SourceModel source) {
@@ -153,6 +178,7 @@ class _SourcesScreenState extends State<SourcesScreen> {
   }
 
   void _onState(BuildContext context, SourceState state) {
+    _followUrl();
     if (state is SourceProcessInProgressState) {
       app.loading.show();
     } else {

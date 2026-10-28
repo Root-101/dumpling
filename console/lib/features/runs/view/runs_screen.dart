@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:console/app_exporter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -9,7 +10,11 @@ class RunsScreenNavigator {
   String get path => RouteNames.runs;
 
   Widget builder(BuildContext context, GoRouterState state) {
-    return RunsScreen(workspace: state.pathParameters[RouteNames.slugParam]!);
+    return RunsScreen(
+      workspace: state.pathParameters[RouteNames.slugParam]!,
+      openId: state.pathParameters[RouteNames.idParam],
+      filters: state.uri.queryParameters,
+    );
   }
 }
 
@@ -20,7 +25,18 @@ class RunsScreen extends StatefulWidget {
 
   final String workspace;
 
-  const RunsScreen({required this.workspace, super.key});
+  /// The run whose dialog the URL opens (`runs/{id}`)
+  final String? openId;
+
+  /// The filters of the URL: `?status=failed&source=postgres&destination=s3`
+  final Map<String, String> filters;
+
+  const RunsScreen({
+    required this.workspace,
+    this.openId,
+    this.filters = const {},
+    super.key,
+  });
 
   /// `—` while it runs, `0.4 s`, `42 s`, `3 min 5 s`, `1 h 2 min`
   static String durationOf(Duration? d) {
@@ -38,7 +54,7 @@ class RunsScreen extends StatefulWidget {
   State<RunsScreen> createState() => _RunsScreenState();
 }
 
-class _RunsScreenState extends State<RunsScreen> {
+class _RunsScreenState extends State<RunsScreen> with UrlDialog {
   late final RunCubit cubit;
   final _searchController = TextEditingController();
 
@@ -47,12 +63,19 @@ class _RunsScreenState extends State<RunsScreen> {
     super.initState();
     cubit = context.read<RunCubit>();
     _load();
+    // a list loaded already changes no state
+    WidgetsBinding.instance.addPostFrameCallback((_) => _followUrl());
   }
 
   @override
   void didUpdateWidget(covariant RunsScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.workspace != widget.workspace) _load();
+    if (oldWidget.workspace != widget.workspace) {
+      _load();
+    } else if (!mapEquals(oldWidget.filters, widget.filters)) {
+      _applyFilters();
+    }
+    _followUrl();
   }
 
   @override
@@ -66,11 +89,55 @@ class _RunsScreenState extends State<RunsScreen> {
     cubit
       ..load(widget.workspace)
       ..clearFilters();
+    _applyFilters();
   }
 
   void _clearFilters() {
     _searchController.clear();
     cubit.clearFilters();
+    _go(const {});
+  }
+
+  static const String _status = 'status';
+  static const String _source = 'source';
+  static const String _destination = 'destination';
+
+  /// The URL has the filters, so the log can be reloaded or shared filtered
+  void _filter(String key, String? value) => _go(
+    {...widget.filters}
+      ..remove(key)
+      ..addAll({key: ?value}),
+  );
+
+  void _go(Map<String, String> filters) => app.navigator.go(
+    RouteNames.runs,
+    pathParameters: {RouteNames.slugParam: widget.workspace},
+    queryParameters: filters,
+  );
+
+  /// An unknown value is no filter
+  void _applyFilters() {
+    final f = widget.filters;
+    cubit
+      ..filterStatus(RunStatus.values.asNameMap()[f[_status]])
+      ..filterSourceType(f[_source])
+      ..filterDestinationType(f[_destination]);
+  }
+
+  /// The run of the URL over the log, once it is loaded
+  void _followUrl() {
+    final data = cubit.state.data;
+    if (!data.loaded || data.workspace != widget.workspace) return;
+    followUrl(
+      widget.openId,
+      show: (id) async {
+        final run = await cubit.find(widget.workspace, id);
+        if (run == null) return false;
+        await RunDialog.open(run);
+        return true;
+      },
+      leave: () => _go(widget.filters),
+    );
   }
 
   @override
@@ -101,6 +168,7 @@ class _RunsScreenState extends State<RunsScreen> {
             child: PagePanel(
               child: BlocConsumer<RunCubit, RunState>(
                 listener: (context, state) {
+                  _followUrl();
                   if (state is RunProcessingErrorState) {
                     app.snack.showError(
                       message: state.message,
@@ -193,7 +261,13 @@ class _RunsScreenState extends State<RunsScreen> {
           ),
           for (final (day, runs) in byDay(data.visibleRuns)) ...[
             _DayHeader(day: day, runs: runs, divider: divider),
-            for (final run in runs) _RunRow(run: run, divider: divider),
+            for (final run in runs)
+              _RunRow(
+                run: run,
+                divider: divider,
+                workspace: widget.workspace,
+                filters: widget.filters,
+              ),
           ],
           ?placeholder,
           // the service sends the 200 newest
@@ -242,27 +316,27 @@ class _RunsScreenState extends State<RunsScreen> {
         AppFilterGroup(
           title: t.columnStatus,
           options: [
-            all(data.status == null, () => cubit.filterStatus(null)),
+            all(data.status == null, () => _filter(_status, null)),
             for (final status in RunStatus.values)
               AppFilterOption(
                 label: RunStatusLabel.labelOf(status),
                 selected: data.status == status,
                 count: runs.where((r) => r.status == status).length,
-                onTap: () => cubit.filterStatus(status),
+                onTap: () => _filter(_status, status.name),
               ),
           ],
         ),
         AppFilterGroup(
           title: t.columnSource,
           options: [
-            all(data.sourceType == null, () => cubit.filterSourceType(null)),
+            all(data.sourceType == null, () => _filter(_source, null)),
             for (final type in {for (final r in runs) r.sourceType})
               AppFilterOption(
                 label: SourceTypeLook.labelOf(type),
                 leading: TypeBadge(look: SourceTypeLook.lookOf(type), size: 24),
                 selected: data.sourceType == type,
                 count: runs.where((r) => r.sourceType == type).length,
-                onTap: () => cubit.filterSourceType(type),
+                onTap: () => _filter(_source, type),
               ),
           ],
         ),
@@ -271,7 +345,7 @@ class _RunsScreenState extends State<RunsScreen> {
           options: [
             all(
               data.destinationType == null,
-              () => cubit.filterDestinationType(null),
+              () => _filter(_destination, null),
             ),
             for (final type in {for (final r in runs) r.destinationType})
               AppFilterOption(
@@ -282,7 +356,7 @@ class _RunsScreenState extends State<RunsScreen> {
                 ),
                 selected: data.destinationType == type,
                 count: runs.where((r) => r.destinationType == type).length,
-                onTap: () => cubit.filterDestinationType(type),
+                onTap: () => _filter(_destination, type),
               ),
           ],
         ),
@@ -357,8 +431,15 @@ class _DayHeader extends StatelessWidget {
 class _RunRow extends StatelessWidget {
   final RunModel run;
   final BorderSide divider;
+  final String workspace;
+  final Map<String, String> filters;
 
-  const _RunRow({required this.run, required this.divider});
+  const _RunRow({
+    required this.run,
+    required this.divider,
+    required this.workspace,
+    required this.filters,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -452,7 +533,12 @@ class _RunRow extends StatelessWidget {
             child: Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () => RunDialog.open(run),
+                onPressed: () => RouteNames.openItem(
+                  workspace,
+                  RouteNames.run,
+                  run.id,
+                  query: filters,
+                ),
                 child: Text(
                   t.viewRun,
                   style: TextStyle(

@@ -7,7 +7,7 @@ import 'package:material_ui/material_ui.dart';
 /// check and the connection itself. It follows the list, so a test or an edit
 /// made from it shows here too
 class SourceDialog extends StatelessWidget {
-  static void open(
+  static Future<void> open(
     SourceModel source, {
     required ValueChanged<SourceModel> onEdit,
   }) => app.dialog.open(

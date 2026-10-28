@@ -11,6 +11,7 @@ class BackupsScreenNavigator {
   Widget builder(BuildContext context, GoRouterState state) {
     return BackupsScreen(
       workspace: state.pathParameters[RouteNames.slugParam]!,
+      openId: state.pathParameters[RouteNames.idParam],
     );
   }
 }
@@ -23,7 +24,10 @@ class BackupsScreen extends StatefulWidget {
 
   final String workspace;
 
-  const BackupsScreen({required this.workspace, super.key});
+  /// The run whose dialog the URL opens (`backups/runs/{id}`)
+  final String? openId;
+
+  const BackupsScreen({required this.workspace, this.openId, super.key});
 
   static Color colorOf(BackupHealth health) => switch (health) {
     BackupHealth.healthy => app.colors.status.success,
@@ -45,7 +49,7 @@ class BackupsScreen extends StatefulWidget {
   State<BackupsScreen> createState() => _BackupsScreenState();
 }
 
-class _BackupsScreenState extends State<BackupsScreen> {
+class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
   late final BackupCubit cubit;
   final _searchController = TextEditingController();
 
@@ -57,12 +61,14 @@ class _BackupsScreenState extends State<BackupsScreen> {
     super.initState();
     cubit = context.read<BackupCubit>();
     _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _followUrl());
   }
 
   @override
   void didUpdateWidget(covariant BackupsScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.workspace != widget.workspace) _load();
+    _followUrl();
   }
 
   @override
@@ -123,27 +129,23 @@ class _BackupsScreenState extends State<BackupsScreen> {
     );
   }
 
-  /// The last run of [backup] as the run dialog takes it; the dialog loads
-  /// the rest (its log)
   void _viewLastRun(BackupRow backup) {
     final last = backup.config.lastRun;
     if (last == null) return;
-    RunDialog.open(
-      RunModel(
-        id: last.id,
-        configId: backup.config.id,
-        configName: backup.config.name,
-        sourceName: backup.source.name,
-        sourceType: backup.source.type,
-        destinationName: backup.destination.name,
-        destinationType: backup.destination.type,
-        trigger: 'schedule',
-        status: last.status,
-        startedAt: last.startedAt,
-        sizeBytes: last.sizeBytes,
-        error: last.error,
-      ),
-      workspace: widget.workspace,
+    RouteNames.openItem(widget.workspace, RouteNames.backupRun, last.id);
+  }
+
+  /// The run of the URL (`backups/runs/{id}`) over the backups
+  void _followUrl() {
+    followUrl(
+      widget.openId,
+      show: (id) async {
+        final run = await context.read<RunCubit>().find(widget.workspace, id);
+        if (run == null) return false;
+        await RunDialog.open(run, workspace: widget.workspace);
+        return true;
+      },
+      leave: () => RouteNames.openWorkspace(widget.workspace),
     );
   }
 
@@ -962,7 +964,7 @@ class _RunLine extends StatelessWidget {
     final color = RunStatusLabel.colorOf(run.status);
     final size = run.sizeBytes;
     final text = TextStyle(fontSize: 12, color: colors.neutral.grey2);
-    void open() => RunDialog.open(run, workspace: workspace);
+    void open() => RouteNames.openItem(workspace, RouteNames.backupRun, run.id);
     final location = run.location?.replaceFirst('s3://', '');
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 44),
