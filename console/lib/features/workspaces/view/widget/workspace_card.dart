@@ -2,7 +2,7 @@ import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// A workspace in the list: a sketch of its canvas, what it has, whether its
-/// backups are healthy and when it last ran, with the ways into it
+/// backups are healthy and when it last ran, with its canvas and its settings
 class WorkspaceCard extends StatefulWidget {
   final WorkspaceModel workspace;
 
@@ -189,18 +189,10 @@ class _WorkspaceCardState extends State<WorkspaceCard> {
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         app.dimensions.padding.s.gap(),
-        Flexible(
-          child: Text(
-            text,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 12, color: color),
-          ),
-        ),
+        // short (`2 failing`, `No backups yet`): whole, the time takes the rest
+        Text(text, style: TextStyle(fontSize: 12, color: color)),
         app.dimensions.padding.m.gap(),
-        const Spacer(),
-        Flexible(
-          flex: 3,
+        Expanded(
           child: Align(
             alignment: Alignment.centerRight,
             child: _stats.running > 0
@@ -250,69 +242,46 @@ class _WorkspaceCardState extends State<WorkspaceCard> {
             ),
           ),
           app.dimensions.padding.s.gap(),
-          PrimaryButton.secondary(
-            onPressed: () => RouteNames.openWorkspace(slug),
-            title: app.intl.workspaces.backups,
-            color: app.colors.surface.control,
-            h: 38,
-            horizontalPadding: 12,
-          ),
-          app.dimensions.padding.s.gap(),
-          Builder(
-            builder: (context) => PrimaryButton.svgIcon(
-              icon: app.assets.icons.actions.more,
-              tooltipMessage: app.intl.workspaces.moreOptions(
-                name: _workspace.name,
-              ),
-              backgroundColor: app.colors.neutral.transparent,
-              iconColor: app.colors.neutral.grey3,
-              buttonSize: 38,
-              iconSize: 18,
-              onPressed: () => _showMenu(context),
-            ),
-          ),
+          _SettingsButton(workspace: _workspace),
         ],
       ),
     );
   }
+}
 
-  /// The menu opens under the button
-  void _showMenu(BuildContext anchor) {
-    final button = anchor.findRenderObject() as RenderBox;
-    final overlay = Overlay.of(anchor).context.findRenderObject() as RenderBox;
-    final position = RelativeRect.fromRect(
-      Rect.fromPoints(
-        button.localToGlobal(Offset.zero, ancestor: overlay),
-        button.localToGlobal(
-          button.size.bottomRight(Offset.zero),
-          ancestor: overlay,
+/// Opens [WorkspaceSettings]: a bordered square with the icon
+class _SettingsButton extends StatelessWidget {
+  final WorkspaceModel workspace;
+
+  const _SettingsButton({required this.workspace});
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = app.dimensions.border.borderRadius.s;
+    return Tooltip(
+      message: app.intl.workspaces.settingsOf(name: workspace.name),
+      child: Material(
+        color: app.colors.surface.control,
+        shape: RoundedRectangleBorder(
+          borderRadius: radius,
+          side: BorderSide(color: app.colors.neutral.grey5),
         ),
-      ),
-      Offset.zero & overlay.size,
-    );
-    showMenu<String>(
-      context: anchor,
-      position: position,
-      color: app.colors.primary.background2,
-      elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: app.dimensions.border.borderRadius.s,
-        side: BorderSide(color: app.colors.neutral.grey5),
-      ),
-      items: [
-        PopupMenuItem(
-          value: RouteNames.settings,
-          child: Text(
-            app.intl.nav.settings,
-            style: TextStyle(fontSize: 14, color: app.colors.neutral.white),
+        child: InkWell(
+          borderRadius: radius,
+          mouseCursor: SystemMouseCursors.click,
+          onTap: () => WorkspaceSettings.open(context, workspace),
+          child: SizedBox.square(
+            dimension: 38,
+            child: Center(
+              child: app.assets.icons.navigation.settings.build(
+                size: 18,
+                color: app.colors.neutral.white,
+              ),
+            ),
           ),
         ),
-      ],
-    ).then((section) {
-      if (section != null) {
-        RouteNames.openWorkspace(_workspace.slug, section: section);
-      }
-    });
+      ),
+    );
   }
 }
 

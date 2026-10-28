@@ -10,7 +10,6 @@ abstract class RouteNames {
   static const String sources = 'sources';
   static const String destinations = 'destinations';
   static const String runs = 'runs';
-  static const String settings = 'settings';
 
   /// `?from=` of [login]: the location asked for without a session, opened
   /// again after logging in

@@ -222,6 +222,8 @@ class _BackupsScreenState extends State<BackupsScreen> {
     }
     if (state is BackupRunFinishedState) {
       final run = state.run;
+      // the failing count of the rail comes from the list of workspaces
+      app.di.find<WorkspaceCubit>().load();
       if (run.status == RunStatus.success) {
         app.snack.showSuccess(
           message: app.intl.canvas.run.done(

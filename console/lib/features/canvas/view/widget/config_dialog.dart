@@ -224,7 +224,7 @@ class _ConfigDialogState extends State<ConfigDialog> {
       const SizedBox(height: 16),
       _Label(t.frequency),
       const SizedBox(height: 6),
-      _Segmented<Frequency>(
+      AppSegmented<Frequency>(
         values: Frequency.values,
         labelOf: (f) => f.label,
         value: schedule == null ? null : Frequency.of(schedule),
@@ -354,7 +354,7 @@ class _ConfigDialogState extends State<ConfigDialog> {
       const SizedBox(height: 16),
       _Label(t.compression),
       const SizedBox(height: 6),
-      _Segmented<String>(
+      AppSegmented<String>(
         values: ConfigRules.compressions,
         labelOf: (v) => v == 'gzip' ? 'gzip' : t.compressionNone,
         value: _c.compression,
@@ -601,71 +601,6 @@ class _EditButton extends StatelessWidget {
       color: app.colors.surface.control,
       h: 32,
       horizontalPadding: 12,
-    );
-  }
-}
-
-/// One of [values]; null: the default of the workspace, none of them
-class _Segmented<T> extends StatelessWidget {
-  final List<T> values;
-  final String Function(T value) labelOf;
-  final T? value;
-  final ValueChanged<T> onChanged;
-
-  const _Segmented({
-    required this.values,
-    required this.labelOf,
-    required this.value,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = app.colors;
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: colors.surface.control,
-        borderRadius: app.dimensions.radius.m,
-      ),
-      child: Row(
-        children: [
-          for (final f in values)
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: Semantics(
-                  selected: f == value,
-                  inMutuallyExclusiveGroup: true,
-                  child: TextButton(
-                    onPressed: () => onChanged(f),
-                    style: TextButton.styleFrom(
-                      minimumSize: const Size(0, 32),
-                      padding: EdgeInsets.zero,
-                      backgroundColor: f == value
-                          ? colors.brand.primarySelected
-                          : Colors.transparent,
-                      foregroundColor: f == value
-                          ? colors.text.primary
-                          : colors.text.muted,
-                      textStyle: TextStyle(
-                        fontFamily: AppText.sans,
-                        fontSize: 12,
-                        fontWeight: f == value
-                            ? FontWeight.w600
-                            : FontWeight.w400,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                    ),
-                    child: Text(labelOf(f)),
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
     );
   }
 }

@@ -38,8 +38,11 @@ class SnackBarAdapter {
 
   void _show({required BuildContext context, required Widget child}) {
     // the root overlay covers the whole screen; the one of each shell branch
-    // only the content, without the rail, and the notice would lose its width
-    final overlay = Overlay.of(context, rootOverlay: true);
+    // only the content, without the rail, and the notice would lose its width.
+    // `app.context` is the root Navigator itself: its overlay is below it
+    final overlay =
+        Navigator.maybeOf(context, rootNavigator: true)?.overlay ??
+        Overlay.of(context, rootOverlay: true);
     final screen = MediaQuery.sizeOf(overlay.context).width;
     final margin = app.dimensions.padding.l;
     showTopSnackBar(

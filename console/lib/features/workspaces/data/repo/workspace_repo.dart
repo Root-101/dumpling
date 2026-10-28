@@ -34,6 +34,31 @@ class WorkspaceRepo {
     }
   }
 
+  Future<WorkspaceModel> update({
+    required String slug,
+    required WorkspaceDraft draft,
+    String? token,
+  }) async {
+    try {
+      final response = await _client.update(
+        slug: slug,
+        request: draft.toRequest(),
+        token: token,
+      );
+      return response.toModel();
+    } catch (e) {
+      throw ExceptionConverter.parse(e);
+    }
+  }
+
+  Future<void> delete({required String slug, String? token}) async {
+    try {
+      await _client.delete(slug: slug, token: token);
+    } catch (e) {
+      throw ExceptionConverter.parse(e);
+    }
+  }
+
   /// The workspace opened last, so the rail keeps showing it on the list of
   /// workspaces and after a reload
   Future<void> saveLast(String slug) async {
@@ -58,6 +83,14 @@ extension WorkspaceResponseMapping on WorkspaceResponse {
       name: name,
       description: description,
       color: color == null ? null : Color(color!),
+      defaults: defaults == null
+          ? null
+          : (
+              schedule: defaults!['schedule'] as String,
+              compression: defaults!['compression'] as String,
+              objectKey: defaults!['object_key'] as String,
+            ),
+      createdAt: createdAt,
       stats: stats == null
           ? null
           : WorkspaceStatsModel(
@@ -79,6 +112,14 @@ extension WorkspaceDraftMapping on WorkspaceDraft {
       name: name,
       description: description,
       color: color?.toARGB32(),
+      defaults: switch (defaults) {
+        final d? => {
+          'schedule': d.schedule,
+          'compression': d.compression,
+          'object_key': d.objectKey,
+        },
+        null => null,
+      },
     );
   }
 }

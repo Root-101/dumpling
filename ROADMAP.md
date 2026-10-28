@@ -212,6 +212,56 @@ Applied on the canvas on 2026-10-25:
 - [x] Times: UTC first, local time smaller.
 - [x] Backups: no download, no retention step.
 
+## Manual test from scratch · 2026-10-27
+
+The whole app by hand, on a new database: the service on `localhost:8180` with an empty
+`DATA_PATH`, the console built and served on `localhost:8181`, PostgreSQL and an S3 server in
+Docker. Each step is checked once it works in Chrome; what fails is noted under it.
+
+- [x] Console: analyze and every test (73).
+- [x] Service: analyze and every test (95). The preview test expected 2 configs where the
+  workspace of the test has more: it checks the cap of 3 now.
+- [x] PostgreSQL (seeded `shop` database) and S3 (a bucket) in Docker.
+- [x] Service and console up, on an empty database.
+- [x] Login: wrong password, then the right one.
+- [x] Workspaces: empty list, then a new workspace (name, description, color).
+  - Fixed: once created it stayed on the list. Every notice shown with `app.context` (the root
+    Navigator) failed looking for an overlay above it, before navigating; the notice takes the
+    root Navigator's overlay now. A test creates a workspace and expects its backups.
+  - Fixed: "No backups yet" was cut on the card; the label keeps its width.
+- [x] Sources: a new PostgreSQL source in steps, its connection test, its detail.
+  - Fixed: a source tested in the form showed "Not tested" once created (the test of the form
+    ran before it existed); a form saved as it was tested tests it again once saved.
+- [x] Destinations: a new S3 destination with a folder, its connection test, its detail. The
+  same fix as the sources for "Not tested" once created.
+- [x] Canvas: both on the canvas, a config between them, saved. Its notice did not show (the
+  same fix as the workspaces).
+- [x] Config: edited in its dialog (schedule, object key, compression).
+- [x] Run now: a success in 1 s, with its steps and log; the file is in the bucket
+  (`shop/shop/2026-10-27-run_….dump`, 147 KB) and `pg_restore --list` reads both tables. The run
+  was too short to see it in progress.
+- [x] A failing run: a source with a wrong password (its test says why), the failure in Backups
+  (Failed, the error under the date, 1 failing in the summary).
+  - Fixed: the config of a second source on the same folder landed on top of the first config
+    on the canvas; it goes below the configs it would cover now.
+- [x] Backups: summary, filters (status), sort (source name), recent runs of a backup and the
+  run details from them.
+- [x] Run log: the runs by day, search, filters (status), "Nothing matches" and clearing them,
+  a failed run's detail (the failed step, the skipped one, the log).
+  - Fixed: inside the workspace the rail showed no failing badge after the failed run (its
+    count comes from the list of workspaces); a run that ends in Backups or the canvas reloads
+    the list. A scheduled run still shows once the list loads again.
+- [x] Workspace card: the preview of its configs (2 sources, 2 configs with the failing one in
+  red, 1 destination), its counts and health, the settings button. Back on the list, the rail
+  shows the failing badge.
+- [x] Workspace settings: General (read, edit: description and color, the header follows as it
+  is typed), defaults saved (weekly, no compression; the API returns them), delete asks for the
+  name and keeps its button off until it matches.
+  - Fixed: "1 destinations" in the delete confirmation; the counts go in parentheses now.
+  - Fixed: the footer lost height on the tabs without *Edit*; it has a fixed height.
+- [x] Deleting the workspace: gone from the list, and from the database its sources,
+  destinations, folders, configs and runs; the file in the bucket stays.
+
 ## 0.2.0
 
 - Retention (needs ListObjects and DeleteObject in the destination).

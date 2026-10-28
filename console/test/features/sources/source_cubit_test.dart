@@ -121,6 +121,45 @@ void main() {
     );
   });
 
+  group('SourceFormCubit', () {
+    const draft = SourceDraft(
+      name: 'orders',
+      type: SourceTypes.postgres,
+      connectionUrl: 'postgresql://u:p@h/db',
+    );
+
+    blocTest<SourceFormCubit, SourceFormState>(
+      'A new source tested in the form is tested again once saved',
+      setUp: () {
+        registerFallbackValue(draft);
+        when(
+          () => repo.save(
+            workspace: 'production',
+            draft: any(named: 'draft'),
+            token: 'jwt',
+          ),
+        ).thenAnswer((_) async => source('orders'));
+        when(
+          () => repo.testSaved(
+            workspace: 'production',
+            id: 'orders',
+            token: 'jwt',
+          ),
+        ).thenAnswer((_) async => check(CheckStatus.connected));
+      },
+      build: () => SourceFormCubit(repo, auth, workspace: 'production'),
+      act: (cubit) => cubit.save(draft, tested: true),
+      skip: 1,
+      expect: () => [
+        isA<SourceFormProcessingOKState>().having(
+          (s) => s.source.lastCheck?.status,
+          'check',
+          CheckStatus.connected,
+        ),
+      ],
+    );
+  });
+
   group('SourceDraft', () {
     test('By URL it sends the URL; editing without a password keeps it', () {
       expect(

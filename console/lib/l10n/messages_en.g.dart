@@ -302,20 +302,11 @@ class AppMessages$nav$en {
   /// en: '{count: int} failing'
   String failedRuns({required int count}) => '${count} failing';
 
-  /// en: 'Workspace settings'
-  String get settings => 'Workspace settings';
-
-  /// en: 'Applies only to this workspace'
-  String get settingsDescription => 'Applies only to this workspace';
-
   /// en: 'Language: {name: String}'
   String language({required String name}) => 'Language: ${name}';
 
   /// en: 'Sign out'
   String get logout => 'Sign out';
-
-  /// en: 'This screen comes next.'
-  String get comingSoon => 'This screen comes next.';
 }
 
 // Path: login
@@ -498,9 +489,6 @@ class AppMessages$workspaces$en {
   /// en: 'Switch & open canvas'
   String get switchAndOpen => 'Switch & open canvas';
 
-  /// en: 'More options for {name: String}'
-  String moreOptions({required String name}) => 'More options for ${name}';
-
   /// en: 'New workspace'
   String get formTitle => 'New workspace';
 
@@ -534,6 +522,12 @@ class AppMessages$workspaces$en {
 
   /// en: 'Workspace {name: String} created'
   String created({required String name}) => 'Workspace ${name} created';
+
+  /// en: 'Settings for {name: String}'
+  String settingsOf({required String name}) => 'Settings for ${name}';
+
+  late final AppMessages$workspaces$settings$en settings =
+      AppMessages$workspaces$settings$en._(_root);
 }
 
 // Path: connections
@@ -1509,6 +1503,110 @@ class AppMessages$backups$en {
       'Connect a source to a destination in the pipeline editor to create one.';
 }
 
+// Path: workspaces.settings
+class AppMessages$workspaces$settings$en {
+  AppMessages$workspaces$settings$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Workspace settings'
+  String get title => 'Workspace settings';
+
+  /// en: 'Applies only to this workspace'
+  String get description => 'Applies only to this workspace';
+
+  /// en: 'General'
+  String get general => 'General';
+
+  /// en: 'Defaults for new configs'
+  String get defaults => 'Defaults for new configs';
+
+  /// en: 'Danger zone'
+  String get danger => 'Danger zone';
+
+  /// en: 'Created'
+  String get created => 'Created';
+
+  /// en: 'Workspace ID'
+  String get id => 'Workspace ID';
+
+  /// en: 'Copy workspace ID'
+  String get copyId => 'Copy workspace ID';
+
+  /// en: 'Copied'
+  String get copied => 'Copied';
+
+  /// en: 'No description'
+  String get noDescription => 'No description';
+
+  /// en: 'A new connection on the canvas starts with these values. Each config can change them.'
+  String get defaultsHint =>
+      'A new connection on the canvas starts with these values. Each config can change them.';
+
+  /// en: 'Schedule'
+  String get schedule => 'Schedule';
+
+  /// en: 'Cron'
+  String get cron => 'Cron';
+
+  /// en: 'Always in UTC.'
+  String get cronHelp => 'Always in UTC.';
+
+  /// en: 'Compression'
+  String get compression => 'Compression';
+
+  /// en: 'None'
+  String get compressionNone => 'None';
+
+  /// en: 'Object key'
+  String get objectKey => 'Object key';
+
+  /// en: 'Relative to the folder each config writes to, without extension.'
+  String get objectKeyHelp =>
+      'Relative to the folder each config writes to, without extension.';
+
+  /// en: 'You have unsaved changes'
+  String get unsaved => 'You have unsaved changes';
+
+  /// en: 'Discard'
+  String get discard => 'Discard';
+
+  /// en: 'Saved'
+  String get saved => 'Saved';
+
+  /// en: 'Delete this workspace'
+  String get deleteTitle => 'Delete this workspace';
+
+  /// en: 'Removes its canvas, sources, destinations, configs and run history. Backup files already in your buckets stay where they are.'
+  String get deleteDescription =>
+      'Removes its canvas, sources, destinations, configs and run history. Backup files already in your buckets stay where they are.';
+
+  /// en: 'Delete workspace'
+  String get deleteButton => 'Delete workspace';
+
+  /// en: 'Delete “{name: String}”?'
+  String deleteConfirmTitle({required String name}) => 'Delete “${name}”?';
+
+  /// en: 'This deletes its sources ({sources: int}), destinations ({destinations: int}), configs ({configs: int}) and their run history. Scheduled backups stop right away. It can't be undone.'
+  String deleteConfirm({
+    required int sources,
+    required int destinations,
+    required int configs,
+  }) =>
+      'This deletes its sources (${sources}), destinations (${destinations}), configs (${configs}) and their run history. Scheduled backups stop right away. It can\'t be undone.';
+
+  /// en: 'Type'
+  String get typeBefore => 'Type';
+
+  /// en: 'to confirm'
+  String get typeAfter => 'to confirm';
+
+  /// en: 'Workspace {name: String} deleted'
+  String deleted({required String name}) => 'Workspace ${name} deleted';
+}
+
 // Path: destinations.typeSub
 class AppMessages$destinations$typeSub$en {
   AppMessages$destinations$typeSub$en._(this._root);
@@ -1919,663 +2017,728 @@ class AppMessages$canvas$guide$en {
 extension on AppMessages {
   dynamic _flatMapFunction(String path) {
     return switch (path) {
-      'app.name' => 'Dumpling',
-      'app.needMoreSpace' => 'Need more space',
-      'app.splashText' => 'Loading your backups…',
-      'app.version' => ({required String version}) => 'Dumpling v${version}',
-      'common.loading' => 'Loading',
-      'common.error' => 'Error',
-      'common.tryAgain' => 'Try again',
-      'common.noData' => 'No data',
-      'common.cancel' => 'Cancel',
-      'common.close' => 'Close',
-      'common.required' => 'Required',
-      'common.optional' => '(optional)',
-      'common.filters' => 'Filters',
-      'common.clearAll' => 'Clear all',
-      'common.done' => 'Done',
-      'common.all' => 'All',
-      'common.selected' => 'Selected',
-      'common.soon' => 'Soon',
-      'common.edit' => 'Edit',
-      'common.duplicate' => 'Duplicate',
-      'common.delete' => 'Delete',
-      'common.add' => 'Add',
-      'common.saving' => 'Saving…',
-      'common.saveChanges' => 'Save changes',
-      'common.noMatches' => 'Nothing matches your search',
-      'common.clearSearch' => 'Clear search and filters',
-      'common.shownOf' => ({
-        required int shown,
-        required int total,
-      }) => '${shown} of ${total}',
-      'common.optionsFor' => ({required String name}) => 'Options for ${name}',
-      'common.viewDetails' => 'View details',
-      'common.refresh' => 'Refresh',
-      'common.listView' => 'List',
-      'common.gridView' => 'Grid',
-      'common.back' => 'Back',
-      'common.next' => 'Next',
-      'common.stepOf' => ({
-        required int n,
-        required int total,
-      }) => 'Step ${n} of ${total}',
-      'common.backupCount' =>
-        ({required num n}) =>
-            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
-              n,
-              one: '${n} backup',
-              other: '${n} backups',
-            ),
-      'time.utc' => ({required String time}) => '${time} UTC',
-      'time.local' => ({required String time}) => '${time} local',
-      'errors.requestCancelled' => 'Request to API server was cancelled',
-      'errors.connectionTimeout' =>
-        'Connection timeout with API server. Check your internet connection',
-      'errors.noConnection' =>
-        'Connection to API server failed due to internet connection',
-      'errors.receiveTimeout' =>
-        'Receive timeout in connection with API server',
-      'errors.sendTimeout' => 'Send timeout with API server',
-      'errors.badCertificate' => 'Bad certificate',
-      'errors.connection' => 'Connection error',
-      'errors.validation' => 'Validation error',
-      'errors.server' => 'Server error',
-      'errors.unknown' => 'Unknown error',
-      'errors.notFoundTitle' => 'Not found',
-      'errors.pageNotFound' => 'This page does not exist.',
-      'errors.offlineTitle' => 'Connection lost',
-      'errors.offline' => ({
-        required String url,
-      }) => 'Can\'t reach the Dumpling service at ${url}. Check that it is running and try again.',
-      'nav.switchWorkspace' => ({
-        required String name,
-      }) => '${name} · switch workspace',
-      'nav.workspaces' => 'Workspaces',
-      'nav.backups' => 'Backups',
-      'nav.canvas' => 'Pipeline editor',
-      'nav.sources' => 'Sources',
-      'nav.destinations' => 'Destinations',
-      'nav.runs' => 'Run log',
-      'nav.failedRuns' => ({required int count}) => '${count} failing',
-      'nav.settings' => 'Workspace settings',
-      'nav.settingsDescription' => 'Applies only to this workspace',
-      'nav.language' => ({required String name}) => 'Language: ${name}',
-      'nav.logout' => 'Sign out',
-      'nav.comingSoon' => 'This screen comes next.',
-      'login.title' => 'Sign in',
-      'login.description' => 'Manage your database backups.',
-      'login.username' => 'Username',
-      'login.usernameHint' => 'Enter your username',
-      'login.password' => 'Password',
-      'login.passwordHint' => 'Enter your password',
-      'login.showPassword' => 'Show password',
-      'login.hidePassword' => 'Hide password',
-      'login.button' => 'Sign in',
-      'login.signingIn' => 'Signing in…',
-      'login.failedHint' => 'Check both and try again.',
-      'login.envHint' => 'The username and password are set on the server with',
-      'login.envHintAnd' => 'and',
-      'login.tagline' => 'Backups made',
-      'login.taglineAccent' => 'easy',
-      'login.tagLightweight' => 'Lightweight',
-      'login.tagCanvas' => 'Drag & Drop Canvas',
-      'login.tagWinter' => 'Powered by Winter',
-      'colors.none' => 'No color',
-      'colors.custom' => 'Custom color',
-      'colors.apply' => 'Apply',
-      'colors.saturationBrightness' => 'Saturation and brightness',
-      'colors.hue' => 'Hue',
-      'colors.contrast' => ({
-        required String ratio,
-      }) => 'White initial on this color: ${ratio}:1',
-      'colors.contrastLow' => ({
-        required String ratio,
-      }) => 'Low contrast with the white initial (${ratio}:1). It will be hard to read.',
-      'colors.hexInvalid' => 'Enter a 6-digit HEX color, for example #0E7490',
-      'colors.violet' => 'Violet',
-      'colors.blue' => 'Blue',
-      'colors.teal' => 'Teal',
-      'colors.green' => 'Green',
-      'colors.amber' => 'Amber',
-      'colors.red' => 'Red',
-      'colors.pink' => 'Pink',
-      'colors.slate' => 'Slate',
-      'workspaces.title' => 'Workspaces',
-      'workspaces.description' => 'Each workspace is separate: its own canvas, sources, destinations and backups.',
-      'workspaces.create' => 'New workspace',
-      'workspaces.createHint' =>
-        'A fresh canvas for another environment, client or project.',
-      'workspaces.current' => 'Current',
-      'workspaces.sources' => 'Sources',
-      'workspaces.destinations' => 'Destinations',
-      'workspaces.backups' => 'Backups',
-      'workspaces.noBackups' => 'No backups yet',
-      'workspaces.healthy' => 'All healthy',
-      'workspaces.failing' => ({required int count}) => '${count} failing',
-      'workspaces.running' => 'Running now',
-      'workspaces.lastRun' => ({required String time}) => 'Last run ${time}',
-      'workspaces.noRuns' => 'No runs yet',
-      'workspaces.openCanvas' => 'Open canvas',
-      'workspaces.switchAndOpen' => 'Switch & open canvas',
-      'workspaces.moreOptions' => ({
-        required String name,
-      }) => 'More options for ${name}',
-      'workspaces.formTitle' => 'New workspace',
-      'workspaces.formDescription' => 'Nothing is shared between workspaces: each one has its own canvas, connections, backups and run history.',
-      'workspaces.name' => 'Name',
-      'workspaces.nameHint' => 'e.g. Staging',
-      'workspaces.descriptionLabel' => 'Description',
-      'workspaces.descriptionHint' => 'What this workspace is for',
-      'workspaces.color' => 'Color',
-      'workspaces.emptyCanvas' =>
-        'A new workspace starts with an empty canvas.',
-      'workspaces.createButton' => 'Create workspace',
-      'workspaces.creating' => 'Creating…',
-      'workspaces.created' => ({
-        required String name,
-      }) => 'Workspace ${name} created',
-      'connections.notTested' => 'Not tested',
-      'connections.notTestedYet' => 'Not tested yet',
-      'connections.testing' => 'Testing…',
-      'connections.test' => 'Test connection',
-      'connections.connected' => 'Connected',
-      'connections.incompatible' => 'Incompatible',
-      'connections.incompatibleTitle' =>
-        'Connected, but the server is newer than the dump tool',
-      'connections.incompatibleSub' => ({
-        required String server,
-        required String tool,
-      }) => 'Server ${server} · ${tool}. Update the dump tool where Dumpling runs.',
-      'connections.toolMissing' => 'Tool missing',
-      'connections.toolMissingTitle' =>
-        'Connected, but the dump tool is not installed where Dumpling runs',
-      'connections.unreachable' => 'Unreachable',
-      'connections.failedTitle' => 'Couldn\'t connect',
-      'connections.lastCheck' => 'Last check',
-      'connections.checkTitle' => 'Connection check',
-      'connections.checkNote' => 'Before every run and when you test',
-      'connections.connection' => 'Connection',
-      'connections.editConnection' => 'Edit connection',
-      'sources.title' => 'Sources',
-      'sources.description' =>
-        'What this workspace backs up: PostgreSQL databases.',
-      'sources.create' => 'New source',
-      'sources.search' => 'Search sources',
-      'sources.columnName' => 'Name',
-      'sources.columnType' => 'Type',
-      'sources.columnHost' => 'Host',
-      'sources.columnBackups' => 'Backups',
-      'sources.columnStatus' => 'Status',
-      'sources.emptyTitle' => 'No sources yet',
-      'sources.emptyDescription' => 'Connect a database to back it up.',
-      'sources.inUse' =>
-        ({required num n}) =>
-            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
-              n,
-              one: 'Used by ${n} backup. Remove it first.',
-              other: 'Used by ${n} backups. Remove them first.',
-            ),
-      'sources.deleteTitle' => ({
-        required String name,
-      }) => 'Delete the source ${name}?',
-      'sources.deleteConfirm' => 'It isn\'t used by any backup. Its saved connection and password are removed from this workspace.',
-      'sources.deleted' => ({required String name}) => 'Source ${name} deleted',
-      'sources.newTitle' => 'New source',
-      'sources.editTitle' => 'Edit source',
-      'sources.formDescription' => 'Connect what you want to back up.',
-      'sources.stepType' => 'Type',
-      'sources.stepConnection' => 'Connection',
-      'sources.stepCheck' => 'Check & save',
-      'sources.typeTitle' => 'What do you want to back up?',
-      'sources.connectionTitle' => 'How should Dumpling connect?',
-      'sources.checkTitle' => 'Check and save',
-      'sources.name' => 'Name',
-      'sources.nameHint' => 'e.g. orders-db',
-      'sources.copyName' => ({required String name}) => '${name}-copy',
-      'sources.connectWith' => 'Connect with',
-      'sources.byFields' => 'Fields',
-      'sources.byUrl' => 'Connection URL',
-      'sources.host' => 'Host',
-      'sources.port' => 'Port',
-      'sources.portInvalid' => 'From 1 to 65535',
-      'sources.database' => 'Database',
-      'sources.username' => 'User',
-      'sources.password' => 'Password',
-      'sources.passwordKeepHint' => 'Leave empty to keep the saved one',
-      'sources.passwordHelp' => 'Use a read-only role. Stored encrypted; never shown again after saving.',
-      'sources.connectionUrl' => 'Connection URL',
-      'sources.urlHelp' =>
-        'The password in the URL is stored encrypted and never shown again.',
-      'sources.urlHelpEditing' =>
-        'Without a password in the URL, the saved one is kept.',
-      'sources.urlInvalid' =>
-        'Use the format postgresql://user:password@host:5432/database',
-      'sources.dumpFormat' => 'Dump format',
-      'sources.formatCustom' => 'Custom (pg_dump -Fc)',
-      'sources.formatPlain' => 'Plain SQL',
-      'sources.testIdle' => 'Check the connection before saving the source.',
-      'sources.connectedAs' => ({
-        required String user,
-      }) => 'Connected as ${user}',
-      'sources.createButton' => 'Create source',
-      'sources.created' => ({required String name}) => 'Source ${name} created',
-      'sources.saved' => ({required String name}) => 'Source ${name} saved',
-      'sources.detailDescription' => ({
-        required String type,
-      }) => 'A ${type} database this workspace backs up.',
-      'sources.statBackups' => 'Backups',
-      'sources.statDestinations' =>
-        ({required num n}) =>
-            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
-              n,
-              zero: 'none yet',
-              one: 'in ${n} destination',
-              other: 'in ${n} destinations',
-            ),
-      'sources.statLastBackup' => 'Last backup',
-      'sources.sectionUses' => 'Backups using this source',
-      'sources.openEditor' => 'Open editor',
-      'sources.noUses' => 'No backup uses it yet. Connect it to a destination in the pipeline editor.',
-      'sources.columnBackup' => 'Backup',
-      'sources.columnSchedule' => 'Schedule',
-      'sources.columnLastRun' => 'Last run',
-      'sources.columnNextRun' => 'Next run',
-      'sources.cronUtc' => 'cron · UTC',
-      'sources.paused' => 'Paused',
-      'sources.neverRun' => 'Not run yet',
-      'sources.passwordStored' => '•••••••• · stored encrypted',
-      'destinations.title' => 'Destinations',
-      'destinations.description' =>
-        'Where this workspace writes backups: S3 buckets.',
-      'destinations.create' => 'New destination',
-      'destinations.search' => 'Search destinations',
-      'destinations.columnName' => 'Name',
-      'destinations.columnType' => 'Type',
-      'destinations.columnEndpoint' => 'Endpoint',
-      'destinations.columnBackups' => 'Backups',
-      'destinations.columnStatus' => 'Status',
-      'destinations.bucketRoot' => 'Bucket root',
-      'destinations.folderCount' =>
-        ({required num n}) =>
-            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
-              n,
-              one: '${n} folder',
-              other: '${n} folders',
-            ),
-      'destinations.showFolders' => ({
-        required String name,
-      }) => 'Show the folders of ${name}',
-      'destinations.hideFolders' => ({
-        required String name,
-      }) => 'Hide the folders of ${name}',
-      'destinations.emptyTitle' => 'No destinations yet',
-      'destinations.emptyDescription' => 'Add a bucket to write backups to.',
-      'destinations.inUse' =>
-        ({required num n}) =>
-            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
-              n,
-              one: 'Used by ${n} backup. Remove it first.',
-              other: 'Used by ${n} backups. Remove them first.',
-            ),
-      'destinations.deleteTitle' => ({
-        required String name,
-      }) => 'Delete the destination ${name}?',
-      'destinations.deleteConfirm' => 'It isn\'t used by any backup. Its saved connection and keys are removed from this workspace. The files already in the bucket stay there.',
-      'destinations.deleted' => ({
-        required String name,
-      }) => 'Destination ${name} deleted',
-      'destinations.noFolders' =>
-        'No folders · the bucket root is the only connection point',
-      'destinations.folderUsed' =>
-        ({required num n}) =>
-            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
-              n,
-              one: '${n} backup',
-              other: '${n} backups',
-            ),
-      'destinations.notUsedYet' => 'Not used yet',
-      'destinations.deleteFolder' => ({
-        required String path,
-      }) => 'Delete folder ${path}',
-      'destinations.folderLocked' => 'In use by backups. Reconnect them first.',
-      'destinations.addFolder' => 'Add folder',
-      'destinations.folderHint' => '/folder-name',
-      'destinations.folderEmpty' => 'Enter a folder name',
-      'destinations.folderInvalid' =>
-        'Lowercase letters, digits, - . _ and / between them',
-      'destinations.folderRepeated' => 'That folder already exists',
-      'destinations.folderAdded' => ({
-        required String path,
-      }) => 'Folder ${path} added',
-      'destinations.folderDeleted' => ({
-        required String path,
-      }) => 'Folder ${path} deleted',
-      'destinations.newTitle' => 'New destination',
-      'destinations.editTitle' => 'Edit destination',
-      'destinations.formDescription' => 'Choose where backups are written.',
-      'destinations.stepType' => 'Type',
-      'destinations.stepConnection' => 'Connection',
-      'destinations.stepFolders' => 'Folders & check',
-      'destinations.typeTitle' => 'Where should backups go?',
-      'destinations.connectionTitle' => 'How should Dumpling connect?',
-      'destinations.foldersTitle' => 'Folders and connection check',
-      'destinations.name' => 'Name',
-      'destinations.nameHint' => 'e.g. bucket-backups',
-      'destinations.copyName' => ({required String name}) => '${name}-copy',
-      'destinations.endpoint' => 'Endpoint',
-      'destinations.endpointHelp' =>
-        'Any S3-compatible URL. For AWS use https://s3.<region>.amazonaws.com.',
-      'destinations.bucket' => 'Bucket',
-      'destinations.region' => 'Region',
-      'destinations.accessKeyId' => 'Access key ID',
-      'destinations.secretKey' => 'Secret key',
-      'destinations.secretKeepHint' => 'Leave empty to keep the saved one',
-      'destinations.secretHelp' =>
-        'Stored encrypted; never shown again after saving.',
-      'destinations.pathStyle' => 'Path-style addressing',
-      'destinations.pathStyleHelp' => 'Needed by most self-hosted S3 servers.',
-      'destinations.permissions' =>
-        'Permissions needed: s3:PutObject and s3:AbortMultipartUpload.',
-      'destinations.foldersHelp' => 'Folders are optional. With at least one folder, each folder is a connection point on the canvas and the bucket root is not. With no folders, the bucket root is the only connection point.',
-      'destinations.testIdle' => 'Dumpling starts and aborts a multipart upload in each folder; nothing is left in the bucket.',
-      'destinations.connectedSub' => ({
-        required String bucket,
-      }) => '${bucket} · nothing was left in the bucket',
-      'destinations.createButton' => 'Create destination',
-      'destinations.created' => ({
-        required String name,
-      }) => 'Destination ${name} created',
-      'destinations.saved' => ({
-        required String name,
-      }) => 'Destination ${name} saved',
-      'destinations.detailDescription' =>
-        'A bucket this workspace writes backups to.',
-      'destinations.statBackups' => 'Backups',
-      'destinations.statBackupsSub' => 'write here',
-      'destinations.statFolders' => 'Folders',
-      'destinations.statFoldersSub' => 'connection points',
-      'destinations.sectionFolders' => 'Folders',
-      'destinations.columnFolder' => 'Folder',
-      'destinations.columnWrittenBy' => 'Written by',
-      'destinations.accessKey' => 'Access key',
-      'destinations.on' => 'On',
-      'destinations.off' => 'Off',
-      'destinations.typeSub.s3' => 'Any S3-compatible storage',
-      'destinations.typeSub.gdrive' => 'Shared drive or folder',
-      'destinations.typeSub.dropbox' => 'App folder',
-      'destinations.typeSub.azure' => 'Storage container',
-      'destinations.typeSub.sftp' => 'Any SSH server',
-      'canvas.description' =>
-        'Connect sources to destinations to build this workspace\'s backups.',
-      'canvas.save' => 'Save canvas',
-      'canvas.saved' => 'Canvas saved',
-      'canvas.newConfig' => 'New config',
-      'canvas.removeFromCanvas' => 'Remove from canvas',
-      'canvas.allSourcesPlaced' => 'Every source is on the canvas',
-      'canvas.allDestinationsPlaced' => 'Every destination is on the canvas',
-      'canvas.workspaceDefault' => 'Workspace default',
-      'canvas.neverRun' => 'Never run',
-      'canvas.disabled' => 'Disabled',
-      'canvas.orphans' =>
-        ({required num n}) =>
-            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
-              n,
-              one: '${n} incomplete config',
-              other: '${n} incomplete configs',
-            ),
-      'canvas.orphansHelp' => 'Only complete flows (source → config → destination) are saved. The configs in amber are discarded on save; sources and destinations stay.',
-      'canvas.semantics' => 'Canvas. Hold Space and drag to move it; right click for options; arrow keys pan; Ctrl and scroll zooms; F centers; click a connection and press Delete to remove it; Escape closes the config',
-      'canvas.addSource' => 'Source',
-      'canvas.addDestination' => 'Destination',
-      'canvas.deleteConfig' => 'Delete config',
-      'canvas.editConfig' => 'Edit config',
-      'canvas.removeConnection' => 'Remove connection',
-      'canvas.removeConnectionKey' => 'Remove connection (Del)',
-      'canvas.configHere' => 'Config is created here',
-      'canvas.releaseToCreate' => 'Release to create the config',
-      'canvas.dragToDestination' => 'Drag to a destination',
-      'canvas.last' => 'Last',
-      'canvas.next' => 'Next',
-      'canvas.runStatus.success' => 'Success',
-      'canvas.runStatus.failed' => 'Failed',
-      'canvas.runStatus.running' => 'Running',
-      'canvas.frequency.hourly' => 'Hourly',
-      'canvas.frequency.daily' => 'Daily',
-      'canvas.frequency.weekly' => 'Weekly',
-      'canvas.frequency.cron' => 'Cron',
-      'canvas.addFolder' => '+ Add folder',
-      'canvas.addFolderTitle' => ({
-        required String name,
-      }) => 'Add a folder to ${name}',
-      'canvas.addFolderDescription' => 'Each folder is a connection point. It is created in the bucket when the canvas is saved.',
-      'canvas.addFolderRoot' => 'With the first folder the bucket root stops being a connection point: the configs that write to it are disconnected.',
-      'canvas.keys.space' => 'Space',
-      'canvas.keys.del' => 'Del',
-      'canvas.keys.ctrl' => 'Ctrl',
-      'canvas.keys.esc' => 'Esc',
-      'canvas.shortcuts.title' => 'Shortcuts',
-      'canvas.shortcuts.hide' => 'Hide shortcuts',
-      'canvas.shortcuts.moveCanvas' => 'Move canvas',
-      'canvas.shortcuts.drag' => ' + drag',
-      'canvas.shortcuts.connect' => 'Connect',
-      'canvas.shortcuts.dragFromPort' => 'drag from a port',
-      'canvas.shortcuts.options' => 'Options',
-      'canvas.shortcuts.rightClick' => 'right click',
-      'canvas.shortcuts.clickIt' => 'click it + ',
-      'canvas.shortcuts.zoom' => 'Zoom',
-      'canvas.shortcuts.scroll' => 'scroll',
-      'canvas.shortcuts.zoomInOut' => 'Zoom in / out',
-      'canvas.shortcuts.center' => 'Center canvas',
-      'canvas.shortcuts.reset' => 'Reset to 100%',
-      'canvas.shortcuts.moveWithKeys' => 'Move with keys',
-      'canvas.shortcuts.closeConfig' => 'Close config',
-      'canvas.shortcuts.toggle' => 'Show / hide shortcuts',
-      'canvas.view.settings' => 'Canvas settings',
-      'canvas.view.toggleShortcuts' => 'Show or hide shortcuts (?)',
-      'canvas.view.center' => 'Center',
-      'canvas.view.centerTooltip' => 'Center canvas (F)',
-      'canvas.view.zoomOut' => 'Zoom out (−)',
-      'canvas.view.reset' => 'Reset to 100% (0)',
-      'canvas.view.zoomIn' => 'Zoom in (+)',
-      'canvas.view.settingsTitle' => 'Canvas',
-      'canvas.view.ctrlZoom' => 'Hold Ctrl to zoom',
-      'canvas.view.ctrlZoomOn' =>
-        'Scroll moves the canvas, Ctrl + scroll zooms',
-      'canvas.view.ctrlZoomOff' => 'Scroll always zooms',
-      'canvas.inspector.configName' => 'Config name',
-      'canvas.inspector.nameHelp' =>
-        'Shown on the canvas, in Backups and in the run log.',
-      'canvas.inspector.frequency' => 'Frequency',
-      'canvas.inspector.review' => 'Review',
-      'canvas.inspector.source' => 'Source',
-      'canvas.inspector.destination' => 'Destination',
-      'canvas.inspector.nextRunOnSave' => 'Computed when it is saved',
-      'canvas.inspector.cronHelp' => 'minute hour day month weekday, in UTC. Hourly, daily and weekly write it for you.',
-      'canvas.inspector.cronInvalid' =>
-        'Not a valid cron expression (minute hour day month weekday)',
-      'canvas.inspector.enabled' => 'Enabled',
-      'canvas.inspector.enabledOn' => 'Runs on its schedule',
-      'canvas.inspector.enabledOff' => 'Off: it only runs with Run now',
-      'canvas.inspector.compressionNone' => 'None',
-      'canvas.inspector.objectKeySlash' => 'The object key cannot start with /',
-      'canvas.inspector.objectKeyExtension' => 'Leave out the extension: it is added from the dump format and the compression',
-      'canvas.inspector.schedule' => 'Name & schedule',
-      'canvas.inspector.cron' => 'Cron',
-      'canvas.inspector.timeZone' => 'Time zone',
-      'canvas.inspector.nextRun' => 'Next run',
-      'canvas.inspector.output' => 'Output',
-      'canvas.inspector.objectKey' => 'Object key',
-      'canvas.inspector.connectDestination' =>
-        'Connect a destination to choose where it goes.',
-      'canvas.inspector.relativeToFolder' => ({
-        required String folder,
-      }) => 'Relative to the folder ${folder}. The extension is added from the dump format and the compression.',
-      'canvas.inspector.relativeToRoot' => ({
-        required String bucket,
-      }) => 'Relative to the root of ${bucket}. The extension is added from the dump format and the compression.',
-      'canvas.inspector.compression' => 'Compression',
-      'canvas.inspector.writes' => 'Next run writes',
-      'canvas.inspector.missingSource' => 'Nothing: connect a source.',
-      'canvas.inspector.missingDestination' =>
-        'Nothing: connect a destination.',
-      'canvas.inspector.missingBoth' =>
-        'Nothing: connect a source and a destination.',
-      'canvas.inspector.noSource' => 'no source',
-      'canvas.inspector.noDestination' => 'no destination',
-      'canvas.columns.sources' => 'Sources',
-      'canvas.columns.configs' => 'Config · one per connection',
-      'canvas.columns.destinations' => 'Destinations',
-      'canvas.folder' => 'Folder',
-      'canvas.testRun.button' => 'Test run',
-      'canvas.testRun.help' => 'Checks that every complete flow could run, without backing anything up: each source connects and pg_dump can dump it, each destination takes a write in its folders.',
-      'canvas.testRun.ok' => ({
-        required int n,
-      }) => 'Everything works: ${n} checks passed',
-      'canvas.testRun.failed' => ({
-        required String list,
-      }) => 'Some checks failed: ${list}',
-      'canvas.testRun.nothing' =>
-        'Nothing to test: connect a source to a destination first.',
-      'canvas.run.button' => 'Run now',
-      'canvas.run.help' => 'Runs this backup now, for real, as it is saved: the edits not saved yet are not used.',
-      'canvas.run.needsSave' =>
-        'Save the canvas first: a run uses the saved config.',
-      'canvas.run.done' => ({
-        required String name,
-        required String size,
-      }) => 'Backup ${name} done: ${size}',
-      'canvas.run.failed' => ({
-        required String name,
-        required String error,
-      }) => 'Backup ${name} failed: ${error}',
-      'canvas.guide.title' => 'Your first backup',
-      'canvas.guide.source' => 'Add a source',
-      'canvas.guide.sourceHelp' => 'The database to back up.',
-      'canvas.guide.destination' => 'Add a destination',
-      'canvas.guide.destinationHelp' => 'The bucket the backups go to.',
-      'canvas.guide.connect' => 'Connect them',
-      'canvas.guide.connectHelp' => 'Drag from the port of the source to a folder or the bucket: a config is created between them. Then save.',
-      'canvas.guide.create' => 'Create one',
-      'canvas.guide.place' => ({required String name}) => 'Place ${name}',
-      'runs.title' => 'Run log',
-      'runs.description' => 'Every backup run in this workspace, scheduled or manual. Times in UTC, your local time below.',
-      'runs.search' => 'Search by backup, source or destination',
-      'runs.columnStatus' => 'Status',
-      'runs.columnSource' => 'Source',
-      'runs.columnDestination' => 'Destination',
-      'runs.columnStarted' => 'Started',
-      'runs.columnDuration' => 'Duration',
-      'runs.columnSize' => 'Size',
-      'runs.scheduled' => 'By schedule',
-      'runs.manual' => 'Manual',
-      'runs.emptyTitle' => 'No runs yet',
-      'runs.emptyDescription' => 'Backups run on their schedule, or with Run now in the pipeline editor.',
-      'runs.newestOnly' => 'Only the 200 newest runs are shown.',
-      'runs.log' => 'Log (UTC)',
-      'runs.copyLog' => 'Copy log',
-      'runs.logCopied' => 'Log copied',
-      'runs.logWhenDone' =>
-        'The log is written when the run ends. Refresh to see it.',
-      'runs.noLog' => 'This run has no log.',
-      'runs.today' => ({required String date}) => 'Today · ${date} (UTC)',
-      'runs.yesterday' => ({
-        required String date,
-      }) => 'Yesterday · ${date} (UTC)',
-      'runs.day' => ({required String date}) => '${date} (UTC)',
-      'runs.succeeded' => ({required int n}) => '${n} succeeded',
-      'runs.failedCount' => ({required int n}) => '${n} failed',
-      'runs.savedIn' => ({
-        required String size,
-        required String duration,
-      }) => '${size} in ${duration}',
-      'runs.inProgress' => 'In progress',
-      'runs.soFar' => ({
-        required String size,
-      }) => 'In progress · ${size} so far',
-      'runs.columnTrigger' => 'Trigger',
-      'runs.viewRun' => 'View run',
-      'runs.steps' => 'Steps',
-      'runs.stepConnect' => ({required String name}) => 'Connect to ${name}',
-      'runs.stepDump' => ({
-        required String name,
-      }) => 'Dump and upload to ${name}',
-      'runs.stepSkipped' => 'Skipped',
-      'runs.stepWaiting' => 'Waiting',
-      'runs.resultSuccess' => 'Backup saved',
-      'runs.resultFailed' => 'The backup failed',
-      'runs.resultRunning' => 'Running. Refresh to see how far it got.',
-      'backups.title' => 'Backups',
-      'backups.description' =>
-        'Every backup in this workspace, its last run and the next one.',
-      'backups.openEditor' => 'Open editor',
-      'backups.newBackup' => 'New backup',
-      'backups.healthy' => 'Healthy',
-      'backups.healthySub' => 'last run succeeded',
-      'backups.failing' => 'Failing',
-      'backups.failingSub' => 'need attention',
-      'backups.paused' => 'Paused',
-      'backups.nextBackup' => 'Next backup',
-      'backups.nextBackupIn' => 'Next backup in',
-      'backups.nothingScheduled' => 'Nothing scheduled',
-      'backups.search' => 'Search backups',
-      'backups.columnStatus' => 'Status',
-      'backups.columnSource' => 'Source',
-      'backups.columnDestination' => 'Destination',
-      'backups.columnSchedule' => 'Schedule',
-      'backups.columnLastRun' => 'Last backup',
-      'backups.columnNextRun' => 'Next backup',
-      'backups.allSources' => 'All sources',
-      'backups.allDestinations' => 'All destinations',
-      'backups.shown' => ({
-        required int shown,
-        required int total,
-      }) => '${shown} of ${total} backups',
-      'backups.showing' => ({
-        required int shown,
-        required int total,
-      }) => 'Showing ${shown} of ${total} backups',
-      'backups.timesNote' => ({
-        required String utc,
-        required String local,
-      }) => 'Times in UTC · now ${utc} (${local})',
-      'backups.sort' => 'Sort:',
-      'backups.sortBy' => 'Sort by',
-      'backups.sortLast' => 'Last backup',
-      'backups.sortLastSub' => 'Most recent first',
-      'backups.sortLastOld' => 'Last backup (oldest)',
-      'backups.sortLastOldSub' => 'Oldest first',
-      'backups.sortNext' => 'Next backup',
-      'backups.sortNextSub' => 'Soonest first',
-      'backups.sortName' => 'Source name',
-      'backups.sortNameSub' => 'A to Z',
-      'backups.inTime' => ({required String time}) => 'in ${time}',
-      'backups.startedAgo' => ({required String time}) => 'Started ${time} ago',
-      'backups.runNowFor' => ({required String name}) => 'Run ${name} now',
-      'backups.showRuns' => 'Show run history',
-      'backups.hideRuns' => 'Hide run history',
-      'backups.moreFor' => ({
-        required String name,
-      }) => 'More actions for ${name}',
-      'backups.viewLastRun' => 'View last run',
-      'backups.editConfig' => 'Edit config',
-      'backups.deleteBackup' => 'Delete backup',
-      'backups.recentRuns' => 'Recent runs',
-      'backups.noRuns' => 'No runs yet',
-      'backups.viewLog' => 'View log',
-      'backups.viewDetails' => 'View details',
-      'backups.noFile' => 'No file written',
-      'backups.uploading' => 'Uploading…',
-      'backups.manual' => 'Manual',
-      'backups.scheduled' => 'By schedule',
-      'backups.deleteTitle' => ({
-        required String name,
-      }) => 'Delete the backup ${name}?',
-      'backups.deleteConfirm' => 'Its schedule stops. Its runs stay in the run log, and the files already in the destination stay there.',
-      'backups.deleted' => ({required String name}) => 'Backup ${name} deleted',
-      'backups.saved' => ({required String name}) => 'Backup ${name} saved',
-      'backups.emptyDescription' => 'Connect a source to a destination in the pipeline editor to create one.',
-      _ => null,
-    };
+          'app.name' => 'Dumpling',
+          'app.needMoreSpace' => 'Need more space',
+          'app.splashText' => 'Loading your backups…',
+          'app.version' => ({
+            required String version,
+          }) => 'Dumpling v${version}',
+          'common.loading' => 'Loading',
+          'common.error' => 'Error',
+          'common.tryAgain' => 'Try again',
+          'common.noData' => 'No data',
+          'common.cancel' => 'Cancel',
+          'common.close' => 'Close',
+          'common.required' => 'Required',
+          'common.optional' => '(optional)',
+          'common.filters' => 'Filters',
+          'common.clearAll' => 'Clear all',
+          'common.done' => 'Done',
+          'common.all' => 'All',
+          'common.selected' => 'Selected',
+          'common.soon' => 'Soon',
+          'common.edit' => 'Edit',
+          'common.duplicate' => 'Duplicate',
+          'common.delete' => 'Delete',
+          'common.add' => 'Add',
+          'common.saving' => 'Saving…',
+          'common.saveChanges' => 'Save changes',
+          'common.noMatches' => 'Nothing matches your search',
+          'common.clearSearch' => 'Clear search and filters',
+          'common.shownOf' => ({
+            required int shown,
+            required int total,
+          }) => '${shown} of ${total}',
+          'common.optionsFor' => ({
+            required String name,
+          }) => 'Options for ${name}',
+          'common.viewDetails' => 'View details',
+          'common.refresh' => 'Refresh',
+          'common.listView' => 'List',
+          'common.gridView' => 'Grid',
+          'common.back' => 'Back',
+          'common.next' => 'Next',
+          'common.stepOf' => ({
+            required int n,
+            required int total,
+          }) => 'Step ${n} of ${total}',
+          'common.backupCount' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} backup',
+                  other: '${n} backups',
+                ),
+          'time.utc' => ({required String time}) => '${time} UTC',
+          'time.local' => ({required String time}) => '${time} local',
+          'errors.requestCancelled' => 'Request to API server was cancelled',
+          'errors.connectionTimeout' => 'Connection timeout with API server. Check your internet connection',
+          'errors.noConnection' =>
+            'Connection to API server failed due to internet connection',
+          'errors.receiveTimeout' =>
+            'Receive timeout in connection with API server',
+          'errors.sendTimeout' => 'Send timeout with API server',
+          'errors.badCertificate' => 'Bad certificate',
+          'errors.connection' => 'Connection error',
+          'errors.validation' => 'Validation error',
+          'errors.server' => 'Server error',
+          'errors.unknown' => 'Unknown error',
+          'errors.notFoundTitle' => 'Not found',
+          'errors.pageNotFound' => 'This page does not exist.',
+          'errors.offlineTitle' => 'Connection lost',
+          'errors.offline' => ({
+            required String url,
+          }) => 'Can\'t reach the Dumpling service at ${url}. Check that it is running and try again.',
+          'nav.switchWorkspace' => ({
+            required String name,
+          }) => '${name} · switch workspace',
+          'nav.workspaces' => 'Workspaces',
+          'nav.backups' => 'Backups',
+          'nav.canvas' => 'Pipeline editor',
+          'nav.sources' => 'Sources',
+          'nav.destinations' => 'Destinations',
+          'nav.runs' => 'Run log',
+          'nav.failedRuns' => ({required int count}) => '${count} failing',
+          'nav.language' => ({required String name}) => 'Language: ${name}',
+          'nav.logout' => 'Sign out',
+          'login.title' => 'Sign in',
+          'login.description' => 'Manage your database backups.',
+          'login.username' => 'Username',
+          'login.usernameHint' => 'Enter your username',
+          'login.password' => 'Password',
+          'login.passwordHint' => 'Enter your password',
+          'login.showPassword' => 'Show password',
+          'login.hidePassword' => 'Hide password',
+          'login.button' => 'Sign in',
+          'login.signingIn' => 'Signing in…',
+          'login.failedHint' => 'Check both and try again.',
+          'login.envHint' =>
+            'The username and password are set on the server with',
+          'login.envHintAnd' => 'and',
+          'login.tagline' => 'Backups made',
+          'login.taglineAccent' => 'easy',
+          'login.tagLightweight' => 'Lightweight',
+          'login.tagCanvas' => 'Drag & Drop Canvas',
+          'login.tagWinter' => 'Powered by Winter',
+          'colors.none' => 'No color',
+          'colors.custom' => 'Custom color',
+          'colors.apply' => 'Apply',
+          'colors.saturationBrightness' => 'Saturation and brightness',
+          'colors.hue' => 'Hue',
+          'colors.contrast' => ({
+            required String ratio,
+          }) => 'White initial on this color: ${ratio}:1',
+          'colors.contrastLow' => ({
+            required String ratio,
+          }) => 'Low contrast with the white initial (${ratio}:1). It will be hard to read.',
+          'colors.hexInvalid' =>
+            'Enter a 6-digit HEX color, for example #0E7490',
+          'colors.violet' => 'Violet',
+          'colors.blue' => 'Blue',
+          'colors.teal' => 'Teal',
+          'colors.green' => 'Green',
+          'colors.amber' => 'Amber',
+          'colors.red' => 'Red',
+          'colors.pink' => 'Pink',
+          'colors.slate' => 'Slate',
+          'workspaces.title' => 'Workspaces',
+          'workspaces.description' => 'Each workspace is separate: its own canvas, sources, destinations and backups.',
+          'workspaces.create' => 'New workspace',
+          'workspaces.createHint' =>
+            'A fresh canvas for another environment, client or project.',
+          'workspaces.current' => 'Current',
+          'workspaces.sources' => 'Sources',
+          'workspaces.destinations' => 'Destinations',
+          'workspaces.backups' => 'Backups',
+          'workspaces.noBackups' => 'No backups yet',
+          'workspaces.healthy' => 'All healthy',
+          'workspaces.failing' => ({required int count}) => '${count} failing',
+          'workspaces.running' => 'Running now',
+          'workspaces.lastRun' => ({
+            required String time,
+          }) => 'Last run ${time}',
+          'workspaces.noRuns' => 'No runs yet',
+          'workspaces.openCanvas' => 'Open canvas',
+          'workspaces.switchAndOpen' => 'Switch & open canvas',
+          'workspaces.formTitle' => 'New workspace',
+          'workspaces.formDescription' => 'Nothing is shared between workspaces: each one has its own canvas, connections, backups and run history.',
+          'workspaces.name' => 'Name',
+          'workspaces.nameHint' => 'e.g. Staging',
+          'workspaces.descriptionLabel' => 'Description',
+          'workspaces.descriptionHint' => 'What this workspace is for',
+          'workspaces.color' => 'Color',
+          'workspaces.emptyCanvas' =>
+            'A new workspace starts with an empty canvas.',
+          'workspaces.createButton' => 'Create workspace',
+          'workspaces.creating' => 'Creating…',
+          'workspaces.created' => ({
+            required String name,
+          }) => 'Workspace ${name} created',
+          'workspaces.settingsOf' => ({
+            required String name,
+          }) => 'Settings for ${name}',
+          'workspaces.settings.title' => 'Workspace settings',
+          'workspaces.settings.description' => 'Applies only to this workspace',
+          'workspaces.settings.general' => 'General',
+          'workspaces.settings.defaults' => 'Defaults for new configs',
+          'workspaces.settings.danger' => 'Danger zone',
+          'workspaces.settings.created' => 'Created',
+          'workspaces.settings.id' => 'Workspace ID',
+          'workspaces.settings.copyId' => 'Copy workspace ID',
+          'workspaces.settings.copied' => 'Copied',
+          'workspaces.settings.noDescription' => 'No description',
+          'workspaces.settings.defaultsHint' => 'A new connection on the canvas starts with these values. Each config can change them.',
+          'workspaces.settings.schedule' => 'Schedule',
+          'workspaces.settings.cron' => 'Cron',
+          'workspaces.settings.cronHelp' => 'Always in UTC.',
+          'workspaces.settings.compression' => 'Compression',
+          'workspaces.settings.compressionNone' => 'None',
+          'workspaces.settings.objectKey' => 'Object key',
+          'workspaces.settings.objectKeyHelp' =>
+            'Relative to the folder each config writes to, without extension.',
+          'workspaces.settings.unsaved' => 'You have unsaved changes',
+          'workspaces.settings.discard' => 'Discard',
+          'workspaces.settings.saved' => 'Saved',
+          'workspaces.settings.deleteTitle' => 'Delete this workspace',
+          'workspaces.settings.deleteDescription' => 'Removes its canvas, sources, destinations, configs and run history. Backup files already in your buckets stay where they are.',
+          'workspaces.settings.deleteButton' => 'Delete workspace',
+          'workspaces.settings.deleteConfirmTitle' => ({
+            required String name,
+          }) => 'Delete “${name}”?',
+          'workspaces.settings.deleteConfirm' => ({
+            required int sources,
+            required int destinations,
+            required int configs,
+          }) => 'This deletes its sources (${sources}), destinations (${destinations}), configs (${configs}) and their run history. Scheduled backups stop right away. It can\'t be undone.',
+          'workspaces.settings.typeBefore' => 'Type',
+          'workspaces.settings.typeAfter' => 'to confirm',
+          'workspaces.settings.deleted' => ({
+            required String name,
+          }) => 'Workspace ${name} deleted',
+          'connections.notTested' => 'Not tested',
+          'connections.notTestedYet' => 'Not tested yet',
+          'connections.testing' => 'Testing…',
+          'connections.test' => 'Test connection',
+          'connections.connected' => 'Connected',
+          'connections.incompatible' => 'Incompatible',
+          'connections.incompatibleTitle' =>
+            'Connected, but the server is newer than the dump tool',
+          'connections.incompatibleSub' => ({
+            required String server,
+            required String tool,
+          }) => 'Server ${server} · ${tool}. Update the dump tool where Dumpling runs.',
+          'connections.toolMissing' => 'Tool missing',
+          'connections.toolMissingTitle' =>
+            'Connected, but the dump tool is not installed where Dumpling runs',
+          'connections.unreachable' => 'Unreachable',
+          'connections.failedTitle' => 'Couldn\'t connect',
+          'connections.lastCheck' => 'Last check',
+          'connections.checkTitle' => 'Connection check',
+          'connections.checkNote' => 'Before every run and when you test',
+          'connections.connection' => 'Connection',
+          'connections.editConnection' => 'Edit connection',
+          'sources.title' => 'Sources',
+          'sources.description' =>
+            'What this workspace backs up: PostgreSQL databases.',
+          'sources.create' => 'New source',
+          'sources.search' => 'Search sources',
+          'sources.columnName' => 'Name',
+          'sources.columnType' => 'Type',
+          'sources.columnHost' => 'Host',
+          'sources.columnBackups' => 'Backups',
+          'sources.columnStatus' => 'Status',
+          'sources.emptyTitle' => 'No sources yet',
+          'sources.emptyDescription' => 'Connect a database to back it up.',
+          'sources.inUse' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: 'Used by ${n} backup. Remove it first.',
+                  other: 'Used by ${n} backups. Remove them first.',
+                ),
+          'sources.deleteTitle' => ({
+            required String name,
+          }) => 'Delete the source ${name}?',
+          'sources.deleteConfirm' => 'It isn\'t used by any backup. Its saved connection and password are removed from this workspace.',
+          'sources.deleted' => ({
+            required String name,
+          }) => 'Source ${name} deleted',
+          'sources.newTitle' => 'New source',
+          'sources.editTitle' => 'Edit source',
+          'sources.formDescription' => 'Connect what you want to back up.',
+          'sources.stepType' => 'Type',
+          'sources.stepConnection' => 'Connection',
+          'sources.stepCheck' => 'Check & save',
+          'sources.typeTitle' => 'What do you want to back up?',
+          'sources.connectionTitle' => 'How should Dumpling connect?',
+          'sources.checkTitle' => 'Check and save',
+          'sources.name' => 'Name',
+          'sources.nameHint' => 'e.g. orders-db',
+          'sources.copyName' => ({required String name}) => '${name}-copy',
+          'sources.connectWith' => 'Connect with',
+          'sources.byFields' => 'Fields',
+          'sources.byUrl' => 'Connection URL',
+          'sources.host' => 'Host',
+          'sources.port' => 'Port',
+          'sources.portInvalid' => 'From 1 to 65535',
+          'sources.database' => 'Database',
+          'sources.username' => 'User',
+          'sources.password' => 'Password',
+          'sources.passwordKeepHint' => 'Leave empty to keep the saved one',
+          'sources.passwordHelp' => 'Use a read-only role. Stored encrypted; never shown again after saving.',
+          'sources.connectionUrl' => 'Connection URL',
+          'sources.urlHelp' => 'The password in the URL is stored encrypted and never shown again.',
+          'sources.urlHelpEditing' =>
+            'Without a password in the URL, the saved one is kept.',
+          'sources.urlInvalid' =>
+            'Use the format postgresql://user:password@host:5432/database',
+          'sources.dumpFormat' => 'Dump format',
+          'sources.formatCustom' => 'Custom (pg_dump -Fc)',
+          'sources.formatPlain' => 'Plain SQL',
+          'sources.testIdle' =>
+            'Check the connection before saving the source.',
+          'sources.connectedAs' => ({
+            required String user,
+          }) => 'Connected as ${user}',
+          'sources.createButton' => 'Create source',
+          'sources.created' => ({
+            required String name,
+          }) => 'Source ${name} created',
+          'sources.saved' => ({required String name}) => 'Source ${name} saved',
+          'sources.detailDescription' => ({
+            required String type,
+          }) => 'A ${type} database this workspace backs up.',
+          'sources.statBackups' => 'Backups',
+          'sources.statDestinations' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  zero: 'none yet',
+                  one: 'in ${n} destination',
+                  other: 'in ${n} destinations',
+                ),
+          'sources.statLastBackup' => 'Last backup',
+          'sources.sectionUses' => 'Backups using this source',
+          'sources.openEditor' => 'Open editor',
+          'sources.noUses' => 'No backup uses it yet. Connect it to a destination in the pipeline editor.',
+          'sources.columnBackup' => 'Backup',
+          'sources.columnSchedule' => 'Schedule',
+          'sources.columnLastRun' => 'Last run',
+          'sources.columnNextRun' => 'Next run',
+          'sources.cronUtc' => 'cron · UTC',
+          'sources.paused' => 'Paused',
+          'sources.neverRun' => 'Not run yet',
+          'sources.passwordStored' => '•••••••• · stored encrypted',
+          'destinations.title' => 'Destinations',
+          'destinations.description' =>
+            'Where this workspace writes backups: S3 buckets.',
+          'destinations.create' => 'New destination',
+          'destinations.search' => 'Search destinations',
+          'destinations.columnName' => 'Name',
+          'destinations.columnType' => 'Type',
+          'destinations.columnEndpoint' => 'Endpoint',
+          'destinations.columnBackups' => 'Backups',
+          'destinations.columnStatus' => 'Status',
+          'destinations.bucketRoot' => 'Bucket root',
+          'destinations.folderCount' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} folder',
+                  other: '${n} folders',
+                ),
+          'destinations.showFolders' => ({
+            required String name,
+          }) => 'Show the folders of ${name}',
+          'destinations.hideFolders' => ({
+            required String name,
+          }) => 'Hide the folders of ${name}',
+          'destinations.emptyTitle' => 'No destinations yet',
+          'destinations.emptyDescription' =>
+            'Add a bucket to write backups to.',
+          'destinations.inUse' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: 'Used by ${n} backup. Remove it first.',
+                  other: 'Used by ${n} backups. Remove them first.',
+                ),
+          'destinations.deleteTitle' => ({
+            required String name,
+          }) => 'Delete the destination ${name}?',
+          'destinations.deleteConfirm' => 'It isn\'t used by any backup. Its saved connection and keys are removed from this workspace. The files already in the bucket stay there.',
+          'destinations.deleted' => ({
+            required String name,
+          }) => 'Destination ${name} deleted',
+          'destinations.noFolders' =>
+            'No folders · the bucket root is the only connection point',
+          'destinations.folderUsed' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} backup',
+                  other: '${n} backups',
+                ),
+          'destinations.notUsedYet' => 'Not used yet',
+          'destinations.deleteFolder' => ({
+            required String path,
+          }) => 'Delete folder ${path}',
+          'destinations.folderLocked' =>
+            'In use by backups. Reconnect them first.',
+          'destinations.addFolder' => 'Add folder',
+          'destinations.folderHint' => '/folder-name',
+          'destinations.folderEmpty' => 'Enter a folder name',
+          'destinations.folderInvalid' =>
+            'Lowercase letters, digits, - . _ and / between them',
+          'destinations.folderRepeated' => 'That folder already exists',
+          'destinations.folderAdded' => ({
+            required String path,
+          }) => 'Folder ${path} added',
+          'destinations.folderDeleted' => ({
+            required String path,
+          }) => 'Folder ${path} deleted',
+          'destinations.newTitle' => 'New destination',
+          'destinations.editTitle' => 'Edit destination',
+          'destinations.formDescription' => 'Choose where backups are written.',
+          'destinations.stepType' => 'Type',
+          'destinations.stepConnection' => 'Connection',
+          'destinations.stepFolders' => 'Folders & check',
+          'destinations.typeTitle' => 'Where should backups go?',
+          'destinations.connectionTitle' => 'How should Dumpling connect?',
+          'destinations.foldersTitle' => 'Folders and connection check',
+          'destinations.name' => 'Name',
+          'destinations.nameHint' => 'e.g. bucket-backups',
+          'destinations.copyName' => ({required String name}) => '${name}-copy',
+          'destinations.endpoint' => 'Endpoint',
+          'destinations.endpointHelp' => 'Any S3-compatible URL. For AWS use https://s3.<region>.amazonaws.com.',
+          'destinations.bucket' => 'Bucket',
+          'destinations.region' => 'Region',
+          'destinations.accessKeyId' => 'Access key ID',
+          'destinations.secretKey' => 'Secret key',
+          'destinations.secretKeepHint' => 'Leave empty to keep the saved one',
+          'destinations.secretHelp' =>
+            'Stored encrypted; never shown again after saving.',
+          'destinations.pathStyle' => 'Path-style addressing',
+          'destinations.pathStyleHelp' =>
+            'Needed by most self-hosted S3 servers.',
+          'destinations.permissions' =>
+            'Permissions needed: s3:PutObject and s3:AbortMultipartUpload.',
+          'destinations.foldersHelp' => 'Folders are optional. With at least one folder, each folder is a connection point on the canvas and the bucket root is not. With no folders, the bucket root is the only connection point.',
+          'destinations.testIdle' => 'Dumpling starts and aborts a multipart upload in each folder; nothing is left in the bucket.',
+          'destinations.connectedSub' => ({
+            required String bucket,
+          }) => '${bucket} · nothing was left in the bucket',
+          'destinations.createButton' => 'Create destination',
+          'destinations.created' => ({
+            required String name,
+          }) => 'Destination ${name} created',
+          'destinations.saved' => ({
+            required String name,
+          }) => 'Destination ${name} saved',
+          'destinations.detailDescription' =>
+            'A bucket this workspace writes backups to.',
+          'destinations.statBackups' => 'Backups',
+          'destinations.statBackupsSub' => 'write here',
+          'destinations.statFolders' => 'Folders',
+          'destinations.statFoldersSub' => 'connection points',
+          'destinations.sectionFolders' => 'Folders',
+          'destinations.columnFolder' => 'Folder',
+          'destinations.columnWrittenBy' => 'Written by',
+          'destinations.accessKey' => 'Access key',
+          'destinations.on' => 'On',
+          'destinations.off' => 'Off',
+          'destinations.typeSub.s3' => 'Any S3-compatible storage',
+          'destinations.typeSub.gdrive' => 'Shared drive or folder',
+          'destinations.typeSub.dropbox' => 'App folder',
+          'destinations.typeSub.azure' => 'Storage container',
+          'destinations.typeSub.sftp' => 'Any SSH server',
+          'canvas.description' => 'Connect sources to destinations to build this workspace\'s backups.',
+          'canvas.save' => 'Save canvas',
+          'canvas.saved' => 'Canvas saved',
+          'canvas.newConfig' => 'New config',
+          'canvas.removeFromCanvas' => 'Remove from canvas',
+          'canvas.allSourcesPlaced' => 'Every source is on the canvas',
+          'canvas.allDestinationsPlaced' =>
+            'Every destination is on the canvas',
+          'canvas.workspaceDefault' => 'Workspace default',
+          'canvas.neverRun' => 'Never run',
+          'canvas.disabled' => 'Disabled',
+          'canvas.orphans' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} incomplete config',
+                  other: '${n} incomplete configs',
+                ),
+          'canvas.orphansHelp' => 'Only complete flows (source → config → destination) are saved. The configs in amber are discarded on save; sources and destinations stay.',
+          'canvas.semantics' => 'Canvas. Hold Space and drag to move it; right click for options; arrow keys pan; Ctrl and scroll zooms; F centers; click a connection and press Delete to remove it; Escape closes the config',
+          'canvas.addSource' => 'Source',
+          'canvas.addDestination' => 'Destination',
+          'canvas.deleteConfig' => 'Delete config',
+          'canvas.editConfig' => 'Edit config',
+          'canvas.removeConnection' => 'Remove connection',
+          'canvas.removeConnectionKey' => 'Remove connection (Del)',
+          'canvas.configHere' => 'Config is created here',
+          'canvas.releaseToCreate' => 'Release to create the config',
+          'canvas.dragToDestination' => 'Drag to a destination',
+          'canvas.last' => 'Last',
+          'canvas.next' => 'Next',
+          'canvas.runStatus.success' => 'Success',
+          'canvas.runStatus.failed' => 'Failed',
+          'canvas.runStatus.running' => 'Running',
+          'canvas.frequency.hourly' => 'Hourly',
+          'canvas.frequency.daily' => 'Daily',
+          'canvas.frequency.weekly' => 'Weekly',
+          'canvas.frequency.cron' => 'Cron',
+          'canvas.addFolder' => '+ Add folder',
+          'canvas.addFolderTitle' => ({
+            required String name,
+          }) => 'Add a folder to ${name}',
+          'canvas.addFolderDescription' => 'Each folder is a connection point. It is created in the bucket when the canvas is saved.',
+          'canvas.addFolderRoot' => 'With the first folder the bucket root stops being a connection point: the configs that write to it are disconnected.',
+          'canvas.keys.space' => 'Space',
+          'canvas.keys.del' => 'Del',
+          'canvas.keys.ctrl' => 'Ctrl',
+          'canvas.keys.esc' => 'Esc',
+          'canvas.shortcuts.title' => 'Shortcuts',
+          'canvas.shortcuts.hide' => 'Hide shortcuts',
+          'canvas.shortcuts.moveCanvas' => 'Move canvas',
+          'canvas.shortcuts.drag' => ' + drag',
+          'canvas.shortcuts.connect' => 'Connect',
+          'canvas.shortcuts.dragFromPort' => 'drag from a port',
+          'canvas.shortcuts.options' => 'Options',
+          'canvas.shortcuts.rightClick' => 'right click',
+          'canvas.shortcuts.clickIt' => 'click it + ',
+          'canvas.shortcuts.zoom' => 'Zoom',
+          'canvas.shortcuts.scroll' => 'scroll',
+          'canvas.shortcuts.zoomInOut' => 'Zoom in / out',
+          'canvas.shortcuts.center' => 'Center canvas',
+          'canvas.shortcuts.reset' => 'Reset to 100%',
+          'canvas.shortcuts.moveWithKeys' => 'Move with keys',
+          'canvas.shortcuts.closeConfig' => 'Close config',
+          'canvas.shortcuts.toggle' => 'Show / hide shortcuts',
+          'canvas.view.settings' => 'Canvas settings',
+          'canvas.view.toggleShortcuts' => 'Show or hide shortcuts (?)',
+          'canvas.view.center' => 'Center',
+          'canvas.view.centerTooltip' => 'Center canvas (F)',
+          'canvas.view.zoomOut' => 'Zoom out (−)',
+          'canvas.view.reset' => 'Reset to 100% (0)',
+          'canvas.view.zoomIn' => 'Zoom in (+)',
+          'canvas.view.settingsTitle' => 'Canvas',
+          'canvas.view.ctrlZoom' => 'Hold Ctrl to zoom',
+          'canvas.view.ctrlZoomOn' =>
+            'Scroll moves the canvas, Ctrl + scroll zooms',
+          'canvas.view.ctrlZoomOff' => 'Scroll always zooms',
+          'canvas.inspector.configName' => 'Config name',
+          'canvas.inspector.nameHelp' =>
+            'Shown on the canvas, in Backups and in the run log.',
+          'canvas.inspector.frequency' => 'Frequency',
+          'canvas.inspector.review' => 'Review',
+          'canvas.inspector.source' => 'Source',
+          'canvas.inspector.destination' => 'Destination',
+          'canvas.inspector.nextRunOnSave' => 'Computed when it is saved',
+          'canvas.inspector.cronHelp' => 'minute hour day month weekday, in UTC. Hourly, daily and weekly write it for you.',
+          'canvas.inspector.cronInvalid' =>
+            'Not a valid cron expression (minute hour day month weekday)',
+          'canvas.inspector.enabled' => 'Enabled',
+          'canvas.inspector.enabledOn' => 'Runs on its schedule',
+          'canvas.inspector.enabledOff' => 'Off: it only runs with Run now',
+          'canvas.inspector.compressionNone' => 'None',
+          'canvas.inspector.objectKeySlash' =>
+            'The object key cannot start with /',
+          'canvas.inspector.objectKeyExtension' => 'Leave out the extension: it is added from the dump format and the compression',
+          'canvas.inspector.schedule' => 'Name & schedule',
+          'canvas.inspector.cron' => 'Cron',
+          'canvas.inspector.timeZone' => 'Time zone',
+          'canvas.inspector.nextRun' => 'Next run',
+          'canvas.inspector.output' => 'Output',
+          'canvas.inspector.objectKey' => 'Object key',
+          'canvas.inspector.connectDestination' =>
+            'Connect a destination to choose where it goes.',
+          'canvas.inspector.relativeToFolder' => ({
+            required String folder,
+          }) => 'Relative to the folder ${folder}. The extension is added from the dump format and the compression.',
+          'canvas.inspector.relativeToRoot' => ({
+            required String bucket,
+          }) => 'Relative to the root of ${bucket}. The extension is added from the dump format and the compression.',
+          'canvas.inspector.compression' => 'Compression',
+          'canvas.inspector.writes' => 'Next run writes',
+          'canvas.inspector.missingSource' => 'Nothing: connect a source.',
+          'canvas.inspector.missingDestination' =>
+            'Nothing: connect a destination.',
+          'canvas.inspector.missingBoth' =>
+            'Nothing: connect a source and a destination.',
+          'canvas.inspector.noSource' => 'no source',
+          'canvas.inspector.noDestination' => 'no destination',
+          'canvas.columns.sources' => 'Sources',
+          'canvas.columns.configs' => 'Config · one per connection',
+          'canvas.columns.destinations' => 'Destinations',
+          'canvas.folder' => 'Folder',
+          'canvas.testRun.button' => 'Test run',
+          'canvas.testRun.help' => 'Checks that every complete flow could run, without backing anything up: each source connects and pg_dump can dump it, each destination takes a write in its folders.',
+          'canvas.testRun.ok' => ({
+            required int n,
+          }) => 'Everything works: ${n} checks passed',
+          'canvas.testRun.failed' => ({
+            required String list,
+          }) => 'Some checks failed: ${list}',
+          'canvas.testRun.nothing' =>
+            'Nothing to test: connect a source to a destination first.',
+          'canvas.run.button' => 'Run now',
+          'canvas.run.help' => 'Runs this backup now, for real, as it is saved: the edits not saved yet are not used.',
+          'canvas.run.needsSave' =>
+            'Save the canvas first: a run uses the saved config.',
+          'canvas.run.done' => ({
+            required String name,
+            required String size,
+          }) => 'Backup ${name} done: ${size}',
+          'canvas.run.failed' => ({
+            required String name,
+            required String error,
+          }) => 'Backup ${name} failed: ${error}',
+          'canvas.guide.title' => 'Your first backup',
+          'canvas.guide.source' => 'Add a source',
+          'canvas.guide.sourceHelp' => 'The database to back up.',
+          'canvas.guide.destination' => 'Add a destination',
+          'canvas.guide.destinationHelp' => 'The bucket the backups go to.',
+          'canvas.guide.connect' => 'Connect them',
+          'canvas.guide.connectHelp' => 'Drag from the port of the source to a folder or the bucket: a config is created between them. Then save.',
+          'canvas.guide.create' => 'Create one',
+          'canvas.guide.place' => ({required String name}) => 'Place ${name}',
+          'runs.title' => 'Run log',
+          'runs.description' => 'Every backup run in this workspace, scheduled or manual. Times in UTC, your local time below.',
+          'runs.search' => 'Search by backup, source or destination',
+          'runs.columnStatus' => 'Status',
+          'runs.columnSource' => 'Source',
+          'runs.columnDestination' => 'Destination',
+          'runs.columnStarted' => 'Started',
+          'runs.columnDuration' => 'Duration',
+          'runs.columnSize' => 'Size',
+          'runs.scheduled' => 'By schedule',
+          'runs.manual' => 'Manual',
+          'runs.emptyTitle' => 'No runs yet',
+          'runs.emptyDescription' => 'Backups run on their schedule, or with Run now in the pipeline editor.',
+          'runs.newestOnly' => 'Only the 200 newest runs are shown.',
+          'runs.log' => 'Log (UTC)',
+          'runs.copyLog' => 'Copy log',
+          'runs.logCopied' => 'Log copied',
+          'runs.logWhenDone' =>
+            'The log is written when the run ends. Refresh to see it.',
+          'runs.noLog' => 'This run has no log.',
+          'runs.today' => ({required String date}) => 'Today · ${date} (UTC)',
+          'runs.yesterday' => ({
+            required String date,
+          }) => 'Yesterday · ${date} (UTC)',
+          'runs.day' => ({required String date}) => '${date} (UTC)',
+          'runs.succeeded' => ({required int n}) => '${n} succeeded',
+          'runs.failedCount' => ({required int n}) => '${n} failed',
+          'runs.savedIn' => ({
+            required String size,
+            required String duration,
+          }) => '${size} in ${duration}',
+          'runs.inProgress' => 'In progress',
+          'runs.soFar' => ({
+            required String size,
+          }) => 'In progress · ${size} so far',
+          'runs.columnTrigger' => 'Trigger',
+          'runs.viewRun' => 'View run',
+          'runs.steps' => 'Steps',
+          'runs.stepConnect' => ({
+            required String name,
+          }) => 'Connect to ${name}',
+          'runs.stepDump' => ({
+            required String name,
+          }) => 'Dump and upload to ${name}',
+          'runs.stepSkipped' => 'Skipped',
+          'runs.stepWaiting' => 'Waiting',
+          'runs.resultSuccess' => 'Backup saved',
+          'runs.resultFailed' => 'The backup failed',
+          'runs.resultRunning' => 'Running. Refresh to see how far it got.',
+          'backups.title' => 'Backups',
+          'backups.description' =>
+            'Every backup in this workspace, its last run and the next one.',
+          'backups.openEditor' => 'Open editor',
+          'backups.newBackup' => 'New backup',
+          'backups.healthy' => 'Healthy',
+          'backups.healthySub' => 'last run succeeded',
+          'backups.failing' => 'Failing',
+          'backups.failingSub' => 'need attention',
+          'backups.paused' => 'Paused',
+          'backups.nextBackup' => 'Next backup',
+          'backups.nextBackupIn' => 'Next backup in',
+          'backups.nothingScheduled' => 'Nothing scheduled',
+          'backups.search' => 'Search backups',
+          'backups.columnStatus' => 'Status',
+          'backups.columnSource' => 'Source',
+          'backups.columnDestination' => 'Destination',
+          'backups.columnSchedule' => 'Schedule',
+          'backups.columnLastRun' => 'Last backup',
+          'backups.columnNextRun' => 'Next backup',
+          'backups.allSources' => 'All sources',
+          'backups.allDestinations' => 'All destinations',
+          'backups.shown' => ({
+            required int shown,
+            required int total,
+          }) => '${shown} of ${total} backups',
+          'backups.showing' => ({
+            required int shown,
+            required int total,
+          }) => 'Showing ${shown} of ${total} backups',
+          'backups.timesNote' => ({
+            required String utc,
+            required String local,
+          }) => 'Times in UTC · now ${utc} (${local})',
+          'backups.sort' => 'Sort:',
+          'backups.sortBy' => 'Sort by',
+          'backups.sortLast' => 'Last backup',
+          'backups.sortLastSub' => 'Most recent first',
+          'backups.sortLastOld' => 'Last backup (oldest)',
+          'backups.sortLastOldSub' => 'Oldest first',
+          'backups.sortNext' => 'Next backup',
+          'backups.sortNextSub' => 'Soonest first',
+          'backups.sortName' => 'Source name',
+          'backups.sortNameSub' => 'A to Z',
+          'backups.inTime' => ({required String time}) => 'in ${time}',
+          'backups.startedAgo' => ({
+            required String time,
+          }) => 'Started ${time} ago',
+          'backups.runNowFor' => ({required String name}) => 'Run ${name} now',
+          'backups.showRuns' => 'Show run history',
+          'backups.hideRuns' => 'Hide run history',
+          'backups.moreFor' => ({
+            required String name,
+          }) => 'More actions for ${name}',
+          'backups.viewLastRun' => 'View last run',
+          'backups.editConfig' => 'Edit config',
+          'backups.deleteBackup' => 'Delete backup',
+          _ => null,
+        } ??
+        switch (path) {
+          'backups.recentRuns' => 'Recent runs',
+          'backups.noRuns' => 'No runs yet',
+          'backups.viewLog' => 'View log',
+          'backups.viewDetails' => 'View details',
+          'backups.noFile' => 'No file written',
+          'backups.uploading' => 'Uploading…',
+          'backups.manual' => 'Manual',
+          'backups.scheduled' => 'By schedule',
+          'backups.deleteTitle' => ({
+            required String name,
+          }) => 'Delete the backup ${name}?',
+          'backups.deleteConfirm' => 'Its schedule stops. Its runs stay in the run log, and the files already in the destination stay there.',
+          'backups.deleted' => ({
+            required String name,
+          }) => 'Backup ${name} deleted',
+          'backups.saved' => ({required String name}) => 'Backup ${name} saved',
+          'backups.emptyDescription' => 'Connect a source to a destination in the pipeline editor to create one.',
+          _ => null,
+        };
   }
 }

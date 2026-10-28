@@ -79,6 +79,21 @@ void main() {
     expect(CanvasGeometry.hit(s.destinations, const Offset(0, 0)), isNull);
   });
 
+  test(
+    'a second wire to the same place puts its config below the first',
+    () async {
+      final cubit = await loaded()
+        ..connect('users', const DropTarget('ca', null))
+        ..connect('users', const DropTarget('ca', null));
+      final made = cubit.state.data.configs
+          .where((c) => c.id.startsWith(CanvasCubit.newPrefix))
+          .map(CanvasGeometry.configRect)
+          .toList();
+      expect(made, hasLength(2));
+      expect(made.first.overlaps(made.last), isFalse);
+    },
+  );
+
   test('connect creates a selected config with the defaults of the workspace; any config can be deleted', () async {
     final cubit = await loaded();
     cubit.connect('users', const DropTarget('ca', null));

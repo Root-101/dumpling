@@ -27,6 +27,25 @@ class WorkspaceClient extends BaseClient {
     );
     return WorkspaceResponse.fromJson(rawResponse.data);
   }
+
+  /// Replaces its data (defaults included); the slug stays
+  Future<WorkspaceResponse> update({
+    required String slug,
+    required WorkspaceRequest request,
+    String? token,
+  }) async {
+    Response rawResponse = await dio.put(
+      '$_workspacesUrl/$slug',
+      data: request.toJson(),
+      options: options(token: token),
+    );
+    return WorkspaceResponse.fromJson(rawResponse.data);
+  }
+
+  /// With everything in it; the files already in the buckets stay
+  Future<void> delete({required String slug, String? token}) async {
+    await dio.delete('$_workspacesUrl/$slug', options: options(token: token));
+  }
 }
 
 //---------- WORKSPACE REQUEST ----------
@@ -37,10 +56,23 @@ class WorkspaceRequest {
   /// ARGB (`Color.toARGB32`)
   final int? color;
 
-  WorkspaceRequest({required this.name, this.description, this.color});
+  /// `schedule`, `compression`, `object_key`; null: the service's
+  final Map<String, String>? defaults;
+
+  WorkspaceRequest({
+    required this.name,
+    this.description,
+    this.color,
+    this.defaults,
+  });
 
   Map<String, dynamic> toJson() {
-    return {'name': name, 'description': description, 'color': color};
+    return {
+      'name': name,
+      'description': description,
+      'color': color,
+      'defaults': ?defaults,
+    };
   }
 }
 
@@ -50,6 +82,8 @@ class WorkspaceResponse {
   final String name;
   final String? description;
   final int? color;
+  final Map<String, dynamic>? defaults;
+  final DateTime? createdAt;
 
   /// Only in the list
   final WorkspaceStatsResponse? stats;
@@ -59,6 +93,8 @@ class WorkspaceResponse {
     required this.name,
     required this.description,
     required this.color,
+    required this.defaults,
+    required this.createdAt,
     required this.stats,
   });
 
@@ -68,6 +104,10 @@ class WorkspaceResponse {
       name: json['name'],
       description: json['description'],
       color: json['color'],
+      defaults: json['defaults'],
+      createdAt: json['created_at'] == null
+          ? null
+          : DateTime.parse(json['created_at']),
       stats: json['stats'] == null
           ? null
           : WorkspaceStatsResponse.fromJson(json['stats']),

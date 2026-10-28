@@ -34,15 +34,29 @@ class DestinationFormCubit extends Cubit<DestinationFormState> {
     }
   }
 
-  Future<void> save(DestinationDraft draft) async {
+  /// [tested]: the form was tested as it is saved. The service keeps only
+  /// the tests of a saved destination, so it is tested again once saved
+  Future<void> save(DestinationDraft draft, {bool tested = false}) async {
     emit(const DestinationFormProcessInProgressState());
     try {
-      final destination = await _repo.save(
+      var destination = await _repo.save(
         workspace: workspace,
         draft: draft,
         id: destinationId,
         token: _auth.auth?.accessToken,
       );
+      if (tested) {
+        // already saved: a failed test leaves it untested, not unsaved
+        try {
+          destination = destination.withCheck(
+            await _repo.testSaved(
+              workspace: workspace,
+              id: destination.id,
+              token: _auth.auth?.accessToken,
+            ),
+          );
+        } catch (_) {}
+      }
       emit(DestinationFormProcessingOKState(destination));
     } catch (e) {
       _emitError(e);

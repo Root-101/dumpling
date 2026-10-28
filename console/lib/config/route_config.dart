@@ -90,12 +90,6 @@ class RouteConfig {
                 path: RunsScreen.navigator.path,
                 builder: RunsScreen.navigator.builder,
               ),
-              for (final section in SectionScreen.sections)
-                GoRoute(
-                  name: section,
-                  path: section,
-                  builder: (context, state) => SectionScreen(section: section),
-                ),
             ],
           ),
         ],

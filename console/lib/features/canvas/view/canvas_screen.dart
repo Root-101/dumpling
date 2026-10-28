@@ -80,6 +80,8 @@ class _CanvasScreenState extends State<CanvasScreen> {
     }
     if (state is CanvasRunFinishedState) {
       final run = state.run;
+      // the failing count of the rail comes from the list of workspaces
+      app.di.find<WorkspaceCubit>().load();
       if (run.status == RunStatus.success) {
         app.snack.showSuccess(
           message: app.intl.canvas.run.done(

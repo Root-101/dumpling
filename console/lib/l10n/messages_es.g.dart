@@ -263,15 +263,9 @@ class AppMessages$nav$es implements AppMessages$nav$en {
   @override
   String failedRuns({required Object count}) => '${count} con fallos';
   @override
-  String get settings => 'Ajustes del workspace';
-  @override
-  String get settingsDescription => 'Aplica solo a este workspace';
-  @override
   String language({required Object name}) => 'Idioma: ${name}';
   @override
   String get logout => 'Cerrar sesión';
-  @override
-  String get comingSoon => 'Esta pantalla viene después.';
 }
 
 // Path: login
@@ -406,8 +400,6 @@ class AppMessages$workspaces$es implements AppMessages$workspaces$en {
   @override
   String get switchAndOpen => 'Cambiar y abrir canvas';
   @override
-  String moreOptions({required Object name}) => 'Más opciones de ${name}';
-  @override
   String get formTitle => 'Nuevo workspace';
   @override
   String get formDescription =>
@@ -430,6 +422,11 @@ class AppMessages$workspaces$es implements AppMessages$workspaces$en {
   String get creating => 'Creando…';
   @override
   String created({required Object name}) => 'Workspace ${name} creado';
+  @override
+  String settingsOf({required Object name}) => 'Ajustes de ${name}';
+  @override
+  late final AppMessages$workspaces$settings$es settings =
+      AppMessages$workspaces$settings$es._(_root);
 }
 
 // Path: connections
@@ -1144,6 +1141,82 @@ class AppMessages$backups$es implements AppMessages$backups$en {
       'Conecta un origen con un destino en el editor para crear uno.';
 }
 
+// Path: workspaces.settings
+class AppMessages$workspaces$settings$es
+    implements AppMessages$workspaces$settings$en {
+  AppMessages$workspaces$settings$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get title => 'Ajustes del workspace';
+  @override
+  String get description => 'Aplica solo a este workspace';
+  @override
+  String get general => 'General';
+  @override
+  String get defaults => 'Valores por defecto de los configs nuevos';
+  @override
+  String get danger => 'Zona de peligro';
+  @override
+  String get created => 'Creado';
+  @override
+  String get id => 'ID del workspace';
+  @override
+  String get copyId => 'Copiar el ID del workspace';
+  @override
+  String get copied => 'Copiado';
+  @override
+  String get noDescription => 'Sin descripción';
+  @override
+  String get defaultsHint =>
+      'Una conexión nueva en el canvas empieza con estos valores. Cada config puede cambiarlos.';
+  @override
+  String get schedule => 'Programación';
+  @override
+  String get cron => 'Cron';
+  @override
+  String get cronHelp => 'Siempre en UTC.';
+  @override
+  String get compression => 'Compresión';
+  @override
+  String get compressionNone => 'Ninguna';
+  @override
+  String get objectKey => 'Object key';
+  @override
+  String get objectKeyHelp =>
+      'Relativa a la carpeta donde escribe cada config, sin extensión.';
+  @override
+  String get unsaved => 'Tienes cambios sin guardar';
+  @override
+  String get discard => 'Descartar';
+  @override
+  String get saved => 'Guardado';
+  @override
+  String get deleteTitle => 'Eliminar este workspace';
+  @override
+  String get deleteDescription =>
+      'Elimina su canvas, orígenes, destinos, configs e historial de ejecuciones. Los archivos de backup que ya están en tus buckets se quedan donde están.';
+  @override
+  String get deleteButton => 'Eliminar workspace';
+  @override
+  String deleteConfirmTitle({required Object name}) => '¿Eliminar «${name}»?';
+  @override
+  String deleteConfirm({
+    required Object sources,
+    required Object destinations,
+    required Object configs,
+  }) =>
+      'Se eliminan sus orígenes (${sources}), destinos (${destinations}), configs (${configs}) y su historial de ejecuciones. Los backups programados se detienen al momento. No se puede deshacer.';
+  @override
+  String get typeBefore => 'Escribe';
+  @override
+  String get typeAfter => 'para confirmar';
+  @override
+  String deleted({required Object name}) => 'Workspace ${name} eliminado';
+}
+
 // Path: destinations.typeSub
 class AppMessages$destinations$typeSub$es
     implements AppMessages$destinations$typeSub$en {
@@ -1465,673 +1538,743 @@ class AppMessages$canvas$guide$es implements AppMessages$canvas$guide$en {
 extension on AppMessagesEs {
   dynamic _flatMapFunction(String path) {
     return switch (path) {
-      'app.name' => 'Dumpling',
-      'app.needMoreSpace' => 'Se necesita más espacio',
-      'app.splashText' => 'Cargando tus backups…',
-      'app.version' => ({required Object version}) => 'Dumpling v${version}',
-      'common.loading' => 'Cargando',
-      'common.error' => 'Error',
-      'common.tryAgain' => 'Reintentar',
-      'common.noData' => 'Sin datos',
-      'common.cancel' => 'Cancelar',
-      'common.close' => 'Cerrar',
-      'common.required' => 'Requerido',
-      'common.optional' => '(opcional)',
-      'common.filters' => 'Filtros',
-      'common.clearAll' => 'Limpiar todo',
-      'common.done' => 'Listo',
-      'common.all' => 'Todos',
-      'common.selected' => 'Elegido',
-      'common.soon' => 'Pronto',
-      'common.edit' => 'Editar',
-      'common.duplicate' => 'Duplicar',
-      'common.delete' => 'Eliminar',
-      'common.add' => 'Agregar',
-      'common.saving' => 'Guardando…',
-      'common.saveChanges' => 'Guardar cambios',
-      'common.noMatches' => 'Nada coincide con tu búsqueda',
-      'common.clearSearch' => 'Limpiar búsqueda y filtros',
-      'common.shownOf' => ({
-        required Object shown,
-        required Object total,
-      }) => '${shown} de ${total}',
-      'common.optionsFor' => ({required Object name}) => 'Opciones de ${name}',
-      'common.viewDetails' => 'Ver detalle',
-      'common.refresh' => 'Actualizar',
-      'common.listView' => 'Lista',
-      'common.gridView' => 'Cuadrícula',
-      'common.back' => 'Atrás',
-      'common.next' => 'Siguiente',
-      'common.stepOf' => ({
-        required Object n,
-        required Object total,
-      }) => 'Paso ${n} de ${total}',
-      'common.backupCount' =>
-        ({required num n}) =>
-            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
-              n,
-              one: '${n} backup',
-              other: '${n} backups',
-            ),
-      'time.utc' => ({required Object time}) => '${time} UTC',
-      'time.local' => ({required Object time}) => '${time} local',
-      'errors.requestCancelled' => 'La petición al servidor fue cancelada',
-      'errors.connectionTimeout' => 'Tiempo de conexión agotado con el servidor. Revisa tu conexión a internet',
-      'errors.noConnection' =>
-        'No se pudo conectar con el servidor. Revisa tu conexión a internet',
-      'errors.receiveTimeout' =>
-        'Tiempo de espera agotado al recibir datos del servidor',
-      'errors.sendTimeout' =>
-        'Tiempo de espera agotado al enviar datos al servidor',
-      'errors.badCertificate' => 'Certificado inválido',
-      'errors.connection' => 'Error de conexión',
-      'errors.validation' => 'Error de validación',
-      'errors.server' => 'Error del servidor',
-      'errors.unknown' => 'Error desconocido',
-      'errors.notFoundTitle' => 'No encontrado',
-      'errors.pageNotFound' => 'Esta página no existe.',
-      'errors.offlineTitle' => 'Conexión perdida',
-      'errors.offline' => ({
-        required String url,
-      }) => 'No se puede conectar con el servicio de Dumpling en ${url}. Revisa que esté corriendo e inténtalo de nuevo.',
-      'nav.switchWorkspace' => ({
-        required Object name,
-      }) => '${name} · cambiar de workspace',
-      'nav.workspaces' => 'Workspaces',
-      'nav.backups' => 'Backups',
-      'nav.canvas' => 'Editor del pipeline',
-      'nav.sources' => 'Orígenes',
-      'nav.destinations' => 'Destinos',
-      'nav.runs' => 'Registro de ejecuciones',
-      'nav.failedRuns' => ({required Object count}) => '${count} con fallos',
-      'nav.settings' => 'Ajustes del workspace',
-      'nav.settingsDescription' => 'Aplica solo a este workspace',
-      'nav.language' => ({required Object name}) => 'Idioma: ${name}',
-      'nav.logout' => 'Cerrar sesión',
-      'nav.comingSoon' => 'Esta pantalla viene después.',
-      'login.title' => 'Inicia sesión',
-      'login.description' => 'Gestiona los backups de tus bases de datos.',
-      'login.username' => 'Usuario',
-      'login.usernameHint' => 'Escribe tu usuario',
-      'login.password' => 'Contraseña',
-      'login.passwordHint' => 'Escribe tu contraseña',
-      'login.showPassword' => 'Mostrar contraseña',
-      'login.hidePassword' => 'Ocultar contraseña',
-      'login.button' => 'Iniciar sesión',
-      'login.signingIn' => 'Iniciando sesión…',
-      'login.failedHint' => 'Revisa ambos e inténtalo de nuevo.',
-      'login.envHint' =>
-        'El usuario y la contraseña se definen en el servidor con',
-      'login.envHintAnd' => 'y',
-      'login.tagline' => 'Respaldos',
-      'login.taglineAccent' => 'sin esfuerzo',
-      'login.tagLightweight' => 'Ligero',
-      'login.tagCanvas' => 'Canvas drag & drop',
-      'login.tagWinter' => 'Hecho con Winter',
-      'colors.none' => 'Sin color',
-      'colors.custom' => 'Color personalizado',
-      'colors.apply' => 'Aplicar',
-      'colors.saturationBrightness' => 'Saturación y brillo',
-      'colors.hue' => 'Tono',
-      'colors.contrast' => ({
-        required Object ratio,
-      }) => 'Inicial blanca sobre este color: ${ratio}:1',
-      'colors.contrastLow' => ({
-        required Object ratio,
-      }) => 'Poco contraste con la inicial blanca (${ratio}:1). Costará leerla.',
-      'colors.hexInvalid' =>
-        'Escribe un color HEX de 6 dígitos, por ejemplo #0E7490',
-      'colors.violet' => 'Violeta',
-      'colors.blue' => 'Azul',
-      'colors.teal' => 'Verde azulado',
-      'colors.green' => 'Verde',
-      'colors.amber' => 'Ámbar',
-      'colors.red' => 'Rojo',
-      'colors.pink' => 'Rosa',
-      'colors.slate' => 'Pizarra',
-      'workspaces.title' => 'Workspaces',
-      'workspaces.description' => 'Cada workspace es independiente: su propio canvas, orígenes, destinos y backups.',
-      'workspaces.create' => 'Nuevo workspace',
-      'workspaces.createHint' =>
-        'Un canvas nuevo para otro entorno, cliente o proyecto.',
-      'workspaces.current' => 'Actual',
-      'workspaces.sources' => 'Orígenes',
-      'workspaces.destinations' => 'Destinos',
-      'workspaces.backups' => 'Backups',
-      'workspaces.noBackups' => 'Todavía sin backups',
-      'workspaces.healthy' => 'Todo en orden',
-      'workspaces.failing' => ({
-        required Object count,
-      }) => '${count} con fallos',
-      'workspaces.running' => 'Ejecutándose ahora',
-      'workspaces.lastRun' => ({
-        required Object time,
-      }) => 'Última ejecución ${time}',
-      'workspaces.noRuns' => 'Todavía sin ejecuciones',
-      'workspaces.openCanvas' => 'Abrir canvas',
-      'workspaces.switchAndOpen' => 'Cambiar y abrir canvas',
-      'workspaces.moreOptions' => ({
-        required Object name,
-      }) => 'Más opciones de ${name}',
-      'workspaces.formTitle' => 'Nuevo workspace',
-      'workspaces.formDescription' => 'Los workspaces no comparten nada: cada uno tiene su propio canvas, conexiones, backups e historial de ejecuciones.',
-      'workspaces.name' => 'Nombre',
-      'workspaces.nameHint' => 'p. ej. Staging',
-      'workspaces.descriptionLabel' => 'Descripción',
-      'workspaces.descriptionHint' => 'Para qué es este workspace',
-      'workspaces.color' => 'Color',
-      'workspaces.emptyCanvas' =>
-        'Un workspace nuevo empieza con el canvas vacío.',
-      'workspaces.createButton' => 'Crear workspace',
-      'workspaces.creating' => 'Creando…',
-      'workspaces.created' => ({
-        required Object name,
-      }) => 'Workspace ${name} creado',
-      'connections.notTested' => 'Sin probar',
-      'connections.notTestedYet' => 'Todavía sin probar',
-      'connections.testing' => 'Probando…',
-      'connections.test' => 'Probar conexión',
-      'connections.connected' => 'Conectado',
-      'connections.incompatible' => 'Incompatible',
-      'connections.incompatibleTitle' =>
-        'Conectó, pero el servidor es más nuevo que la herramienta de dump',
-      'connections.incompatibleSub' => ({
-        required Object server,
-        required Object tool,
-      }) => 'Servidor ${server} · ${tool}. Actualiza la herramienta de dump donde corre Dumpling.',
-      'connections.toolMissing' => 'Falta la herramienta',
-      'connections.toolMissingTitle' => 'Conectó, pero la herramienta de dump no está instalada donde corre Dumpling',
-      'connections.unreachable' => 'Sin conexión',
-      'connections.failedTitle' => 'No se pudo conectar',
-      'connections.lastCheck' => 'Última prueba',
-      'connections.checkTitle' => 'Prueba de conexión',
-      'connections.checkNote' => 'Antes de cada ejecución y al probarla',
-      'connections.connection' => 'Conexión',
-      'connections.editConnection' => 'Editar conexión',
-      'sources.title' => 'Sources',
-      'sources.description' =>
-        'Lo que respalda este workspace: bases de datos PostgreSQL.',
-      'sources.create' => 'Nuevo source',
-      'sources.search' => 'Buscar sources',
-      'sources.columnName' => 'Nombre',
-      'sources.columnType' => 'Tipo',
-      'sources.columnHost' => 'Host',
-      'sources.columnBackups' => 'Backups',
-      'sources.columnStatus' => 'Estado',
-      'sources.emptyTitle' => 'Todavía no hay sources',
-      'sources.emptyDescription' =>
-        'Conecta una base de datos para respaldarla.',
-      'sources.inUse' =>
-        ({required num n}) =>
-            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
-              n,
-              one: 'Lo usa ${n} backup. Quítalo primero.',
-              other: 'Lo usan ${n} backups. Quítalos primero.',
-            ),
-      'sources.deleteTitle' => ({
-        required Object name,
-      }) => '¿Eliminar el source ${name}?',
-      'sources.deleteConfirm' => 'Ningún backup lo usa. Su conexión y su contraseña guardadas se borran de este workspace.',
-      'sources.deleted' => ({
-        required Object name,
-      }) => 'Source ${name} eliminado',
-      'sources.newTitle' => 'Nuevo source',
-      'sources.editTitle' => 'Editar source',
-      'sources.formDescription' => 'Conecta lo que quieres respaldar.',
-      'sources.stepType' => 'Tipo',
-      'sources.stepConnection' => 'Conexión',
-      'sources.stepCheck' => 'Revisar y guardar',
-      'sources.typeTitle' => '¿Qué quieres respaldar?',
-      'sources.connectionTitle' => '¿Cómo se conecta Dumpling?',
-      'sources.checkTitle' => 'Revisa y guarda',
-      'sources.name' => 'Nombre',
-      'sources.nameHint' => 'p. ej. orders-db',
-      'sources.copyName' => ({required Object name}) => '${name}-copia',
-      'sources.connectWith' => 'Conectar con',
-      'sources.byFields' => 'Campos',
-      'sources.byUrl' => 'URL de conexión',
-      'sources.host' => 'Host',
-      'sources.port' => 'Puerto',
-      'sources.portInvalid' => 'De 1 a 65535',
-      'sources.database' => 'Base de datos',
-      'sources.username' => 'Usuario',
-      'sources.password' => 'Contraseña',
-      'sources.passwordKeepHint' => 'Déjala vacía para mantener la guardada',
-      'sources.passwordHelp' => 'Usa un rol de solo lectura. Se guarda cifrada y no se vuelve a mostrar.',
-      'sources.connectionUrl' => 'URL de conexión',
-      'sources.urlHelp' =>
-        'La contraseña de la URL se guarda cifrada y no se vuelve a mostrar.',
-      'sources.urlHelpEditing' =>
-        'Si la URL no trae contraseña, se mantiene la guardada.',
-      'sources.urlInvalid' =>
-        'Usa el formato postgresql://usuario:contraseña@host:5432/base',
-      'sources.dumpFormat' => 'Formato del dump',
-      'sources.formatCustom' => 'Custom (pg_dump -Fc)',
-      'sources.formatPlain' => 'SQL plano',
-      'sources.testIdle' => 'Revisa la conexión antes de guardar el source.',
-      'sources.connectedAs' => ({
-        required Object user,
-      }) => 'Conectado como ${user}',
-      'sources.createButton' => 'Crear source',
-      'sources.created' => ({required Object name}) => 'Source ${name} creado',
-      'sources.saved' => ({required Object name}) => 'Source ${name} guardado',
-      'sources.detailDescription' => ({
-        required Object type,
-      }) => 'Una base de datos ${type} que este workspace respalda.',
-      'sources.statBackups' => 'Backups',
-      'sources.statDestinations' =>
-        ({required num n}) =>
-            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
-              n,
-              zero: 'ninguno aún',
-              one: 'en ${n} destination',
-              other: 'en ${n} destinations',
-            ),
-      'sources.statLastBackup' => 'Último backup',
-      'sources.sectionUses' => 'Backups de este source',
-      'sources.openEditor' => 'Abrir editor',
-      'sources.noUses' => 'Ningún backup lo usa todavía. Conéctalo a un destination en el editor de pipelines.',
-      'sources.columnBackup' => 'Backup',
-      'sources.columnSchedule' => 'Horario',
-      'sources.columnLastRun' => 'Última ejecución',
-      'sources.columnNextRun' => 'Siguiente',
-      'sources.cronUtc' => 'cron · UTC',
-      'sources.paused' => 'En pausa',
-      'sources.neverRun' => 'Aún no se ejecuta',
-      'sources.passwordStored' => '•••••••• · guardada cifrada',
-      'destinations.title' => 'Destinations',
-      'destinations.description' =>
-        'Donde este workspace escribe los backups: buckets S3.',
-      'destinations.create' => 'Nuevo destination',
-      'destinations.search' => 'Buscar destinations',
-      'destinations.columnName' => 'Nombre',
-      'destinations.columnType' => 'Tipo',
-      'destinations.columnEndpoint' => 'Endpoint',
-      'destinations.columnBackups' => 'Backups',
-      'destinations.columnStatus' => 'Estado',
-      'destinations.bucketRoot' => 'Raíz del bucket',
-      'destinations.folderCount' =>
-        ({required num n}) =>
-            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
-              n,
-              one: '${n} carpeta',
-              other: '${n} carpetas',
-            ),
-      'destinations.showFolders' => ({
-        required Object name,
-      }) => 'Mostrar las carpetas de ${name}',
-      'destinations.hideFolders' => ({
-        required Object name,
-      }) => 'Ocultar las carpetas de ${name}',
-      'destinations.emptyTitle' => 'Todavía no hay destinations',
-      'destinations.emptyDescription' =>
-        'Agrega un bucket donde escribir los backups.',
-      'destinations.inUse' =>
-        ({required num n}) =>
-            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
-              n,
-              one: 'Lo usa ${n} backup. Quítalo primero.',
-              other: 'Lo usan ${n} backups. Quítalos primero.',
-            ),
-      'destinations.deleteTitle' => ({
-        required Object name,
-      }) => '¿Eliminar el destination ${name}?',
-      'destinations.deleteConfirm' => 'Ningún backup lo usa. Su conexión y sus llaves guardadas se borran de este workspace. Los archivos que ya están en el bucket se quedan ahí.',
-      'destinations.deleted' => ({
-        required Object name,
-      }) => 'Destination ${name} eliminado',
-      'destinations.noFolders' =>
-        'Sin carpetas · la raíz del bucket es el único punto de conexión',
-      'destinations.folderUsed' =>
-        ({required num n}) =>
-            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
-              n,
-              one: '${n} backup',
-              other: '${n} backups',
-            ),
-      'destinations.notUsedYet' => 'Sin usar',
-      'destinations.deleteFolder' => ({
-        required Object path,
-      }) => 'Eliminar la carpeta ${path}',
-      'destinations.folderLocked' => 'La usan backups. Reconéctalos primero.',
-      'destinations.addFolder' => 'Agregar carpeta',
-      'destinations.folderHint' => '/nombre-carpeta',
-      'destinations.folderEmpty' => 'Escribe el nombre de la carpeta',
-      'destinations.folderInvalid' =>
-        'Minúsculas, dígitos, - . _ y / entre ellos',
-      'destinations.folderRepeated' => 'Esa carpeta ya existe',
-      'destinations.folderAdded' => ({
-        required Object path,
-      }) => 'Carpeta ${path} agregada',
-      'destinations.folderDeleted' => ({
-        required Object path,
-      }) => 'Carpeta ${path} eliminada',
-      'destinations.newTitle' => 'Nuevo destination',
-      'destinations.editTitle' => 'Editar destination',
-      'destinations.formDescription' => 'Elige dónde se escriben los backups.',
-      'destinations.stepType' => 'Tipo',
-      'destinations.stepConnection' => 'Conexión',
-      'destinations.stepFolders' => 'Carpetas y prueba',
-      'destinations.typeTitle' => '¿A dónde van los backups?',
-      'destinations.connectionTitle' => '¿Cómo se conecta Dumpling?',
-      'destinations.foldersTitle' => 'Carpetas y prueba de conexión',
-      'destinations.name' => 'Nombre',
-      'destinations.nameHint' => 'p. ej. bucket-backups',
-      'destinations.copyName' => ({required Object name}) => '${name}-copia',
-      'destinations.endpoint' => 'Endpoint',
-      'destinations.endpointHelp' => 'Cualquier URL compatible con S3. Para AWS usa https://s3.<región>.amazonaws.com.',
-      'destinations.bucket' => 'Bucket',
-      'destinations.region' => 'Región',
-      'destinations.accessKeyId' => 'Access key ID',
-      'destinations.secretKey' => 'Secret key',
-      'destinations.secretKeepHint' => 'Déjala vacía para mantener la guardada',
-      'destinations.secretHelp' =>
-        'Se guarda cifrada y no se vuelve a mostrar.',
-      'destinations.pathStyle' => 'Direcciones path-style',
-      'destinations.pathStyleHelp' =>
-        'La necesitan casi todos los servidores S3 propios.',
-      'destinations.permissions' =>
-        'Permisos necesarios: s3:PutObject y s3:AbortMultipartUpload.',
-      'destinations.foldersHelp' => 'Las carpetas son opcionales. Con al menos una, cada carpeta es un punto de conexión del canvas y la raíz del bucket no. Sin carpetas, la raíz del bucket es el único punto de conexión.',
-      'destinations.testIdle' => 'Dumpling inicia y cancela una subida multipart en cada carpeta; no queda nada en el bucket.',
-      'destinations.connectedSub' => ({
-        required Object bucket,
-      }) => '${bucket} · no quedó nada en el bucket',
-      'destinations.createButton' => 'Crear destination',
-      'destinations.created' => ({
-        required Object name,
-      }) => 'Destination ${name} creado',
-      'destinations.saved' => ({
-        required Object name,
-      }) => 'Destination ${name} guardado',
-      'destinations.detailDescription' =>
-        'Un bucket donde este workspace escribe backups.',
-      'destinations.statBackups' => 'Backups',
-      'destinations.statBackupsSub' => 'escriben aquí',
-      'destinations.statFolders' => 'Carpetas',
-      'destinations.statFoldersSub' => 'puntos de conexión',
-      'destinations.sectionFolders' => 'Carpetas',
-      'destinations.columnFolder' => 'Carpeta',
-      'destinations.columnWrittenBy' => 'Lo escribe',
-      'destinations.accessKey' => 'Access key',
-      'destinations.on' => 'Sí',
-      'destinations.off' => 'No',
-      'destinations.typeSub.s3' => 'Cualquier almacenamiento compatible con S3',
-      'destinations.typeSub.gdrive' => 'Unidad o carpeta compartida',
-      'destinations.typeSub.dropbox' => 'Carpeta de la app',
-      'destinations.typeSub.azure' => 'Contenedor de almacenamiento',
-      'destinations.typeSub.sftp' => 'Cualquier servidor SSH',
-      'canvas.description' => 'Conecta orígenes con destinos para armar los respaldos de este workspace.',
-      'canvas.save' => 'Guardar canvas',
-      'canvas.saved' => 'Canvas guardado',
-      'canvas.newConfig' => 'Nueva config',
-      'canvas.removeFromCanvas' => 'Quitar del canvas',
-      'canvas.allSourcesPlaced' => 'Todos los orígenes están en el canvas',
-      'canvas.allDestinationsPlaced' => 'Todos los destinos están en el canvas',
-      'canvas.workspaceDefault' => 'Predeterminado del workspace',
-      'canvas.neverRun' => 'Nunca se ha ejecutado',
-      'canvas.disabled' => 'Desactivada',
-      'canvas.orphans' =>
-        ({required num n}) =>
-            (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
-              n,
-              one: '${n} config incompleta',
-              other: '${n} configs incompletas',
-            ),
-      'canvas.orphansHelp' => 'Solo se guardan los flujos completos (origen → config → destino). Las configs en ámbar se descartan al guardar; los orígenes y destinos se quedan.',
-      'canvas.semantics' => 'Canvas. Mantén Espacio y arrastra para moverlo; clic derecho para opciones; las flechas lo mueven; Ctrl y la rueda hacen zoom; F lo centra; haz clic en una conexión y pulsa Supr para quitarla; Escape cierra la config',
-      'canvas.addSource' => 'Origen',
-      'canvas.addDestination' => 'Destino',
-      'canvas.deleteConfig' => 'Eliminar config',
-      'canvas.editConfig' => 'Editar config',
-      'canvas.removeConnection' => 'Quitar conexión',
-      'canvas.removeConnectionKey' => 'Quitar conexión (Supr)',
-      'canvas.configHere' => 'La config se crea aquí',
-      'canvas.releaseToCreate' => 'Suelta para crear la config',
-      'canvas.dragToDestination' => 'Arrastra hasta un destino',
-      'canvas.last' => 'Última',
-      'canvas.next' => 'Próxima',
-      'canvas.runStatus.success' => 'Correcta',
-      'canvas.runStatus.failed' => 'Fallida',
-      'canvas.runStatus.running' => 'En curso',
-      'canvas.frequency.hourly' => 'Cada hora',
-      'canvas.frequency.daily' => 'Diaria',
-      'canvas.frequency.weekly' => 'Semanal',
-      'canvas.frequency.cron' => 'Cron',
-      'canvas.addFolder' => '+ Agregar carpeta',
-      'canvas.addFolderTitle' => ({
-        required String name,
-      }) => 'Agregar una carpeta a ${name}',
-      'canvas.addFolderDescription' => 'Cada carpeta es un punto de conexión. Se crea en el bucket al guardar el canvas.',
-      'canvas.addFolderRoot' => 'Con la primera carpeta, la raíz del bucket deja de ser un punto de conexión: las configs que escriben ahí se desconectan.',
-      'canvas.keys.space' => 'Espacio',
-      'canvas.keys.del' => 'Supr',
-      'canvas.keys.ctrl' => 'Ctrl',
-      'canvas.keys.esc' => 'Esc',
-      'canvas.shortcuts.title' => 'Atajos',
-      'canvas.shortcuts.hide' => 'Ocultar atajos',
-      'canvas.shortcuts.moveCanvas' => 'Mover el canvas',
-      'canvas.shortcuts.drag' => ' + arrastrar',
-      'canvas.shortcuts.connect' => 'Conectar',
-      'canvas.shortcuts.dragFromPort' => 'arrastra desde un puerto',
-      'canvas.shortcuts.options' => 'Opciones',
-      'canvas.shortcuts.rightClick' => 'clic derecho',
-      'canvas.shortcuts.clickIt' => 'clic en ella + ',
-      'canvas.shortcuts.zoom' => 'Zoom',
-      'canvas.shortcuts.scroll' => 'rueda',
-      'canvas.shortcuts.zoomInOut' => 'Acercar / alejar',
-      'canvas.shortcuts.center' => 'Centrar el canvas',
-      'canvas.shortcuts.reset' => 'Volver a 100%',
-      'canvas.shortcuts.moveWithKeys' => 'Mover con teclas',
-      'canvas.shortcuts.closeConfig' => 'Cerrar la config',
-      'canvas.shortcuts.toggle' => 'Mostrar / ocultar atajos',
-      'canvas.view.settings' => 'Ajustes del canvas',
-      'canvas.view.toggleShortcuts' => 'Mostrar u ocultar atajos (?)',
-      'canvas.view.center' => 'Centrar',
-      'canvas.view.centerTooltip' => 'Centrar el canvas (F)',
-      'canvas.view.zoomOut' => 'Alejar (−)',
-      'canvas.view.reset' => 'Volver a 100% (0)',
-      'canvas.view.zoomIn' => 'Acercar (+)',
-      'canvas.view.settingsTitle' => 'Canvas',
-      'canvas.view.ctrlZoom' => 'Mantén Ctrl para hacer zoom',
-      'canvas.view.ctrlZoomOn' =>
-        'La rueda mueve el canvas, Ctrl + rueda hace zoom',
-      'canvas.view.ctrlZoomOff' => 'La rueda siempre hace zoom',
-      'canvas.inspector.configName' => 'Nombre de la config',
-      'canvas.inspector.nameHelp' => 'Se muestra en el canvas, en Respaldos y en el registro de ejecuciones.',
-      'canvas.inspector.frequency' => 'Frecuencia',
-      'canvas.inspector.review' => 'Revisión',
-      'canvas.inspector.source' => 'Origen',
-      'canvas.inspector.destination' => 'Destino',
-      'canvas.inspector.nextRunOnSave' => 'Se calcula al guardar',
-      'canvas.inspector.cronHelp' => 'minuto hora día mes día-de-la-semana, en UTC. Cada hora, diaria y semanal lo escriben por ti.',
-      'canvas.inspector.cronInvalid' => 'No es una expresión cron válida (minuto hora día mes día-de-la-semana)',
-      'canvas.inspector.enabled' => 'Activa',
-      'canvas.inspector.enabledOn' => 'Se ejecuta según su programación',
-      'canvas.inspector.enabledOff' =>
-        'Desactivada: solo se ejecuta con Ejecutar ahora',
-      'canvas.inspector.compressionNone' => 'Ninguna',
-      'canvas.inspector.objectKeySlash' =>
-        'El object key no puede empezar con /',
-      'canvas.inspector.objectKeyExtension' => 'Omite la extensión: se agrega según el formato del dump y la compresión',
-      'canvas.inspector.schedule' => 'Nombre y programación',
-      'canvas.inspector.cron' => 'Cron',
-      'canvas.inspector.timeZone' => 'Zona horaria',
-      'canvas.inspector.nextRun' => 'Próxima ejecución',
-      'canvas.inspector.output' => 'Salida',
-      'canvas.inspector.objectKey' => 'Object key',
-      'canvas.inspector.connectDestination' =>
-        'Conecta un destino para elegir dónde se guarda.',
-      'canvas.inspector.relativeToFolder' => ({
-        required String folder,
-      }) => 'Relativa a la carpeta ${folder}. La extensión se agrega según el formato del dump y la compresión.',
-      'canvas.inspector.relativeToRoot' => ({
-        required String bucket,
-      }) => 'Relativa a la raíz de ${bucket}. La extensión se agrega según el formato del dump y la compresión.',
-      'canvas.inspector.compression' => 'Compresión',
-      'canvas.inspector.writes' => 'La próxima ejecución escribe',
-      'canvas.inspector.missingSource' => 'Nada: conecta un origen.',
-      'canvas.inspector.missingDestination' => 'Nada: conecta un destino.',
-      'canvas.inspector.missingBoth' => 'Nada: conecta un origen y un destino.',
-      'canvas.inspector.noSource' => 'sin origen',
-      'canvas.inspector.noDestination' => 'sin destino',
-      'canvas.columns.sources' => 'Orígenes',
-      'canvas.columns.configs' => 'Config · una por conexión',
-      'canvas.columns.destinations' => 'Destinos',
-      'canvas.folder' => 'Carpeta',
-      'canvas.testRun.button' => 'Probar',
-      'canvas.testRun.help' => 'Comprueba que cada flujo completo podría ejecutarse, sin hacer backups: cada origen conecta y pg_dump puede respaldarlo, cada destino acepta escrituras en sus carpetas.',
-      'canvas.testRun.ok' => ({
-        required int n,
-      }) => 'Todo funciona: ${n} comprobaciones correctas',
-      'canvas.testRun.failed' => ({
-        required String list,
-      }) => 'Fallaron algunas comprobaciones: ${list}',
-      'canvas.testRun.nothing' =>
-        'Nada que probar: primero conecta un origen a un destino.',
-      'canvas.run.button' => 'Ejecutar ahora',
-      'canvas.run.help' => 'Ejecuta este backup ahora, de verdad, tal como está guardado: los cambios sin guardar no se usan.',
-      'canvas.run.needsSave' =>
-        'Guarda el canvas primero: una ejecución usa la config guardada.',
-      'canvas.run.done' => ({
-        required String name,
-        required String size,
-      }) => 'Backup ${name} terminado: ${size}',
-      'canvas.run.failed' => ({
-        required String name,
-        required String error,
-      }) => 'Backup ${name} falló: ${error}',
-      'canvas.guide.title' => 'Tu primer backup',
-      'canvas.guide.source' => 'Agrega un origen',
-      'canvas.guide.sourceHelp' => 'La base de datos a respaldar.',
-      'canvas.guide.destination' => 'Agrega un destino',
-      'canvas.guide.destinationHelp' => 'El bucket donde van los backups.',
-      'canvas.guide.connect' => 'Conéctalos',
-      'canvas.guide.connectHelp' => 'Arrastra desde el puerto del origen hasta una carpeta o el bucket: se crea una config entre ellos. Luego guarda.',
-      'canvas.guide.create' => 'Crear uno',
-      'canvas.guide.place' => ({required String name}) => 'Colocar ${name}',
-      'runs.title' => 'Registro de ejecuciones',
-      'runs.description' => 'Cada ejecución de respaldo de este workspace, programada o manual. Horas en UTC, tu hora local debajo.',
-      'runs.search' => 'Buscar por respaldo, origen o destino',
-      'runs.columnStatus' => 'Estado',
-      'runs.columnSource' => 'Origen',
-      'runs.columnDestination' => 'Destino',
-      'runs.columnStarted' => 'Inicio',
-      'runs.columnDuration' => 'Duración',
-      'runs.columnSize' => 'Tamaño',
-      'runs.scheduled' => 'Programada',
-      'runs.manual' => 'Manual',
-      'runs.emptyTitle' => 'Aún no hay ejecuciones',
-      'runs.emptyDescription' => 'Los respaldos se ejecutan según su programación, o con Ejecutar ahora en el editor.',
-      'runs.newestOnly' =>
-        'Solo se muestran las 200 ejecuciones más recientes.',
-      'runs.log' => 'Log (UTC)',
-      'runs.copyLog' => 'Copiar log',
-      'runs.logCopied' => 'Log copiado',
-      'runs.logWhenDone' =>
-        'El log se escribe cuando termina la ejecución. Actualiza para verlo.',
-      'runs.noLog' => 'Esta ejecución no tiene log.',
-      'runs.today' => ({required String date}) => 'Hoy · ${date} (UTC)',
-      'runs.yesterday' => ({required String date}) => 'Ayer · ${date} (UTC)',
-      'runs.day' => ({required String date}) => '${date} (UTC)',
-      'runs.succeeded' => ({required int n}) => '${n} correctas',
-      'runs.failedCount' => ({required int n}) => '${n} fallidas',
-      'runs.savedIn' => ({
-        required String size,
-        required String duration,
-      }) => '${size} en ${duration}',
-      'runs.inProgress' => 'En curso',
-      'runs.soFar' => ({
-        required String size,
-      }) => 'En curso · ${size} hasta ahora',
-      'runs.columnTrigger' => 'Tipo',
-      'runs.viewRun' => 'Ver ejecución',
-      'runs.steps' => 'Pasos',
-      'runs.stepConnect' => ({required String name}) => 'Conectar con ${name}',
-      'runs.stepDump' => ({required String name}) => 'Volcar y subir a ${name}',
-      'runs.stepSkipped' => 'Omitido',
-      'runs.stepWaiting' => 'En espera',
-      'runs.resultSuccess' => 'Respaldo guardado',
-      'runs.resultFailed' => 'El respaldo falló',
-      'runs.resultRunning' => 'En curso. Actualiza para ver cuánto avanzó.',
-      'backups.title' => 'Respaldos',
-      'backups.description' =>
-        'Cada respaldo de este workspace, su última ejecución y la siguiente.',
-      'backups.openEditor' => 'Abrir editor',
-      'backups.newBackup' => 'Nuevo respaldo',
-      'backups.healthy' => 'Correctos',
-      'backups.healthySub' => 'la última ejecución salió bien',
-      'backups.failing' => 'Con fallas',
-      'backups.failingSub' => 'requieren atención',
-      'backups.paused' => 'Pausado',
-      'backups.nextBackup' => 'Próximo respaldo',
-      'backups.nextBackupIn' => 'Próximo respaldo en',
-      'backups.nothingScheduled' => 'Nada programado',
-      'backups.search' => 'Buscar respaldos',
-      'backups.columnStatus' => 'Estado',
-      'backups.columnSource' => 'Origen',
-      'backups.columnDestination' => 'Destino',
-      'backups.columnSchedule' => 'Programación',
-      'backups.columnLastRun' => 'Último respaldo',
-      'backups.columnNextRun' => 'Próximo respaldo',
-      'backups.allSources' => 'Todos los orígenes',
-      'backups.allDestinations' => 'Todos los destinos',
-      'backups.shown' => ({
-        required Object shown,
-        required Object total,
-      }) => '${shown} de ${total} respaldos',
-      'backups.showing' => ({
-        required Object shown,
-        required Object total,
-      }) => 'Mostrando ${shown} de ${total} respaldos',
-      'backups.timesNote' => ({
-        required Object utc,
-        required Object local,
-      }) => 'Horas en UTC · ahora ${utc} (${local})',
-      'backups.sort' => 'Orden:',
-      'backups.sortBy' => 'Ordenar por',
-      'backups.sortLast' => 'Último respaldo',
-      'backups.sortLastSub' => 'El más reciente primero',
-      'backups.sortLastOld' => 'Último respaldo (antiguo)',
-      'backups.sortLastOldSub' => 'El más antiguo primero',
-      'backups.sortNext' => 'Próximo respaldo',
-      'backups.sortNextSub' => 'El más cercano primero',
-      'backups.sortName' => 'Nombre del origen',
-      'backups.sortNameSub' => 'De la A a la Z',
-      'backups.inTime' => ({required Object time}) => 'en ${time}',
-      'backups.startedAgo' => ({required Object time}) => 'Empezó hace ${time}',
-      'backups.runNowFor' => ({
-        required Object name,
-      }) => 'Ejecutar ${name} ahora',
-      'backups.showRuns' => 'Ver las ejecuciones',
-      'backups.hideRuns' => 'Ocultar las ejecuciones',
-      'backups.moreFor' => ({
-        required Object name,
-      }) => 'Más acciones de ${name}',
-      'backups.viewLastRun' => 'Ver la última ejecución',
-      'backups.editConfig' => 'Editar config',
-      'backups.deleteBackup' => 'Eliminar respaldo',
-      'backups.recentRuns' => 'Ejecuciones recientes',
-      'backups.noRuns' => 'Aún no hay ejecuciones',
-      'backups.viewLog' => 'Ver log',
-      'backups.viewDetails' => 'Ver detalle',
-      'backups.noFile' => 'No se escribió archivo',
-      'backups.uploading' => 'Subiendo…',
-      'backups.manual' => 'Manual',
-      'backups.scheduled' => 'Programada',
-      'backups.deleteTitle' => ({
-        required Object name,
-      }) => '¿Eliminar el respaldo ${name}?',
-      'backups.deleteConfirm' => 'Su programación se detiene. Sus ejecuciones quedan en el registro y los archivos que ya están en el destino se quedan ahí.',
-      'backups.deleted' => ({
-        required Object name,
-      }) => 'Respaldo ${name} eliminado',
-      'backups.saved' => ({
-        required Object name,
-      }) => 'Respaldo ${name} guardado',
-      'backups.emptyDescription' =>
-        'Conecta un origen con un destino en el editor para crear uno.',
-      _ => null,
-    };
+          'app.name' => 'Dumpling',
+          'app.needMoreSpace' => 'Se necesita más espacio',
+          'app.splashText' => 'Cargando tus backups…',
+          'app.version' => ({
+            required Object version,
+          }) => 'Dumpling v${version}',
+          'common.loading' => 'Cargando',
+          'common.error' => 'Error',
+          'common.tryAgain' => 'Reintentar',
+          'common.noData' => 'Sin datos',
+          'common.cancel' => 'Cancelar',
+          'common.close' => 'Cerrar',
+          'common.required' => 'Requerido',
+          'common.optional' => '(opcional)',
+          'common.filters' => 'Filtros',
+          'common.clearAll' => 'Limpiar todo',
+          'common.done' => 'Listo',
+          'common.all' => 'Todos',
+          'common.selected' => 'Elegido',
+          'common.soon' => 'Pronto',
+          'common.edit' => 'Editar',
+          'common.duplicate' => 'Duplicar',
+          'common.delete' => 'Eliminar',
+          'common.add' => 'Agregar',
+          'common.saving' => 'Guardando…',
+          'common.saveChanges' => 'Guardar cambios',
+          'common.noMatches' => 'Nada coincide con tu búsqueda',
+          'common.clearSearch' => 'Limpiar búsqueda y filtros',
+          'common.shownOf' => ({
+            required Object shown,
+            required Object total,
+          }) => '${shown} de ${total}',
+          'common.optionsFor' => ({
+            required Object name,
+          }) => 'Opciones de ${name}',
+          'common.viewDetails' => 'Ver detalle',
+          'common.refresh' => 'Actualizar',
+          'common.listView' => 'Lista',
+          'common.gridView' => 'Cuadrícula',
+          'common.back' => 'Atrás',
+          'common.next' => 'Siguiente',
+          'common.stepOf' => ({
+            required Object n,
+            required Object total,
+          }) => 'Paso ${n} de ${total}',
+          'common.backupCount' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: '${n} backup',
+                  other: '${n} backups',
+                ),
+          'time.utc' => ({required Object time}) => '${time} UTC',
+          'time.local' => ({required Object time}) => '${time} local',
+          'errors.requestCancelled' => 'La petición al servidor fue cancelada',
+          'errors.connectionTimeout' => 'Tiempo de conexión agotado con el servidor. Revisa tu conexión a internet',
+          'errors.noConnection' => 'No se pudo conectar con el servidor. Revisa tu conexión a internet',
+          'errors.receiveTimeout' =>
+            'Tiempo de espera agotado al recibir datos del servidor',
+          'errors.sendTimeout' =>
+            'Tiempo de espera agotado al enviar datos al servidor',
+          'errors.badCertificate' => 'Certificado inválido',
+          'errors.connection' => 'Error de conexión',
+          'errors.validation' => 'Error de validación',
+          'errors.server' => 'Error del servidor',
+          'errors.unknown' => 'Error desconocido',
+          'errors.notFoundTitle' => 'No encontrado',
+          'errors.pageNotFound' => 'Esta página no existe.',
+          'errors.offlineTitle' => 'Conexión perdida',
+          'errors.offline' => ({
+            required String url,
+          }) => 'No se puede conectar con el servicio de Dumpling en ${url}. Revisa que esté corriendo e inténtalo de nuevo.',
+          'nav.switchWorkspace' => ({
+            required Object name,
+          }) => '${name} · cambiar de workspace',
+          'nav.workspaces' => 'Workspaces',
+          'nav.backups' => 'Backups',
+          'nav.canvas' => 'Editor del pipeline',
+          'nav.sources' => 'Orígenes',
+          'nav.destinations' => 'Destinos',
+          'nav.runs' => 'Registro de ejecuciones',
+          'nav.failedRuns' => ({
+            required Object count,
+          }) => '${count} con fallos',
+          'nav.language' => ({required Object name}) => 'Idioma: ${name}',
+          'nav.logout' => 'Cerrar sesión',
+          'login.title' => 'Inicia sesión',
+          'login.description' => 'Gestiona los backups de tus bases de datos.',
+          'login.username' => 'Usuario',
+          'login.usernameHint' => 'Escribe tu usuario',
+          'login.password' => 'Contraseña',
+          'login.passwordHint' => 'Escribe tu contraseña',
+          'login.showPassword' => 'Mostrar contraseña',
+          'login.hidePassword' => 'Ocultar contraseña',
+          'login.button' => 'Iniciar sesión',
+          'login.signingIn' => 'Iniciando sesión…',
+          'login.failedHint' => 'Revisa ambos e inténtalo de nuevo.',
+          'login.envHint' =>
+            'El usuario y la contraseña se definen en el servidor con',
+          'login.envHintAnd' => 'y',
+          'login.tagline' => 'Respaldos',
+          'login.taglineAccent' => 'sin esfuerzo',
+          'login.tagLightweight' => 'Ligero',
+          'login.tagCanvas' => 'Canvas drag & drop',
+          'login.tagWinter' => 'Hecho con Winter',
+          'colors.none' => 'Sin color',
+          'colors.custom' => 'Color personalizado',
+          'colors.apply' => 'Aplicar',
+          'colors.saturationBrightness' => 'Saturación y brillo',
+          'colors.hue' => 'Tono',
+          'colors.contrast' => ({
+            required Object ratio,
+          }) => 'Inicial blanca sobre este color: ${ratio}:1',
+          'colors.contrastLow' => ({
+            required Object ratio,
+          }) => 'Poco contraste con la inicial blanca (${ratio}:1). Costará leerla.',
+          'colors.hexInvalid' =>
+            'Escribe un color HEX de 6 dígitos, por ejemplo #0E7490',
+          'colors.violet' => 'Violeta',
+          'colors.blue' => 'Azul',
+          'colors.teal' => 'Verde azulado',
+          'colors.green' => 'Verde',
+          'colors.amber' => 'Ámbar',
+          'colors.red' => 'Rojo',
+          'colors.pink' => 'Rosa',
+          'colors.slate' => 'Pizarra',
+          'workspaces.title' => 'Workspaces',
+          'workspaces.description' => 'Cada workspace es independiente: su propio canvas, orígenes, destinos y backups.',
+          'workspaces.create' => 'Nuevo workspace',
+          'workspaces.createHint' =>
+            'Un canvas nuevo para otro entorno, cliente o proyecto.',
+          'workspaces.current' => 'Actual',
+          'workspaces.sources' => 'Orígenes',
+          'workspaces.destinations' => 'Destinos',
+          'workspaces.backups' => 'Backups',
+          'workspaces.noBackups' => 'Todavía sin backups',
+          'workspaces.healthy' => 'Todo en orden',
+          'workspaces.failing' => ({
+            required Object count,
+          }) => '${count} con fallos',
+          'workspaces.running' => 'Ejecutándose ahora',
+          'workspaces.lastRun' => ({
+            required Object time,
+          }) => 'Última ejecución ${time}',
+          'workspaces.noRuns' => 'Todavía sin ejecuciones',
+          'workspaces.openCanvas' => 'Abrir canvas',
+          'workspaces.switchAndOpen' => 'Cambiar y abrir canvas',
+          'workspaces.formTitle' => 'Nuevo workspace',
+          'workspaces.formDescription' => 'Los workspaces no comparten nada: cada uno tiene su propio canvas, conexiones, backups e historial de ejecuciones.',
+          'workspaces.name' => 'Nombre',
+          'workspaces.nameHint' => 'p. ej. Staging',
+          'workspaces.descriptionLabel' => 'Descripción',
+          'workspaces.descriptionHint' => 'Para qué es este workspace',
+          'workspaces.color' => 'Color',
+          'workspaces.emptyCanvas' =>
+            'Un workspace nuevo empieza con el canvas vacío.',
+          'workspaces.createButton' => 'Crear workspace',
+          'workspaces.creating' => 'Creando…',
+          'workspaces.created' => ({
+            required Object name,
+          }) => 'Workspace ${name} creado',
+          'workspaces.settingsOf' => ({
+            required Object name,
+          }) => 'Ajustes de ${name}',
+          'workspaces.settings.title' => 'Ajustes del workspace',
+          'workspaces.settings.description' => 'Aplica solo a este workspace',
+          'workspaces.settings.general' => 'General',
+          'workspaces.settings.defaults' =>
+            'Valores por defecto de los configs nuevos',
+          'workspaces.settings.danger' => 'Zona de peligro',
+          'workspaces.settings.created' => 'Creado',
+          'workspaces.settings.id' => 'ID del workspace',
+          'workspaces.settings.copyId' => 'Copiar el ID del workspace',
+          'workspaces.settings.copied' => 'Copiado',
+          'workspaces.settings.noDescription' => 'Sin descripción',
+          'workspaces.settings.defaultsHint' => 'Una conexión nueva en el canvas empieza con estos valores. Cada config puede cambiarlos.',
+          'workspaces.settings.schedule' => 'Programación',
+          'workspaces.settings.cron' => 'Cron',
+          'workspaces.settings.cronHelp' => 'Siempre en UTC.',
+          'workspaces.settings.compression' => 'Compresión',
+          'workspaces.settings.compressionNone' => 'Ninguna',
+          'workspaces.settings.objectKey' => 'Object key',
+          'workspaces.settings.objectKeyHelp' =>
+            'Relativa a la carpeta donde escribe cada config, sin extensión.',
+          'workspaces.settings.unsaved' => 'Tienes cambios sin guardar',
+          'workspaces.settings.discard' => 'Descartar',
+          'workspaces.settings.saved' => 'Guardado',
+          'workspaces.settings.deleteTitle' => 'Eliminar este workspace',
+          'workspaces.settings.deleteDescription' => 'Elimina su canvas, orígenes, destinos, configs e historial de ejecuciones. Los archivos de backup que ya están en tus buckets se quedan donde están.',
+          'workspaces.settings.deleteButton' => 'Eliminar workspace',
+          'workspaces.settings.deleteConfirmTitle' => ({
+            required Object name,
+          }) => '¿Eliminar «${name}»?',
+          'workspaces.settings.deleteConfirm' => ({
+            required Object sources,
+            required Object destinations,
+            required Object configs,
+          }) => 'Se eliminan sus orígenes (${sources}), destinos (${destinations}), configs (${configs}) y su historial de ejecuciones. Los backups programados se detienen al momento. No se puede deshacer.',
+          'workspaces.settings.typeBefore' => 'Escribe',
+          'workspaces.settings.typeAfter' => 'para confirmar',
+          'workspaces.settings.deleted' => ({
+            required Object name,
+          }) => 'Workspace ${name} eliminado',
+          'connections.notTested' => 'Sin probar',
+          'connections.notTestedYet' => 'Todavía sin probar',
+          'connections.testing' => 'Probando…',
+          'connections.test' => 'Probar conexión',
+          'connections.connected' => 'Conectado',
+          'connections.incompatible' => 'Incompatible',
+          'connections.incompatibleTitle' =>
+            'Conectó, pero el servidor es más nuevo que la herramienta de dump',
+          'connections.incompatibleSub' => ({
+            required Object server,
+            required Object tool,
+          }) => 'Servidor ${server} · ${tool}. Actualiza la herramienta de dump donde corre Dumpling.',
+          'connections.toolMissing' => 'Falta la herramienta',
+          'connections.toolMissingTitle' => 'Conectó, pero la herramienta de dump no está instalada donde corre Dumpling',
+          'connections.unreachable' => 'Sin conexión',
+          'connections.failedTitle' => 'No se pudo conectar',
+          'connections.lastCheck' => 'Última prueba',
+          'connections.checkTitle' => 'Prueba de conexión',
+          'connections.checkNote' => 'Antes de cada ejecución y al probarla',
+          'connections.connection' => 'Conexión',
+          'connections.editConnection' => 'Editar conexión',
+          'sources.title' => 'Sources',
+          'sources.description' =>
+            'Lo que respalda este workspace: bases de datos PostgreSQL.',
+          'sources.create' => 'Nuevo source',
+          'sources.search' => 'Buscar sources',
+          'sources.columnName' => 'Nombre',
+          'sources.columnType' => 'Tipo',
+          'sources.columnHost' => 'Host',
+          'sources.columnBackups' => 'Backups',
+          'sources.columnStatus' => 'Estado',
+          'sources.emptyTitle' => 'Todavía no hay sources',
+          'sources.emptyDescription' =>
+            'Conecta una base de datos para respaldarla.',
+          'sources.inUse' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: 'Lo usa ${n} backup. Quítalo primero.',
+                  other: 'Lo usan ${n} backups. Quítalos primero.',
+                ),
+          'sources.deleteTitle' => ({
+            required Object name,
+          }) => '¿Eliminar el source ${name}?',
+          'sources.deleteConfirm' => 'Ningún backup lo usa. Su conexión y su contraseña guardadas se borran de este workspace.',
+          'sources.deleted' => ({
+            required Object name,
+          }) => 'Source ${name} eliminado',
+          'sources.newTitle' => 'Nuevo source',
+          'sources.editTitle' => 'Editar source',
+          'sources.formDescription' => 'Conecta lo que quieres respaldar.',
+          'sources.stepType' => 'Tipo',
+          'sources.stepConnection' => 'Conexión',
+          'sources.stepCheck' => 'Revisar y guardar',
+          'sources.typeTitle' => '¿Qué quieres respaldar?',
+          'sources.connectionTitle' => '¿Cómo se conecta Dumpling?',
+          'sources.checkTitle' => 'Revisa y guarda',
+          'sources.name' => 'Nombre',
+          'sources.nameHint' => 'p. ej. orders-db',
+          'sources.copyName' => ({required Object name}) => '${name}-copia',
+          'sources.connectWith' => 'Conectar con',
+          'sources.byFields' => 'Campos',
+          'sources.byUrl' => 'URL de conexión',
+          'sources.host' => 'Host',
+          'sources.port' => 'Puerto',
+          'sources.portInvalid' => 'De 1 a 65535',
+          'sources.database' => 'Base de datos',
+          'sources.username' => 'Usuario',
+          'sources.password' => 'Contraseña',
+          'sources.passwordKeepHint' =>
+            'Déjala vacía para mantener la guardada',
+          'sources.passwordHelp' => 'Usa un rol de solo lectura. Se guarda cifrada y no se vuelve a mostrar.',
+          'sources.connectionUrl' => 'URL de conexión',
+          'sources.urlHelp' => 'La contraseña de la URL se guarda cifrada y no se vuelve a mostrar.',
+          'sources.urlHelpEditing' =>
+            'Si la URL no trae contraseña, se mantiene la guardada.',
+          'sources.urlInvalid' =>
+            'Usa el formato postgresql://usuario:contraseña@host:5432/base',
+          'sources.dumpFormat' => 'Formato del dump',
+          'sources.formatCustom' => 'Custom (pg_dump -Fc)',
+          'sources.formatPlain' => 'SQL plano',
+          'sources.testIdle' =>
+            'Revisa la conexión antes de guardar el source.',
+          'sources.connectedAs' => ({
+            required Object user,
+          }) => 'Conectado como ${user}',
+          'sources.createButton' => 'Crear source',
+          'sources.created' => ({
+            required Object name,
+          }) => 'Source ${name} creado',
+          'sources.saved' => ({
+            required Object name,
+          }) => 'Source ${name} guardado',
+          'sources.detailDescription' => ({
+            required Object type,
+          }) => 'Una base de datos ${type} que este workspace respalda.',
+          'sources.statBackups' => 'Backups',
+          'sources.statDestinations' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  zero: 'ninguno aún',
+                  one: 'en ${n} destination',
+                  other: 'en ${n} destinations',
+                ),
+          'sources.statLastBackup' => 'Último backup',
+          'sources.sectionUses' => 'Backups de este source',
+          'sources.openEditor' => 'Abrir editor',
+          'sources.noUses' => 'Ningún backup lo usa todavía. Conéctalo a un destination en el editor de pipelines.',
+          'sources.columnBackup' => 'Backup',
+          'sources.columnSchedule' => 'Horario',
+          'sources.columnLastRun' => 'Última ejecución',
+          'sources.columnNextRun' => 'Siguiente',
+          'sources.cronUtc' => 'cron · UTC',
+          'sources.paused' => 'En pausa',
+          'sources.neverRun' => 'Aún no se ejecuta',
+          'sources.passwordStored' => '•••••••• · guardada cifrada',
+          'destinations.title' => 'Destinations',
+          'destinations.description' =>
+            'Donde este workspace escribe los backups: buckets S3.',
+          'destinations.create' => 'Nuevo destination',
+          'destinations.search' => 'Buscar destinations',
+          'destinations.columnName' => 'Nombre',
+          'destinations.columnType' => 'Tipo',
+          'destinations.columnEndpoint' => 'Endpoint',
+          'destinations.columnBackups' => 'Backups',
+          'destinations.columnStatus' => 'Estado',
+          'destinations.bucketRoot' => 'Raíz del bucket',
+          'destinations.folderCount' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: '${n} carpeta',
+                  other: '${n} carpetas',
+                ),
+          'destinations.showFolders' => ({
+            required Object name,
+          }) => 'Mostrar las carpetas de ${name}',
+          'destinations.hideFolders' => ({
+            required Object name,
+          }) => 'Ocultar las carpetas de ${name}',
+          'destinations.emptyTitle' => 'Todavía no hay destinations',
+          'destinations.emptyDescription' =>
+            'Agrega un bucket donde escribir los backups.',
+          'destinations.inUse' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: 'Lo usa ${n} backup. Quítalo primero.',
+                  other: 'Lo usan ${n} backups. Quítalos primero.',
+                ),
+          'destinations.deleteTitle' => ({
+            required Object name,
+          }) => '¿Eliminar el destination ${name}?',
+          'destinations.deleteConfirm' => 'Ningún backup lo usa. Su conexión y sus llaves guardadas se borran de este workspace. Los archivos que ya están en el bucket se quedan ahí.',
+          'destinations.deleted' => ({
+            required Object name,
+          }) => 'Destination ${name} eliminado',
+          'destinations.noFolders' =>
+            'Sin carpetas · la raíz del bucket es el único punto de conexión',
+          'destinations.folderUsed' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: '${n} backup',
+                  other: '${n} backups',
+                ),
+          'destinations.notUsedYet' => 'Sin usar',
+          'destinations.deleteFolder' => ({
+            required Object path,
+          }) => 'Eliminar la carpeta ${path}',
+          'destinations.folderLocked' =>
+            'La usan backups. Reconéctalos primero.',
+          'destinations.addFolder' => 'Agregar carpeta',
+          'destinations.folderHint' => '/nombre-carpeta',
+          'destinations.folderEmpty' => 'Escribe el nombre de la carpeta',
+          'destinations.folderInvalid' =>
+            'Minúsculas, dígitos, - . _ y / entre ellos',
+          'destinations.folderRepeated' => 'Esa carpeta ya existe',
+          'destinations.folderAdded' => ({
+            required Object path,
+          }) => 'Carpeta ${path} agregada',
+          'destinations.folderDeleted' => ({
+            required Object path,
+          }) => 'Carpeta ${path} eliminada',
+          'destinations.newTitle' => 'Nuevo destination',
+          'destinations.editTitle' => 'Editar destination',
+          'destinations.formDescription' =>
+            'Elige dónde se escriben los backups.',
+          'destinations.stepType' => 'Tipo',
+          'destinations.stepConnection' => 'Conexión',
+          'destinations.stepFolders' => 'Carpetas y prueba',
+          'destinations.typeTitle' => '¿A dónde van los backups?',
+          'destinations.connectionTitle' => '¿Cómo se conecta Dumpling?',
+          'destinations.foldersTitle' => 'Carpetas y prueba de conexión',
+          'destinations.name' => 'Nombre',
+          'destinations.nameHint' => 'p. ej. bucket-backups',
+          'destinations.copyName' => ({
+            required Object name,
+          }) => '${name}-copia',
+          'destinations.endpoint' => 'Endpoint',
+          'destinations.endpointHelp' => 'Cualquier URL compatible con S3. Para AWS usa https://s3.<región>.amazonaws.com.',
+          'destinations.bucket' => 'Bucket',
+          'destinations.region' => 'Región',
+          'destinations.accessKeyId' => 'Access key ID',
+          'destinations.secretKey' => 'Secret key',
+          'destinations.secretKeepHint' =>
+            'Déjala vacía para mantener la guardada',
+          'destinations.secretHelp' =>
+            'Se guarda cifrada y no se vuelve a mostrar.',
+          'destinations.pathStyle' => 'Direcciones path-style',
+          'destinations.pathStyleHelp' =>
+            'La necesitan casi todos los servidores S3 propios.',
+          'destinations.permissions' =>
+            'Permisos necesarios: s3:PutObject y s3:AbortMultipartUpload.',
+          'destinations.foldersHelp' => 'Las carpetas son opcionales. Con al menos una, cada carpeta es un punto de conexión del canvas y la raíz del bucket no. Sin carpetas, la raíz del bucket es el único punto de conexión.',
+          'destinations.testIdle' => 'Dumpling inicia y cancela una subida multipart en cada carpeta; no queda nada en el bucket.',
+          'destinations.connectedSub' => ({
+            required Object bucket,
+          }) => '${bucket} · no quedó nada en el bucket',
+          'destinations.createButton' => 'Crear destination',
+          'destinations.created' => ({
+            required Object name,
+          }) => 'Destination ${name} creado',
+          'destinations.saved' => ({
+            required Object name,
+          }) => 'Destination ${name} guardado',
+          'destinations.detailDescription' =>
+            'Un bucket donde este workspace escribe backups.',
+          'destinations.statBackups' => 'Backups',
+          'destinations.statBackupsSub' => 'escriben aquí',
+          'destinations.statFolders' => 'Carpetas',
+          'destinations.statFoldersSub' => 'puntos de conexión',
+          'destinations.sectionFolders' => 'Carpetas',
+          'destinations.columnFolder' => 'Carpeta',
+          'destinations.columnWrittenBy' => 'Lo escribe',
+          'destinations.accessKey' => 'Access key',
+          'destinations.on' => 'Sí',
+          'destinations.off' => 'No',
+          'destinations.typeSub.s3' =>
+            'Cualquier almacenamiento compatible con S3',
+          'destinations.typeSub.gdrive' => 'Unidad o carpeta compartida',
+          'destinations.typeSub.dropbox' => 'Carpeta de la app',
+          'destinations.typeSub.azure' => 'Contenedor de almacenamiento',
+          'destinations.typeSub.sftp' => 'Cualquier servidor SSH',
+          'canvas.description' => 'Conecta orígenes con destinos para armar los respaldos de este workspace.',
+          'canvas.save' => 'Guardar canvas',
+          'canvas.saved' => 'Canvas guardado',
+          'canvas.newConfig' => 'Nueva config',
+          'canvas.removeFromCanvas' => 'Quitar del canvas',
+          'canvas.allSourcesPlaced' => 'Todos los orígenes están en el canvas',
+          'canvas.allDestinationsPlaced' =>
+            'Todos los destinos están en el canvas',
+          'canvas.workspaceDefault' => 'Predeterminado del workspace',
+          'canvas.neverRun' => 'Nunca se ha ejecutado',
+          'canvas.disabled' => 'Desactivada',
+          'canvas.orphans' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: '${n} config incompleta',
+                  other: '${n} configs incompletas',
+                ),
+          'canvas.orphansHelp' => 'Solo se guardan los flujos completos (origen → config → destino). Las configs en ámbar se descartan al guardar; los orígenes y destinos se quedan.',
+          'canvas.semantics' => 'Canvas. Mantén Espacio y arrastra para moverlo; clic derecho para opciones; las flechas lo mueven; Ctrl y la rueda hacen zoom; F lo centra; haz clic en una conexión y pulsa Supr para quitarla; Escape cierra la config',
+          'canvas.addSource' => 'Origen',
+          'canvas.addDestination' => 'Destino',
+          'canvas.deleteConfig' => 'Eliminar config',
+          'canvas.editConfig' => 'Editar config',
+          'canvas.removeConnection' => 'Quitar conexión',
+          'canvas.removeConnectionKey' => 'Quitar conexión (Supr)',
+          'canvas.configHere' => 'La config se crea aquí',
+          'canvas.releaseToCreate' => 'Suelta para crear la config',
+          'canvas.dragToDestination' => 'Arrastra hasta un destino',
+          'canvas.last' => 'Última',
+          'canvas.next' => 'Próxima',
+          'canvas.runStatus.success' => 'Correcta',
+          'canvas.runStatus.failed' => 'Fallida',
+          'canvas.runStatus.running' => 'En curso',
+          'canvas.frequency.hourly' => 'Cada hora',
+          'canvas.frequency.daily' => 'Diaria',
+          'canvas.frequency.weekly' => 'Semanal',
+          'canvas.frequency.cron' => 'Cron',
+          'canvas.addFolder' => '+ Agregar carpeta',
+          'canvas.addFolderTitle' => ({
+            required String name,
+          }) => 'Agregar una carpeta a ${name}',
+          'canvas.addFolderDescription' => 'Cada carpeta es un punto de conexión. Se crea en el bucket al guardar el canvas.',
+          'canvas.addFolderRoot' => 'Con la primera carpeta, la raíz del bucket deja de ser un punto de conexión: las configs que escriben ahí se desconectan.',
+          'canvas.keys.space' => 'Espacio',
+          'canvas.keys.del' => 'Supr',
+          'canvas.keys.ctrl' => 'Ctrl',
+          'canvas.keys.esc' => 'Esc',
+          'canvas.shortcuts.title' => 'Atajos',
+          'canvas.shortcuts.hide' => 'Ocultar atajos',
+          'canvas.shortcuts.moveCanvas' => 'Mover el canvas',
+          'canvas.shortcuts.drag' => ' + arrastrar',
+          'canvas.shortcuts.connect' => 'Conectar',
+          'canvas.shortcuts.dragFromPort' => 'arrastra desde un puerto',
+          'canvas.shortcuts.options' => 'Opciones',
+          'canvas.shortcuts.rightClick' => 'clic derecho',
+          'canvas.shortcuts.clickIt' => 'clic en ella + ',
+          'canvas.shortcuts.zoom' => 'Zoom',
+          'canvas.shortcuts.scroll' => 'rueda',
+          'canvas.shortcuts.zoomInOut' => 'Acercar / alejar',
+          'canvas.shortcuts.center' => 'Centrar el canvas',
+          'canvas.shortcuts.reset' => 'Volver a 100%',
+          'canvas.shortcuts.moveWithKeys' => 'Mover con teclas',
+          'canvas.shortcuts.closeConfig' => 'Cerrar la config',
+          'canvas.shortcuts.toggle' => 'Mostrar / ocultar atajos',
+          'canvas.view.settings' => 'Ajustes del canvas',
+          'canvas.view.toggleShortcuts' => 'Mostrar u ocultar atajos (?)',
+          'canvas.view.center' => 'Centrar',
+          'canvas.view.centerTooltip' => 'Centrar el canvas (F)',
+          'canvas.view.zoomOut' => 'Alejar (−)',
+          'canvas.view.reset' => 'Volver a 100% (0)',
+          'canvas.view.zoomIn' => 'Acercar (+)',
+          'canvas.view.settingsTitle' => 'Canvas',
+          'canvas.view.ctrlZoom' => 'Mantén Ctrl para hacer zoom',
+          'canvas.view.ctrlZoomOn' =>
+            'La rueda mueve el canvas, Ctrl + rueda hace zoom',
+          'canvas.view.ctrlZoomOff' => 'La rueda siempre hace zoom',
+          'canvas.inspector.configName' => 'Nombre de la config',
+          'canvas.inspector.nameHelp' => 'Se muestra en el canvas, en Respaldos y en el registro de ejecuciones.',
+          'canvas.inspector.frequency' => 'Frecuencia',
+          'canvas.inspector.review' => 'Revisión',
+          'canvas.inspector.source' => 'Origen',
+          'canvas.inspector.destination' => 'Destino',
+          'canvas.inspector.nextRunOnSave' => 'Se calcula al guardar',
+          'canvas.inspector.cronHelp' => 'minuto hora día mes día-de-la-semana, en UTC. Cada hora, diaria y semanal lo escriben por ti.',
+          'canvas.inspector.cronInvalid' => 'No es una expresión cron válida (minuto hora día mes día-de-la-semana)',
+          'canvas.inspector.enabled' => 'Activa',
+          'canvas.inspector.enabledOn' => 'Se ejecuta según su programación',
+          'canvas.inspector.enabledOff' =>
+            'Desactivada: solo se ejecuta con Ejecutar ahora',
+          'canvas.inspector.compressionNone' => 'Ninguna',
+          'canvas.inspector.objectKeySlash' =>
+            'El object key no puede empezar con /',
+          'canvas.inspector.objectKeyExtension' => 'Omite la extensión: se agrega según el formato del dump y la compresión',
+          'canvas.inspector.schedule' => 'Nombre y programación',
+          'canvas.inspector.cron' => 'Cron',
+          'canvas.inspector.timeZone' => 'Zona horaria',
+          'canvas.inspector.nextRun' => 'Próxima ejecución',
+          'canvas.inspector.output' => 'Salida',
+          'canvas.inspector.objectKey' => 'Object key',
+          'canvas.inspector.connectDestination' =>
+            'Conecta un destino para elegir dónde se guarda.',
+          'canvas.inspector.relativeToFolder' => ({
+            required String folder,
+          }) => 'Relativa a la carpeta ${folder}. La extensión se agrega según el formato del dump y la compresión.',
+          'canvas.inspector.relativeToRoot' => ({
+            required String bucket,
+          }) => 'Relativa a la raíz de ${bucket}. La extensión se agrega según el formato del dump y la compresión.',
+          'canvas.inspector.compression' => 'Compresión',
+          'canvas.inspector.writes' => 'La próxima ejecución escribe',
+          'canvas.inspector.missingSource' => 'Nada: conecta un origen.',
+          'canvas.inspector.missingDestination' => 'Nada: conecta un destino.',
+          'canvas.inspector.missingBoth' =>
+            'Nada: conecta un origen y un destino.',
+          'canvas.inspector.noSource' => 'sin origen',
+          'canvas.inspector.noDestination' => 'sin destino',
+          'canvas.columns.sources' => 'Orígenes',
+          'canvas.columns.configs' => 'Config · una por conexión',
+          'canvas.columns.destinations' => 'Destinos',
+          'canvas.folder' => 'Carpeta',
+          'canvas.testRun.button' => 'Probar',
+          'canvas.testRun.help' => 'Comprueba que cada flujo completo podría ejecutarse, sin hacer backups: cada origen conecta y pg_dump puede respaldarlo, cada destino acepta escrituras en sus carpetas.',
+          'canvas.testRun.ok' => ({
+            required int n,
+          }) => 'Todo funciona: ${n} comprobaciones correctas',
+          'canvas.testRun.failed' => ({
+            required String list,
+          }) => 'Fallaron algunas comprobaciones: ${list}',
+          'canvas.testRun.nothing' =>
+            'Nada que probar: primero conecta un origen a un destino.',
+          'canvas.run.button' => 'Ejecutar ahora',
+          'canvas.run.help' => 'Ejecuta este backup ahora, de verdad, tal como está guardado: los cambios sin guardar no se usan.',
+          'canvas.run.needsSave' =>
+            'Guarda el canvas primero: una ejecución usa la config guardada.',
+          'canvas.run.done' => ({
+            required String name,
+            required String size,
+          }) => 'Backup ${name} terminado: ${size}',
+          'canvas.run.failed' => ({
+            required String name,
+            required String error,
+          }) => 'Backup ${name} falló: ${error}',
+          'canvas.guide.title' => 'Tu primer backup',
+          'canvas.guide.source' => 'Agrega un origen',
+          'canvas.guide.sourceHelp' => 'La base de datos a respaldar.',
+          'canvas.guide.destination' => 'Agrega un destino',
+          'canvas.guide.destinationHelp' => 'El bucket donde van los backups.',
+          'canvas.guide.connect' => 'Conéctalos',
+          'canvas.guide.connectHelp' => 'Arrastra desde el puerto del origen hasta una carpeta o el bucket: se crea una config entre ellos. Luego guarda.',
+          'canvas.guide.create' => 'Crear uno',
+          'canvas.guide.place' => ({required String name}) => 'Colocar ${name}',
+          'runs.title' => 'Registro de ejecuciones',
+          'runs.description' => 'Cada ejecución de respaldo de este workspace, programada o manual. Horas en UTC, tu hora local debajo.',
+          'runs.search' => 'Buscar por respaldo, origen o destino',
+          'runs.columnStatus' => 'Estado',
+          'runs.columnSource' => 'Origen',
+          'runs.columnDestination' => 'Destino',
+          'runs.columnStarted' => 'Inicio',
+          'runs.columnDuration' => 'Duración',
+          'runs.columnSize' => 'Tamaño',
+          'runs.scheduled' => 'Programada',
+          'runs.manual' => 'Manual',
+          'runs.emptyTitle' => 'Aún no hay ejecuciones',
+          'runs.emptyDescription' => 'Los respaldos se ejecutan según su programación, o con Ejecutar ahora en el editor.',
+          'runs.newestOnly' =>
+            'Solo se muestran las 200 ejecuciones más recientes.',
+          'runs.log' => 'Log (UTC)',
+          'runs.copyLog' => 'Copiar log',
+          'runs.logCopied' => 'Log copiado',
+          'runs.logWhenDone' => 'El log se escribe cuando termina la ejecución. Actualiza para verlo.',
+          'runs.noLog' => 'Esta ejecución no tiene log.',
+          'runs.today' => ({required String date}) => 'Hoy · ${date} (UTC)',
+          'runs.yesterday' => ({
+            required String date,
+          }) => 'Ayer · ${date} (UTC)',
+          'runs.day' => ({required String date}) => '${date} (UTC)',
+          'runs.succeeded' => ({required int n}) => '${n} correctas',
+          'runs.failedCount' => ({required int n}) => '${n} fallidas',
+          'runs.savedIn' => ({
+            required String size,
+            required String duration,
+          }) => '${size} en ${duration}',
+          'runs.inProgress' => 'En curso',
+          'runs.soFar' => ({
+            required String size,
+          }) => 'En curso · ${size} hasta ahora',
+          'runs.columnTrigger' => 'Tipo',
+          'runs.viewRun' => 'Ver ejecución',
+          'runs.steps' => 'Pasos',
+          'runs.stepConnect' => ({
+            required String name,
+          }) => 'Conectar con ${name}',
+          'runs.stepDump' => ({
+            required String name,
+          }) => 'Volcar y subir a ${name}',
+          'runs.stepSkipped' => 'Omitido',
+          'runs.stepWaiting' => 'En espera',
+          'runs.resultSuccess' => 'Respaldo guardado',
+          'runs.resultFailed' => 'El respaldo falló',
+          'runs.resultRunning' => 'En curso. Actualiza para ver cuánto avanzó.',
+          'backups.title' => 'Respaldos',
+          'backups.description' => 'Cada respaldo de este workspace, su última ejecución y la siguiente.',
+          'backups.openEditor' => 'Abrir editor',
+          'backups.newBackup' => 'Nuevo respaldo',
+          'backups.healthy' => 'Correctos',
+          'backups.healthySub' => 'la última ejecución salió bien',
+          'backups.failing' => 'Con fallas',
+          'backups.failingSub' => 'requieren atención',
+          'backups.paused' => 'Pausado',
+          'backups.nextBackup' => 'Próximo respaldo',
+          'backups.nextBackupIn' => 'Próximo respaldo en',
+          'backups.nothingScheduled' => 'Nada programado',
+          'backups.search' => 'Buscar respaldos',
+          'backups.columnStatus' => 'Estado',
+          'backups.columnSource' => 'Origen',
+          'backups.columnDestination' => 'Destino',
+          'backups.columnSchedule' => 'Programación',
+          'backups.columnLastRun' => 'Último respaldo',
+          'backups.columnNextRun' => 'Próximo respaldo',
+          'backups.allSources' => 'Todos los orígenes',
+          'backups.allDestinations' => 'Todos los destinos',
+          'backups.shown' => ({
+            required Object shown,
+            required Object total,
+          }) => '${shown} de ${total} respaldos',
+          'backups.showing' => ({
+            required Object shown,
+            required Object total,
+          }) => 'Mostrando ${shown} de ${total} respaldos',
+          'backups.timesNote' => ({
+            required Object utc,
+            required Object local,
+          }) => 'Horas en UTC · ahora ${utc} (${local})',
+          'backups.sort' => 'Orden:',
+          'backups.sortBy' => 'Ordenar por',
+          'backups.sortLast' => 'Último respaldo',
+          'backups.sortLastSub' => 'El más reciente primero',
+          'backups.sortLastOld' => 'Último respaldo (antiguo)',
+          'backups.sortLastOldSub' => 'El más antiguo primero',
+          'backups.sortNext' => 'Próximo respaldo',
+          'backups.sortNextSub' => 'El más cercano primero',
+          'backups.sortName' => 'Nombre del origen',
+          'backups.sortNameSub' => 'De la A a la Z',
+          'backups.inTime' => ({required Object time}) => 'en ${time}',
+          'backups.startedAgo' => ({
+            required Object time,
+          }) => 'Empezó hace ${time}',
+          'backups.runNowFor' => ({
+            required Object name,
+          }) => 'Ejecutar ${name} ahora',
+          'backups.showRuns' => 'Ver las ejecuciones',
+          'backups.hideRuns' => 'Ocultar las ejecuciones',
+          'backups.moreFor' => ({
+            required Object name,
+          }) => 'Más acciones de ${name}',
+          'backups.viewLastRun' => 'Ver la última ejecución',
+          'backups.editConfig' => 'Editar config',
+          'backups.deleteBackup' => 'Eliminar respaldo',
+          _ => null,
+        } ??
+        switch (path) {
+          'backups.recentRuns' => 'Ejecuciones recientes',
+          'backups.noRuns' => 'Aún no hay ejecuciones',
+          'backups.viewLog' => 'Ver log',
+          'backups.viewDetails' => 'Ver detalle',
+          'backups.noFile' => 'No se escribió archivo',
+          'backups.uploading' => 'Subiendo…',
+          'backups.manual' => 'Manual',
+          'backups.scheduled' => 'Programada',
+          'backups.deleteTitle' => ({
+            required Object name,
+          }) => '¿Eliminar el respaldo ${name}?',
+          'backups.deleteConfirm' => 'Su programación se detiene. Sus ejecuciones quedan en el registro y los archivos que ya están en el destino se quedan ahí.',
+          'backups.deleted' => ({
+            required Object name,
+          }) => 'Respaldo ${name} eliminado',
+          'backups.saved' => ({
+            required Object name,
+          }) => 'Respaldo ${name} guardado',
+          'backups.emptyDescription' =>
+            'Conecta un origen con un destino en el editor para crear uno.',
+          _ => null,
+        };
   }
 }

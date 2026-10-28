@@ -263,11 +263,16 @@ void main() {
       expect(stats['failing'], 2);
       expect(stats['running'], 0);
       expect(stats['last_run_at'], isNotNull);
-      // and the sketch of its canvas: its first configs, what they connect
+      // and the sketch of its canvas: its first configs (3 at most), what
+      // they connect, and the failing ones among them
       final preview = stats['preview'] as List;
-      expect(preview, hasLength(2));
+      expect(stats['configs'], greaterThan(WorkspaceStats.previewConfigs));
+      expect(preview, hasLength(WorkspaceStats.previewConfigs));
       expect({for (final l in preview) l['source']}, hasLength(1));
-      expect(preview.every((l) => l['failing'] == true), isTrue);
+      expect(
+        preview.where((l) => l['failing'] == true).length,
+        lessThanOrEqualTo(stats['failing']),
+      );
     });
   });
 

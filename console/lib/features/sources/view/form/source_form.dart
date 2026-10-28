@@ -154,7 +154,7 @@ class _SourceFormState extends State<SourceForm> {
   void _next() {
     if (_busy || !_validate()) return;
     if (_step == _lastStep) {
-      cubit.save(_draft());
+      cubit.save(_draft(), tested: _check != null);
       return;
     }
     setState(() {

@@ -247,15 +247,25 @@ class CanvasCubit extends Cubit<CanvasState> {
     final a = CanvasGeometry.sourceOut(source);
     final b = CanvasGeometry.destinationPort(dest, target.folderId);
     final id = '$newPrefix${s.seq}';
+    var pos = Offset(
+      ((a.dx + b.dx) / 2 - 120).roundToDouble(),
+      ((a.dy + b.dy) / 2 - 76).roundToDouble(),
+    );
+    // another wire to the same place has a config there: below it
+    while (s.configs.any(
+      (c) =>
+          CanvasGeometry.configRect(c)
+              .inflate(12)
+              .overlaps(pos & CanvasGeometry.configSize),
+    )) {
+      pos += Offset(0, CanvasGeometry.configSize.height + 24);
+    }
     final config = BackupConfig(
       id: id,
       sourceId: sourceId,
       destinationId: target.destinationId,
       folderId: target.folderId,
-      pos: Offset(
-        ((a.dx + b.dx) / 2 - 120).roundToDouble(),
-        ((a.dy + b.dy) / 2 - 76).roundToDouble(),
-      ),
+      pos: pos,
       name: app.intl.canvas.newConfig,
     );
     _edit(

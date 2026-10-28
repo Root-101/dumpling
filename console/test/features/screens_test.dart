@@ -42,6 +42,7 @@ void main() {
   final destinations = _MockDestinations();
   final runs = _MockRuns();
   final backups = _MockBackups();
+  final workspaceRepo = _MockRepo();
   final authStates = StreamController<AuthState>.broadcast();
 
   final english = LanguageModel(
@@ -152,7 +153,8 @@ void main() {
     app.di.put<RunCubit>(runs);
     app.di.put<BackupCubit>(backups);
     // the dialogs and drawers make their own cubit with them
-    app.di.put<WorkspaceRepo>(_MockRepo());
+    app.di.put<WorkspaceRepo>(workspaceRepo);
+    registerFallbackValue(const WorkspaceDraft(name: 'fallback'));
     app.di.put<SourceRepo>(_MockSourceRepo());
     app.di.put<DestinationRepo>(_MockDestinationRepo());
   });
@@ -245,6 +247,79 @@ void main() {
       find.text('A new workspace starts with an empty canvas.'),
       findsOneWidget,
     );
+
+    // created, it opens on its backups
+    when(
+      () => workspaceRepo.create(
+        draft: any(named: 'draft'),
+        token: any(named: 'token'),
+      ),
+    ).thenAnswer((_) async => const WorkspaceModel(slug: 'qa', name: 'QA'));
+    when(() => backups.load(any())).thenAnswer((_) async {});
+    await tester.enterText(find.byType(TextField).first, 'QA');
+    await tester.tap(find.widgetWithText(PrimaryButton, 'Create workspace'));
+    await settle(tester);
+    expect(
+      RouteConfig.router.routerDelegate.currentConfiguration.uri.path,
+      '/workspaces/qa/backups',
+    );
+  });
+
+  testWidgets('The settings of a workspace edit it and keep its defaults', (
+    tester,
+  ) async {
+    when(() => auth.auth).thenReturn(session());
+    when(
+      () => workspaceRepo.update(
+        slug: any(named: 'slug'),
+        draft: any(named: 'draft'),
+        token: any(named: 'token'),
+      ),
+    ).thenAnswer(
+      (_) async => const WorkspaceModel(slug: 'staging', name: 'QA'),
+    );
+    await pumpApp(tester);
+    RouteConfig.router.go('/workspaces');
+    await settle(tester);
+
+    // the card has no Backups button nor menu: its settings
+    expect(find.widgetWithText(PrimaryButton, 'Backups'), findsNothing);
+    await tester.tap(find.byTooltip('Settings for Staging'));
+    await settle(tester);
+    expect(find.text('WORKSPACE SETTINGS'), findsOneWidget);
+    expect(find.text('Defaults for new configs'), findsOneWidget);
+    expect(find.text('Danger zone'), findsOneWidget);
+
+    // Edit, and a new name in the header as it is typed
+    await tester.tap(find.widgetWithText(PrimaryButton, 'Edit'));
+    await settle(tester);
+    await tester.enterText(find.byType(TextField).first, 'QA');
+    await settle(tester);
+    expect(find.text('You have unsaved changes'), findsOneWidget);
+    await tester.tap(find.widgetWithText(PrimaryButton, 'Save changes'));
+    await settle(tester);
+
+    // the update sends the defaults too: the service replaces everything
+    final draft =
+        verify(
+              () => workspaceRepo.update(
+                slug: 'staging',
+                draft: captureAny(named: 'draft'),
+                token: any(named: 'token'),
+              ),
+            ).captured.single
+            as WorkspaceDraft;
+    expect(draft.name, 'QA');
+    expect(draft.description, 'About staging');
+    expect(draft.defaults, WorkspaceSettings.fallbackDefaults);
+    expect(find.text('Saved'), findsOneWidget);
+
+    // deleting asks for the name
+    await tester.tap(find.text('Danger zone'));
+    await settle(tester);
+    await tester.tap(find.widgetWithText(PrimaryButton, 'Delete workspace'));
+    await settle(tester);
+    expect(find.text('Delete “QA”?'), findsOneWidget);
   });
 
   testWidgets('A workspace opens on its backups and becomes the current one', (

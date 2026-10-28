@@ -4,6 +4,7 @@ export 'logic/cubit/workspace_cubit.dart';
 export 'logic/cubit/workspace_form_cubit.dart';
 export 'logic/model/workspace_model.dart';
 export 'view/form/workspace_form.dart';
+export 'view/settings/workspace_settings.dart';
 export 'view/widget/workspace_avatar.dart';
 export 'view/widget/workspace_card.dart';
 export 'view/widget/workspace_preview_painter.dart';

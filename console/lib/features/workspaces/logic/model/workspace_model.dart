@@ -8,6 +8,10 @@ class WorkspaceModel {
   final String? description;
   final Color? color;
 
+  /// What a new config takes; null when the service doesn't send them
+  final WorkspaceDefaults? defaults;
+  final DateTime? createdAt;
+
   /// Only from the list
   final WorkspaceStatsModel? stats;
 
@@ -16,6 +20,8 @@ class WorkspaceModel {
     required this.name,
     this.description,
     this.color,
+    this.defaults,
+    this.createdAt,
     this.stats,
   });
 
@@ -24,7 +30,14 @@ class WorkspaceModel {
       name.isEmpty ? '?' : name.characters.first.toUpperCase();
 }
 
-/// What a workspace has. [failing] counts the configs whose last run failed
+/// The schedule (cron, UTC), the compression (`gzip`, `none`) and the object
+/// key a new config of the workspace starts with
+typedef WorkspaceDefaults = ({
+  String schedule,
+  String compression,
+  String objectKey,
+});
+
 /// A config of [WorkspaceStatsModel.preview]: what it connects, by id
 typedef WorkspacePreviewLink = ({
   String source,
@@ -32,6 +45,7 @@ typedef WorkspacePreviewLink = ({
   bool failing,
 });
 
+/// What a workspace has. [failing] counts the configs whose last run failed
 class WorkspaceStatsModel {
   final int sources;
   final int destinations;
@@ -54,11 +68,18 @@ class WorkspaceStatsModel {
   });
 }
 
-/// What the form of a new workspace sends
+/// What the form of a workspace sends. Without [defaults] the service sets
+/// its own: an update must send them, it replaces everything
 class WorkspaceDraft {
   final String name;
   final String? description;
   final Color? color;
+  final WorkspaceDefaults? defaults;
 
-  const WorkspaceDraft({required this.name, this.description, this.color});
+  const WorkspaceDraft({
+    required this.name,
+    this.description,
+    this.color,
+    this.defaults,
+  });
 }

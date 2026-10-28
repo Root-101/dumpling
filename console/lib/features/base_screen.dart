@@ -143,12 +143,6 @@ class _Rail extends StatelessWidget {
           ],
           const Spacer(),
           const LanguageWidget(),
-          if (workspace != null)
-            item(
-              RouteNames.settings,
-              app.intl.nav.settings,
-              icons.navigation.settings,
-            ),
           RailButton(
             tooltip: app.intl.nav.logout,
             onPressed: (_) => context.read<AuthCubit>().logout(),
