@@ -29,6 +29,14 @@ class FeaturesInit {
           if (language != null) {
             options.headers[HttpHeaders.acceptLanguageHeader] = language;
           }
+          // In the browser the connect timer runs until the answer starts: a
+          // request that waits longer for it (a connection test, its own
+          // checks take up to 10 s each) must not be cut as "offline" first
+          final receive = options.receiveTimeout;
+          if (receive != null &&
+              receive > (options.connectTimeout ?? receive)) {
+            options.connectTimeout = receive;
+          }
           return handler.next(options);
         },
         onError: (DioException e, ErrorInterceptorHandler handler) async {

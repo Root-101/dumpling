@@ -2,6 +2,7 @@
 library;
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:service/dumpling.dart';
@@ -230,6 +231,21 @@ void main() {
     test('Should report an endpoint that does not answer', () async {
       final check = await testConnection(
         bucket(endpoint: 'http://127.0.0.1:1'),
+      );
+      expect(check['status'], 'failed');
+      expect(check['message'], isNotEmpty);
+    });
+
+    test('Should report an endpoint that does not speak HTTP', () async {
+      // http on a TLS port, or any server that answers something else
+      final socket = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(socket.close);
+      socket.listen((client) async {
+        client.write('not http\r\n\r\n');
+        await client.close();
+      });
+      final check = await testConnection(
+        bucket(endpoint: 'http://127.0.0.1:${socket.port}'),
       );
       expect(check['status'], 'failed');
       expect(check['message'], isNotEmpty);

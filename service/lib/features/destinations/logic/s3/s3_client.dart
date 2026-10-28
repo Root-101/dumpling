@@ -216,6 +216,9 @@ class S3Client {
       throw S3ClientException(e.osError?.message ?? e.message);
     } on HandshakeException catch (e) {
       throw S3ClientException(e.message);
+    } on HttpException catch (e) {
+      // Not an HTTP answer: http on a TLS port, a server that hangs up
+      throw S3ClientException(e.message);
     } on TimeoutException {
       throw S3ClientException('Timed out after ${wait.inSeconds} s');
     } finally {
