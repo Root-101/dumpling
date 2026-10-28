@@ -145,7 +145,11 @@ class _Rail extends StatelessWidget {
           const LanguageWidget(),
           RailButton(
             tooltip: app.intl.nav.logout,
-            onPressed: (_) => context.read<AuthCubit>().logout(),
+            // the logout resets the canvas before the router could ask
+            onPressed: (_) async {
+              final auth = context.read<AuthCubit>();
+              if (await CanvasScreen.confirmLeave()) auth.logout();
+            },
             icon: (color) => icons.actions.logout.build(size: 20, color: color),
           ),
         ],

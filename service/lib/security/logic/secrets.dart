@@ -21,6 +21,17 @@ class Secrets {
     cipher.decrypt(stored, associatedData: id),
   ) as Map<String, dynamic>).cast<String, String>();
 
+  /// The stored secrets of row [id] for an edit, or none when they don't
+  /// decrypt (`SECRETS_ENCRYPTION_KEY` changed): [require] then asks for them
+  /// again (422) instead of every edit failing.
+  Map<String, String> decryptOrNone(String id, String stored) {
+    try {
+      return decrypt(id, stored);
+    } on Exception {
+      return const {};
+    }
+  }
+
   /// [secrets], or a 422 naming each of [required] that is missing
   /// (`settings.password`, under [field]).
   static Map<String, String> require(

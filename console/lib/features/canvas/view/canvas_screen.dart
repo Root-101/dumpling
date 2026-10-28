@@ -22,16 +22,18 @@ class CanvasScreen extends StatefulWidget {
 
   const CanvasScreen({required this.workspace, super.key});
 
-  /// Leaving with edits not saved asks first; coming back loads the saved one
+  /// Leaving with edits not saved asks first; Discard drops them, so coming
+  /// back loads the saved one
   static Future<bool> confirmLeave() async {
-    if (!app.di.find<CanvasCubit>().dirty) return true;
+    final cubit = app.di.find<CanvasCubit>();
+    if (!cubit.dirty) return true;
     final t = app.intl.canvas;
     return ConfirmDialog.show(
       title: t.unsavedTitle,
       description: t.unsavedDescription,
       confirmTitle: t.discard,
       confirmColor: app.colors.primary.errorAction,
-      confirmAction: () {},
+      confirmAction: cubit.reset,
     );
   }
 

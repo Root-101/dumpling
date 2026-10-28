@@ -55,7 +55,7 @@ class SourceService {
     final row = await _row(workspace, id);
     final settings = request.settings!;
     final stored = row.type == request.sourceType
-        ? _decrypt(row)
+        ? secrets.decryptOrNone(row.id, row.secretsEncrypted)
         : const <String, String>{};
     final values = Secrets.require(settings.requiredSecrets, {
       ...stored,
@@ -108,7 +108,9 @@ class SourceService {
     var stored = const <String, String>{};
     if (sourceId != null) {
       final row = await _row(workspace, sourceId);
-      if (row.type == request.sourceType) stored = _decrypt(row);
+      if (row.type == request.sourceType) {
+        stored = secrets.decryptOrNone(row.id, row.secretsEncrypted);
+      }
     }
     final values = Secrets.require(settings.requiredSecrets, {
       ...stored,

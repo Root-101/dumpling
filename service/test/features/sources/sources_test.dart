@@ -3,6 +3,7 @@ library;
 
 import 'dart:convert';
 
+import 'package:drift/drift.dart' show Value;
 import 'package:http/http.dart' as http;
 import 'package:service/dumpling.dart';
 import 'package:test/test.dart';
@@ -130,6 +131,39 @@ void main() {
         expect(response.statusCode, 200, reason: response.body);
         expect(jsonDecode(response.body)['name'], 'users');
         expect(await storedSecrets(source['id']), {'password': 's3cr3t-pass'});
+      },
+    );
+
+    test(
+      'Should ask for the password again after SECRETS_ENCRYPTION_KEY changed',
+      () async {
+        final source = await created(postgres(name: 'rekeyed-db'));
+        final id = source['id'] as String;
+        // as if stored under the key the service had before
+        final db = di.find<AppDatabase>();
+        await (db.update(db.sourceTable)..where((t) => t.id.equals(id))).write(
+          SourceTableCompanion(
+            secretsEncrypted: Value(
+              SecretCipher('the-previous-key').encrypt(
+                jsonEncode({'password': 'old-pass'}),
+                associatedData: id,
+              ),
+            ),
+          ),
+        );
+        Future<http.Response> update(String? password) => http.put(
+          server.url(path('production', '/$id')),
+          headers: jsonHeaders(),
+          body: jsonEncode(postgres(name: 'rekeyed-db', password: password)),
+        );
+
+        final missing = await update(null);
+        expect(missing.statusCode, 422, reason: missing.body);
+        expect(missing.body, contains('settings.password'));
+
+        final updated = await update('new-pass');
+        expect(updated.statusCode, 200, reason: updated.body);
+        expect(await storedSecrets(id), {'password': 'new-pass'});
       },
     );
 

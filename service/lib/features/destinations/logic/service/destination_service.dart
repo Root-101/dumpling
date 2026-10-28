@@ -181,7 +181,10 @@ class DestinationService {
   /// The stored secrets of [row], if it is still of [type].
   Map<String, String> _storedFor(DestinationRow row, DestinationType? type) =>
       row.destination.type == type
-      ? secrets.decrypt(row.destination.id, row.destination.secretsEncrypted)
+      ? secrets.decryptOrNone(
+          row.destination.id,
+          row.destination.secretsEncrypted,
+        )
       : const {};
 
   DestinationDriver _driver(DestinationType type) =>
