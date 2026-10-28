@@ -38,7 +38,7 @@ associated data.
 `pg_dump` runs with `PGHOST`, `PGPORT`, `PGUSER`, `PGDATABASE` and `PGPASSWORD`, and only
 `--format`, `--no-password` and `--lock-wait-timeout` (1 minute: a table locked by a migration
 fails the run instead of leaving it running forever) as arguments. Its environment is the service's without its secrets
-and without any other `PG*` variable.
+and without any other `PG*` variable; `PGSSLMODE` comes from the source (§14).
 
 - The arguments of a process are visible to every user of the machine (`ps`); the environment is
   not.
@@ -68,6 +68,9 @@ fits in one part is a single `PutObject`.
 | A failed run aborts its multipart upload | No half file stays in the bucket looking like a backup, nor parts that cost storage                                                 |
 | Our own S3 client (SigV4)                | Only `PutObject` and multipart are needed; `minio` (the package) can't abort an upload by its id, which the previous point requires |
 | The extension comes from the engine      | `.dump` or `.sql` by the dump format, plus `.gz` by the compression: an object key with its own extension could lie about the file  |
+| No compression by default                | The default dump (`-Fc`) is compressed already: gzip on top costs CPU for almost nothing. A plain SQL dump can still ask for gzip     |
+| No `.` or `..` folders in an object key  | The URL drops them after signing, so S3 would reject every upload; `{db}` always renders as one folder                              |
+| A part that fails for a moment is retried | Three tries on a 5xx, a 429 or a network error: one `SlowDown` shouldn't throw away the parts already sent                         |
 
 ## 7. Tests that leave nothing behind
 
@@ -111,6 +114,7 @@ for all of them and has no daylight-saving jumps (a local 02:30 can happen twice
 |-----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------|
 | One run per config at a time (`409` for a second Run now) | Two dumps of the same database at once double its load and race to write the same key                     |
 | Runs left running by a stop are marked failed at start-up | Their process is gone: "running" forever would hide that the backup didn't happen                         |
+| Their multipart upload is aborted at start-up             | The run keeps its upload id (`pending_upload`): parts left behind are billed until aborted                 |
 | The log of a run is written when it ends                  | One write per run instead of one per line; while it runs, its size and location already show the progress |
 | The run log lists the 200 newest runs                     | Enough for months of daily backups in a workspace, in one request; paging when someone needs more         |
 
@@ -135,3 +139,32 @@ Only the console calls the service, a few requests per screen and one every 2 se
 now is followed: far below 600. Above it, something is wrong, and stopping it before bodies are
 read or tokens checked is cheap. Behind your own proxies, `TRUSTED_PROXIES` makes it count the
 client's IP, not the proxy's.
+
+| Decision                                                  | Why                                                                                                                       |
+|-----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| `X-Forwarded-For` counts only from private addresses      | A client that reaches the port from outside would otherwise pick its own IP: no login lock, and the admin's IP locked at will |
+| A request lasts at most 2 minutes                         | A client that sends its body slowly can't hold a request forever; above the slowest route, a connection test (90 s)        |
+| The login limiter forgets old IPs at most once a minute   | With many recent IPs (a whole IPv6 range) nothing is forgotten, and a scan on every failure made each failed login costly |
+
+## 14. PostgreSQL over TLS by default
+
+A source has `ssl_mode` `require` (the default) or `disable`. `require` encrypts the connection
+without checking the certificate, like libpq's `sslmode=require`.
+
+- Without TLS, a server (or anyone on the way, impersonating it) can ask for the password in clear
+  and get it, and the dump travels readable. `require` never sends the password in clear.
+- Not checking the certificate keeps it working with the self-signed ones most databases have;
+  `verify-full` with a CA is next (ROADMAP).
+- A database without TLS must be marked `disable` by hand: the risk is a choice, not a default.
+
+## 15. Remote servers are not trusted
+
+A PostgreSQL or S3 server is chosen by the admin, but it is still another machine, and with
+`disable` or an `http://` endpoint anyone on the way can answer for it. What it sends is bounded:
+
+| Decision                                                              | Why                                                                                                                              |
+|-----------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| The connection test talks to PostgreSQL in its own isolate, killed after 35 s | The server picks how many times the client hashes the password (SCRAM); that loop would freeze every request and run of the service |
+| Errors, versions and messages cut to 2000 characters                  | They are kept in every check and failed run, and the run log is never pruned                                                     |
+| S3 answers read up to 1 MiB, never compressed                         | S3 answers with a few hundred bytes of XML; a small gzip could grow to gigabytes in memory                                       |
+| Only the end of `pg_dump`'s stderr is kept, decoded leniently         | A server can make it write without end, and in the encoding of the database (a non-UTF-8 byte used to end the service)          |

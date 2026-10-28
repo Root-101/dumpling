@@ -17,7 +17,7 @@ goes where on a canvas (a database, a bucket and the backup between them) and Du
 
 |                  |                                                                                                                                    |
 |------------------|------------------------------------------------------------------------------------------------------------------------------------|
-| **Sources**      | PostgreSQL (any version up to the `pg_dump` of the image, 18 by default), custom (`-Fc`) or plain SQL dumps                        |
+| **Sources**      | PostgreSQL (any version up to the `pg_dump` of the image, 18 by default) over TLS by default, custom (`-Fc`) or plain SQL dumps     |
 | **Destinations** | Any S3-compatible storage (AWS S3, MinIO, feather-io…), its root or folders in the bucket                                          |
 | **Canvas**       | Sources, destinations and the backups between them, connected by hand and saved in one go; a test run checks every flow first      |
 | **Backups**      | Cron schedules in UTC and Run now; gzip or none; object keys with placeholders (`{db}/{yyyy}-{MM}-{dd}`); streamed in 16 MiB parts |
@@ -27,8 +27,9 @@ goes where on a canvas (a database, a bucket and the backup between them) and Du
 
 **What it doesn't do (yet):** restore from the console (it is plain `pg_restore`, see
 [`docs/restore.md`](docs/restore.md)), retention of old backups, alerts, other databases (MySQL,
-MongoDB… are shown but disabled) or destinations (Google Drive, SFTP…), more than one user. It
-serves HTTP: put a proxy in front for TLS.
+MongoDB… are shown but disabled) or destinations (Google Drive, SFTP…), more than one user,
+checking the certificate of a database (`verify-full`). It serves HTTP: put a proxy in front for
+TLS, and publish the port only to it (`127.0.0.1:8080:8080`).
 
 ## Run it
 
@@ -50,6 +51,9 @@ docker compose up -d --build
 
 Keep `SECRETS_ENCRYPTION_KEY`: the passwords of the databases and the keys of the buckets are
 encrypted with it, and changing it makes them unreadable.
+
+A source connects with TLS unless its **TLS** setting is turned off (`ssl_mode` `disable`): a
+PostgreSQL without TLS, like the one of a plain `postgres` container, needs it off.
 
 ### With Docker, the image alone
 
@@ -90,7 +94,7 @@ fvm flutter run -d chrome --web-port=8081
 | `PORT`                                                               | `8080`                                     | Port of the API and the console                                              |
 | `DATA_PATH`                                                          | `data` (`/data`)                           | Folder of the SQLite database                                                |
 | `PG_DUMP_PATH`                                                       | `pg_dump` (image: the one of `PG_VERSION`) | The `pg_dump` the backups run                                                |
-| `TRUSTED_PROXIES`                                                    | `0`                                        | How many proxies of your own add their entry to `X-Forwarded-For`            |
+| `TRUSTED_PROXIES`                                                    | `0`                                        | Proxies of your own in front (`X-Forwarded-For`, from private addresses)     |
 | `RATE_LIMIT_REQUESTS`, `RATE_LIMIT_WINDOW_SECONDS`                   | `600`, `60`                                | Requests per IP and window; `0` disables it                                  |
 | `LOGIN_MAX_FAILURES`, `LOGIN_LOCK_SECONDS`, `LOGIN_FAILURE_DELAY_MS` | `10`, `900`, `1000`                        | Failed logins that lock an IP, for how long, and the wait after each failure |
 | `LOG_LEVEL`, `LOG_FORMAT`                                            | `info`, readable                           | `LOG_FORMAT=json` writes one JSON object per line                            |

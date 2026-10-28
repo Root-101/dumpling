@@ -33,6 +33,10 @@ client) is needed to run backups locally, and Docker for the image and the end-t
 - **Both**: JSON keys are `snake_case`, times are UTC. A field renamed in the service changes the
   console's DTO in the same change.
 - Don't add a dependency for something Dart, Flutter or Winter already does.
+- What a database or a bucket sends back is not trusted, even if the admin chose it: bound its size
+  and its time, and don't let its bytes throw past a run (see [`DECISIONS.md`](DECISIONS.md#15-remote-servers-are-not-trusted)).
+- A change to authentication, credentials, limits or what the logs show updates
+  [`SECURITY.md`](SECURITY.md) in the same change.
 - A non-obvious decision goes into [`DECISIONS.md`](DECISIONS.md), and a finished roadmap task is
   marked in [`ROADMAP.md`](ROADMAP.md), in the same change.
 

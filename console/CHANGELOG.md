@@ -7,10 +7,12 @@ The first release candidate, on the API of the service.
 - Sign in, with the error of the service in the form; back to the page asked for after signing in.
 - Workspaces: cards with counts, health and last run; create; switch from the rail or the URL.
 - Sources and destinations: list with search and type filter, create, edit, duplicate, test and
-  delete; the folders of each bucket from its row.
+  delete; the folders of each bucket from its row. A source has a TLS selector (on by default,
+  with a warning when turned off).
 - The canvas, loaded from and saved to the service: Save, Test run, and a panel per config (name,
-  frequency or cron, enabled, object key with a preview, compression, Run now). A guide for an
-  empty workspace. The right click opens only the menu of the canvas.
+  frequency or cron, enabled, object key with a preview, compression, Run now). An empty cron goes
+  back to the workspace's schedule. A guide for an empty workspace. The right click opens only the
+  menu of the canvas. Leaving it, or signing out, with edits asks first; Discard drops them.
 - Backups: healthy, failing and the next run; every backup with its last and next run, filters,
   sort and Run now.
 - Run log: every run with filters by status, source type and destination type; a row opens on
