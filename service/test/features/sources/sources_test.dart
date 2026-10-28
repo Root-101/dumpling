@@ -363,6 +363,14 @@ void main() {
       expect(PgDump.major('17.2'), 17);
     });
 
+    test('Should give pg_dump a limit for waiting on a locked table', () {
+      final args = PostgresSourceDriver.dumpArguments(
+        PostgresSettings(host: 'db', database: 'orders', username: 'backup'),
+      );
+      expect(args, containsAll(['--format=custom', '--no-password']));
+      expect(args, contains('--lock-wait-timeout=60000'));
+    });
+
     test('Should give pg_dump its connection in PG* variables, without the secrets of the service', () {
       final vars = PostgresSourceDriver.dumpEnvironment(
         PostgresSettings(

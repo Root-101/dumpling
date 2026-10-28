@@ -15,6 +15,9 @@ class S3ClientException implements Exception {
 
   S3ClientException(this.message, {this.status, this.code});
 
+  /// The network failed, or S3 asked to try again later (5xx, 429)
+  bool get transient => status == null || status == 429 || status! >= 500;
+
   @override
   String toString() => code == null ? message : '$code: $message';
 }
@@ -28,6 +31,10 @@ class S3Client {
 
   /// To send a body (a part of up to [S3Uploader.partSize]) and get the answer.
   static const Duration transferTimeout = Duration(minutes: 5);
+
+  /// Tries of a part, and the wait before the second (doubled for the third).
+  static const int partTries = 3;
+  static Duration retryDelay = const Duration(seconds: 2);
 
   /// `https://s3.us-east-1.amazonaws.com`, `http://minio.internal:9000`.
   final Uri endpoint;
@@ -68,21 +75,34 @@ class S3Client {
     return uploadId;
   }
 
-  /// Uploads part [number] (from 1) and returns its ETag.
+  /// Uploads part [number] (from 1) and returns its ETag. A [transient]
+  /// failure is tried again, up to [partTries] in all: one 503 must not throw
+  /// away the parts already sent.
   Future<String> uploadPart(
     String key,
     String uploadId,
     int number,
     Uint8List body,
   ) async {
-    final (body: _, etag: etag) = await _send(
-      'PUT',
-      key,
-      query: {'partNumber': '$number', 'uploadId': uploadId},
-      body: body,
-    );
-    if (etag == null) throw S3ClientException('The answer has no ETag');
-    return etag;
+    for (var attempt = 1; ; attempt++) {
+      try {
+        final (body: _, etag: etag) = await _send(
+          'PUT',
+          key,
+          query: {'partNumber': '$number', 'uploadId': uploadId},
+          body: body,
+        );
+        if (etag == null) throw S3ClientException('The answer has no ETag');
+        return etag;
+      } on S3ClientException catch (e) {
+        if (attempt == partTries || !e.transient) rethrow;
+        logger.warning(
+          'A part failed, trying again',
+          fields: {'key': key, 'part': '$number', 'error': '$e'},
+        );
+        await Future<void>.delayed(retryDelay * attempt);
+      }
+    }
   }
 
   /// Joins the parts (their ETags, in order) into the object.

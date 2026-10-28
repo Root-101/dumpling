@@ -24,6 +24,9 @@ class FakeS3 {
   /// Upload ids started and not aborted or completed yet, with their key.
   final Map<String, String> openUploads = {};
   final Map<String, Map<int, List<int>>> _parts = {};
+
+  /// How many of the next parts get `503 SlowDown`.
+  int failingParts = 0;
   var _next = 0;
 
   FakeS3({this.deniedPrefix = 'denied/'});
@@ -45,6 +48,7 @@ class FakeS3 {
     objects.clear();
     openUploads.clear();
     _parts.clear();
+    failingParts = 0;
   }
 
   Future<void> _handle(HttpRequest request) async {
@@ -73,6 +77,9 @@ class FakeS3 {
           '<InitiateMultipartUploadResult><UploadId>$id</UploadId>'
           '</InitiateMultipartUploadResult>',
         );
+      case 'PUT' when uploadId != null && failingParts > 0:
+        failingParts--;
+        return _error(response, 503, 'SlowDown');
       case 'PUT' when uploadId != null:
         final number = int.parse(query['partNumber']!);
         _parts[uploadId]![number] = body;

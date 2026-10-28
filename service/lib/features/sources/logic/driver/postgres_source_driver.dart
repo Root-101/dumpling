@@ -36,10 +36,7 @@ class PostgresSourceDriver implements SourceDriver {
         try {
           process = await Process.start(
             env.pgDumpPath,
-            [
-              '--format=${postgres.format == PostgresDumpFormat.custom ? 'custom' : 'plain'}',
-              '--no-password',
-            ],
+            dumpArguments(postgres),
             environment: dumpEnvironment(postgres, secrets),
             includeParentEnvironment: false,
           );
@@ -71,6 +68,19 @@ class PostgresSourceDriver implements SourceDriver {
     );
     return controller.stream;
   }
+
+  /// The arguments of `pg_dump`. A table locked by something else (a
+  /// migration) fails the dump after [lockWait]: without it pg_dump waits
+  /// forever, the run stays running and every next run of its config is
+  /// skipped.
+  static List<String> dumpArguments(PostgresSettings postgres) => [
+    '--format=${postgres.format == PostgresDumpFormat.custom ? 'custom' : 'plain'}',
+    '--no-password',
+    '--lock-wait-timeout=${lockWait.inMilliseconds}',
+  ];
+
+  /// How long pg_dump waits for the lock of each table.
+  static const Duration lockWait = Duration(minutes: 1);
 
   /// The variables of `pg_dump`: those of the service (the `PATH`, and what
   /// Windows needs to open a socket) without its secrets nor any `PG*` of the

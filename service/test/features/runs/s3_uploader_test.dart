@@ -63,6 +63,32 @@ void main() {
       expect(s3.requests.where((r) => r.contains('partNumber')), hasLength(3));
     });
 
+    test('Should try a part again when S3 asks to slow down', () async {
+      S3Client.retryDelay = Duration.zero;
+      s3.failingParts = 2;
+      final size = await S3Uploader(
+        client,
+        partSize: 1000,
+      ).upload('orders/d.dump', bytes(2500));
+      expect(size, 2500);
+      expect(s3.objects['backups/orders/d.dump'], expected(2500));
+      // the first part, twice failed, then the three
+      expect(s3.requests.where((r) => r.contains('partNumber')), hasLength(5));
+    });
+
+    test('Should give up and abort after the last try', () async {
+      S3Client.retryDelay = Duration.zero;
+      s3.failingParts = S3Client.partTries;
+      await expectLater(
+        S3Uploader(client, partSize: 1000).upload('orders/e.dump', bytes(2500)),
+        throwsA(
+          isA<S3ClientException>().having((e) => e.code, 'code', 'SlowDown'),
+        ),
+      );
+      expect(s3.objects, isEmpty);
+      expect(s3.openUploads, isEmpty);
+    });
+
     test('Should abort the upload when the stream fails', () async {
       await expectLater(
         S3Uploader(

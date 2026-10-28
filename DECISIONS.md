@@ -36,7 +36,8 @@ associated data.
 ## 4. `pg_dump` gets its connection in the environment
 
 `pg_dump` runs with `PGHOST`, `PGPORT`, `PGUSER`, `PGDATABASE` and `PGPASSWORD`, and only
-`--format` and `--no-password` as arguments. Its environment is the service's without its secrets
+`--format`, `--no-password` and `--lock-wait-timeout` (1 minute: a table locked by a migration
+fails the run instead of leaving it running forever) as arguments. Its environment is the service's without its secrets
 and without any other `PG*` variable.
 
 - The arguments of a process are visible to every user of the machine (`ps`); the environment is
