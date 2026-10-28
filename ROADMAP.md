@@ -174,7 +174,7 @@ Screens: Backups, Backups · Filters / Sort / Run details, Events (as the run lo
 - [x] Restore guide: `pg_restore` / `psql` of a file taken from the bucket.
 - [x] Security pass (`SECURITY.md`): credentials, auth, rate limits, input validation, what the
   logs show.
-- [x] End-to-end test with PostgreSQL and MinIO (or feather-io) in Docker.
+- [x] End-to-end test with PostgreSQL and Feather-io in Docker.
 - [ ] Run a code audit using Ponytail, as well as a security audit.
 - [ ] README, `CONTRIBUTING.md`, `DECISIONS.md`, changelogs; versions and tag `0.1.0-rc.1`.
 

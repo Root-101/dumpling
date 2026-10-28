@@ -261,12 +261,18 @@ class ConfigNodeView extends StatelessWidget {
   final BackupConfig config;
   final bool selected;
   final NodeHandlers handlers;
+  final VoidCallback onEdit;
+
+  /// Null while it can't run (not saved, incomplete or running)
+  final VoidCallback? onRun;
   final VoidCallback onDelete;
 
   const ConfigNodeView({
     required this.config,
     required this.selected,
     required this.handlers,
+    required this.onEdit,
+    required this.onRun,
     required this.onDelete,
     super.key,
   });
@@ -520,30 +526,75 @@ class ConfigNodeView extends StatelessWidget {
           ),
         ),
         if (selected)
+          // above the node: on it they would cover the cron of its title
           Positioned(
             right: -11,
-            top: -11,
+            top: -32,
             child: Listener(
               onPointerDown: (_) => handlers.claim(),
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colors.surface.control,
-                  border: Border.all(color: colors.surface.border),
-                ),
-                child: AppIconButton(
-                  size: 24,
-                  tooltip: app.intl.canvas.deleteConfig,
-                  onPressed: onDelete,
-                  icon: app.assets.icons.actions.delete.build(
-                    size: 13,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 6,
+                children: [
+                  _CornerButton(
+                    tooltip: app.intl.canvas.editConfig,
+                    onPressed: onEdit,
+                    icon: app.assets.icons.actions.edit,
+                    color: colors.text.secondary,
+                  ),
+                  _CornerButton(
+                    tooltip: app.intl.canvas.run.button,
+                    onPressed: onRun,
+                    icon: app.assets.icons.actions.play,
+                    color: colors.brand.primary,
+                  ),
+                  _CornerButton(
+                    tooltip: app.intl.canvas.deleteConfig,
+                    onPressed: onDelete,
+                    icon: app.assets.icons.actions.delete,
                     color: colors.status.error,
                   ),
-                ),
+                ],
               ),
             ),
           ),
       ],
+    );
+  }
+}
+
+/// A round action on the corner of a selected node
+class _CornerButton extends StatelessWidget {
+  final String tooltip;
+  final VoidCallback? onPressed;
+  final SvgAsset icon;
+  final Color color;
+
+  const _CornerButton({
+    required this.tooltip,
+    required this.onPressed,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = app.colors;
+    return Opacity(
+      opacity: onPressed == null ? 0.4 : 1,
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: colors.surface.control,
+          border: Border.all(color: colors.surface.border),
+        ),
+        child: AppIconButton(
+          size: 24,
+          tooltip: tooltip,
+          onPressed: onPressed,
+          icon: icon.build(size: 13, color: color),
+        ),
+      ),
     );
   }
 }

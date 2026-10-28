@@ -280,17 +280,18 @@ class _CanvasEditorState extends State<CanvasEditor>
     if (mounted) _cubit.select(null);
   }
 
+  /// A run uses the saved config, complete and not running already
+  bool _canRun(BackupConfig config) =>
+      !config.id.startsWith(CanvasCubit.newPrefix) &&
+      !CanvasData.configOrphan(config) &&
+      !(config.lastRun?.running ?? false);
+
   List<ContextMenuItem> _nodeMenu(NodeKind kind, String id) {
     final icons = app.assets.icons;
     final config = kind == NodeKind.config
         ? _cubit.state.data.config(id)
         : null;
-    // a run uses the saved config, complete and not running already
-    final canRun =
-        config != null &&
-        !config.id.startsWith(CanvasCubit.newPrefix) &&
-        !CanvasData.configOrphan(config) &&
-        !(config.lastRun?.running ?? false);
+    final canRun = config != null && _canRun(config);
     return [
       if (config != null) ...[
         ContextMenuItem(
@@ -445,8 +446,8 @@ class _CanvasEditorState extends State<CanvasEditor>
     final drag = _drag;
     final link = _link;
     if (drag != null && !drag.moved) {
+      // a click selects a config; its edit is a button of its corner
       _cubit.tapNode(drag.kind, drag.id);
-      if (drag.kind == NodeKind.config) _openConfig(drag.id);
     }
     if (link != null) {
       final s = _cubit.state.data;
@@ -828,6 +829,8 @@ class _CanvasEditorState extends State<CanvasEditor>
               config: c,
               selected: sel?.id == c.id,
               handlers: handlers,
+              onEdit: () => _openConfig(c.id),
+              onRun: _canRun(c) ? () => _cubit.runNow(c.id) : null,
               onDelete: () => _cubit.deleteConfig(c.id),
             ),
           ),

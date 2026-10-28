@@ -285,18 +285,29 @@ void main() {
   );
 
   testWidgets(
-    'a click on a config opens its dialog in steps; Save changes applies it',
+    'a click selects a config; its edit opens the dialog in steps, Save '
+    'changes applies it',
     (tester) async {
       final cubit = await pump(tester);
+      Future<void> settle() async {
+        for (var i = 0; i < 5; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+      }
+
       await tester.tapAt(
         world(
           tester,
           cubit.state.data.config('j1')!.pos + const Offset(40, 20),
         ),
       );
-      for (var i = 0; i < 5; i++) {
-        await tester.pump(const Duration(milliseconds: 100));
-      }
+      await settle();
+      expect(cubit.state.data.selectedId, 'j1');
+      expect(find.text('Step 1 of 3'), findsNothing);
+      expect(find.byTooltip('Run now'), findsOneWidget);
+
+      await tester.tap(find.byTooltip('Edit config'));
+      await settle();
       expect(find.text('Step 1 of 3'), findsOneWidget);
       expect(find.widgetWithText(TextField, '0 2 * * *'), findsOneWidget);
 
