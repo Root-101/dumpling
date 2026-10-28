@@ -1,7 +1,10 @@
 @TestOn('vm')
 library;
 
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:drift/drift.dart' show Value;
 import 'package:http/http.dart' as http;
@@ -396,5 +399,121 @@ void main() {
         isEmpty,
       );
     });
+  });
+
+  group('PostgresSourceDriver', () {
+    test(
+      'Should give up on a server that makes the password hash run forever',
+      () async {
+        // Answers the SCRAM start with 2^40 iterations: the client would hash
+        // the password for days
+        final fake = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+        addTearDown(fake.close);
+        fake.listen((socket) {
+          var received = <int>[];
+          var startup = true;
+          socket.listen((data) {
+            received.addAll(data);
+            int length(int at) => ByteData.sublistView(
+              Uint8List.fromList(received),
+              at,
+            ).getInt32(0);
+            List<int> auth(int code, List<int> payload) => [
+              ...ascii.encode('R'),
+              ...(ByteData(8)
+                    ..setInt32(0, 8 + payload.length)
+                    ..setInt32(4, code))
+                  .buffer
+                  .asUint8List(),
+              ...payload,
+            ];
+            if (startup) {
+              if (received.length < 4 || received.length < length(0)) return;
+              received = received.sublist(length(0));
+              startup = false;
+              socket.add(auth(10, [...ascii.encode('SCRAM-SHA-256'), 0, 0]));
+            }
+            if (received.length < 5 || received.length < 1 + length(1)) return;
+            final nonce = RegExp(r'r=([^,\x00]+)')
+                .firstMatch(latin1.decode(received))!
+                .group(1);
+            received = [];
+            socket.add(
+              auth(11, ascii.encode('r=${nonce}x,s=c2FsdA==,i=${1 << 40}')),
+            );
+          });
+        });
+
+        final before = PostgresSourceDriver.deadline;
+        PostgresSourceDriver.deadline = const Duration(seconds: 2);
+        addTearDown(() => PostgresSourceDriver.deadline = before);
+        // The service keeps answering meanwhile
+        var ticks = 0;
+        final heartbeat = Timer.periodic(
+          const Duration(milliseconds: 100),
+          (_) => ticks++,
+        );
+        addTearDown(heartbeat.cancel);
+
+        final check = await PostgresSourceDriver().testConnection(
+          PostgresSettings(
+            host: '127.0.0.1',
+            port: fake.port,
+            database: 'orders',
+            username: 'backup',
+          ),
+          {PostgresSettings.passwordKey: 'pw'},
+        );
+        expect(check.status, CheckStatus.failed);
+        expect(check.message, 'Timed out after 2 s');
+        expect(ticks, greaterThan(10));
+      },
+    );
+
+    test(
+      'Should fail a dump whose errors are not UTF-8, without throwing past it',
+      () async {
+        // A LATIN1 database names its tables in LATIN1: 'pg' + é + an 0xFF
+        final dir = await Directory.systemTemp.createTemp('fake_pg_dump');
+        addTearDown(() => dir.delete(recursive: true));
+        await File('${dir.path}/bad.txt')
+            .writeAsBytes([0x70, 0x67, 0xE9, 0xFF, 0x0A]);
+        final String script;
+        if (Platform.isWindows) {
+          script = '${dir.path}\\pg_dump.bat';
+          await File(script)
+              .writeAsString('@type "%~dp0bad.txt" 1>&2\r\n@exit /b 1\r\n');
+        } else {
+          script = '${dir.path}/pg_dump';
+          await File(script).writeAsString(
+            '#!/bin/sh\ncat "\$(dirname "\$0")/bad.txt" >&2\nexit 1\n',
+          );
+          await Process.run('chmod', ['+x', script]);
+        }
+        final before = env.pgDumpPath;
+        env.put('PG_DUMP_PATH', script);
+        addTearDown(() => env.put('PG_DUMP_PATH', before));
+
+        await expectLater(
+          PostgresSourceDriver()
+              .dump(
+                PostgresSettings(
+                  host: 'db',
+                  database: 'orders',
+                  username: 'backup',
+                ),
+                {},
+              )
+              .drain<void>(),
+          throwsA(
+            isA<DumpException>().having(
+              (e) => e.message,
+              'message',
+              contains('pg\uFFFD'),
+            ),
+          ),
+        );
+      },
+    );
   });
 }

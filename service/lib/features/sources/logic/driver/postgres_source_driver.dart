@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:postgres/postgres.dart' as pg;
 import 'package:service/dumpling.dart';
@@ -8,6 +9,13 @@ import 'package:service/dumpling.dart';
 class PostgresSourceDriver implements SourceDriver {
   /// To connect and to answer each query.
   static const Duration timeout = Duration(seconds: 10);
+
+  /// The whole talk with the server of a connection test, in an isolate of
+  /// its own that is killed after this: a server (or anyone on the way, the
+  /// connection has no TLS) picks how many times the client hashes the
+  /// password (the SCRAM iterations), and that loop would block every
+  /// request and run of the service, beyond the reach of [timeout].
+  static Duration deadline = const Duration(seconds: 35);
 
   /// The end of what pg_dump writes to stderr that goes into the error.
   static const int _stderrTail = 2000;
@@ -46,23 +54,32 @@ class PostgresSourceDriver implements SourceDriver {
           return;
         }
         final stderr = StringBuffer();
-        final errors = process!.stderr
-            .transform(utf8.decoder)
-            .forEach(stderr.write);
-        // The stream waits for the upload: pausing it holds pg_dump back
-        await controller.addStream(process!.stdout);
-        final code = await process!.exitCode;
-        await errors;
-        if (code != 0) {
-          final text = stderr.toString().trim();
-          controller.addError(
-            DumpException(
-              'pg_dump exited with code $code: '
-              '${text.length > _stderrTail ? text.substring(text.length - _stderrTail) : text}',
-            ),
-          );
+        // Server messages come in the encoding of the database, not always
+        // UTF-8; and an error here before it is awaited would end the service
+        final errors =
+            process!.stderr
+                .transform(const Utf8Decoder(allowMalformed: true))
+                .forEach(stderr.write)
+              ..ignore();
+        try {
+          // The stream waits for the upload: pausing it holds pg_dump back
+          await controller.addStream(process!.stdout);
+          final code = await process!.exitCode;
+          await errors;
+          if (code != 0) {
+            final text = stderr.toString().trim();
+            controller.addError(
+              DumpException(
+                'pg_dump exited with code $code: '
+                '${text.length > _stderrTail ? text.substring(text.length - _stderrTail) : text}',
+              ),
+            );
+          }
+        } catch (e) {
+          controller.addError(DumpException('pg_dump failed: $e'));
+        } finally {
+          await controller.close();
         }
-        await controller.close();
       },
       onCancel: () => process?.kill(),
     );
@@ -125,55 +142,30 @@ class PostgresSourceDriver implements SourceDriver {
       checkedAt: DateTime.now().toUtc(),
     );
 
-    final String serverVersion;
-    final int serverMajor;
-    try {
-      final connection = await pg.Connection.open(
-        pg.Endpoint(
-          host: postgres.host!.trim(),
-          port: postgres.portOrDefault,
-          database: postgres.database!.trim(),
-          username: postgres.username!.trim(),
-          password: secrets[PostgresSettings.passwordKey],
-        ),
-        settings: pg.ConnectionSettings(
-          sslMode: switch (postgres.ssl) {
-            PostgresSslMode.disable => pg.SslMode.disable,
-            PostgresSslMode.require => pg.SslMode.require,
-          },
-          connectTimeout: timeout,
-          queryTimeout: timeout,
-          applicationName: 'dumpling',
-        ),
-      );
-      try {
-        // `16.4 (Debian 16.4-1.pgdg120+2)` → `16.4`
-        final version = await connection.execute('SHOW server_version');
-        serverVersion = (version.first.first as String).split(' ').first;
-        // 160004 → 16 (and 90624 → 9, before PostgreSQL 10)
-        final number = await connection.execute('SHOW server_version_num');
-        serverMajor = int.parse(number.first.first as String) ~/ 10000;
-      } finally {
-        await connection.close();
+    final server = await _askServer(
+      pg.Endpoint(
+        host: postgres.host!.trim(),
+        port: postgres.portOrDefault,
+        database: postgres.database!.trim(),
+        username: postgres.username!.trim(),
+        password: secrets[PostgresSettings.passwordKey],
+      ),
+      switch (postgres.ssl) {
+        PostgresSslMode.disable => pg.SslMode.disable,
+        PostgresSslMode.require => pg.SslMode.require,
+      },
+    );
+    final serverVersion = server.version;
+    if (serverVersion == null) {
+      if (server.unexpected) {
+        logger.warning(
+          'Connection test failed',
+          fields: {'error': server.error},
+        );
       }
-    } on pg.ServerException catch (e) {
-      // Wrong password, unknown database or role…
-      return result(CheckStatus.failed, message: e.message);
-    } on SocketException catch (e) {
-      return result(
-        CheckStatus.failed,
-        message: e.osError?.message ?? e.message,
-      );
-    } on TimeoutException {
-      return result(
-        CheckStatus.failed,
-        message: 'Timed out after ${timeout.inSeconds} s',
-      );
-    } on Object catch (e) {
-      // A TLS handshake that fails, a closed connection…
-      logger.warning('Connection test failed', fields: {'error': '$e'});
-      return result(CheckStatus.failed, message: '$e');
+      return result(CheckStatus.failed, message: server.error);
     }
+    final serverMajor = server.major!;
 
     if (tool == null) {
       return result(CheckStatus.toolMissing, serverVersion: serverVersion);
@@ -185,4 +177,88 @@ class PostgresSourceDriver implements SourceDriver {
       serverVersion: serverVersion,
     );
   }
+
+  /// [_queryServer] in its own isolate, killed after [deadline].
+  static Future<_ServerAnswer> _askServer(
+    pg.Endpoint endpoint,
+    pg.SslMode ssl,
+  ) async {
+    final answer = ReceivePort();
+    final isolate = await Isolate.spawn(_serverIsolate, (
+      answer.sendPort,
+      endpoint,
+      ssl,
+    ));
+    try {
+      return await answer.first.timeout(deadline) as _ServerAnswer;
+    } on TimeoutException {
+      return (
+        version: null,
+        major: null,
+        error: 'Timed out after ${deadline.inSeconds} s',
+        unexpected: false,
+      );
+    } finally {
+      isolate.kill(priority: Isolate.immediate);
+      answer.close();
+    }
+  }
+
+  static Future<void> _serverIsolate(
+    (SendPort, pg.Endpoint, pg.SslMode) args,
+  ) async {
+    final (reply, endpoint, ssl) = args;
+    Isolate.exit(reply, await _queryServer(endpoint, ssl));
+  }
+
+  /// The version of the server, or why it can't be read.
+  static Future<_ServerAnswer> _queryServer(
+    pg.Endpoint endpoint,
+    pg.SslMode ssl,
+  ) async {
+    _ServerAnswer failed(String error, {bool unexpected = false}) =>
+        (version: null, major: null, error: error, unexpected: unexpected);
+    try {
+      final connection = await pg.Connection.open(
+        endpoint,
+        settings: pg.ConnectionSettings(
+          sslMode: ssl,
+          connectTimeout: timeout,
+          queryTimeout: timeout,
+          applicationName: 'dumpling',
+        ),
+      );
+      try {
+        // `16.4 (Debian 16.4-1.pgdg120+2)` → `16.4`
+        final version = await connection.execute('SHOW server_version');
+        // 160004 → 16 (and 90624 → 9, before PostgreSQL 10)
+        final number = await connection.execute('SHOW server_version_num');
+        return (
+          version: (version.first.first as String).split(' ').first,
+          major: int.parse(number.first.first as String) ~/ 10000,
+          error: null,
+          unexpected: false,
+        );
+      } finally {
+        await connection.close();
+      }
+    } on pg.ServerException catch (e) {
+      // Wrong password, unknown database or role…
+      return failed(e.message);
+    } on SocketException catch (e) {
+      return failed(e.osError?.message ?? e.message);
+    } on TimeoutException {
+      return failed('Timed out after ${timeout.inSeconds} s');
+    } on Object catch (e) {
+      // A TLS handshake that fails, a closed connection…
+      return failed('$e', unexpected: true);
+    }
+  }
 }
+
+typedef _ServerAnswer = ({
+  String? version,
+  int? major,
+  String? error,
+  bool unexpected,
+});
