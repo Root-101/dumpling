@@ -51,7 +51,8 @@ and connected by hand.
   `.env` (a build arg: changing it and running `docker compose up -d --build` updates it). The
   service reads `pg_dump --version` (`PG_DUMP_PATH`) for the compatibility check; the image is
   what is missing.
-- [ ] CI: analyze and tests of both packages.
+- [x] CI: analyze and tests of both packages (`.github/workflows/ci.yml`), on every push to
+  `develop` or `main`.
 
 ## M1 · Auth
 
@@ -73,13 +74,13 @@ Screens: Workspaces, Workspaces · New workspace, Workspace settings, Workspace 
 
 - [x] CRUD: name, description and color.
 - [x] Defaults for new configs: schedule, compression, object key.
-- [ ] Delete by typing its name: its sources, destinations, configs and runs go, the files in the
-  buckets stay. The service side is done.
+- [x] Delete by typing its name: its sources, destinations, configs and runs go, the files in the
+  buckets stay.
 - [x] `GET /api/workspaces` returns the `stats` of each workspace: sources, destinations,
   configs, failing, running and the last run.
-- [ ] Console: list, switch, create, settings, delete. List (cards with counts, health and last
-  run), switch (the rail, by the URL, the last one remembered) and create are done; settings and
-  delete are not.
+- [x] Console: list, switch, create, settings, delete. List (cards with counts, health and last
+  run), switch (the rail, by the URL, the last one remembered), create, and settings (a dialog
+  from the card: general, defaults, delete) are done.
 
 ## M3 · Sources
 
