@@ -456,15 +456,6 @@ class CanvasCubit extends Cubit<CanvasState> {
     );
   }
 
-  /// See [Frequency.apply]
-  void setFrequency(Frequency f) {
-    final sel = _data.selected;
-    if (sel == null || f == Frequency.cron) return;
-    _updateSelected(
-      (c) => c.copyWith(schedule: () => Frequency.apply(f, c.schedule)),
-    );
-  }
-
   /// What the config dialog left: its name, schedule, output and whether it
   /// is enabled (its place and its wires stay)
   void applyConfig(BackupConfig edited) => _update(
@@ -477,33 +468,6 @@ class CanvasCubit extends Cubit<CanvasState> {
       enabled: edited.enabled,
     ),
   );
-
-  /// Empty: the default of the workspace
-  void setObjectKey(String key) {
-    final value = key.trim();
-    _updateSelected(
-      (c) => c.copyWith(objectKey: () => value.isEmpty ? null : value),
-    );
-  }
-
-  /// As typed: the panel says when it is empty, the service trims it
-  void setName(String name) => _updateSelected((c) => c.copyWith(name: name));
-
-  /// A cron in UTC, as typed; the frequency picker follows it
-  void setSchedule(String cron) =>
-      _updateSelected((c) => c.copyWith(schedule: () => cron.trim()));
-
-  void setCompression(String compression) =>
-      _updateSelected((c) => c.copyWith(compression: compression));
-
-  /// A disabled config only runs with Run now
-  void setEnabled(bool enabled) =>
-      _updateSelected((c) => c.copyWith(enabled: enabled));
-
-  void _updateSelected(BackupConfig Function(BackupConfig) f) {
-    final id = _data.selectedId;
-    if (id != null) _update(id, f);
-  }
 
   /// What a run now would write, with the placeholders of the key filled
   /// like the engine does (UTC)

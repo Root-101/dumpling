@@ -4069,6 +4069,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'run_config_started',
     'CREATE INDEX run_config_started ON run (config_id, started_at)',
   );
+  late final Index runWorkspaceStarted = Index(
+    'run_workspace_started',
+    'CREATE INDEX run_workspace_started ON run (workspace_slug, started_at)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4081,6 +4085,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     runTable,
     destinationFolderTable,
     runConfigStarted,
+    runWorkspaceStarted,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([

@@ -24,21 +24,6 @@ class NavigatorHelper {
     );
   }
 
-  void push(
-    String name, {
-    Map<String, String> pathParameters = const <String, String>{},
-    Map<String, dynamic> queryParameters = const <String, dynamic>{},
-    Object? extra,
-    bool addToStack = true,
-  }) {
-    app.context.pushNamed(
-      name,
-      pathParameters: pathParameters,
-      queryParameters: queryParameters,
-      extra: extra,
-    );
-  }
-
   void pop() {
     app.context.pop();
   }

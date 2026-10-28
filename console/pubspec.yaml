@@ -30,7 +30,6 @@ dependencies:
   material_ui: 1.0.1
 
   #utils
-  logger: 2.7.0
   intl: 0.20.3
   #texts generated from lib/l10n/*.i18n.yaml (`fvm dart run slang`)
   slang: 4.19.2

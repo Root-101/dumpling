@@ -5,7 +5,6 @@ import 'package:flutter/services.dart' show BrowserContextMenu;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:logger/logger.dart';
 import 'package:material_ui/material_ui.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -134,8 +133,6 @@ class AppGlobal {
     if (context != null) return context.intl;
     return messagesOf(Locale(Intl.defaultLocale ?? 'en'));
   }
-
-  Logger logger = Logger();
 
   LoadingOverlayController loading = LoadingOverlayController();
 

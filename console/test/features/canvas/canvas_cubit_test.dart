@@ -173,16 +173,11 @@ void main() {
     },
   );
 
-  test('the frequency keeps the time of the schedule', () async {
-    final cubit = (await loaded())..select('j2');
-    cubit.setFrequency(Frequency.weekly);
-    expect(cubit.state.data.config('j2')!.schedule, '30 2 * * 0');
-    cubit.setFrequency(Frequency.hourly);
-    expect(cubit.state.data.config('j2')!.schedule, '30 * * * *');
+  test('the frequency keeps the time of the schedule', () {
+    expect(Frequency.apply(Frequency.weekly, '30 2 * * *'), '30 2 * * 0');
+    expect(Frequency.apply(Frequency.hourly, '30 2 * * 0'), '30 * * * *');
     expect(Frequency.of('30 * * * *'), Frequency.hourly);
     expect(Frequency.of('*/5 * * * *'), Frequency.cron);
-    cubit.setObjectKey('  ');
-    expect(cubit.state.data.config('j2')!.objectKey, isNull);
   });
 
   test('a click on a wire picks it', () async {
@@ -508,14 +503,17 @@ void main() {
     expect(cubit.state.data.config('j1')!.lastRun, isNull);
   });
 
-  test('the panel edits name, schedule, compression and enabled; the save sends them', () async {
-    final cubit = (await loaded())..select('j1');
-    cubit
-      ..setName('Hourly orders')
-      ..setSchedule('  15 * * * * ')
-      ..setCompression('none')
-      ..setEnabled(false)
-      ..setObjectKey('{db}/{yyyy}');
+  test('the dialog edits name, schedule, compression and enabled; the save sends them', () async {
+    final cubit = await loaded();
+    cubit.applyConfig(
+      cubit.state.data.config('j1')!.copyWith(
+        name: 'Hourly orders',
+        schedule: () => '15 * * * *',
+        compression: 'none',
+        enabled: false,
+        objectKey: () => '{db}/{yyyy}',
+      ),
+    );
     final j1 = cubit.state.data.config('j1')!;
     expect(j1.name, 'Hourly orders');
     expect(j1.schedule, '15 * * * *');

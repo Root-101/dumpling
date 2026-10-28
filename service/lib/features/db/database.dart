@@ -191,7 +191,10 @@ class ConfigTable extends Table {
 
 /// One run of a config, scheduled or manual. It keeps the names and types of
 /// what it used: the history stays readable after they change or go.
+///
+/// The run log lists by workspace, newest first; the history of a config too.
 @TableIndex(name: 'run_config_started', columns: {#configId, #startedAt})
+@TableIndex(name: 'run_workspace_started', columns: {#workspaceSlug, #startedAt})
 class RunTable extends Table {
   @override
   String get tableName => 'run';
