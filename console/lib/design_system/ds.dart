@@ -34,6 +34,7 @@ export 'form/app_form_alert.dart';
 export 'table/app_simple_table.dart';
 export 'text/app_date_time.dart';
 export 'text/app_text.dart';
+export 'text_input/app_field_warning.dart';
 export 'text_input/app_form_input.dart';
 export 'text_input/app_form_password_input.dart';
 export 'text_input/app_text_search_field.dart';

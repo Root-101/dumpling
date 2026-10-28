@@ -5,6 +5,7 @@ app:
   version: 'Dumpling v{version: String}'
 
 common:
+  longName: 'Long names are cut on the canvas: a shorter one reads better.'
   loading: 'Loading'
   error: 'Error'
   tryAgain: 'Try again'

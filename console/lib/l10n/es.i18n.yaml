@@ -5,6 +5,7 @@ app:
   version: 'Dumpling v{version}'
 
 common:
+  longName: 'Los nombres largos se cortan en el canvas: uno más corto se lee mejor.'
   loading: 'Cargando'
   error: 'Error'
   tryAgain: 'Reintentar'

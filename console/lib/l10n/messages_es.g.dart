@@ -111,6 +111,9 @@ class AppMessages$common$es implements AppMessages$common$en {
 
   // Translations
   @override
+  String get longName =>
+      'Los nombres largos se cortan en el canvas: uno más corto se lee mejor.';
+  @override
   String get loading => 'Cargando';
   @override
   String get error => 'Error';
@@ -1551,6 +1554,7 @@ extension on AppMessagesEs {
           'app.version' => ({
             required Object version,
           }) => 'Dumpling v${version}',
+          'common.longName' => 'Los nombres largos se cortan en el canvas: uno más corto se lee mejor.',
           'common.loading' => 'Cargando',
           'common.error' => 'Error',
           'common.tryAgain' => 'Reintentar',
@@ -2255,12 +2259,12 @@ extension on AppMessagesEs {
           }) => 'Ejecutar ${name} ahora',
           'backups.showRuns' => 'Ver las ejecuciones',
           'backups.hideRuns' => 'Ocultar las ejecuciones',
-          'backups.moreFor' => ({
-            required Object name,
-          }) => 'Más acciones de ${name}',
           _ => null,
         } ??
         switch (path) {
+          'backups.moreFor' => ({
+            required Object name,
+          }) => 'Más acciones de ${name}',
           'backups.viewLastRun' => 'Ver la última ejecución',
           'backups.editConfig' => 'Editar config',
           'backups.deleteBackup' => 'Eliminar respaldo',

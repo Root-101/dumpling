@@ -8,6 +8,13 @@ import 'package:material_ui/material_ui.dart';
 class CanvasGeometry {
   CanvasGeometry._();
 
+  /// Characters of a name that fit on its node; a longer one is cut, and its
+  /// form warns about it
+  static const int readableName = 10;
+
+  /// [name] would be cut on its node
+  static bool longName(String name) => name.trim().length > readableName;
+
   static const Size sourceSize = Size(200, 88);
   static const Size configSize = Size(240, 112);
   static const double destinationWidth = 256;

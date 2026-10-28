@@ -96,6 +96,10 @@ class AppMessages$common$en {
 
   // Translations
 
+  /// en: 'Long names are cut on the canvas: a shorter one reads better.'
+  String get longName =>
+      'Long names are cut on the canvas: a shorter one reads better.';
+
   /// en: 'Loading'
   String get loading => 'Loading';
 
@@ -2033,6 +2037,8 @@ extension on AppMessages {
           'app.version' => ({
             required String version,
           }) => 'Dumpling v${version}',
+          'common.longName' =>
+            'Long names are cut on the canvas: a shorter one reads better.',
           'common.loading' => 'Loading',
           'common.error' => 'Error',
           'common.tryAgain' => 'Try again',
@@ -2725,12 +2731,12 @@ extension on AppMessages {
           'backups.runNowFor' => ({required String name}) => 'Run ${name} now',
           'backups.showRuns' => 'Show run history',
           'backups.hideRuns' => 'Hide run history',
-          'backups.moreFor' => ({
-            required String name,
-          }) => 'More actions for ${name}',
           _ => null,
         } ??
         switch (path) {
+          'backups.moreFor' => ({
+            required String name,
+          }) => 'More actions for ${name}',
           'backups.viewLastRun' => 'View last run',
           'backups.editConfig' => 'Edit config',
           'backups.deleteBackup' => 'Delete backup',

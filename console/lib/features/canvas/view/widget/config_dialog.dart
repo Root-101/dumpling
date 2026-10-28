@@ -220,7 +220,10 @@ class _ConfigDialogState extends State<ConfigDialog> {
         onChanged: (v) => _set(_c.copyWith(name: v)),
       ),
       const SizedBox(height: 6),
-      _Help(t.nameHelp),
+      if (_nameError == null && CanvasGeometry.longName(_c.name))
+        AppFieldWarning(app.intl.common.longName)
+      else
+        _Help(t.nameHelp),
       const SizedBox(height: 16),
       _Label(t.frequency),
       const SizedBox(height: 6),

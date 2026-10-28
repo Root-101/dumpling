@@ -181,9 +181,9 @@ Screens: Backups, Backups · Filters / Sort / Run details, Events (as the run lo
 
 UX/UI improvements in 0.1.0, not features.
 
-- [ ] Long names: sources, destinations and configs each have a name. When it is longer than a
-  limit (one console constant, about 10 characters, to tune on the canvas), a small warning under
-  the field says to choose a shorter name so it reads well on the canvas. It does not block saving.
+- [x] Long names: sources, destinations and configs each have a name. When it is longer than a
+  limit (`CanvasGeometry.readableName`, 10 characters), a small warning under the field says to
+  choose a shorter name so it reads well on the canvas. It does not block saving.
 - [ ] Double compression: a PostgreSQL source with the custom format (`pg_dump -Fc`, already
   compressed) and a config with gzip is allowed and compressed twice, but a small warning under
   the compression field says it barely makes the file smaller.

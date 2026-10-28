@@ -394,6 +394,9 @@ class _DestinationFormState extends State<DestinationForm> {
         hint: app.intl.destinations.nameHint,
         autofocus: !_editing,
         maxLength: _nameMaxLength,
+        warningText: CanvasGeometry.longName(_nameController.text)
+            ? app.intl.common.longName
+            : null,
         errorText: _serverErrors[DestinationFormField.name],
         validator: _required,
         onChange: (_) => _changed(DestinationFormField.name),

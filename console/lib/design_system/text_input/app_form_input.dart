@@ -13,6 +13,10 @@ class AppFormInput extends StatefulWidget {
   /// Help text under the field; the error replaces it when there is one
   final String? helperText;
 
+  /// A value allowed but worth changing; it replaces [helperText], the error
+  /// replaces it
+  final String? warningText;
+
   /// Error from outside the [validator] (e.g. from the API). It wins over the validator's
   final String? errorText;
   final int? maxLength;
@@ -47,6 +51,7 @@ class AppFormInput extends StatefulWidget {
     this.label,
     this.hint,
     this.helperText,
+    this.warningText,
     this.errorText,
     this.maxLength,
     this.showCounter = false,
@@ -140,6 +145,7 @@ class _AppFormInputState extends State<AppFormInput> {
   bool get _hasHelpRow =>
       widget.validator != null ||
       widget.helperText != null ||
+      widget.warningText != null ||
       widget.errorText != null;
 
   @override
@@ -332,6 +338,8 @@ class _AppFormInputState extends State<AppFormInput> {
                 ],
               ),
             )
+          : widget.warningText != null
+          ? AppFieldWarning(widget.warningText!)
           : Text(
               widget.helperText ?? '',
               style: style?.copyWith(color: app.colors.neutral.grey3),

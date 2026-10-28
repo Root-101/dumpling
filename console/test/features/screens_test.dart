@@ -439,13 +439,18 @@ void main() {
       expect(find.text('pg-billing.internal'), findsOneWidget);
       expect(find.text('5432'), findsOneWidget);
 
-      await tester.enterText(
-        find.ancestor(
-          of: find.text('e.g. orders-db'),
-          matching: find.byType(TextField),
-        ),
-        'billing-db',
+      final name = find.ancestor(
+        of: find.text('e.g. orders-db'),
+        matching: find.byType(TextField),
       );
+      const longName =
+          'Long names are cut on the canvas: a shorter one reads better.';
+      await tester.enterText(name, 'billing-database-primary');
+      await settle(tester);
+      expect(find.text(longName), findsOneWidget); // a warning, it goes on
+      await tester.enterText(name, 'billing-db');
+      await settle(tester);
+      expect(find.text(longName), findsNothing);
       await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));
       await settle(tester);
       expect(find.text('Check and save'), findsOneWidget);
