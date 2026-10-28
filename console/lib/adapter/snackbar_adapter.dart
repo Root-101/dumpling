@@ -23,6 +23,8 @@ class SnackBarAdapter {
   }
 
   void showError({required String message, required BuildContext context}) {
+    // what failed with the old token is the session expired dialog's to say
+    if (app.di.find<AuthCubit>().expired) return;
     _show(
       context: context,
       child: _AppSnackBar(

@@ -33,10 +33,10 @@ class FeaturesInit {
         },
         onError: (DioException e, ErrorInterceptorHandler handler) async {
           // A wrong password at login is a 401 too, but there is no session
-          // to close then
+          // to expire then
           final auth = app.di.find<AuthCubit>();
           if (e.response?.statusCode == 401 && auth.auth != null) {
-            auth.logout();
+            auth.expire();
           }
           return handler.next(e);
         },
@@ -58,6 +58,9 @@ class FeaturesInit {
     app.di.find<AuthCubit>().stream.listen((state) async {
       if (state is AuthLogoutState) {
         await _resetCubits();
+      }
+      if (state is AuthExpiredState) {
+        SessionExpiredDialog.open();
       }
     });
   }

@@ -370,6 +370,16 @@ class AppMessages$login$en {
 
   /// en: 'Powered by Winter'
   String get tagWinter => 'Powered by Winter';
+
+  /// en: 'Your session expired'
+  String get expiredTitle => 'Your session expired';
+
+  /// en: 'Your session ended after 12 hours. Sign in again to continue where you left off.'
+  String get expiredDescription =>
+      'Your session ended after 12 hours. Sign in again to continue where you left off.';
+
+  /// en: 'Go to the sign-in page'
+  String get toSignInPage => 'Go to the sign-in page';
 }
 
 // Path: colors
@@ -2121,6 +2131,9 @@ extension on AppMessages {
           'login.tagLightweight' => 'Lightweight',
           'login.tagCanvas' => 'Drag & Drop Canvas',
           'login.tagWinter' => 'Powered by Winter',
+          'login.expiredTitle' => 'Your session expired',
+          'login.expiredDescription' => 'Your session ended after 12 hours. Sign in again to continue where you left off.',
+          'login.toSignInPage' => 'Go to the sign-in page',
           'colors.none' => 'No color',
           'colors.custom' => 'Custom color',
           'colors.apply' => 'Apply',
@@ -2715,12 +2728,12 @@ extension on AppMessages {
           'backups.moreFor' => ({
             required String name,
           }) => 'More actions for ${name}',
-          'backups.viewLastRun' => 'View last run',
-          'backups.editConfig' => 'Edit config',
-          'backups.deleteBackup' => 'Delete backup',
           _ => null,
         } ??
         switch (path) {
+          'backups.viewLastRun' => 'View last run',
+          'backups.editConfig' => 'Edit config',
+          'backups.deleteBackup' => 'Delete backup',
           'backups.recentRuns' => 'Recent runs',
           'backups.noRuns' => 'No runs yet',
           'backups.viewLog' => 'View log',

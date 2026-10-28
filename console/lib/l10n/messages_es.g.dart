@@ -312,6 +312,13 @@ class AppMessages$login$es implements AppMessages$login$en {
   String get tagCanvas => 'Canvas drag & drop';
   @override
   String get tagWinter => 'Hecho con Winter';
+  @override
+  String get expiredTitle => 'Tu sesión expiró';
+  @override
+  String get expiredDescription =>
+      'Tu sesión terminó tras 12 horas. Inicia sesión de nuevo para seguir donde lo dejaste.';
+  @override
+  String get toSignInPage => 'Ir a la página de inicio de sesión';
 }
 
 // Path: colors
@@ -1644,6 +1651,9 @@ extension on AppMessagesEs {
           'login.tagLightweight' => 'Ligero',
           'login.tagCanvas' => 'Canvas drag & drop',
           'login.tagWinter' => 'Hecho con Winter',
+          'login.expiredTitle' => 'Tu sesión expiró',
+          'login.expiredDescription' => 'Tu sesión terminó tras 12 horas. Inicia sesión de nuevo para seguir donde lo dejaste.',
+          'login.toSignInPage' => 'Ir a la página de inicio de sesión',
           'colors.none' => 'Sin color',
           'colors.custom' => 'Color personalizado',
           'colors.apply' => 'Aplicar',
@@ -2248,12 +2258,12 @@ extension on AppMessagesEs {
           'backups.moreFor' => ({
             required Object name,
           }) => 'Más acciones de ${name}',
-          'backups.viewLastRun' => 'Ver la última ejecución',
-          'backups.editConfig' => 'Editar config',
-          'backups.deleteBackup' => 'Eliminar respaldo',
           _ => null,
         } ??
         switch (path) {
+          'backups.viewLastRun' => 'Ver la última ejecución',
+          'backups.editConfig' => 'Editar config',
+          'backups.deleteBackup' => 'Eliminar respaldo',
           'backups.recentRuns' => 'Ejecuciones recientes',
           'backups.noRuns' => 'Aún no hay ejecuciones',
           'backups.viewLog' => 'Ver log',

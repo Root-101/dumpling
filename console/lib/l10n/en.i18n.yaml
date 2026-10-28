@@ -91,6 +91,9 @@ login:
   tagLightweight: 'Lightweight'
   tagCanvas: 'Drag & Drop Canvas'
   tagWinter: 'Powered by Winter'
+  expiredTitle: 'Your session expired'
+  expiredDescription: 'Your session ended after 12 hours. Sign in again to continue where you left off.'
+  toSignInPage: 'Go to the sign-in page'
 
 colors:
   none: 'No color'

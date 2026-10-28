@@ -65,8 +65,8 @@ Screens: Login, Login · Wrong password, Error · Session expired.
 - [x] Console: login screen (a wrong password shows the error of the service inside the form);
   a `401` sends back to the login, there is no refresh; back to the page asked for after signing
   in; sign out.
-- [ ] Console: the Error · Session expired screen of the design (today a `401` goes straight to
-  the login).
+- [x] Console: the Error · Session expired dialog of the design: a `401` with a session keeps the
+  screen (an unsaved canvas too) under a dialog that signs in again, or goes to the sign-in page.
 
 ## M2 · Workspaces
 

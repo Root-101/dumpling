@@ -91,6 +91,9 @@ login:
   tagLightweight: 'Ligero'
   tagCanvas: 'Canvas drag & drop'
   tagWinter: 'Hecho con Winter'
+  expiredTitle: 'Tu sesión expiró'
+  expiredDescription: 'Tu sesión terminó tras 12 horas. Inicia sesión de nuevo para seguir donde lo dejaste.'
+  toSignInPage: 'Ir a la página de inicio de sesión'
 
 colors:
   none: 'Sin color'
