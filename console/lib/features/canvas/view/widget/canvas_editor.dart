@@ -429,11 +429,14 @@ class _CanvasEditorState extends State<CanvasEditor>
         start: drag.start,
         moved: moved,
       );
-      _cubit.move(
-        drag.kind,
-        drag.id,
-        Offset(pos.dx.roundToDouble(), pos.dy.roundToDouble()),
-      );
+      // the jitter of a click is not an edit
+      if (moved) {
+        _cubit.move(
+          drag.kind,
+          drag.id,
+          Offset(pos.dx.roundToDouble(), pos.dy.roundToDouble()),
+        );
+      }
     } else if (link != null) {
       setState(
         () =>

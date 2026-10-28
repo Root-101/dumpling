@@ -52,7 +52,7 @@ class S3Uploader {
       }
       if (uploadId == null) {
         final body = buffer.takeBytes();
-        await client.putObject(key, Uint8List.fromList(body));
+        await client.putObject(key, body);
         onProgress?.call(body.length);
         return body.length;
       }

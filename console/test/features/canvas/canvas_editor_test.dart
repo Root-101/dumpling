@@ -96,6 +96,15 @@ void main() {
     );
     await tester.pump();
     expect(cubit.state.data.selectedId, 'j2');
+
+    // a click that shakes 1 px moves nothing: no edit to save
+    final moved = cubit.state.data.source('users')!.pos;
+    await tester.dragFrom(
+      world(tester, moved + const Offset(60, 60)),
+      const Offset(1, 0),
+    );
+    await tester.pump();
+    expect(cubit.state.data.source('users')!.pos, moved);
   });
 
   testWidgets('a wire from a source port to a bucket creates a config', (

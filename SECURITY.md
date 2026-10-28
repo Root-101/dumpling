@@ -64,8 +64,10 @@ reasons behind each decision are in [`DECISIONS.md`](DECISIONS.md).
 - **Secrets**: use long random values for `DUMPLING_ADMIN_PASSWORD`, `JWT_SECRET` and
   `SECRETS_ENCRYPTION_KEY` (e.g. `openssl rand -hex 32`) and keep them out of the repository. The
   service warns at start-up when the password has fewer than 12 characters or the other two fewer
-  than 32. Rotating `JWT_SECRET` signs everyone out; changing `SECRETS_ENCRYPTION_KEY` makes every
-  stored credential unreadable, and each source and destination needs its password again.
+  than 32. Rotating `JWT_SECRET` signs everyone out. Changing `DUMPLING_ADMIN_PASSWORD` does not:
+  the tokens already given work until they expire, so after a leak change both. Changing
+  `SECRETS_ENCRYPTION_KEY` makes every stored credential unreadable, and each source and
+  destination needs its password again.
 - **Least privilege for the database**: connect with a role that can only read, e.g. one granted
   `pg_read_all_data` (PostgreSQL 14+). `pg_dump` needs nothing else.
 - **Least privilege for the bucket**: an access key limited to `s3:PutObject` and

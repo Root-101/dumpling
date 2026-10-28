@@ -8,7 +8,6 @@ class SigV4Signer {
   static const String algorithm = 'AWS4-HMAC-SHA256';
   static const String region = 'us-east-1';
   static const String service = 's3';
-  static const String unsignedPayload = 'UNSIGNED-PAYLOAD';
 
   /// The sha256 of an empty body.
   static const String emptyPayload =

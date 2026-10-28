@@ -45,7 +45,7 @@ void main() {
           },
           headers: {'host': 'examplebucket.s3.amazonaws.com'},
           signedHeaders: 'host',
-          payloadHash: SigV4Signer.unsignedPayload,
+          payloadHash: 'UNSIGNED-PAYLOAD',
         ),
       );
       expect(
