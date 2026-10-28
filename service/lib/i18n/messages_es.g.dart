@@ -203,6 +203,9 @@ class ServiceMessages$errors$validations$es
   String get objectKeyExtension =>
       'Quita la extensión: se agrega según el formato del dump y la compresión';
   @override
+  String get objectKeyDots =>
+      'La clave del objeto no puede tener carpetas . o ..';
+  @override
   String get sourceTypeDisabled =>
       'Este tipo de origen todavía no está disponible';
   @override
@@ -291,6 +294,8 @@ extension on ServiceMessagesEs {
       'errors.validations.objectKey' =>
         'La clave del objeto no puede empezar por /',
       'errors.validations.objectKeyExtension' => 'Quita la extensión: se agrega según el formato del dump y la compresión',
+      'errors.validations.objectKeyDots' =>
+        'La clave del objeto no puede tener carpetas . o ..',
       'errors.validations.sourceTypeDisabled' =>
         'Este tipo de origen todavía no está disponible',
       'errors.validations.destinationTypeDisabled' =>

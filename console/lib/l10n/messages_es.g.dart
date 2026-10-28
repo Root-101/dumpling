@@ -1426,6 +1426,8 @@ class AppMessages$canvas$inspector$es
   String get objectKeyExtension =>
       'Omite la extensión: se agrega según el formato del dump y la compresión';
   @override
+  String get objectKeyDots => 'El object key no puede tener carpetas . o ..';
+  @override
   String get schedule => 'Nombre y programación';
   @override
   String get cron => 'Cron';
@@ -2116,6 +2118,8 @@ extension on AppMessagesEs {
           'canvas.inspector.objectKeySlash' =>
             'El object key no puede empezar con /',
           'canvas.inspector.objectKeyExtension' => 'Omite la extensión: se agrega según el formato del dump y la compresión',
+          'canvas.inspector.objectKeyDots' =>
+            'El object key no puede tener carpetas . o ..',
           'canvas.inspector.schedule' => 'Nombre y programación',
           'canvas.inspector.cron' => 'Cron',
           'canvas.inspector.timeZone' => 'Zona horaria',
@@ -2265,10 +2269,10 @@ extension on AppMessagesEs {
           'backups.sortNextSub' => 'El más cercano primero',
           'backups.sortName' => 'Nombre del origen',
           'backups.sortNameSub' => 'De la A a la Z',
-          'backups.inTime' => ({required Object time}) => 'en ${time}',
           _ => null,
         } ??
         switch (path) {
+          'backups.inTime' => ({required Object time}) => 'en ${time}',
           'backups.startedAgo' => ({
             required Object time,
           }) => 'Empezó hace ${time}',

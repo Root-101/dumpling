@@ -44,9 +44,12 @@ class BackupEngine {
 
   static String taskName(String configId) => 'config:$configId';
 
-  /// On start: the runs a stop left half done are failed, and every enabled
-  /// config gets its task.
+  /// On start: the runs a stop left half done are failed, their uploads
+  /// aborted, and every enabled config gets its task.
   Future<void> start() async {
+    for (final run in await runs.running()) {
+      if (run.pendingUpload != null) await _abortPending(run);
+    }
     final interrupted = await runs.failRunning(
       'Interrupted: the service stopped during the run',
     );
@@ -94,7 +97,7 @@ class BackupEngine {
     return run;
   }
 
-  /// Waits for the manual runs in progress (the tests, a stop).
+  /// Waits for the manual runs in progress (the tests).
   Future<void> idle() => Future.wait([..._manual]);
 
   Future<void> _scheduled(String configId) async {
@@ -226,6 +229,16 @@ class BackupEngine {
         onProgress: (bytes) => unawaited(
           runs.update(run.id, RunTableCompanion(sizeBytes: Value(bytes))),
         ),
+        onPending: (pending) => unawaited(
+          runs.update(
+            run.id,
+            RunTableCompanion(
+              pendingUpload: Value(
+                jsonEncode({'destination': destination.id, ...pending}),
+              ),
+            ),
+          ),
+        ),
       );
       write('Uploaded $size bytes in ${watch.elapsed.inSeconds} s');
 
@@ -259,6 +272,38 @@ class BackupEngine {
       logger.warning('Run failed', fields: {'run': run.id, 'error': '$e'});
     } finally {
       _active.remove(config.id);
+    }
+  }
+
+  /// Aborts the upload [run] left half done: its parts are billed until then.
+  /// A failure only logs: a lifecycle rule of the bucket is the fallback.
+  Future<void> _abortPending(RunTableData run) async {
+    try {
+      final pending = (jsonDecode(run.pendingUpload!) as Map<String, dynamic>)
+          .cast<String, String>();
+      final destination = (await destinations.get(
+        run.workspaceSlug,
+        pending['destination']!,
+      ))?.destination;
+      // Deleted since, with its credentials
+      if (destination == null) return;
+      await DestinationDriver.drivers[destination.type]!.abortPending(
+        DestinationSettings.fromJson(
+          destination.type,
+          jsonDecode(destination.settings) as Map<String, dynamic>,
+        )!,
+        secrets.decrypt(destination.id, destination.secretsEncrypted),
+        pending,
+      );
+      logger.info(
+        'Aborted the upload of an interrupted run',
+        fields: {'run': run.id},
+      );
+    } catch (e) {
+      logger.warning(
+        'Could not abort the upload of an interrupted run',
+        fields: {'run': run.id, 'error': '$e'},
+      );
     }
   }
 

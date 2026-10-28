@@ -2950,6 +2950,17 @@ class $RunTableTable extends RunTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _pendingUploadMeta = const VerificationMeta(
+    'pendingUpload',
+  );
+  @override
+  late final GeneratedColumn<String> pendingUpload = GeneratedColumn<String>(
+    'pending_upload',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _logMeta = const VerificationMeta('log');
   @override
   late final GeneratedColumn<String> log = GeneratedColumn<String>(
@@ -2997,6 +3008,7 @@ class $RunTableTable extends RunTable
     location,
     sizeBytes,
     error,
+    pendingUpload,
     log,
     startedAt,
     finishedAt,
@@ -3078,6 +3090,15 @@ class $RunTableTable extends RunTable
       context.handle(
         _errorMeta,
         error.isAcceptableOrUnknown(data['error']!, _errorMeta),
+      );
+    }
+    if (data.containsKey('pending_upload')) {
+      context.handle(
+        _pendingUploadMeta,
+        pendingUpload.isAcceptableOrUnknown(
+          data['pending_upload']!,
+          _pendingUploadMeta,
+        ),
       );
     }
     if (data.containsKey('log')) {
@@ -3169,6 +3190,10 @@ class $RunTableTable extends RunTable
         DriftSqlType.string,
         data['${effectivePrefix}error'],
       ),
+      pendingUpload: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pending_upload'],
+      ),
       log: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}log'],
@@ -3227,6 +3252,11 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
   /// Why it failed, when it did.
   final String? error;
 
+  /// The multipart upload in progress (`{"destination", "key", "upload_id"}`):
+  /// its parts are billed until it is aborted, so a start after a stop or a
+  /// crash aborts it.
+  final String? pendingUpload;
+
   /// The [RunLogLine]s as a JSON list.
   final String log;
   final DateTime startedAt;
@@ -3245,6 +3275,7 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
     this.location,
     required this.sizeBytes,
     this.error,
+    this.pendingUpload,
     required this.log,
     required this.startedAt,
     this.finishedAt,
@@ -3287,6 +3318,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
     if (!nullToAbsent || error != null) {
       map['error'] = Variable<String>(error);
     }
+    if (!nullToAbsent || pendingUpload != null) {
+      map['pending_upload'] = Variable<String>(pendingUpload);
+    }
     map['log'] = Variable<String>(log);
     map['started_at'] = Variable<DateTime>(startedAt);
     if (!nullToAbsent || finishedAt != null) {
@@ -3316,6 +3350,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
       error: error == null && nullToAbsent
           ? const Value.absent()
           : Value(error),
+      pendingUpload: pendingUpload == null && nullToAbsent
+          ? const Value.absent()
+          : Value(pendingUpload),
       log: Value(log),
       startedAt: Value(startedAt),
       finishedAt: finishedAt == null && nullToAbsent
@@ -3351,6 +3388,7 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
       location: serializer.fromJson<String?>(json['location']),
       sizeBytes: serializer.fromJson<int>(json['sizeBytes']),
       error: serializer.fromJson<String?>(json['error']),
+      pendingUpload: serializer.fromJson<String?>(json['pendingUpload']),
       log: serializer.fromJson<String>(json['log']),
       startedAt: serializer.fromJson<DateTime>(json['startedAt']),
       finishedAt: serializer.fromJson<DateTime?>(json['finishedAt']),
@@ -3381,6 +3419,7 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
       'location': serializer.toJson<String?>(location),
       'sizeBytes': serializer.toJson<int>(sizeBytes),
       'error': serializer.toJson<String?>(error),
+      'pendingUpload': serializer.toJson<String?>(pendingUpload),
       'log': serializer.toJson<String>(log),
       'startedAt': serializer.toJson<DateTime>(startedAt),
       'finishedAt': serializer.toJson<DateTime?>(finishedAt),
@@ -3401,6 +3440,7 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
     Value<String?> location = const Value.absent(),
     int? sizeBytes,
     Value<String?> error = const Value.absent(),
+    Value<String?> pendingUpload = const Value.absent(),
     String? log,
     DateTime? startedAt,
     Value<DateTime?> finishedAt = const Value.absent(),
@@ -3418,6 +3458,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
     location: location.present ? location.value : this.location,
     sizeBytes: sizeBytes ?? this.sizeBytes,
     error: error.present ? error.value : this.error,
+    pendingUpload: pendingUpload.present
+        ? pendingUpload.value
+        : this.pendingUpload,
     log: log ?? this.log,
     startedAt: startedAt ?? this.startedAt,
     finishedAt: finishedAt.present ? finishedAt.value : this.finishedAt,
@@ -3449,6 +3492,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
       location: data.location.present ? data.location.value : this.location,
       sizeBytes: data.sizeBytes.present ? data.sizeBytes.value : this.sizeBytes,
       error: data.error.present ? data.error.value : this.error,
+      pendingUpload: data.pendingUpload.present
+          ? data.pendingUpload.value
+          : this.pendingUpload,
       log: data.log.present ? data.log.value : this.log,
       startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
       finishedAt: data.finishedAt.present
@@ -3473,6 +3519,7 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
           ..write('location: $location, ')
           ..write('sizeBytes: $sizeBytes, ')
           ..write('error: $error, ')
+          ..write('pendingUpload: $pendingUpload, ')
           ..write('log: $log, ')
           ..write('startedAt: $startedAt, ')
           ..write('finishedAt: $finishedAt')
@@ -3495,6 +3542,7 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
     location,
     sizeBytes,
     error,
+    pendingUpload,
     log,
     startedAt,
     finishedAt,
@@ -3516,6 +3564,7 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
           other.location == this.location &&
           other.sizeBytes == this.sizeBytes &&
           other.error == this.error &&
+          other.pendingUpload == this.pendingUpload &&
           other.log == this.log &&
           other.startedAt == this.startedAt &&
           other.finishedAt == this.finishedAt);
@@ -3535,6 +3584,7 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
   final Value<String?> location;
   final Value<int> sizeBytes;
   final Value<String?> error;
+  final Value<String?> pendingUpload;
   final Value<String> log;
   final Value<DateTime> startedAt;
   final Value<DateTime?> finishedAt;
@@ -3553,6 +3603,7 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
     this.location = const Value.absent(),
     this.sizeBytes = const Value.absent(),
     this.error = const Value.absent(),
+    this.pendingUpload = const Value.absent(),
     this.log = const Value.absent(),
     this.startedAt = const Value.absent(),
     this.finishedAt = const Value.absent(),
@@ -3572,6 +3623,7 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
     this.location = const Value.absent(),
     this.sizeBytes = const Value.absent(),
     this.error = const Value.absent(),
+    this.pendingUpload = const Value.absent(),
     this.log = const Value.absent(),
     required DateTime startedAt,
     this.finishedAt = const Value.absent(),
@@ -3600,6 +3652,7 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
     Expression<String>? location,
     Expression<int>? sizeBytes,
     Expression<String>? error,
+    Expression<String>? pendingUpload,
     Expression<String>? log,
     Expression<DateTime>? startedAt,
     Expression<DateTime>? finishedAt,
@@ -3619,6 +3672,7 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
       if (location != null) 'location': location,
       if (sizeBytes != null) 'size_bytes': sizeBytes,
       if (error != null) 'error': error,
+      if (pendingUpload != null) 'pending_upload': pendingUpload,
       if (log != null) 'log': log,
       if (startedAt != null) 'started_at': startedAt,
       if (finishedAt != null) 'finished_at': finishedAt,
@@ -3640,6 +3694,7 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
     Value<String?>? location,
     Value<int>? sizeBytes,
     Value<String?>? error,
+    Value<String?>? pendingUpload,
     Value<String>? log,
     Value<DateTime>? startedAt,
     Value<DateTime?>? finishedAt,
@@ -3659,6 +3714,7 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
       location: location ?? this.location,
       sizeBytes: sizeBytes ?? this.sizeBytes,
       error: error ?? this.error,
+      pendingUpload: pendingUpload ?? this.pendingUpload,
       log: log ?? this.log,
       startedAt: startedAt ?? this.startedAt,
       finishedAt: finishedAt ?? this.finishedAt,
@@ -3716,6 +3772,9 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
     if (error.present) {
       map['error'] = Variable<String>(error.value);
     }
+    if (pendingUpload.present) {
+      map['pending_upload'] = Variable<String>(pendingUpload.value);
+    }
     if (log.present) {
       map['log'] = Variable<String>(log.value);
     }
@@ -3747,6 +3806,7 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
           ..write('location: $location, ')
           ..write('sizeBytes: $sizeBytes, ')
           ..write('error: $error, ')
+          ..write('pendingUpload: $pendingUpload, ')
           ..write('log: $log, ')
           ..write('startedAt: $startedAt, ')
           ..write('finishedAt: $finishedAt, ')
@@ -6712,6 +6772,7 @@ typedef $$RunTableTableCreateCompanionBuilder = RunTableCompanion Function({
   Value<String?> location,
   Value<int> sizeBytes,
   Value<String?> error,
+  Value<String?> pendingUpload,
   Value<String> log,
   required DateTime startedAt,
   Value<DateTime?> finishedAt,
@@ -6731,6 +6792,7 @@ typedef $$RunTableTableUpdateCompanionBuilder = RunTableCompanion Function({
   Value<String?> location,
   Value<int> sizeBytes,
   Value<String?> error,
+  Value<String?> pendingUpload,
   Value<String> log,
   Value<DateTime> startedAt,
   Value<DateTime?> finishedAt,
@@ -6841,6 +6903,11 @@ class $$RunTableTableFilterComposer
 
   ColumnFilters<String> get error => $composableBuilder(
     column: $table.error,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get pendingUpload => $composableBuilder(
+    column: $table.pendingUpload,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6970,6 +7037,11 @@ class $$RunTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get pendingUpload => $composableBuilder(
+    column: $table.pendingUpload,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get log => $composableBuilder(
     column: $table.log,
     builder: (column) => ColumnOrderings(column),
@@ -7086,6 +7158,11 @@ class $$RunTableTableAnnotationComposer
   GeneratedColumn<String> get error =>
       $composableBuilder(column: $table.error, builder: (column) => column);
 
+  GeneratedColumn<String> get pendingUpload => $composableBuilder(
+    column: $table.pendingUpload,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get log =>
       $composableBuilder(column: $table.log, builder: (column) => column);
 
@@ -7185,6 +7262,7 @@ class $$RunTableTableTableManager
                 Value<String?> location = const Value.absent(),
                 Value<int> sizeBytes = const Value.absent(),
                 Value<String?> error = const Value.absent(),
+                Value<String?> pendingUpload = const Value.absent(),
                 Value<String> log = const Value.absent(),
                 Value<DateTime> startedAt = const Value.absent(),
                 Value<DateTime?> finishedAt = const Value.absent(),
@@ -7203,6 +7281,7 @@ class $$RunTableTableTableManager
                 location: location,
                 sizeBytes: sizeBytes,
                 error: error,
+                pendingUpload: pendingUpload,
                 log: log,
                 startedAt: startedAt,
                 finishedAt: finishedAt,
@@ -7223,6 +7302,7 @@ class $$RunTableTableTableManager
                 Value<String?> location = const Value.absent(),
                 Value<int> sizeBytes = const Value.absent(),
                 Value<String?> error = const Value.absent(),
+                Value<String?> pendingUpload = const Value.absent(),
                 Value<String> log = const Value.absent(),
                 required DateTime startedAt,
                 Value<DateTime?> finishedAt = const Value.absent(),
@@ -7241,6 +7321,7 @@ class $$RunTableTableTableManager
                 location: location,
                 sizeBytes: sizeBytes,
                 error: error,
+                pendingUpload: pendingUpload,
                 log: log,
                 startedAt: startedAt,
                 finishedAt: finishedAt,

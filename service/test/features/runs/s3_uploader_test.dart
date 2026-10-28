@@ -52,11 +52,16 @@ void main() {
 
     test('Should send a bigger one part by part, in order', () async {
       final progress = <int>[];
-      final size = await S3Uploader(
-        client,
-        partSize: 1000,
-      ).upload('orders/b.dump', bytes(2500), onProgress: progress.add);
+      final multipart = <String>[];
+      final size = await S3Uploader(client, partSize: 1000).upload(
+        'orders/b.dump',
+        bytes(2500),
+        onProgress: progress.add,
+        onMultipart: multipart.add,
+      );
       expect(size, 2500);
+      // once, with the id S3 gave
+      expect(multipart, [startsWith('upload-')]);
       expect(s3.objects['backups/orders/b.dump'], expected(2500));
       expect(progress, [1000, 2000, 2500]);
       expect(s3.openUploads, isEmpty);
@@ -115,6 +120,31 @@ void main() {
         ),
         'orders/2026/03/07-0405-run_abc-{nope}.dump.gz',
       );
+    });
+
+    test('Should keep the name of the database one folder', () {
+      String key(String database) => ObjectKey.render(
+        '{db}/{run_id}',
+        at: DateTime.utc(2026),
+        database: database,
+        runId: 'r',
+        extension: '.dump',
+      );
+      expect(key('..'), '_/r.dump');
+      expect(key('a/b'), 'a_b/r.dump');
+      expect(key('orders.v2'), 'orders.v2/r.dump');
+    });
+
+    test('Should reject . and .. folders in the object key', () {
+      bool valid(String key) {
+        final context = ConstraintValidatorContext();
+        context.field<String?>('object_key', key).objectKey();
+        return context.violations.isEmpty;
+      }
+
+      expect(valid('{db}/{yyyy}'), isTrue);
+      expect(valid('../x/{db}'), isFalse);
+      expect(valid('{db}/./{yyyy}'), isFalse);
     });
   });
 }

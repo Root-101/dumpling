@@ -65,6 +65,11 @@ class RunTableRepo {
     )..where((tbl) => tbl.id.equals(id))).write(run);
   }
 
+  /// The runs still running: on start, those a stop left half done.
+  Future<List<RunTableData>> running() => (_db.select(
+    _db.runTable,
+  )..where((tbl) => tbl.status.equalsValue(RunStatus.running))).get();
+
   /// The runs a stop of the service left half done: failed, with [error].
   Future<int> failRunning(String error) =>
       (_db.update(

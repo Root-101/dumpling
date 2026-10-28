@@ -233,6 +233,11 @@ class RunTable extends Table {
   /// Why it failed, when it did.
   TextColumn get error => text().nullable()();
 
+  /// The multipart upload in progress (`{"destination", "key", "upload_id"}`):
+  /// its parts are billed until it is aborted, so a start after a stop or a
+  /// crash aborts it.
+  TextColumn get pendingUpload => text().nullable()();
+
   /// The [RunLogLine]s as a JSON list.
   TextColumn get log => text().withDefault(const Constant('[]'))();
 

@@ -445,6 +445,7 @@ canvas:
     compressionNone: 'Ninguna'
     objectKeySlash: 'El object key no puede empezar con /'
     objectKeyExtension: 'Omite la extensión: se agrega según el formato del dump y la compresión'
+    objectKeyDots: 'El object key no puede tener carpetas . o ..'
     schedule: 'Nombre y programación'
     cron: 'Cron'
     timeZone: 'Zona horaria'

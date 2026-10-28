@@ -153,7 +153,8 @@ Screens: Pipeline editor, Getting started · Empty workspace.
 - [x] A run streams from end to end: `pg_dump` to stdout → gzip → parts of 16 MiB → S3 multipart
   upload (a single PutObject when it fits in one part). The dump never touches the disk and the
   memory stays at a few parts.
-- [x] A failed run aborts its multipart upload, so no half file remains in the bucket.
+- [x] A failed run aborts its multipart upload, so no half file remains in the bucket; one cut by
+  a stop or a crash is aborted on the next start.
 - [x] Each run stores status, trigger (schedule or manual), size, duration, log lines and the
   object key it wrote.
 - [x] One run per config at a time; runs left half-done by a restart are marked failed.

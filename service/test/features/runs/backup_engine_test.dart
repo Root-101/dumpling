@@ -301,6 +301,17 @@ void main() {
 
     test('Should fail the runs a stop left half done', () async {
       final db = di.find<AppDatabase>();
+      // the multipart upload it had started
+      final client = S3Client(
+        endpoint: Uri.parse(s3.endpoint),
+        region: FakeS3.region,
+        bucket: 'backups',
+        accessKeyId: FakeS3.accessKeyId,
+        secretAccessKey: FakeS3.secretAccessKey,
+        pathStyle: true,
+      );
+      final uploadId = await client.createMultipartUpload('orders/half.dump');
+      expect(s3.openUploads, hasLength(1));
       await db
           .into(db.runTable)
           .insert(
@@ -316,6 +327,13 @@ void main() {
               status: RunStatus.running,
               startedAt: DateTime.now().toUtc(),
               configId: const Value(null),
+              pendingUpload: Value(
+                jsonEncode({
+                  'destination': destinationId,
+                  'key': 'orders/half.dump',
+                  'upload_id': uploadId,
+                }),
+              ),
             ),
           );
       // What a new start of the service does
@@ -323,6 +341,9 @@ void main() {
       final run = await getJson('$base/runs/run_interrupted');
       expect(run['status'], 'failed');
       expect(run['error'], contains('Interrupted'));
+      // its parts are no longer billed
+      expect(s3.openUploads, isEmpty);
+      expect(s3.requests.last, startsWith('DELETE /backups/orders/half.dump'));
     });
   });
 

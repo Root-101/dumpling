@@ -17,7 +17,10 @@ abstract final class ObjectKey {
       'dd': two(utc.day),
       'HH': two(utc.hour),
       'mm': two(utc.minute),
-      'db': database,
+      // a name is one folder: a `/` would make more, and `.` or `..` none
+      'db': database == '.' || database == '..'
+          ? '_'
+          : database.replaceAll('/', '_'),
       'run_id': runId,
     };
     // An unknown placeholder stays as it is

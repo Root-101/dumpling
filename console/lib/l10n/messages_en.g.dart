@@ -1877,6 +1877,9 @@ class AppMessages$canvas$inspector$en {
   String get objectKeyExtension =>
       'Leave out the extension: it is added from the dump format and the compression';
 
+  /// en: 'The object key cannot have . or .. folders'
+  String get objectKeyDots => 'The object key cannot have . or .. folders';
+
   /// en: 'Name & schedule'
   String get schedule => 'Name & schedule';
 
@@ -2592,6 +2595,8 @@ extension on AppMessages {
           'canvas.inspector.objectKeySlash' =>
             'The object key cannot start with /',
           'canvas.inspector.objectKeyExtension' => 'Leave out the extension: it is added from the dump format and the compression',
+          'canvas.inspector.objectKeyDots' =>
+            'The object key cannot have . or .. folders',
           'canvas.inspector.schedule' => 'Name & schedule',
           'canvas.inspector.cron' => 'Cron',
           'canvas.inspector.timeZone' => 'Time zone',
@@ -2743,10 +2748,10 @@ extension on AppMessages {
           'backups.sortNextSub' => 'Soonest first',
           'backups.sortName' => 'Source name',
           'backups.sortNameSub' => 'A to Z',
-          'backups.inTime' => ({required String time}) => 'in ${time}',
           _ => null,
         } ??
         switch (path) {
+          'backups.inTime' => ({required String time}) => 'in ${time}',
           'backups.startedAgo' => ({
             required String time,
           }) => 'Started ${time} ago',

@@ -262,6 +262,9 @@ abstract class ConfigRules {
   static String? objectKey(String? value) {
     if (value == null) return null;
     if (value.startsWith('/')) return app.intl.canvas.inspector.objectKeySlash;
+    if (value.split('/').any((s) => s == '.' || s == '..')) {
+      return app.intl.canvas.inspector.objectKeyDots;
+    }
     final file = value.split('/').last.toLowerCase();
     return _extensions.any(file.endsWith)
         ? app.intl.canvas.inspector.objectKeyExtension

@@ -28,6 +28,7 @@ errors:
     cron: 'Not a valid cron expression (minute hour day month weekday)'
     objectKey: 'The object key cannot start with /'
     objectKeyExtension: 'Leave out the extension: it is added from the dump format and the compression'
+    objectKeyDots: 'The object key cannot have . or .. folders'
     sourceTypeDisabled: 'This type of source is not available yet'
     destinationTypeDisabled: 'This type of destination is not available yet'
     s3Endpoint: 'Not an endpoint URL (https://s3.us-east-1.amazonaws.com, http://minio:9000)'

@@ -202,6 +202,9 @@ class ServiceMessages$errors$validations$en {
   String get objectKeyExtension =>
       'Leave out the extension: it is added from the dump format and the compression';
 
+  /// en: 'The object key cannot have . or .. folders'
+  String get objectKeyDots => 'The object key cannot have . or .. folders';
+
   /// en: 'This type of source is not available yet'
   String get sourceTypeDisabled => 'This type of source is not available yet';
 
@@ -303,6 +306,8 @@ extension on ServiceMessages {
         'Not a valid cron expression (minute hour day month weekday)',
       'errors.validations.objectKey' => 'The object key cannot start with /',
       'errors.validations.objectKeyExtension' => 'Leave out the extension: it is added from the dump format and the compression',
+      'errors.validations.objectKeyDots' =>
+        'The object key cannot have . or .. folders',
       'errors.validations.sourceTypeDisabled' =>
         'This type of source is not available yet',
       'errors.validations.destinationTypeDisabled' =>

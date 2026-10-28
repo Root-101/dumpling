@@ -51,9 +51,28 @@ class S3DestinationDriver implements DestinationDriver {
     String key,
     Stream<List<int>> data, {
     void Function(int bytes)? onProgress,
-  }) =>
-      S3Uploader(_client(settings, secrets))
-          .upload(_objectKey(folder, key), data, onProgress: onProgress);
+    void Function(Map<String, String> pending)? onPending,
+  }) {
+    final objectKey = _objectKey(folder, key);
+    return S3Uploader(_client(settings, secrets)).upload(
+      objectKey,
+      data,
+      onProgress: onProgress,
+      onMultipart: onPending == null
+          ? null
+          : (id) => onPending({'key': objectKey, 'upload_id': id}),
+    );
+  }
+
+  @override
+  Future<void> abortPending(
+    DestinationSettings settings,
+    Map<String, String> secrets,
+    Map<String, String> pending,
+  ) => _client(
+    settings,
+    secrets,
+  ).abortMultipartUpload(pending['key']!, pending['upload_id']!);
 
   @override
   String location(DestinationSettings settings, String? folder, String key) =>

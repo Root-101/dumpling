@@ -445,6 +445,7 @@ canvas:
     compressionNone: 'None'
     objectKeySlash: 'The object key cannot start with /'
     objectKeyExtension: 'Leave out the extension: it is added from the dump format and the compression'
+    objectKeyDots: 'The object key cannot have . or .. folders'
     schedule: 'Name & schedule'
     cron: 'Cron'
     timeZone: 'Time zone'

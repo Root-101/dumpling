@@ -61,7 +61,8 @@ class Dumpling {
 
     //--------------- Backups ---------------\\
     // Each enabled config is a task on its cron; Winter starts the scheduler
-    // once the port is open and waits for the runs on a graceful stop
+    // once the port is open. A stop cuts the runs in progress: the next start
+    // fails them and aborts their uploads
     final scheduler = Scheduler();
     di.put(scheduler);
     final engine = BackupEngine();

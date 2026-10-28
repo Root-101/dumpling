@@ -504,6 +504,9 @@ void main() {
     expect(ConfigRules.objectKey('{db}/{yyyy}-{MM}'), isNull);
     expect(ConfigRules.objectKey('/{db}'), isNotNull);
     expect(ConfigRules.objectKey('{db}/backup.sql.gz'), isNotNull);
+    expect(ConfigRules.objectKey('../x/{db}'), isNotNull);
+    expect(ConfigRules.objectKey('{db}/./{yyyy}'), isNotNull);
+    expect(ConfigRules.objectKey('{db}/v1.2/{yyyy}'), isNull);
     expect(ConfigRules.extension(sourceNode('orders'), 'gzip'), '.dump.gz');
     expect(
       ConfigRules.extension(

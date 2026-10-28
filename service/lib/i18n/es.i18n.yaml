@@ -25,6 +25,7 @@ errors:
     cron: 'No es una expresión cron válida (minuto hora día mes día-de-la-semana)'
     objectKey: 'La clave del objeto no puede empezar por /'
     objectKeyExtension: 'Quita la extensión: se agrega según el formato del dump y la compresión'
+    objectKeyDots: 'La clave del objeto no puede tener carpetas . o ..'
     sourceTypeDisabled: 'Este tipo de origen todavía no está disponible'
     destinationTypeDisabled: 'Este tipo de destino todavía no está disponible'
     s3Endpoint: 'No es una URL de endpoint (https://s3.us-east-1.amazonaws.com, http://minio:9000)'

@@ -19,11 +19,13 @@ class S3Uploader {
   S3Uploader(this.client, {this.partSize = defaultPartSize});
 
   /// Uploads [data] to [key] and returns its size; [onProgress] gets the bytes
-  /// uploaded so far after each part.
+  /// uploaded so far after each part, and [onMultipart] the id of the
+  /// multipart upload once started.
   Future<int> upload(
     String key,
     Stream<List<int>> data, {
     void Function(int bytes)? onProgress,
+    void Function(String uploadId)? onMultipart,
   }) async {
     final buffer = BytesBuilder(copy: false);
     final etags = <String>[];
@@ -32,7 +34,10 @@ class S3Uploader {
 
     Future<void> sendPart() async {
       final part = buffer.takeBytes();
-      uploadId ??= await client.createMultipartUpload(key);
+      if (uploadId == null) {
+        uploadId = await client.createMultipartUpload(key);
+        onMultipart?.call(uploadId!);
+      }
       etags.add(
         await client.uploadPart(key, uploadId!, etags.length + 1, part),
       );

@@ -70,7 +70,9 @@ reasons behind each decision are in [`DECISIONS.md`](DECISIONS.md).
   `pg_read_all_data` (PostgreSQL 14+). `pg_dump` needs nothing else.
 - **Least privilege for the bucket**: an access key limited to `s3:PutObject` and
   `s3:AbortMultipartUpload` on the bucket (or its prefix). Turn on versioning or object lock in the
-  bucket if a leaked key must not be able to overwrite older backups.
+  bucket if a leaked key must not be able to overwrite older backups. A run cut by a stop has its
+  upload aborted on the next start; if that fails (the key changed, the bucket is unreachable), an
+  `AbortIncompleteMultipartUpload` lifecycle rule in the bucket drops the parts it left.
 - **The data volume** (`/data`) holds the SQLite database with the encrypted credentials; protect
   its backups like the secrets themselves, and keep `SECRETS_ENCRYPTION_KEY` apart from them.
 - **The backups** contain your data: restrict who can read the bucket, and enable encryption at

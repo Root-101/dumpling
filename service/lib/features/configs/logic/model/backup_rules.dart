@@ -17,12 +17,18 @@ extension BackupRules on FieldValidator<String?> {
         value == null || isCron(value) ? null : intl.errors.validations.cron,
   );
 
-  /// Relative (no `/` first) and without extension.
+  /// Relative (no `/` first), without `.` or `..` folders (the URL would
+  /// drop them after signing: S3 rejects every upload) and without extension.
   FieldValidator<String?> objectKey() => size(min: 1, max: maxObjectKeyLength)
       .custom(
         (value) => value == null || !value.startsWith('/')
             ? null
             : intl.errors.validations.objectKey,
+      )
+      .custom(
+        (value) => value == null || !hasDotFolder(value)
+            ? null
+            : intl.errors.validations.objectKeyDots,
       )
       .custom(
         (value) => value == null || !_hasExtension(value)
@@ -38,6 +44,9 @@ extension BackupRules on FieldValidator<String?> {
       return false;
     }
   }
+
+  static bool hasDotFolder(String key) =>
+      key.split('/').any((s) => s == '.' || s == '..');
 
   /// Whether the file name (after the last `/`) ends in one of [_extensions].
   static bool _hasExtension(String key) {
