@@ -182,7 +182,21 @@ Screens: Backups, Backups · Filters / Sort / Run details, Events (as the run lo
   (the pipeline editor above all).
 - [x] Before the audits: review the whole git history for committed secrets, API keys or other
   sensitive data.
-- [ ] Run a code audit using Ponytail, as well as a security audit.
+- [x] Run a code audit using Ponytail, as well as a security audit.
+  - Code audit (18 findings, all fixed): secrets that no longer decrypt ask for the password
+    again; Discard and sign-out with edits; pg_dump waits at most a minute for a lock; parts of a
+    multipart upload are tried again; no `.`/`..` folders in object keys; the upload of an
+    interrupted run is aborted on the next start; S3 endpoints that don't answer HTTP; connection
+    tests not cut by the browser; Run now during a Save; no gzip on top of `-Fc` by default; the
+    cron back to the workspace default and crons that never fire refused; the run log indexed;
+    dead code out; a click is not an edit; a new admin password doesn't sign out (documented).
+  - Security audit (source review, no finding confirmed by running it; 10 leads, all fixed): a
+    PostgreSQL server can't freeze the service with SCRAM iterations (the connection test runs in
+    an isolate killed after 35 s) nor end it with non-UTF-8 errors; `ssl_mode` per source, TLS by
+    default; `X-Forwarded-For` only from private addresses; a request lasts at most 2 minutes;
+    text from remote servers cut to 2000 characters; S3 answers up to 1 MiB, never compressed;
+    only the end of pg_dump's stderr kept; the login limiter scans its clients at most once a
+    minute.
 - [ ] README, `CONTRIBUTING.md`, `DECISIONS.md`, changelogs; versions and tag `0.1.0-rc.1`.
 
 ## Quality of life
@@ -286,6 +300,10 @@ Docker. Each step is checked once it works in Chrome; what fails is noted under 
   and the run log and its dialog update without Refresh. Until then a run in progress shows a
   generic bar and the bytes uploaded so far, and its log appears only when it ends.
 - Account screen; users and changing the password.
+- Hardening left by the security audit: a new admin password ends the sessions already open;
+  refuse to start with short secrets (today only a warning); pin the JWT algorithm and an
+  audience; a retention for the run log; no redirects followed by the S3 client; the stored
+  password dropped when a source's host changes; a `Content-Security-Policy` for the console.
 - Copying connections between workspaces; zstd compression.
 - More sources (MySQL, MariaDB, MongoDB) and destinations (Google Drive, SFTP, local download).
 
