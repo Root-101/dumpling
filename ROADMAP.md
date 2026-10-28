@@ -175,10 +175,10 @@ Screens: Backups, Backups · Filters / Sort / Run details, Events (as the run lo
 - [x] Security pass (`SECURITY.md`): credentials, auth, rate limits, input validation, what the
   logs show.
 - [x] End-to-end test with PostgreSQL and Feather-io in Docker.
-- [ ] Before the audits: review every screen and dialog of the console against the design canvas
+- [x] Before the audits: review every screen and dialog of the console against the design canvas
   and update the canvas where they differ, checked by eye with the service and the console up
   (the pipeline editor above all).
-- [ ] Before the audits: review the whole git history for committed secrets, API keys or other
+- [x] Before the audits: review the whole git history for committed secrets, API keys or other
   sensitive data.
 - [ ] Run a code audit using Ponytail, as well as a security audit.
 - [ ] README, `CONTRIBUTING.md`, `DECISIONS.md`, changelogs; versions and tag `0.1.0-rc.1`.
