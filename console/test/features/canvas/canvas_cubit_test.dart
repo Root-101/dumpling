@@ -480,6 +480,19 @@ void main() {
       ),
       '.sql',
     );
+    // the custom format is compressed already; plain SQL is worth gzip
+    final plain = const SourceNode(
+      id: 'x',
+      name: 'x',
+      type: SourceTypes.postgres,
+      settings: {'dump_format': 'plain'},
+    );
+    expect(ConfigRules.doubleCompression(sourceNode('orders'), 'gzip'), isTrue);
+    expect(
+      ConfigRules.doubleCompression(sourceNode('orders'), 'none'),
+      isFalse,
+    );
+    expect(ConfigRules.doubleCompression(plain, 'gzip'), isFalse);
   });
 
   test('a save the service rejects names the config of each error', () async {

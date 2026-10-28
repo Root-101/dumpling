@@ -1384,6 +1384,9 @@ class AppMessages$canvas$inspector$es
   @override
   String get configName => 'Nombre de la config';
   @override
+  String get doubleCompression =>
+      'El formato custom (pg_dump -Fc) ya va comprimido: gzip apenas lo reduce.';
+  @override
   String get nameHelp =>
       'Se muestra en el canvas, en Respaldos y en el registro de ejecuciones.';
   @override
@@ -2085,6 +2088,7 @@ extension on AppMessagesEs {
             'La rueda mueve el canvas, Ctrl + rueda hace zoom',
           'canvas.view.ctrlZoomOff' => 'La rueda siempre hace zoom',
           'canvas.inspector.configName' => 'Nombre de la config',
+          'canvas.inspector.doubleCompression' => 'El formato custom (pg_dump -Fc) ya va comprimido: gzip apenas lo reduce.',
           'canvas.inspector.nameHelp' => 'Se muestra en el canvas, en Respaldos y en el registro de ejecuciones.',
           'canvas.inspector.frequency' => 'Frecuencia',
           'canvas.inspector.review' => 'Revisión',
@@ -2258,10 +2262,10 @@ extension on AppMessagesEs {
             required Object name,
           }) => 'Ejecutar ${name} ahora',
           'backups.showRuns' => 'Ver las ejecuciones',
-          'backups.hideRuns' => 'Ocultar las ejecuciones',
           _ => null,
         } ??
         switch (path) {
+          'backups.hideRuns' => 'Ocultar las ejecuciones',
           'backups.moreFor' => ({
             required Object name,
           }) => 'Más acciones de ${name}',

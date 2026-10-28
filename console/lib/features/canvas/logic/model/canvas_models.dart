@@ -273,6 +273,13 @@ abstract class ConfigRules {
   static String extension(SourceNode source, String? compression) =>
       (source.settings['dump_format'] == 'plain' ? '.sql' : '.dump') +
       (compression == 'gzip' ? '.gz' : '');
+
+  /// gzip over the custom format (`pg_dump -Fc`), compressed already: allowed,
+  /// but it barely makes the file smaller
+  static bool doubleCompression(SourceNode? source, String? compression) =>
+      source != null &&
+      source.settings['dump_format'] != 'plain' &&
+      compression == 'gzip';
 }
 
 /// Where a wire was dropped

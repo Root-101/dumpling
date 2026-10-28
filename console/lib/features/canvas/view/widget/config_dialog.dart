@@ -363,6 +363,20 @@ class _ConfigDialogState extends State<ConfigDialog> {
         value: _c.compression,
         onChanged: (v) => _set(_c.copyWith(compression: v)),
       ),
+      if (ConfigRules.doubleCompression(
+        widget.source,
+        _c.compression ??
+            app.di
+                .find<WorkspaceCubit>()
+                .state
+                .data
+                .current
+                ?.defaults
+                ?.compression,
+      )) ...[
+        const SizedBox(height: 6),
+        AppFieldWarning(t.doubleCompression),
+      ],
     ];
   }
 

@@ -427,6 +427,7 @@ canvas:
     ctrlZoomOff: 'Scroll always zooms'
   inspector:
     configName: 'Config name'
+    doubleCompression: 'The custom format (pg_dump -Fc) is compressed already: gzip barely makes it smaller.'
     nameHelp: 'Shown on the canvas, in Backups and in the run log.'
     frequency: 'Frequency'
     review: 'Review'

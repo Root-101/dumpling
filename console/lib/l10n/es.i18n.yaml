@@ -427,6 +427,7 @@ canvas:
     ctrlZoomOff: 'La rueda siempre hace zoom'
   inspector:
     configName: 'Nombre de la config'
+    doubleCompression: 'El formato custom (pg_dump -Fc) ya va comprimido: gzip apenas lo reduce.'
     nameHelp: 'Se muestra en el canvas, en Respaldos y en el registro de ejecuciones.'
     frequency: 'Frecuencia'
     review: 'Revisión'

@@ -1818,6 +1818,10 @@ class AppMessages$canvas$inspector$en {
   /// en: 'Config name'
   String get configName => 'Config name';
 
+  /// en: 'The custom format (pg_dump -Fc) is compressed already: gzip barely makes it smaller.'
+  String get doubleCompression =>
+      'The custom format (pg_dump -Fc) is compressed already: gzip barely makes it smaller.';
+
   /// en: 'Shown on the canvas, in Backups and in the run log.'
   String get nameHelp => 'Shown on the canvas, in Backups and in the run log.';
 
@@ -2556,6 +2560,7 @@ extension on AppMessages {
             'Scroll moves the canvas, Ctrl + scroll zooms',
           'canvas.view.ctrlZoomOff' => 'Scroll always zooms',
           'canvas.inspector.configName' => 'Config name',
+          'canvas.inspector.doubleCompression' => 'The custom format (pg_dump -Fc) is compressed already: gzip barely makes it smaller.',
           'canvas.inspector.nameHelp' =>
             'Shown on the canvas, in Backups and in the run log.',
           'canvas.inspector.frequency' => 'Frequency',
@@ -2730,10 +2735,10 @@ extension on AppMessages {
           }) => 'Started ${time} ago',
           'backups.runNowFor' => ({required String name}) => 'Run ${name} now',
           'backups.showRuns' => 'Show run history',
-          'backups.hideRuns' => 'Hide run history',
           _ => null,
         } ??
         switch (path) {
+          'backups.hideRuns' => 'Hide run history',
           'backups.moreFor' => ({
             required String name,
           }) => 'More actions for ${name}',
