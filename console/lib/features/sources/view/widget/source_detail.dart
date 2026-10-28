@@ -110,6 +110,13 @@ class SourceDialog extends StatelessWidget {
                   : t.formatCustom,
               false,
             ),
+            (
+              t.sslMode,
+              pg.sslMode == PostgresSettingsModel.sslDisable
+                  ? t.sslDisable
+                  : t.sslRequire,
+              false,
+            ),
           ],
         ],
         action: app.intl.connections.editConnection,

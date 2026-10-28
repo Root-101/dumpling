@@ -136,7 +136,9 @@ def main():
     step('workspace, sources and destination')
     ws = call('POST', '/workspaces', {'name': 'E2E'}, expect=201)['slug']
     postgres = {'host': E['PG_HOST'], 'port': 5432, 'database': 'shop',
-                'username': E['PG_USER'], 'password': E['PG_PASSWORD']}
+                'username': E['PG_USER'], 'password': E['PG_PASSWORD'],
+                # the test postgres has no TLS
+                'ssl_mode': 'disable'}
     sources = {}
     for name, fmt in (('shop-custom', 'custom'), ('shop-plain', 'plain')):
         source = call('POST', f'/workspaces/{ws}/sources', {

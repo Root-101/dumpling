@@ -1,7 +1,8 @@
 import 'package:service/dumpling.dart';
 
-/// `disable` sends the data in clear; `require` encrypts it without checking
-/// the certificate (like `sslmode=require` of libpq).
+/// `disable` sends the data (and the password, if the server asks for it in
+/// clear) as is; `require` encrypts it, without checking the certificate
+/// (like `sslmode=require` of libpq), and never sends the password in clear.
 enum PostgresSslMode { disable, require }
 
 /// `custom` is `pg_dump -Fc` (compressed, for `pg_restore`); `plain` is SQL.
@@ -22,6 +23,9 @@ class PostgresSettings implements SourceSettings {
   final String? password;
   final String? dumpFormat;
 
+  /// `ssl_mode`, also `sslmode` in the URL: [PostgresSslMode]
+  final String? sslMode;
+
   /// The URL as it came, only to name it in a violation.
   final String? connectionUrl;
   final bool invalidUrl;
@@ -33,6 +37,7 @@ class PostgresSettings implements SourceSettings {
     this.username,
     this.password,
     this.dumpFormat,
+    this.sslMode,
     this.connectionUrl,
     this.invalidUrl = false,
   });
@@ -47,6 +52,7 @@ class PostgresSettings implements SourceSettings {
       username: json.field<String?>('username') ?? parsed?.username,
       password: json.field<String?>(passwordKey) ?? parsed?.password,
       dumpFormat: json.field<String?>('dump_format'),
+      sslMode: json.field<String?>('ssl_mode') ?? parsed?.sslMode,
       connectionUrl: url,
       invalidUrl: url != null && parsed == null,
     );
@@ -60,6 +66,7 @@ class PostgresSettings implements SourceSettings {
     String? database,
     String? username,
     String? password,
+    String? sslMode,
   })?
   parseUrl(String url) {
     final uri = Uri.tryParse(url.trim());
@@ -79,6 +86,7 @@ class PostgresSettings implements SourceSettings {
         colon < 0 ? uri.userInfo : uri.userInfo.substring(0, colon),
       ),
       password: colon < 0 ? null : part(uri.userInfo.substring(colon + 1)),
+      sslMode: uri.queryParameters['sslmode'],
     );
   }
 
@@ -94,13 +102,17 @@ class PostgresSettings implements SourceSettings {
     ..field('database', database?.trim()).notNull().size(min: 1, max: 63)
     ..field('username', username?.trim()).notNull().size(min: 1, max: 63)
     ..field(passwordKey, password, sensitive: true).size(min: 1, max: 1024)
-    ..field('dump_format', dumpFormat).isEnum(PostgresDumpFormat.values);
+    ..field('dump_format', dumpFormat).isEnum(PostgresDumpFormat.values)
+    ..field('ssl_mode', sslMode).isEnum(PostgresSslMode.values);
 
   int get portOrDefault => port ?? defaultPort;
 
-  // shortcut: always without SSL, and not in the API; in 0.2.0 it becomes a
-  // `ssl_mode` setting of the source
-  PostgresSslMode get ssl => PostgresSslMode.disable;
+  /// `require` unless the source says `disable`: a database without TLS has
+  /// to be marked as such.
+  // shortcut: no `verify-full` with a CA yet (ROADMAP)
+  PostgresSslMode get ssl => sslMode == null
+      ? PostgresSslMode.require
+      : PostgresSslMode.values.byName(sslMode!);
 
   PostgresDumpFormat get format => dumpFormat == null
       ? PostgresDumpFormat.custom
@@ -114,6 +126,7 @@ class PostgresSettings implements SourceSettings {
     'database': database!.trim(),
     'username': username!.trim(),
     'dump_format': format.name,
+    'ssl_mode': ssl.name,
   };
 
   @override

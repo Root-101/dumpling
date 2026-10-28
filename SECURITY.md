@@ -36,6 +36,10 @@ reasons behind each decision are in [`DECISIONS.md`](DECISIONS.md).
   `SECRETS_ENCRYPTION_KEY`), each with its own random nonce and bound to its row: a value copied
   to another source doesn't decrypt. They are never returned by the API nor shown again in the
   console; an edit without a new password keeps the saved one.
+- The connection to PostgreSQL uses TLS by default (`ssl_mode` `require`, which doesn't check the
+  certificate) and never sends the password in clear. A source set to `disable` sends the password
+  (if the server asks for it in clear) and the data unencrypted: only for a database on a network
+  you trust.
 - `pg_dump` gets the connection in its environment (`PGHOST`, `PGPASSWORD`…), never in its
   arguments, which any user of the machine can list. That environment doesn't carry the secrets
   of the service nor any other `PG*` variable of the machine.
@@ -59,7 +63,11 @@ reasons behind each decision are in [`DECISIONS.md`](DECISIONS.md).
 
 - **TLS**: the service speaks HTTP. Put it behind a proxy that terminates TLS, and set
   `TRUSTED_PROXIES` to the number of your own proxies so the login lock and the rate limit see the
-  client IP, not the proxy's. A `Content-Security-Policy` for the console, if you want one, goes in
+  client IP, not the proxy's. `X-Forwarded-For` only counts when the connection comes from a
+  private address (loopback, `10/8`, `172.16/12`, `192.168/16`, `fc00::/7`), where a proxy of your
+  own sits, so a client that reaches the port from outside can't pick its IP; still, publish the
+  port only to the proxy (`127.0.0.1:8080:8080`). A request lasts at most 2 minutes, so a client
+  that sends its body slowly can't hold it. A `Content-Security-Policy` for the console, if you want one, goes in
   that proxy (Flutter Web needs `'wasm-unsafe-eval'` and its inline bootstrap script).
 - **Secrets**: use long random values for `DUMPLING_ADMIN_PASSWORD`, `JWT_SECRET` and
   `SECRETS_ENCRYPTION_KEY` (e.g. `openssl rand -hex 32`) and keep them out of the repository. The

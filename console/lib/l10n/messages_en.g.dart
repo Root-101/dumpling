@@ -761,6 +761,23 @@ class AppMessages$sources$en {
   /// en: 'Plain SQL'
   String get formatPlain => 'Plain SQL';
 
+  /// en: 'TLS'
+  String get sslMode => 'TLS';
+
+  /// en: 'Required'
+  String get sslRequire => 'Required';
+
+  /// en: 'Off'
+  String get sslDisable => 'Off';
+
+  /// en: 'The connection is encrypted (the certificate is not checked) and the password never travels in clear.'
+  String get sslRequireHelp =>
+      'The connection is encrypted (the certificate is not checked) and the password never travels in clear.';
+
+  /// en: 'Without TLS the password and the data travel in clear: only for a database on a network you trust.'
+  String get sslDisableWarning =>
+      'Without TLS the password and the data travel in clear: only for a database on a network you trust.';
+
   /// en: 'Check the connection before saving the source.'
   String get testIdle => 'Check the connection before saving the source.';
 
@@ -2333,6 +2350,11 @@ extension on AppMessages {
           'sources.dumpFormat' => 'Dump format',
           'sources.formatCustom' => 'Custom (pg_dump -Fc)',
           'sources.formatPlain' => 'Plain SQL',
+          'sources.sslMode' => 'TLS',
+          'sources.sslRequire' => 'Required',
+          'sources.sslDisable' => 'Off',
+          'sources.sslRequireHelp' => 'The connection is encrypted (the certificate is not checked) and the password never travels in clear.',
+          'sources.sslDisableWarning' => 'Without TLS the password and the data travel in clear: only for a database on a network you trust.',
           'sources.testIdle' =>
             'Check the connection before saving the source.',
           'sources.connectedAs' => ({
@@ -2743,14 +2765,14 @@ extension on AppMessages {
           'backups.sortLast' => 'Last backup',
           'backups.sortLastSub' => 'Most recent first',
           'backups.sortLastOld' => 'Last backup (oldest)',
+          _ => null,
+        } ??
+        switch (path) {
           'backups.sortLastOldSub' => 'Oldest first',
           'backups.sortNext' => 'Next backup',
           'backups.sortNextSub' => 'Soonest first',
           'backups.sortName' => 'Source name',
           'backups.sortNameSub' => 'A to Z',
-          _ => null,
-        } ??
-        switch (path) {
           'backups.inTime' => ({required String time}) => 'in ${time}',
           'backups.startedAgo' => ({
             required String time,

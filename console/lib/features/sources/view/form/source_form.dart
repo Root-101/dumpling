@@ -71,6 +71,7 @@ class _SourceFormState extends State<SourceForm> {
   late String _type;
   bool _byUrl = false;
   String _dumpFormat = PostgresSettingsModel.custom;
+  String _sslMode = PostgresSettingsModel.sslRequire;
 
   /// What the last test of the form found; any change clears it
   ConnectionCheckModel? _check;
@@ -108,6 +109,7 @@ class _SourceFormState extends State<SourceForm> {
       _databaseController.text = pg.database;
       _usernameController.text = pg.username;
       _dumpFormat = pg.dumpFormat;
+      _sslMode = pg.sslMode;
     }
   }
 
@@ -137,6 +139,7 @@ class _SourceFormState extends State<SourceForm> {
     username: _usernameController.text.trim(),
     password: _byUrl ? null : _passwordController.text,
     dumpFormat: _dumpFormat,
+    sslMode: _sslMode,
   );
 
   bool _validate() {
@@ -215,7 +218,11 @@ class _SourceFormState extends State<SourceForm> {
             final fields = state.fieldErrors.keys;
             if (fields.contains(SourceFormField.type)) {
               _step = 0;
-            } else if (fields.any((f) => f != SourceFormField.dumpFormat)) {
+            } else if (fields.any(
+              (f) =>
+                  f != SourceFormField.dumpFormat &&
+                  f != SourceFormField.sslMode,
+            )) {
               _step = 1;
             }
           });
@@ -290,6 +297,8 @@ class _SourceFormState extends State<SourceForm> {
                   if (_type == SourceTypes.postgres) ...[
                     app.dimensions.padding.l.gap(),
                     ..._buildDumpFormat(),
+                    app.dimensions.padding.l.gap(),
+                    ..._buildSslMode(),
                     app.dimensions.padding.xl.gap(),
                     BlocBuilder<SourceFormCubit, SourceFormState>(
                       builder: (context, state) => ConnectionTestBanner(
@@ -512,6 +521,40 @@ class _SourceFormState extends State<SourceForm> {
             error,
             style: TextStyle(fontSize: 12, color: app.colors.primary.error),
           ),
+        ),
+    ];
+  }
+
+  List<Widget> _buildSslMode() {
+    final t = app.intl.sources;
+    final disabled = _sslMode == PostgresSettingsModel.sslDisable;
+    return [
+      _label(t.sslMode),
+      app.dimensions.padding.s.gap(),
+      _Segmented(
+        options: [t.sslRequire, t.sslDisable],
+        selected: disabled ? 1 : 0,
+        onChanged: (index) {
+          setState(
+            () => _sslMode = index == 1
+                ? PostgresSettingsModel.sslDisable
+                : PostgresSettingsModel.sslRequire,
+          );
+          _changed(SourceFormField.sslMode);
+        },
+      ),
+      app.dimensions.padding.s.gap(),
+      if (_serverErrors[SourceFormField.sslMode] case final error?)
+        Text(
+          error,
+          style: TextStyle(fontSize: 12, color: app.colors.primary.error),
+        )
+      else if (disabled)
+        AppFieldWarning(t.sslDisableWarning)
+      else
+        Text(
+          t.sslRequireHelp,
+          style: TextStyle(fontSize: 12, color: app.colors.text.secondary),
         ),
     ];
   }

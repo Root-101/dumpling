@@ -11,6 +11,8 @@ class PostgresSettingsModel {
   static const int defaultPort = 5432;
   static const String custom = 'custom';
   static const String plain = 'plain';
+  static const String sslRequire = 'require';
+  static const String sslDisable = 'disable';
 
   final String host;
   final int port;
@@ -20,12 +22,16 @@ class PostgresSettingsModel {
   /// [custom] (`pg_dump -Fc`) or [plain] (SQL)
   final String dumpFormat;
 
+  /// [sslRequire] (TLS, the default) or [sslDisable]
+  final String sslMode;
+
   const PostgresSettingsModel({
     required this.host,
     required this.port,
     required this.database,
     required this.username,
     required this.dumpFormat,
+    this.sslMode = sslRequire,
   });
 
   /// `pg-prod-01.internal:5432/orders`
@@ -80,6 +86,7 @@ class SourceDraft {
   final String username;
   final String? password;
   final String dumpFormat;
+  final String sslMode;
 
   const SourceDraft({
     required this.name,
@@ -91,5 +98,6 @@ class SourceDraft {
     this.username = '',
     this.password,
     this.dumpFormat = PostgresSettingsModel.custom,
+    this.sslMode = PostgresSettingsModel.sslRequire,
   });
 }

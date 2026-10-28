@@ -110,6 +110,7 @@ void main() {
           'database': 'orders',
           'username': 'dumpling_backup',
           'dump_format': 'custom',
+          'ssl_mode': 'require',
         });
         expect(body['last_check'], isNull);
         expect(await storedSecrets(body['id']), {'password': 's3cr3t-pass'});
@@ -175,7 +176,7 @@ void main() {
         'name': 'from-url',
         'type': 'postgres',
         'settings': {
-          'connection_url': 'postgresql://dumpling%40ro:s3cr3t%3Aurl@pg-billing.internal:6432/billing',
+          'connection_url': 'postgresql://dumpling%40ro:s3cr3t%3Aurl@pg-billing.internal:6432/billing?sslmode=disable',
           'database': 'billing_replica',
         },
       });
@@ -185,6 +186,8 @@ void main() {
         'database': 'billing_replica',
         'username': 'dumpling@ro',
         'dump_format': 'custom',
+        // from the URL too
+        'ssl_mode': 'disable',
       });
       expect(await storedSecrets(source['id']), {'password': 's3cr3t:url'});
     });
@@ -225,6 +228,7 @@ void main() {
           'username': 'u',
           'password': 'p',
           'dump_format': 'directory',
+          'ssl_mode': 'prefer',
         },
       });
       expect(invalid.statusCode, 422);
@@ -234,7 +238,12 @@ void main() {
       };
       expect(
         fields,
-        containsAll(['settings.host', 'settings.port', 'settings.dump_format']),
+        containsAll([
+          'settings.host',
+          'settings.port',
+          'settings.dump_format',
+          'settings.ssl_mode',
+        ]),
       );
     });
 
@@ -461,6 +470,8 @@ void main() {
             port: fake.port,
             database: 'orders',
             username: 'backup',
+            // the attack works on a connection without TLS
+            sslMode: 'disable',
           ),
           {PostgresSettings.passwordKey: 'pw'},
         );

@@ -168,7 +168,12 @@ void main() {
           type: SourceTypes.postgres,
           connectionUrl: 'postgresql://u:p@h/db',
         ).toRequest().settings,
-        {'connection_url': 'postgresql://u:p@h/db', 'dump_format': 'custom'},
+        {
+          'connection_url': 'postgresql://u:p@h/db',
+          'dump_format': 'custom',
+          // TLS unless the admin turns it off
+          'ssl_mode': 'require',
+        },
       );
       expect(
         const SourceDraft(
@@ -184,6 +189,7 @@ void main() {
           'database': 'db',
           'username': 'u',
           'dump_format': 'custom',
+          'ssl_mode': 'require',
         },
       );
     });

@@ -14,6 +14,9 @@ void main() async {
 }
 
 class Dumpling {
+  /// The longest a request can take.
+  static Duration requestTimeout = const Duration(minutes: 2);
+
   /// [database] lets the tests use an in-memory database instead of the file.
   static Future<void> start({int port = 8080, AppDatabase? database}) async {
     // Every missing variable in one error, before anything is created
@@ -115,6 +118,10 @@ class Dumpling {
         trustedProxies: env.trustedProxies > 0
             ? TrustedProxies(env.trustedProxies)
             : null,
+        // A client that sends its body slowly (or never) can't hold a
+        // request forever; above the slowest route, a connection test (the
+        // console waits 90 s for it)
+        requestTimeout: requestTimeout,
       ),
       globalFilterConfig: FilterConfig([
         // First: stops a flood before reading bodies or checking tokens
@@ -122,6 +129,7 @@ class Dumpling {
           RateLimiterFilter(
             maxRequests: env.rateLimitRequests,
             window: Duration(seconds: env.rateLimitWindowSeconds),
+            clientId: clientIdOf,
           ),
         // Method, path, status and time of every request
         LoggingFilter(),

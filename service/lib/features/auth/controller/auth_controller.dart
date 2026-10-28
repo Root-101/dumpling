@@ -15,7 +15,7 @@ class AuthController {
   Future<ResponseEntity> login(RequestEntity request) async {
     // Per IP (an IPv6 by its /64), as the general limit; behind your own
     // proxies, see TRUSTED_PROXIES
-    final client = defaultClientId(request);
+    final client = clientIdOf(request);
     void checkLock() {
       final locked = rateLimiter.lockedFor(client);
       if (locked != null) {

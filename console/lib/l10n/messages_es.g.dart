@@ -594,6 +594,18 @@ class AppMessages$sources$es implements AppMessages$sources$en {
   @override
   String get formatPlain => 'SQL plano';
   @override
+  String get sslMode => 'TLS';
+  @override
+  String get sslRequire => 'Obligatorio';
+  @override
+  String get sslDisable => 'Desactivado';
+  @override
+  String get sslRequireHelp =>
+      'La conexión va cifrada (sin comprobar el certificado) y la contraseña nunca viaja en claro.';
+  @override
+  String get sslDisableWarning =>
+      'Sin TLS la contraseña y los datos viajan en claro: solo para una base de datos en una red de confianza.';
+  @override
   String get testIdle => 'Revisa la conexión antes de guardar el source.';
   @override
   String connectedAs({required Object user}) => 'Conectado como ${user}';
@@ -1850,6 +1862,11 @@ extension on AppMessagesEs {
           'sources.dumpFormat' => 'Formato del dump',
           'sources.formatCustom' => 'Custom (pg_dump -Fc)',
           'sources.formatPlain' => 'SQL plano',
+          'sources.sslMode' => 'TLS',
+          'sources.sslRequire' => 'Obligatorio',
+          'sources.sslDisable' => 'Desactivado',
+          'sources.sslRequireHelp' => 'La conexión va cifrada (sin comprobar el certificado) y la contraseña nunca viaja en claro.',
+          'sources.sslDisableWarning' => 'Sin TLS la contraseña y los datos viajan en claro: solo para una base de datos en una red de confianza.',
           'sources.testIdle' =>
             'Revisa la conexión antes de guardar el source.',
           'sources.connectedAs' => ({
@@ -2264,14 +2281,14 @@ extension on AppMessagesEs {
           'backups.sortLast' => 'Último respaldo',
           'backups.sortLastSub' => 'El más reciente primero',
           'backups.sortLastOld' => 'Último respaldo (antiguo)',
+          _ => null,
+        } ??
+        switch (path) {
           'backups.sortLastOldSub' => 'El más antiguo primero',
           'backups.sortNext' => 'Próximo respaldo',
           'backups.sortNextSub' => 'El más cercano primero',
           'backups.sortName' => 'Nombre del origen',
           'backups.sortNameSub' => 'De la A a la Z',
-          _ => null,
-        } ??
-        switch (path) {
           'backups.inTime' => ({required Object time}) => 'en ${time}',
           'backups.startedAgo' => ({
             required Object time,

@@ -90,6 +90,7 @@ abstract class SourceFormField {
   static const String username = 'settings.username';
   static const String password = 'settings.password';
   static const String dumpFormat = 'settings.dump_format';
+  static const String sslMode = 'settings.ssl_mode';
 }
 
 abstract class SourceFormState {

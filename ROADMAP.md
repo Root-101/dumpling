@@ -88,7 +88,8 @@ Screens: Sources · List / New source / Row options / Delete confirmation, Sourc
 
 - [x] Type list with PostgreSQL enabled and MySQL, MariaDB, MongoDB and Redis disabled.
 - [x] PostgreSQL by fields or by connection URL (the service parses it; a field given apart wins);
-  dump format plain SQL or custom (`-Fc`). Always without SSL: no `ssl_mode` in the API yet.
+  dump format plain SQL or custom (`-Fc`). `ssl_mode` `require` (TLS without checking the certificate, the default) or
+  `disable`, also `sslmode` in the URL.
 - [x] `POST /api/workspaces/{slug}/sources/test` with the data of the form (before saving) and
   `POST /api/workspaces/{slug}/sources/{id}/test` (saved): the service connects, never the console, so the database
   can be in its internal network.
@@ -278,8 +279,7 @@ Docker. Each step is checked once it works in Chrome; what fails is noted under 
   size and last write of each folder; and the history of its connection checks, not only the last.
 - Source detail with the size of the database, the copies stored and the success rate of its
   runs; and the history of its connection checks, not only the last.
-- SSL for PostgreSQL sources: `ssl_mode` in the API and the console (`require`; `verify-full`
-  with a CA).
+- `verify-full` with a CA for PostgreSQL sources (`require` and `disable` exist).
 - Download a backup from the console.
 - Events feed (changes, connection checks) and alerts.
 - Live runs over a websocket: the service pushes each run's step, bytes and percentage as it goes,

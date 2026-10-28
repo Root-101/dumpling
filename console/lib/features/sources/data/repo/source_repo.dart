@@ -118,6 +118,7 @@ extension SourceResponseMapping on SourceResponse {
               database: s['database'],
               username: s['username'],
               dumpFormat: s['dump_format'],
+              sslMode: s['ssl_mode'] ?? PostgresSettingsModel.sslRequire,
             )
           : null,
       lastCheck: lastCheck?.toModel(),
@@ -142,6 +143,7 @@ extension SourceDraftMapping on SourceDraft {
         },
         if (password != null && password!.isNotEmpty) 'password': password,
         'dump_format': dumpFormat,
+        'ssl_mode': sslMode,
       },
     );
   }
