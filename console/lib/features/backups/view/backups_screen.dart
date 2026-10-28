@@ -191,7 +191,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
                   if (!state.data.loaded) {
                     return state is BackupLoadingErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
-                        : const LoadingPage();
+                        : _buildSkeleton(state.data);
                   }
                   return SingleChildScrollView(
                     padding: EdgeInsets.symmetric(
@@ -295,6 +295,77 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
     );
   }
 
+  List<AppTableColumn> _columns(BackupData data) {
+    final t = app.intl.backups;
+    return [
+      AppTableColumn(t.columnStatus, width: 120),
+      AppTableColumn(t.columnSource, flex: 115),
+      AppTableColumn(t.columnDestination, flex: 150),
+      AppTableColumn(t.columnSchedule, flex: 100),
+      AppTableColumn(
+        [
+          t.columnLastRun,
+          if (data.sort == BackupSort.lastRun) '↓',
+          if (data.sort == BackupSort.lastRunOldest) '↑',
+        ].join(' '),
+        flex: 125,
+      ),
+      AppTableColumn(
+        [t.columnNextRun, if (data.sort == BackupSort.nextRun) '↑'].join(' '),
+        flex: 100,
+      ),
+      const AppTableColumn.actions(width: 144),
+    ];
+  }
+
+  /// While they load: the summary and the table as they will be, in blocks
+  Widget _buildSkeleton(BackupData data) => AppShimmer(
+    child: SingleChildScrollView(
+      padding: EdgeInsets.symmetric(
+        horizontal: app.dimensions.padding.xxl,
+        vertical: app.dimensions.padding.xl,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: app.dimensions.padding.l,
+        children: [
+          Row(
+            spacing: 12,
+            children: [
+              for (var i = 0; i < 3; i++)
+                const Expanded(child: AppStatSkeleton()),
+            ],
+          ),
+          AppSimpleTable(
+            minWidth: 1120,
+            toolbar: AppSkeleton.toolbar(const [96, 168]),
+            columns: _columns(data),
+            rows: [
+              for (final f in const [0.62, 0.48, 0.7, 0.55, 0.66, 0.5])
+                AppTableRow([
+                  const AppSkeleton(width: 78, height: 26, radius: 6),
+                  AppSkeleton.named(f, 0.4),
+                  AppSkeleton.lines(1.2 - f, 0.44),
+                  AppSkeleton.lines(0.5, 0.64),
+                  AppSkeleton.lines(0.78, 0.56),
+                  AppSkeleton.lines(f + 0.1, 0.48),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    spacing: 6,
+                    children: [
+                      AppSkeleton(width: 36, height: 36, radius: 8),
+                      AppSkeleton(width: 36, height: 36, radius: 8),
+                      AppSkeleton(width: 28, height: 36, radius: 8),
+                    ],
+                  ),
+                ], minHeight: 64),
+            ],
+          ),
+        ],
+      ),
+    ),
+  );
+
   Widget _buildTable(BackupData data) {
     final t = app.intl.backups;
     final now = DateTime.now();
@@ -318,25 +389,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
           _SortButton(value: data.sort, onChanged: cubit.sort),
         ],
       ),
-      columns: [
-        AppTableColumn(t.columnStatus, width: 120),
-        AppTableColumn(t.columnSource, flex: 115),
-        AppTableColumn(t.columnDestination, flex: 150),
-        AppTableColumn(t.columnSchedule, flex: 100),
-        AppTableColumn(
-          [
-            t.columnLastRun,
-            if (data.sort == BackupSort.lastRun) '↓',
-            if (data.sort == BackupSort.lastRunOldest) '↑',
-          ].join(' '),
-          flex: 125,
-        ),
-        AppTableColumn(
-          [t.columnNextRun, if (data.sort == BackupSort.nextRun) '↑'].join(' '),
-          flex: 100,
-        ),
-        const AppTableColumn.actions(width: 144),
-      ],
+      columns: _columns(data),
       rows: [
         for (final backup in data.visible)
           AppTableRow(

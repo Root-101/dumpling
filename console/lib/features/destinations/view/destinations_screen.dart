@@ -177,7 +177,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
                   if (!state.data.loaded) {
                     return state is DestinationLoadingErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
-                        : const LoadingPage();
+                        : _buildSkeleton();
                   }
                   return SingleChildScrollView(
                     padding: EdgeInsets.symmetric(
@@ -226,6 +226,44 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     }
   }
 
+  List<AppTableColumn> get _columns => [
+    const AppTableColumn.actions(width: 40),
+    AppTableColumn(app.intl.destinations.columnName, flex: 13),
+    AppTableColumn(app.intl.destinations.columnType, flex: 8),
+    AppTableColumn(app.intl.destinations.columnEndpoint, flex: 17),
+    AppTableColumn(app.intl.destinations.columnBackups, flex: 7),
+    AppTableColumn(app.intl.destinations.columnStatus, flex: 10),
+    const AppTableColumn.actions(width: 52),
+  ];
+
+  /// While they load: the table as it will be, its rows in blocks
+  Widget _buildSkeleton() => AppShimmer(
+    child: SingleChildScrollView(
+      padding: EdgeInsets.symmetric(
+        horizontal: app.dimensions.padding.xxl,
+        vertical: app.dimensions.padding.xl,
+      ),
+      child: AppSimpleTable(
+        toolbar: AppSkeleton.toolbar(const [96], toggle: true),
+        columns: _columns,
+        rows: [
+          for (final f in const [0.62, 0.48, 0.7, 0.55, 0.66])
+            AppTableRow([
+              const Center(
+                child: AppSkeleton(width: 16, height: 16, dim: true),
+              ),
+              AppSkeleton.named(f, 0.42),
+              AppSkeleton(factor: f, height: 11, dim: true),
+              AppSkeleton(factor: 1.25 - f, height: 11, dim: true),
+              const AppSkeleton(width: 18),
+              const AppStatusSkeleton(),
+              const AppActionSkeleton(),
+            ], minHeight: 58),
+        ],
+      ),
+    ),
+  );
+
   Widget _buildTable(DestinationData data) {
     return AppSimpleTable(
       toolbar: Row(
@@ -251,15 +289,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
         ],
       ),
       body: _view == AppView.grid ? _buildGrid(data) : null,
-      columns: [
-        const AppTableColumn.actions(width: 40),
-        AppTableColumn(app.intl.destinations.columnName, flex: 13),
-        AppTableColumn(app.intl.destinations.columnType, flex: 8),
-        AppTableColumn(app.intl.destinations.columnEndpoint, flex: 17),
-        AppTableColumn(app.intl.destinations.columnBackups, flex: 7),
-        AppTableColumn(app.intl.destinations.columnStatus, flex: 10),
-        const AppTableColumn.actions(width: 52),
-      ],
+      columns: _columns,
       rows: [
         for (final destination in data.visibleDestinations)
           AppTableRow(

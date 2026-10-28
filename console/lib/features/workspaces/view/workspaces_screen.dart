@@ -63,7 +63,21 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
                   if (!state.data.loaded) {
                     return state is WorkspaceLoadingErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.load)
-                        : const LoadingPage();
+                        : AppShimmer(
+                            child: _grid(
+                              (width) => [
+                                for (var i = 0; i < 5; i++)
+                                  SizedBox(
+                                    width: width,
+                                    child: const _CardSkeleton(),
+                                  ),
+                                SizedBox(
+                                  width: width,
+                                  child: const _NewWorkspaceSkeleton(),
+                                ),
+                              ],
+                            ),
+                          );
                   }
                   return _buildGrid(state.data);
                 },
@@ -75,7 +89,25 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
     );
   }
 
-  Widget _buildGrid(WorkspaceData data) {
+  Widget _buildGrid(WorkspaceData data) => _grid(
+    (width) => [
+      for (final workspace in data.workspaces)
+        SizedBox(
+          width: width,
+          child: WorkspaceCard(
+            workspace: workspace,
+            current: workspace.slug == data.currentSlug,
+          ),
+        ),
+      SizedBox(
+        width: width,
+        child: _NewWorkspaceTile(onPressed: () => WorkspaceForm.open(context)),
+      ),
+    ],
+  );
+
+  /// Up to 3 columns of cards as wide as [cards] gets them
+  Widget _grid(List<Widget> Function(double width) cards) {
     final gap = app.dimensions.padding.l;
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -92,22 +124,7 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
           child: Wrap(
             spacing: gap,
             runSpacing: gap,
-            children: [
-              for (final workspace in data.workspaces)
-                SizedBox(
-                  width: cardWidth,
-                  child: WorkspaceCard(
-                    workspace: workspace,
-                    current: workspace.slug == data.currentSlug,
-                  ),
-                ),
-              SizedBox(
-                width: cardWidth,
-                child: _NewWorkspaceTile(
-                  onPressed: () => WorkspaceForm.open(context),
-                ),
-              ),
-            ],
+            children: cards(cardWidth),
           ),
         );
       },
@@ -183,4 +200,90 @@ class _NewWorkspaceTile extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A [WorkspaceCard] while the workspaces load
+class _CardSkeleton extends StatelessWidget {
+  const _CardSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = app.colors;
+    final line = BorderSide(color: colors.neutral.grey5.withValues(alpha: 0.6));
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: colors.primary.background2,
+        borderRadius: app.dimensions.border.borderRadius.m,
+        border: Border.all(color: colors.neutral.grey5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SizedBox(
+            height: WorkspacePreviewPainter.height,
+            child: AppSkeleton(radius: 0, dim: true),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(border: Border(top: line)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 14,
+              children: [
+                AppSkeleton.named(0.6, 0.8, 34),
+                Row(
+                  children: [
+                    for (var i = 0; i < 3; i++)
+                      Expanded(child: AppSkeleton.lines(0.3, 0.6)),
+                  ],
+                ),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    AppSkeleton(width: 84, height: 10),
+                    AppSkeleton(width: 132, height: 10, dim: true),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(border: Border(top: line)),
+            child: const Row(
+              spacing: 8,
+              children: [
+                Expanded(child: AppSkeleton(height: 38, radius: 8)),
+                AppSkeleton(width: 38, height: 38, radius: 8),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The dashed card of a new workspace while the workspaces load
+class _NewWorkspaceSkeleton extends StatelessWidget {
+  const _NewWorkspaceSkeleton();
+
+  @override
+  Widget build(BuildContext context) => DashedBorder(
+    color: app.colors.neutral.grey5,
+    radius: 12,
+    child: const SizedBox(
+      height: 330,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        spacing: 12,
+        children: [
+          AppSkeleton(width: 44, height: 44, radius: 22),
+          AppSkeleton(width: 110, height: 12),
+          AppSkeleton(width: 200, height: 9, dim: true),
+        ],
+      ),
+    ),
+  );
 }

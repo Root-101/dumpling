@@ -178,7 +178,7 @@ class _CanvasScreenState extends State<CanvasScreen> {
                   if (!state.data.loaded) {
                     return state is CanvasLoadingErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
-                        : const LoadingPage();
+                        : const CanvasSkeleton();
                   }
                   return CanvasEditor(key: ValueKey(state.data.workspace));
                 },

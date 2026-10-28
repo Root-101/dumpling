@@ -159,7 +159,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
                   if (!state.data.loaded) {
                     return state is SourceLoadingErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
-                        : const LoadingPage();
+                        : _buildSkeleton();
                   }
                   return SingleChildScrollView(
                     padding: EdgeInsets.symmetric(
@@ -196,6 +196,40 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
     }
   }
 
+  List<AppTableColumn> get _columns => [
+    AppTableColumn(app.intl.sources.columnName, flex: 13),
+    AppTableColumn(app.intl.sources.columnType, flex: 10),
+    AppTableColumn(app.intl.sources.columnHost, flex: 16),
+    AppTableColumn(app.intl.sources.columnBackups, flex: 8),
+    AppTableColumn(app.intl.sources.columnStatus, flex: 8),
+    const AppTableColumn.actions(width: 52),
+  ];
+
+  /// While they load: the table as it will be, its rows in blocks
+  Widget _buildSkeleton() => AppShimmer(
+    child: SingleChildScrollView(
+      padding: EdgeInsets.symmetric(
+        horizontal: app.dimensions.padding.xxl,
+        vertical: app.dimensions.padding.xl,
+      ),
+      child: AppSimpleTable(
+        toolbar: AppSkeleton.toolbar(const [96], toggle: true),
+        columns: _columns,
+        rows: [
+          for (final f in const [0.62, 0.48, 0.7, 0.55, 0.66])
+            AppTableRow([
+              AppSkeleton.named(f),
+              AppSkeleton(factor: f - 0.04, height: 11, dim: true),
+              AppSkeleton(factor: 1.2 - f, height: 11, dim: true),
+              const AppSkeleton(width: 18),
+              const AppStatusSkeleton(),
+              const AppActionSkeleton(),
+            ]),
+        ],
+      ),
+    ),
+  );
+
   Widget _buildTable(SourceData data) {
     return AppSimpleTable(
       toolbar: Row(
@@ -221,14 +255,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
         ],
       ),
       body: _view == AppView.grid ? _buildGrid(data) : null,
-      columns: [
-        AppTableColumn(app.intl.sources.columnName, flex: 13),
-        AppTableColumn(app.intl.sources.columnType, flex: 10),
-        AppTableColumn(app.intl.sources.columnHost, flex: 16),
-        AppTableColumn(app.intl.sources.columnBackups, flex: 8),
-        AppTableColumn(app.intl.sources.columnStatus, flex: 8),
-        const AppTableColumn.actions(width: 52),
-      ],
+      columns: _columns,
       rows: [
         for (final source in data.visibleSources)
           AppTableRow(_buildCells(data, source)),

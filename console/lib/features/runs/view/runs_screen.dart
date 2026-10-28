@@ -180,7 +180,7 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
                   if (!state.data.loaded) {
                     return state is RunLoadingErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
-                        : const LoadingPage();
+                        : _buildSkeleton();
                   }
                   return SingleChildScrollView(
                     padding: EdgeInsets.symmetric(
@@ -221,6 +221,50 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
             onPressed: _clearFilters,
           )
         : null;
+    return _panel(
+      Row(
+        children: [
+          Expanded(
+            child: AppTextSearchField(
+              controller: _searchController,
+              hint: t.search,
+              // filters the runs already loaded: no wait
+              delay: 0,
+              onSearch: cubit.search,
+            ),
+          ),
+          app.dimensions.padding.sm.gap(),
+          _buildFilter(data),
+        ],
+      ),
+      [
+        for (final (day, runs) in byDay(data.visibleRuns)) ...[
+          _DayHeader(day: day, runs: runs, divider: divider),
+          for (final run in runs)
+            _RunRow(
+              run: run,
+              divider: divider,
+              workspace: widget.workspace,
+              filters: widget.filters,
+            ),
+        ],
+        ?placeholder,
+        // the service sends the 200 newest
+        if (data.runs.length >= 200)
+          Padding(
+            padding: EdgeInsets.all(app.dimensions.padding.l),
+            child: Text(
+              t.newestOnly,
+              style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+            ),
+          ),
+      ],
+    );
+  }
+
+  /// The log's box: [toolbar] on top, then [children]
+  Widget _panel(Widget toolbar, List<Widget> children) {
+    final colors = app.colors;
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
@@ -243,43 +287,68 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
                 ),
               ),
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: AppTextSearchField(
-                    controller: _searchController,
-                    hint: t.search,
-                    // filters the runs already loaded: no wait
-                    delay: 0,
-                    onSearch: cubit.search,
-                  ),
-                ),
-                app.dimensions.padding.sm.gap(),
-                _buildFilter(data),
-              ],
+            child: toolbar,
+          ),
+          ...children,
+        ],
+      ),
+    );
+  }
+
+  /// While they load: two days of runs, in blocks
+  Widget _buildSkeleton() {
+    final divider = BorderSide(
+      color: app.colors.neutral.white.withValues(alpha: 0.06),
+    );
+    Widget row(double f) => Container(
+      constraints: const BoxConstraints(minHeight: 64),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(border: Border(bottom: divider)),
+      child: Row(
+        children: [
+          const AppSkeleton(width: 24, height: 24, radius: 12),
+          14.gap(),
+          Expanded(child: AppSkeleton.lines(f, 0.38)),
+          14.gap(),
+          const SizedBox(
+            width: 90,
+            child: AppSkeleton(width: 58, height: 10, dim: true),
+          ),
+          SizedBox(width: 170, child: AppSkeleton.lines(0.7, 0.56)),
+          const SizedBox(
+            width: 110,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: AppSkeleton(width: 72, height: 28, radius: 6, dim: true),
             ),
           ),
-          for (final (day, runs) in byDay(data.visibleRuns)) ...[
-            _DayHeader(day: day, runs: runs, divider: divider),
-            for (final run in runs)
-              _RunRow(
-                run: run,
-                divider: divider,
-                workspace: widget.workspace,
-                filters: widget.filters,
-              ),
-          ],
-          ?placeholder,
-          // the service sends the 200 newest
-          if (data.runs.length >= 200)
-            Padding(
-              padding: EdgeInsets.all(app.dimensions.padding.l),
-              child: Text(
-                t.newestOnly,
-                style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
-              ),
-            ),
         ],
+      ),
+    );
+    Widget day(double w) => Container(
+      height: 36,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      color: app.colors.primary.backgroundForm,
+      child: Row(
+        spacing: 10,
+        children: [
+          AppSkeleton(width: w, height: 10),
+          const AppSkeleton(width: 70, height: 10, dim: true),
+        ],
+      ),
+    );
+    return AppShimmer(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(
+          horizontal: app.dimensions.padding.xxl,
+          vertical: app.dimensions.padding.xl,
+        ),
+        child: _panel(AppSkeleton.toolbar(const [96]), [
+          day(150),
+          for (final f in const [0.62, 0.48, 0.7, 0.55]) row(f),
+          day(170),
+          for (final f in const [0.66, 0.5, 0.58]) row(f),
+        ]),
       ),
     );
   }

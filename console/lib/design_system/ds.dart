@@ -13,6 +13,7 @@ export 'colors/theme_adapter.dart';
 export 'customs/app_focus_ring.dart';
 export 'customs/app_row_menu.dart';
 export 'customs/app_segmented.dart';
+export 'customs/app_skeleton.dart';
 export 'customs/app_switch.dart';
 export 'customs/app_view_toggle.dart';
 export 'customs/dashed.dart';

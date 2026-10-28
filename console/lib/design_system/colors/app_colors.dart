@@ -146,6 +146,11 @@ class SurfaceColor {
 
   /// Unselected wires and ports: 6a6778
   Color get wire => const Color(0xFF6A6778);
+
+  /// What a loading screen draws in place of its content: 24212f, and
+  /// 1f1c29 for what is secondary (labels, meta)
+  Color get skeleton => const Color(0xFF24212F);
+  Color get skeletonDim => const Color(0xFF1F1C29);
 }
 
 class BrandColor {

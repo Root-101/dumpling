@@ -589,4 +589,54 @@ void main() {
     );
     expect(find.text('Copy log'), findsOneWidget);
   });
+
+  // last: its loading states stay on the shared mocks
+  testWidgets('Every screen loads as a skeleton of itself', (tester) async {
+    when(() => auth.auth).thenReturn(session());
+    whenListen(
+      sources,
+      const Stream<SourceState>.empty(),
+      initialState: const SourceLoadingInProgressState(
+        data: SourceData.empty('production'),
+      ),
+    );
+    whenListen(
+      destinations,
+      const Stream<DestinationState>.empty(),
+      initialState: const DestinationLoadingInProgressState(
+        data: DestinationData.empty('production'),
+      ),
+    );
+    whenListen(
+      runs,
+      const Stream<RunState>.empty(),
+      initialState: const RunLoadingInProgressState(
+        data: RunData.empty('production'),
+      ),
+    );
+    whenListen(
+      backups,
+      const Stream<BackupState>.empty(),
+      initialState: const BackupLoadingInProgressState(
+        data: BackupData.empty('production'),
+      ),
+    );
+    await pumpApp(tester);
+    // the workspaces last: the rest need them loaded
+    for (final section in ['backups', 'sources', 'destinations', 'runs']) {
+      RouteConfig.router.go('/workspaces/production/$section');
+      await settle(tester);
+      expect(find.byType(AppShimmer), findsWidgets, reason: section);
+    }
+    whenListen(
+      workspaces,
+      const Stream<WorkspaceState>.empty(),
+      initialState: const WorkspaceLoadingInProgressState(
+        data: WorkspaceData.empty(),
+      ),
+    );
+    RouteConfig.router.go('/workspaces');
+    await settle(tester);
+    expect(find.byType(AppShimmer), findsOneWidget);
+  });
 }
