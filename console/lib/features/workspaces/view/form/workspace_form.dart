@@ -130,21 +130,39 @@ class _WorkspaceFormState extends State<WorkspaceForm> {
               app.dimensions.padding.l.gap(),
             ],
             Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // The avatar follows the name and the color as they change
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 1),
-                  child: ListenableBuilder(
-                    listenable: _nameController,
-                    builder: (context, _) => WorkspaceAvatar(
-                      initial: WorkspaceModel(
-                        slug: '',
-                        name: _nameController.text.trim(),
-                      ).initial,
-                      color: _color,
-                      size: 42,
-                    ),
+                // Beside the box of the field, under the height of its label
+                // (the help row below it changes with an error)
+                SizedBox(
+                  width: 42,
+                  child: Column(
+                    children: [
+                      Visibility.maintain(
+                        visible: false,
+                        child: Text(
+                          app.intl.workspaces.name,
+                          softWrap: false,
+                          overflow: TextOverflow.visible,
+                          style: app.textTheme.bodyMedium!.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      app.dimensions.padding.s.gap(),
+                      // The avatar follows the name and the color as they change
+                      ListenableBuilder(
+                        listenable: _nameController,
+                        builder: (context, _) => WorkspaceAvatar(
+                          initial: WorkspaceModel(
+                            slug: '',
+                            name: _nameController.text.trim(),
+                          ).initial,
+                          color: _color,
+                          size: 42,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 app.dimensions.padding.m.gap(),

@@ -254,6 +254,10 @@ void main() {
       find.text('A new workspace starts with an empty canvas.'),
       findsOneWidget,
     );
+    // the avatar beside the box of the name, not its help line (below it)
+    final avatar = tester.getRect(find.byType(WorkspaceAvatar).last);
+    final box = tester.getRect(find.byType(TextField).first);
+    expect((avatar.top - box.top).abs(), lessThan(2));
 
     // created, it opens on its backups
     when(
