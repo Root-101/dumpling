@@ -354,6 +354,9 @@ canvas:
   description: "Connect sources to destinations to build this workspace's backups."
   save: 'Save canvas'
   saved: 'Canvas saved'
+  unsavedTitle: 'Discard the changes?'
+  unsavedDescription: 'The canvas has changes that are not saved. Leaving discards them.'
+  discard: 'Discard'
   newConfig: 'New config'
   removeFromCanvas: 'Remove from canvas'
   allSourcesPlaced: 'Every source is on the canvas'

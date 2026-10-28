@@ -1097,6 +1097,16 @@ class AppMessages$canvas$en {
   /// en: 'Canvas saved'
   String get saved => 'Canvas saved';
 
+  /// en: 'Discard the changes?'
+  String get unsavedTitle => 'Discard the changes?';
+
+  /// en: 'The canvas has changes that are not saved. Leaving discards them.'
+  String get unsavedDescription =>
+      'The canvas has changes that are not saved. Leaving discards them.';
+
+  /// en: 'Discard'
+  String get discard => 'Discard';
+
   /// en: 'New config'
   String get newConfig => 'New config';
 
@@ -2484,6 +2494,10 @@ extension on AppMessages {
           'canvas.description' => 'Connect sources to destinations to build this workspace\'s backups.',
           'canvas.save' => 'Save canvas',
           'canvas.saved' => 'Canvas saved',
+          'canvas.unsavedTitle' => 'Discard the changes?',
+          'canvas.unsavedDescription' =>
+            'The canvas has changes that are not saved. Leaving discards them.',
+          'canvas.discard' => 'Discard',
           'canvas.newConfig' => 'New config',
           'canvas.removeFromCanvas' => 'Remove from canvas',
           'canvas.allSourcesPlaced' => 'Every source is on the canvas',
@@ -2730,14 +2744,14 @@ extension on AppMessages {
           'backups.sortName' => 'Source name',
           'backups.sortNameSub' => 'A to Z',
           'backups.inTime' => ({required String time}) => 'in ${time}',
+          _ => null,
+        } ??
+        switch (path) {
           'backups.startedAgo' => ({
             required String time,
           }) => 'Started ${time} ago',
           'backups.runNowFor' => ({required String name}) => 'Run ${name} now',
           'backups.showRuns' => 'Show run history',
-          _ => null,
-        } ??
-        switch (path) {
           'backups.hideRuns' => 'Hide run history',
           'backups.moreFor' => ({
             required String name,

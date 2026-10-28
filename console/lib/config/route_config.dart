@@ -81,6 +81,7 @@ class RouteConfig {
                 name: CanvasScreen.navigator.name,
                 path: CanvasScreen.navigator.path,
                 builder: CanvasScreen.navigator.builder,
+                onExit: (context, state) => CanvasScreen.confirmLeave(),
               ),
               ..._withItem(
                 name: BackupsScreen.navigator.name,

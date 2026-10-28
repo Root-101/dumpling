@@ -22,6 +22,19 @@ class CanvasScreen extends StatefulWidget {
 
   const CanvasScreen({required this.workspace, super.key});
 
+  /// Leaving with edits not saved asks first; coming back loads the saved one
+  static Future<bool> confirmLeave() async {
+    if (!app.di.find<CanvasCubit>().dirty) return true;
+    final t = app.intl.canvas;
+    return ConfirmDialog.show(
+      title: t.unsavedTitle,
+      description: t.unsavedDescription,
+      confirmTitle: t.discard,
+      confirmColor: app.colors.primary.errorAction,
+      confirmAction: () {},
+    );
+  }
+
   @override
   State<CanvasScreen> createState() => _CanvasScreenState();
 }
@@ -42,7 +55,15 @@ class _CanvasScreenState extends State<CanvasScreen> {
     if (oldWidget.workspace != widget.workspace) cubit.load(widget.workspace);
   }
 
+  @override
+  void dispose() {
+    BrowserWindow.guardLeave(false);
+    super.dispose();
+  }
+
   void _onState(BuildContext context, CanvasState state) {
+    // closing or reloading the tab asks while there are edits
+    BrowserWindow.guardLeave(cubit.dirty);
     if (state is CanvasProcessInProgressState) {
       app.loading.show();
     } else {
@@ -133,7 +154,7 @@ class _CanvasScreenState extends State<CanvasScreen> {
               ),
               BlocBuilder<CanvasCubit, CanvasState>(
                 builder: (context, state) => PrimaryButton.primary(
-                  onPressed: state.data.loaded ? cubit.save : null,
+                  onPressed: cubit.dirty ? cubit.save : null,
                   title: app.intl.canvas.save,
                   color: app.colors.primary.primaryAction,
                   h: 40,

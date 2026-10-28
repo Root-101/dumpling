@@ -840,6 +840,13 @@ class AppMessages$canvas$es implements AppMessages$canvas$en {
   @override
   String get saved => 'Canvas guardado';
   @override
+  String get unsavedTitle => '¿Descartar los cambios?';
+  @override
+  String get unsavedDescription =>
+      'El canvas tiene cambios sin guardar. Si sales, se descartan.';
+  @override
+  String get discard => 'Descartar';
+  @override
   String get newConfig => 'Nueva config';
   @override
   String get removeFromCanvas => 'Quitar del canvas';
@@ -2012,6 +2019,10 @@ extension on AppMessagesEs {
           'canvas.description' => 'Conecta orígenes con destinos para armar los respaldos de este workspace.',
           'canvas.save' => 'Guardar canvas',
           'canvas.saved' => 'Canvas guardado',
+          'canvas.unsavedTitle' => '¿Descartar los cambios?',
+          'canvas.unsavedDescription' =>
+            'El canvas tiene cambios sin guardar. Si sales, se descartan.',
+          'canvas.discard' => 'Descartar',
           'canvas.newConfig' => 'Nueva config',
           'canvas.removeFromCanvas' => 'Quitar del canvas',
           'canvas.allSourcesPlaced' => 'Todos los orígenes están en el canvas',
@@ -2255,6 +2266,9 @@ extension on AppMessagesEs {
           'backups.sortName' => 'Nombre del origen',
           'backups.sortNameSub' => 'De la A a la Z',
           'backups.inTime' => ({required Object time}) => 'en ${time}',
+          _ => null,
+        } ??
+        switch (path) {
           'backups.startedAgo' => ({
             required Object time,
           }) => 'Empezó hace ${time}',
@@ -2262,9 +2276,6 @@ extension on AppMessagesEs {
             required Object name,
           }) => 'Ejecutar ${name} ahora',
           'backups.showRuns' => 'Ver las ejecuciones',
-          _ => null,
-        } ??
-        switch (path) {
           'backups.hideRuns' => 'Ocultar las ejecuciones',
           'backups.moreFor' => ({
             required Object name,

@@ -2,7 +2,8 @@ import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
 class ConfirmDialog extends StatelessWidget {
-  static void show({
+  /// True when it was confirmed; false when cancelled or dismissed
+  static Future<bool> show({
     required String title,
     required String description,
     required String confirmTitle,
@@ -12,20 +13,25 @@ class ConfirmDialog extends StatelessWidget {
     VoidCallback? cancelAction,
     double? w,
     double? h,
-  }) {
-    DialogTemplate.open(
+  }) async {
+    var confirmed = false;
+    await DialogTemplate.open(
       title: title,
       w: w ?? 400,
       h: h,
       child: ConfirmDialog(
         description: description,
-        confirmAction: confirmAction,
+        confirmAction: () {
+          confirmed = true;
+          confirmAction();
+        },
         confirmColor: confirmColor,
         confirmTitle: confirmTitle,
         cancelAction: cancelAction,
         cancelTitle: cancelTitle,
       ),
     );
+    return confirmed;
   }
 
   final String description;

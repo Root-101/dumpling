@@ -2,14 +2,15 @@ import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
 class DialogTemplate extends StatelessWidget {
-  static void open({
+  /// Completes when it closes
+  static Future<void> open({
     required String title,
     required Widget child,
     BuildContext? context,
     double? w,
     double? h,
   }) {
-    app.dialog.open(
+    return app.dialog.open(
       dialog: DialogTemplate(title: title, w: w, h: h, child: child),
       context: context,
     );

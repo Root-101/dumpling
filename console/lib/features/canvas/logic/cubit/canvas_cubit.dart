@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,6 +31,15 @@ class CanvasCubit extends Cubit<CanvasState> {
 
   CanvasData get _data => state.data;
 
+  /// The graph as it was loaded or saved last, as a save sends it
+  String? _saved;
+
+  String _request(CanvasData data) => jsonEncode(data.toRequest().toJson());
+
+  /// Edits not saved yet; undoing them leaves none. The selection, a run or a
+  /// test are not edits
+  bool get dirty => _data.loaded && _saved != null && _saved != _request(_data);
+
   void _edit(CanvasData data) => emit(CanvasLoadingSuccessState(data: data));
 
   /// The canvas of [workspace]; another workspace starts from empty
@@ -41,7 +52,10 @@ class CanvasCubit extends Cubit<CanvasState> {
       final canvas = await _repo.get(workspace: workspace, token: _token);
       // the answer of a workspace already left behind is dropped
       if (_data.workspace != workspace) return;
-      emit(CanvasLoadingSuccessState(data: _data.withCanvas(canvas)));
+      final loaded = _data.withCanvas(canvas);
+      // before the state: its listeners ask for [dirty]
+      _saved = _request(loaded);
+      emit(CanvasLoadingSuccessState(data: loaded));
     } catch (e) {
       if (_data.workspace != workspace) return;
       emit(CanvasLoadingErrorState(ExceptionConverter.parse(e), data: _data));
@@ -66,7 +80,9 @@ class CanvasCubit extends Cubit<CanvasState> {
         token: _token,
       );
       if (_data.workspace != workspace) return;
-      emit(CanvasProcessingOKState(data: _data.withCanvas(canvas)));
+      final saved = _data.withCanvas(canvas);
+      _saved = _request(saved);
+      emit(CanvasProcessingOKState(data: saved));
     } catch (e) {
       if (_data.workspace != workspace) return;
       emit(CanvasProcessingErrorState(_saveError(e), data: _data));
@@ -187,7 +203,10 @@ class CanvasCubit extends Cubit<CanvasState> {
   );
 
   /// After signing out
-  void reset() => emit(const CanvasInitialState());
+  void reset() {
+    _saved = null;
+    emit(const CanvasInitialState());
+  }
 
   void move(NodeKind kind, String id, Offset pos) {
     final s = _data;

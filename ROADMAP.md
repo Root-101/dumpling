@@ -198,9 +198,9 @@ UX/UI improvements in 0.1.0, not features.
   detail's path opens its dialog over its screen, and leaving the path closes it. The settings
   of a workspace stay a dialog over the list, without a path; the search of the run log stays
   out of the query.
-- [ ] Unsaved canvas: leaving the canvas (another screen, another workspace, closing or reloading
+- [x] Unsaved canvas: leaving the canvas (another screen, another workspace, closing or reloading
   the tab) with changes not saved asks first that they will be discarded.
-- [ ] Save only with changes: the Save button of the canvas is disabled until something changes,
+- [x] Save only with changes: the Save button of the canvas is disabled until something changes,
   and again once saved (or once the changes are undone).
 
 ## Design changes

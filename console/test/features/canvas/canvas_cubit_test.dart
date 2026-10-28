@@ -242,6 +242,43 @@ void main() {
     },
   );
 
+  test(
+    'only an edit not saved is a change; undoing it or saving leaves none',
+    () async {
+      final cubit = await loaded();
+      final at = cubit.state.data.source('orders')!.pos;
+      expect(cubit.dirty, isFalse);
+      cubit.select('orders'); // not an edit
+      expect(cubit.dirty, isFalse);
+
+      cubit.move(NodeKind.source, 'orders', at + const Offset(40, 0));
+      expect(cubit.dirty, isTrue);
+      cubit.move(NodeKind.source, 'orders', at);
+      expect(cubit.dirty, isFalse);
+
+      cubit.move(NodeKind.source, 'orders', at + const Offset(40, 0));
+      when(
+        () => repo.save(
+          workspace: 'production',
+          data: any(named: 'data'),
+          token: 'jwt',
+        ),
+      ).thenAnswer((i) async {
+        final d = i.namedArguments[#data] as CanvasData;
+        return CanvasModel(
+          sources: d.sources,
+          sourcePool: d.sourcePool,
+          destinations: d.destinations,
+          destinationPool: d.destinationPool,
+          configs: d.configs,
+          ids: const {},
+        );
+      });
+      await cubit.save();
+      expect(cubit.dirty, isFalse);
+    },
+  );
+
   test('after a save the selection follows the id the config got', () async {
     final cubit = (await loaded())
       ..connect('users', const DropTarget('ca', null));
