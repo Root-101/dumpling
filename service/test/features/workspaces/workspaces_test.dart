@@ -52,7 +52,7 @@ void main() {
       expect(body['color'], 0xFF5B4A9A);
       expect(body['defaults'], {
         'schedule': WorkspaceDefaults.defaultSchedule,
-        'compression': 'gzip',
+        'compression': 'none',
         'object_key': WorkspaceDefaults.defaultObjectKey,
       });
       expect(DateTime.parse(body['created_at']).isUtc, isTrue);

@@ -35,7 +35,7 @@ class WorkspaceSettings extends StatefulWidget {
   /// What a workspace starts with on the service, when it sends none
   static const WorkspaceDefaults fallbackDefaults = (
     schedule: '0 2 * * *',
-    compression: 'gzip',
+    compression: 'none',
     objectKey: '{db}/{yyyy}-{MM}-{dd}-{run_id}',
   );
 
@@ -65,7 +65,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
   final _cron = TextEditingController();
   final _objectKey = TextEditingController();
   Color? _color;
-  String _compression = 'gzip';
+  String _compression = 'none';
 
   /// API errors per field; cleared when that field is edited
   Map<String, String> _serverErrors = const {};

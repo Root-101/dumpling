@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:console/app_exporter.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -460,6 +462,41 @@ void main() {
       expect(cubit.state.data.selectedId, 'j2');
     },
   );
+
+  test('a run that moves during a save waits for it: the overlay stays', () async {
+    final cubit = CanvasCubit(
+      repo,
+      sources,
+      destinations,
+      auth,
+      pollEvery: Duration.zero,
+    );
+    await cubit.load('production');
+    final saving = Completer<CanvasModel>();
+    when(
+      () => repo.save(
+        workspace: 'production',
+        data: any(named: 'data'),
+        token: 'jwt',
+      ),
+    ).thenAnswer((_) => saving.future);
+    when(
+      () => repo.runNow(workspace: 'production', configId: 'j1', token: 'jwt'),
+    ).thenAnswer((_) async => run(RunStatus.running));
+    when(() => repo.run(workspace: 'production', id: 'run_1', token: 'jwt'))
+        .thenAnswer((_) async => run(RunStatus.success, size: 2048));
+
+    final save = cubit.save();
+    final running = cubit.runNow('j1');
+    await pumpEventQueue();
+    expect(cubit.state, isA<CanvasProcessInProgressState>());
+
+    saving.complete(demoCanvas());
+    await Future.wait([save, running]);
+    expect(cubit.state, isA<CanvasRunFinishedState>());
+    // the saved canvas did not drop it
+    expect(cubit.state.data.config('j1')!.lastRun!.status, RunStatus.success);
+  });
 
   test('run now while one is running says why', () async {
     final cubit = await loaded();

@@ -134,6 +134,16 @@ class BackupCubit extends Cubit<BackupState> {
 
   /// Deletes its config: it stops running; its runs stay in the run log
   Future<void> delete(BackupRow backup) async {
+    final deleting = _delete(backup);
+    _deleting = deleting;
+    await deleting;
+    if (_deleting == deleting) _deleting = null;
+  }
+
+  /// A run waits for it to show how it goes: the overlay stays up meanwhile
+  Future<void>? _deleting;
+
+  Future<void> _delete(BackupRow backup) async {
     final workspace = state.data.workspace!;
     emit(BackupProcessInProgressState(data: state.data));
     try {
@@ -168,12 +178,15 @@ class BackupCubit extends Cubit<BackupState> {
         token: _token,
       );
       while (true) {
+        await _deleting;
         if (isClosed || state.data.workspace != workspace) return;
         emit(BackupLoadingSuccessState(data: state.data.withRun(id, run)));
         if (!run.running) break;
         await Future.delayed(pollEvery);
         run = await _repo.run(workspace: workspace, id: run.id, token: _token);
       }
+      await _deleting;
+      if (isClosed || state.data.workspace != workspace) return;
       emit(BackupRunFinishedState(backup.config.name, run, data: state.data));
       // an open row shows the new run too
       if (state.data.recent.containsKey(id)) await loadRecent(id);

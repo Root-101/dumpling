@@ -42,6 +42,19 @@ class CanvasCubit extends Cubit<CanvasState> {
 
   void _edit(CanvasData data) => emit(CanvasLoadingSuccessState(data: data));
 
+  /// The save or test in progress: a run waits for it to show how it goes,
+  /// so the overlay stays up and the saved canvas doesn't drop its update
+  Future<void>? _process;
+
+  Future<void> _track(Future<void> process) async {
+    _process = process;
+    try {
+      await process;
+    } finally {
+      if (_process == process) _process = null;
+    }
+  }
+
   /// The canvas of [workspace]; another workspace starts from empty
   Future<void> load(String workspace) async {
     final data = _data.workspace == workspace
@@ -69,7 +82,9 @@ class CanvasCubit extends Cubit<CanvasState> {
 
   /// Sends the whole canvas; the incomplete configs are discarded. What comes
   /// back (with the saved ids) replaces it
-  Future<void> save() async {
+  Future<void> save() => _track(_save());
+
+  Future<void> _save() async {
     final workspace = _data.workspace;
     if (workspace == null || !_data.loaded) return;
     emit(CanvasProcessInProgressState(data: _data));
@@ -118,7 +133,9 @@ class CanvasCubit extends Cubit<CanvasState> {
   /// run: each source connects and its server is not newer than `pg_dump`;
   /// each destination takes a write in every folder (or the root), the ones
   /// added here and not saved yet too
-  Future<void> testRun() async {
+  Future<void> testRun() => _track(_testRun());
+
+  Future<void> _testRun() async {
     final workspace = _data.workspace;
     if (workspace == null || !_data.loaded) return;
     final complete = _data.configs.where((c) => !CanvasData.configOrphan(c));
@@ -174,14 +191,18 @@ class CanvasCubit extends Cubit<CanvasState> {
         token: _token,
       );
       while (true) {
+        await _process;
         if (isClosed || _data.workspace != workspace) return;
         _setRun(configId, run);
         if (!run.running) break;
         await Future.delayed(pollEvery);
         run = await _repo.run(workspace: workspace, id: run.id, token: _token);
       }
+      await _process;
+      if (isClosed || _data.workspace != workspace) return;
       emit(CanvasRunFinishedState(config.name, run, data: _data));
     } catch (e) {
+      await _process;
       if (isClosed || _data.workspace != workspace) return;
       emit(
         CanvasProcessingErrorState(

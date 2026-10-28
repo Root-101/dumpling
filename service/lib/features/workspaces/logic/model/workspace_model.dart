@@ -114,7 +114,8 @@ class WorkspacePreviewLink {
 class WorkspaceDefaults {
   /// Every day at 02:00 UTC
   static const String defaultSchedule = '0 2 * * *';
-  static const Compression defaultCompression = Compression.gzip;
+  /// The default dump (custom format, `pg_dump -Fc`) is compressed already
+  static const Compression defaultCompression = Compression.none;
 
   /// With the run id: two runs of a day (Run now, or an hourly schedule)
   /// never write the same file

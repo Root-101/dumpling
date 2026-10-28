@@ -100,7 +100,7 @@ void main() {
       expect(body['destination_id'], foldersId);
       expect(body['folder'], 'orders');
       expect(body['schedule'], '0 2 * * *');
-      expect(body['compression'], 'gzip');
+      expect(body['compression'], 'none');
       expect(body['object_key'], '{db}/{yyyy}-{MM}-{dd}-{run_id}');
       expect(body['enabled'], isTrue);
       // The next 02:00 UTC
