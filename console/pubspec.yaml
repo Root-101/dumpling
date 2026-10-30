@@ -2,7 +2,7 @@ name: console
 description: "Web console of dumpling, served as static files by the service"
 publish_to: 'none'
 
-version: 0.0.1
+version: 0.1.0-rc.1
 
 environment:
   flutter: ^3.47.0
@@ -12,15 +12,28 @@ dependencies:
   flutter:
     sdk: flutter
 
-  #state management
+  #state management & dependency injection
   flutter_bloc: 9.1.1
+  get: 4.7.3
 
   #routing
   go_router: 17.5.0
 
+  #rest client
+  dio: 5.11.0
+
   #view
   flutter_svg: 2.3.0    #to show icons in svg format
+  top_snackbar_flutter: 3.4.0     #snackbars
+  flutter_secure_storage: 11.0.0       #the session and the language survive a reload
+  gap: 3.0.1
   material_ui: 1.0.1
+
+  #utils
+  intl: 0.20.3
+  #texts generated from lib/l10n/*.i18n.yaml (`fvm dart run slang`)
+  slang: 4.19.2
+  web: 1.1.1
 
 dev_dependencies:
   flutter_test:
@@ -28,11 +41,21 @@ dev_dependencies:
 
   flutter_lints: 6.0.0
 
+  #tests
+  bloc_test: 10.0.0
+  mocktail: 1.0.5
+
 flutter:
   uses-material-design: true
 
   assets:
-    - assets/icons/
+    - assets/brand/
+    - assets/icons/actions/
+    - assets/icons/destinations/
+    - assets/icons/sources/
+    - assets/icons/languages/
+    - assets/icons/navigation/
+    - assets/icons/nodes/
   fonts:
     - family: DMSans
       fonts:

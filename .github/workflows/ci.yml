@@ -1,0 +1,43 @@
+name: CI
+
+# Only what lands on develop or main: a merge or a direct commit
+on:
+  push:
+    branches: [develop, main]
+
+jobs:
+  check:
+    name: ${{ matrix.package }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [service, console]
+    defaults:
+      run:
+        working-directory: ${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # the version pinned for fvm
+      - id: fvm
+        run: echo "flutter=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvm.outputs.flutter }}
+          channel: stable
+          cache: true
+
+      - if: matrix.package == 'service'
+        run: |
+          dart pub get
+          dart analyze
+          dart test
+
+      # the infos stay out: MaterialUiCompatibilityBridge is deprecated on purpose
+      - if: matrix.package == 'console'
+        run: |
+          flutter pub get
+          flutter analyze --no-fatal-infos
+          flutter test

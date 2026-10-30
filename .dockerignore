@@ -1,0 +1,12 @@
+# Only the sources of the service and the console reach the build
+**/.dart_tool/
+**/build/
+**/.idea/
+**/*.iml
+.git/
+.env
+data/
+docs/
+console/web/env.js
+service/data/
+service/.env*

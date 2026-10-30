@@ -1,14 +1,38 @@
 name: service
 description: Service of dumpling, a lightweight tool to back up databases on a schedule
-version: 0.0.1
+version: 0.1.0-rc.1
 publish_to: none
 
 environment:
   sdk: ^3.13.0
 
 dependencies:
-  winter: 1.0.0-rc.1            #framework
+  winter: 1.0.0-rc.6            #framework
+
+  dart_jsonwebtoken: 3.4.1      #JWT
+
+  #i18n: typed error messages generated from lib/i18n/*.i18n.yaml (`fvm dart run slang`)
+  slang: 4.19.2
+  #Imported by the code that slang generates
+  intl: 0.20.2
+
+  #DB
+  drift: 2.35.2
+  sqlite3: 3.7.0
+  path: 1.9.1
+
+  #sources
+  postgres: 3.5.20              #connection checks of PostgreSQL sources
+
+  #credentials of sources and destinations
+  crypto: 3.0.7                 #sha256 of the encryption key
+  pointycastle: 4.0.0           #AES-GCM
 
 dev_dependencies:
+  http: 1.6.0
   lints: 6.1.0
   test: 1.33.0
+
+  #DB
+  drift_dev: 2.35.1
+  build_runner: 2.15.0

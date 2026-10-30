@@ -1,0 +1,63 @@
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:service/dumpling.dart';
+
+/// The write-only values (passwords, secret keys) of sources and destinations:
+/// one encrypted JSON per row, bound to its id.
+class Secrets {
+  static const String _idAlphabet = 'abcdefghijklmnopqrstuvwxyz234567';
+  static const int _idRandomLength = 16;
+  static final Random _random = Random.secure();
+
+  final SecretCipher cipher;
+
+  Secrets() : cipher = di.find();
+
+  String encrypt(String id, Map<String, String> secrets) =>
+      cipher.encrypt(jsonEncode(secrets), associatedData: id);
+
+  Map<String, String> decrypt(String id, String stored) => (jsonDecode(
+    cipher.decrypt(stored, associatedData: id),
+  ) as Map<String, dynamic>).cast<String, String>();
+
+  /// The stored secrets of row [id] for an edit, or none when they don't
+  /// decrypt (`SECRETS_ENCRYPTION_KEY` changed): [require] then asks for them
+  /// again (422) instead of every edit failing.
+  Map<String, String> decryptOrNone(String id, String stored) {
+    try {
+      return decrypt(id, stored);
+    } on Exception {
+      return const {};
+    }
+  }
+
+  /// [secrets], or a 422 naming each of [required] that is missing
+  /// (`settings.password`, under [field]).
+  static Map<String, String> require(
+    List<String> required,
+    Map<String, String> secrets, {
+    String field = 'settings',
+  }) {
+    final context = ConstraintValidatorContext();
+    for (final name in required) {
+      context.field('$field.$name', secrets[name]).notNull();
+    }
+    context.throwOnFailure();
+    return secrets;
+  }
+
+  /// Whether [a] and [b] hold the same secrets: their encrypted forms always
+  /// differ (a random nonce each time), so only the plain ones compare.
+  static bool same(Map<String, String> a, Map<String, String> b) =>
+      a.length == b.length && a.entries.every((e) => b[e.key] == e.value);
+
+  /// [prefix] and 16 random base32 characters (`src_k3x…`): no 0, 1, 8 or 9,
+  /// which read like letters.
+  static String newId(String prefix) =>
+      prefix +
+      String.fromCharCodes([
+        for (var i = 0; i < _idRandomLength; i++)
+          _idAlphabet.codeUnitAt(_random.nextInt(_idAlphabet.length)),
+      ]);
+}

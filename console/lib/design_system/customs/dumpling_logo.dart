@@ -1,3 +1,4 @@
+import 'package:console/app_exporter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -21,6 +22,25 @@ class DumplingLogo extends StatelessWidget {
     return Semantics(
       label: 'Dumpling',
       child: SvgPicture.string(svg, height: height, width: height * 88 / 62),
+    );
+  }
+}
+
+/// The mark with the name (`dumpling`) next to it: the login and the splash
+class DumplingWordmark extends StatelessWidget {
+  final double height;
+
+  const DumplingWordmark({super.key, this.height = 40});
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: 'Dumpling',
+      child: SvgPicture.asset(
+        app.assets.wordmark,
+        height: height,
+        width: height * 336.94 / 62,
+      ),
     );
   }
 }
