@@ -154,6 +154,7 @@ class _ConfigDialogState extends State<ConfigDialog> {
       description: _route,
       icon: app.assets.icons.nodes.clock,
       width: 640,
+      fullHeight: true,
       steps: [t.schedule, t.output, t.review],
       current: _step,
       footerLeading: widget.onDelete == null
