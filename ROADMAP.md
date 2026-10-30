@@ -306,6 +306,9 @@ Docker. Each step is checked once it works in Chrome; what fails is noted under 
   password dropped when a source's host changes; a `Content-Security-Policy` for the console.
 - Copying connections between workspaces; zstd compression.
 - More sources (MySQL, MariaDB, MongoDB) and destinations (Google Drive, SFTP, local download).
+- To weigh: publish the image (Docker Hub or `ghcr.io`, amd64 and arm64), built by CI on each
+  tag, with a `docker-compose.yml` that pulls it (`image:` instead of `build:`) and the
+  `.env.example`, so running Dumpling needs no build. The secrets stay out of the image.
 
 ## After 1.0
 
