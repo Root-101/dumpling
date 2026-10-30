@@ -45,7 +45,8 @@ hand.
 
 - [x] Changelogs updated with the last changes of the console; README, `CONTRIBUTING.md` and
   `DECISIONS.md` reviewed.
-- [ ] End-to-end test (`service/tool/e2e/run.sh`) with the `Dockerfile` at the root.
+- [x] End-to-end test (`service/tool/e2e/run.sh`) with the `Dockerfile` at the root: passed with
+  MinIO on 2026-10-30.
 - [ ] A pass by hand over the last changes of the console: the rail and its notch, the dialogs in
   steps, the placeholders of the object key, the local time on the config nodes, the sign-in.
 - [ ] Merge `feature/poc` into `main` and tag `0.1.0-rc.1`.
