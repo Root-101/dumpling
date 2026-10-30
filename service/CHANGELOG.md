@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.0-rc.3
+
+- The console is served with `Cache-Control: no-cache`: the browser revalidates every file (a 304
+  when it didn't change), so a new version shows on reload without clearing the cache.
+
 ## 0.1.0-rc.2
 
 - No changes in the service: the version follows the console's.

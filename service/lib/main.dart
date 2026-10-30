@@ -160,7 +160,9 @@ class Dumpling {
           'Serving the console',
           fields: {'path': Directory(path).absolute.path},
         );
-        return StaticFiles(path);
+        // Flutter Web keeps the same file names on every build: the browser
+        // revalidates each one (a 304 by its ETag), so a deploy shows on reload
+        return StaticFiles(path, cacheControl: 'no-cache');
       }
     }
     return null;
