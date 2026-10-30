@@ -30,8 +30,9 @@ The first release candidate: backups of PostgreSQL to S3-compatible storage, on 
   `pg_dump`'s stderr is kept.
 - `pg_dump` gets its connection in its environment, without the secrets of the service.
 - The port comes from `PORT`; `Referrer-Policy: no-referrer` on every response.
-- One Docker image with the console and the `pg_dump` of `PG_VERSION` (PostgreSQL packages), and
-  an end-to-end test in Docker (`tool/e2e/run.sh`).
+- One Docker image with the console and the `pg_dump` of `PG_VERSION` (PostgreSQL packages),
+  built by the `Dockerfile` at the root of the repo, and an end-to-end test in Docker
+  (`tool/e2e/run.sh`).
 
 ## 0.0.1
 

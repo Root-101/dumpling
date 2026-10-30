@@ -4,20 +4,30 @@
 
 The first release candidate, on the API of the service.
 
-- Sign in, with the error of the service in the form; back to the page asked for after signing in.
-- Workspaces: cards with counts, health and last run; create; switch from the rail or the URL.
-- Sources and destinations: list with search and type filter, create, edit, duplicate, test and
-  delete; the folders of each bucket from its row. A source has a TLS selector (on by default,
-  with a warning when turned off).
-- The canvas, loaded from and saved to the service: Save, Test run, and a panel per config (name,
-  frequency or cron, enabled, object key with a preview, compression, Run now). An empty cron goes
-  back to the workspace's schedule. A guide for an empty workspace. The right click opens only the
-  menu of the canvas. Leaving it, or signing out, with edits asks first; Discard drops them.
+- Sign in, with the error of the service in the form; while it signs in only the form's side is
+  blurred. Back to the page asked for after signing in; a session that expires keeps the screen
+  under a dialog that signs in again.
+- Workspaces: cards with counts, health and last run; create; settings with the defaults; delete
+  by typing its name; switch from the rail or the URL.
+- Every screen has its own path: bookmarks, reloads, back and forward.
+- The rail splits its items with dividers and expands from a notch on its edge, each item with
+  its name.
+- Sources and destinations: list or cards with search and type filter, the logo of each type,
+  create, edit, duplicate, test and delete; the folders of each bucket from its row. Created and
+  edited in a dialog in steps as tall as the screen; each step starts with what the steps before
+  chose. A source has a TLS selector (on by default, with a warning when turned off).
+- The canvas, loaded from and saved to the service: Save (only with changes), Test run, and a
+  dialog in steps per config (name, frequency or cron, enabled, object key with a preview and a
+  list of its placeholders, compression, Run now). An empty cron goes back to the workspace's
+  schedule. Its nodes show the logo of their type, and each config its last and next run in UTC
+  and local time. A guide for an empty workspace. The right click opens only the menu of the
+  canvas. Leaving it, or signing out, with edits asks first; Discard drops them.
+- Warnings that don't block: a name too long to read on the canvas, gzip on top of a custom dump.
 - Backups: healthy, failing and the next run; every backup with its last and next run, filters,
   sort and Run now.
 - Run log: every run with filters by status, source type and destination type; a row opens on
   where the file went, the error and the log, which can be copied.
-- Not found and Connection lost pages.
+- Not found and Connection lost pages; each screen loads as a skeleton of itself.
 - English and Spanish; times in UTC with the local time next to them.
 
 ## 0.0.1
