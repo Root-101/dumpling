@@ -348,6 +348,8 @@ void main() {
     await settle(tester);
     expect(canvas, findsOneWidget);
     expect(find.widgetWithText(RailButton, 'Sign out'), findsOneWidget);
+    // the failing count goes in its badge, not again in the name
+    expect(find.widgetWithText(RailButton, 'Run log'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Collapse menu'));
     await settle(tester);

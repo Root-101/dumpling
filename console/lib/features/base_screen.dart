@@ -101,17 +101,23 @@ class _RailState extends State<_Rail> {
     final icons = app.assets.icons;
     final workspace = widget.current;
     final expanded = _expanded;
-    Widget item(String name, String tooltip, SvgAsset icon, {Widget? badge}) =>
-        RailButton(
-          tooltip: tooltip,
-          label: expanded ? tooltip : null,
-          selected: widget.section == name,
-          badge: badge,
-          onPressed: workspace == null
-              ? null
-              : (_) => RouteNames.openWorkspace(workspace.slug, section: name),
-          icon: (color) => icon.build(size: 20, color: color),
-        );
+    // [label]: the name when it isn't the whole tooltip (its badge says the rest)
+    Widget item(
+      String name,
+      String tooltip,
+      SvgAsset icon, {
+      Widget? badge,
+      String? label,
+    }) => RailButton(
+      tooltip: tooltip,
+      label: expanded ? label ?? tooltip : null,
+      selected: widget.section == name,
+      badge: badge,
+      onPressed: workspace == null
+          ? null
+          : (_) => RouteNames.openWorkspace(workspace.slug, section: name),
+      icon: (color) => icon.build(size: 20, color: color),
+    );
     final divider = Padding(
       padding: EdgeInsets.symmetric(horizontal: expanded ? 0 : 8),
       child: Container(
@@ -165,6 +171,7 @@ class _RailState extends State<_Rail> {
                       : app.intl.nav.runs,
                   icons.navigation.events,
                   badge: failing > 0 ? RailBadge(count: failing) : null,
+                  label: app.intl.nav.runs,
                 ),
               ],
               const Spacer(),
