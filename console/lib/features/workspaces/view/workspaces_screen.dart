@@ -66,14 +66,9 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
                         : AppShimmer(
                             child: _grid(
                               (width) => [
-                                for (var i = 0; i < 5; i++)
-                                  SizedBox(
-                                    width: width,
-                                    child: const _CardSkeleton(),
-                                  ),
                                 SizedBox(
                                   width: width,
-                                  child: const _NewWorkspaceSkeleton(),
+                                  child: const _CardSkeleton(),
                                 ),
                               ],
                             ),
@@ -263,27 +258,4 @@ class _CardSkeleton extends StatelessWidget {
       ),
     );
   }
-}
-
-/// The dashed card of a new workspace while the workspaces load
-class _NewWorkspaceSkeleton extends StatelessWidget {
-  const _NewWorkspaceSkeleton();
-
-  @override
-  Widget build(BuildContext context) => DashedBorder(
-    color: app.colors.neutral.grey5,
-    radius: 12,
-    child: const SizedBox(
-      height: 330,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        spacing: 12,
-        children: [
-          AppSkeleton(width: 44, height: 44, radius: 22),
-          AppSkeleton(width: 110, height: 12),
-          AppSkeleton(width: 200, height: 9, dim: true),
-        ],
-      ),
-    ),
-  );
 }

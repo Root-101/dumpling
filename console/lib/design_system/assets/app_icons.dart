@@ -10,6 +10,22 @@ class AppIcons {
   final NavigationIcons navigation = const NavigationIcons();
   final NodesIcons nodes = const NodesIcons();
   final LanguageIcons language = const LanguageIcons();
+  final SourcesIcons sources = const SourcesIcons();
+}
+
+/// Logos of the kinds of source, in their own colors
+class SourcesIcons {
+  const SourcesIcons();
+
+  static const String _sources = 'assets/icons/sources';
+
+  SvgAsset get postgresql => const SvgAsset('$_sources/postgresql.svg');
+
+  SvgAsset get mysql => const SvgAsset('$_sources/mysql.svg');
+
+  SvgAsset get mariadb => const SvgAsset('$_sources/mariadb.svg');
+
+  SvgAsset get mongodb => const SvgAsset('$_sources/mongodb.svg');
 }
 
 class LanguageIcons {

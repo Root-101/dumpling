@@ -37,6 +37,10 @@ class StepsDialogTemplate extends StatelessWidget {
   final Object? loadingId;
   final double width;
 
+  /// As tall as the screen, but 32 above and below, whatever the step;
+  /// otherwise as tall as the step up to 800
+  final bool fullHeight;
+
   const StepsDialogTemplate({
     required this.title,
     required this.description,
@@ -48,6 +52,7 @@ class StepsDialogTemplate extends StatelessWidget {
     this.footerLeading,
     this.loadingId,
     this.width = 720,
+    this.fullHeight = false,
     super.key,
   });
 
@@ -56,7 +61,7 @@ class StepsDialogTemplate extends StatelessWidget {
     final colors = app.colors;
     final line = BorderSide(color: colors.neutral.grey5.withValues(alpha: 0.5));
     final content = Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: fullHeight ? MainAxisSize.max : MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
@@ -118,6 +123,7 @@ class StepsDialogTemplate extends StatelessWidget {
           ),
         ),
         Flexible(
+          fit: fullHeight ? FlexFit.tight : FlexFit.loose,
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
             child: child,
@@ -150,11 +156,17 @@ class StepsDialogTemplate extends StatelessWidget {
     );
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
+        padding: EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: fullHeight ? 32 : 48,
+        ),
         child: AppDialogFrame(
           color: colors.primary.backgroundForm,
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: width, maxHeight: 800),
+            constraints: BoxConstraints(
+              maxWidth: width,
+              maxHeight: fullHeight ? double.infinity : 800,
+            ),
             child: loadingId == null
                 ? content
                 : LoadingOverlay(

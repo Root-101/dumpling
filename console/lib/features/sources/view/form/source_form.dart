@@ -245,6 +245,7 @@ class _SourceFormState extends State<SourceForm> {
         description: app.intl.sources.formDescription,
         icon: app.assets.icons.nodes.database,
         loadingId: SourceForm.loadingId,
+        fullHeight: true,
         steps: [
           app.intl.sources.stepType,
           app.intl.sources.stepConnection,
@@ -286,14 +287,16 @@ class _SourceFormState extends State<SourceForm> {
                   _buildTypes(),
                 ],
                 1 => [
+                  _buildSummary(full: false),
+                  ..._divider(),
                   StepTitle(app.intl.sources.connectionTitle),
                   app.dimensions.padding.l.gap(),
                   if (_type == SourceTypes.postgres) ..._buildPostgres(),
                 ],
                 _ => [
-                  StepTitle(app.intl.sources.checkTitle),
-                  app.dimensions.padding.m.gap(),
                   _buildSummary(),
+                  ..._divider(),
+                  StepTitle(app.intl.sources.checkTitle),
                   if (_type == SourceTypes.postgres) ...[
                     app.dimensions.padding.l.gap(),
                     ..._buildDumpFormat(),
@@ -328,8 +331,9 @@ class _SourceFormState extends State<SourceForm> {
     );
   }
 
-  /// What the last step saves: type, name and where it connects
-  Widget _buildSummary() {
+  /// What the last step saves: type, name and where it connects; not [full],
+  /// only the type picked in the first step, in the first of the three cells
+  Widget _buildSummary({bool full = true}) {
     final parts = _byUrl ? _urlParts() : null;
     final host = _byUrl
         ? (parts == null ? '—' : '${parts.host}:${parts.port}')
@@ -339,17 +343,37 @@ class _SourceFormState extends State<SourceForm> {
     return Row(
       spacing: app.dimensions.padding.sm,
       children: [
-        for (final (label, value) in [
+        for (final (index, (label, value)) in [
           (app.intl.sources.columnType, SourceTypeLook.labelOf(_type)),
           (app.intl.sources.name, name.isEmpty ? '—' : name),
           (app.intl.sources.host, host),
-        ])
+        ].indexed)
           Expanded(
-            child: _UrlPart(label: label, value: value),
+            child: full || index == 0
+                ? _UrlPart(label: label, value: value)
+                : const SizedBox(),
           ),
       ],
     );
   }
+
+  /// Line between the summary and the step, across the dialog's padding
+  List<Widget> _divider() => [
+    app.dimensions.padding.xl.gap(),
+    LayoutBuilder(
+      builder: (context, constraints) => SizedBox(
+        height: 1,
+        child: OverflowBox(
+          minWidth: constraints.maxWidth + 40,
+          maxWidth: constraints.maxWidth + 40,
+          child: ColoredBox(
+            color: app.colors.neutral.grey5.withValues(alpha: 0.5),
+          ),
+        ),
+      ),
+    ),
+    app.dimensions.padding.xl.gap(),
+  ];
 
   Widget _buildTypes() {
     return LayoutBuilder(

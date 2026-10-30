@@ -1,17 +1,20 @@
 import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// The look of a kind of source or destination: its abbreviation and colors
+/// The look of a kind of source or destination: its abbreviation and colors,
+/// and the product's [logo] when it has one
 class TypeLook {
   final String abbr;
   final Color color;
+  final SvgAsset? logo;
 
-  const TypeLook(this.abbr, this.color);
+  const TypeLook(this.abbr, this.color, [this.logo]);
 
   Color get tint => color.withValues(alpha: 0.16);
 }
 
-/// Square with the abbreviation of a type (`PG`, `S3`) on its tint
+/// Square with the logo of a type on a light ground, or its abbreviation
+/// (`PG`, `S3`) on its tint
 class TypeBadge extends StatelessWidget {
   final TypeLook look;
   final double size;
@@ -20,22 +23,25 @@ class TypeBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final logo = look.logo;
     return Container(
       width: size,
       height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: look.tint,
+        color: logo == null ? look.tint : const Color(0xFFF1EFF6),
         borderRadius: BorderRadius.circular(size * 0.26),
       ),
-      child: Text(
-        look.abbr,
-        style: TextStyle(
-          fontSize: size * 0.34,
-          fontWeight: FontWeight.w700,
-          color: look.color,
-        ),
-      ),
+      child: logo != null
+          ? logo.build(size: size * 0.6)
+          : Text(
+              look.abbr,
+              style: TextStyle(
+                fontSize: size * 0.34,
+                fontWeight: FontWeight.w700,
+                color: look.color,
+              ),
+            ),
     );
   }
 }
