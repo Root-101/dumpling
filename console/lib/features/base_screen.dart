@@ -187,7 +187,9 @@ class _RailState extends State<_Rail> {
           top: 0,
           bottom: 0,
           right: 0,
-          child: Center(
+          // a little under the middle, away from the items
+          child: Align(
+            alignment: const Alignment(0, 0.2),
             child: _RailNotch(
               expanded: expanded,
               onPressed: () => setState(() => _expanded = !_expanded),
