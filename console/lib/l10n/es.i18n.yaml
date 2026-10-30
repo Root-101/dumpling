@@ -71,6 +71,8 @@ nav:
   runs: 'Registro de ejecuciones'
   failedRuns: '{count} con fallos'
   language: 'Idioma: {name}'
+  expand: 'Expandir menú'
+  collapse: 'Contraer menú'
   logout: 'Cerrar sesión'
 
 login:

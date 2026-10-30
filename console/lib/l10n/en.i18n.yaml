@@ -71,6 +71,8 @@ nav:
   runs: 'Run log'
   failedRuns: '{count: int} failing'
   language: 'Language: {name: String}'
+  expand: 'Expand menu'
+  collapse: 'Collapse menu'
   logout: 'Sign out'
 
 login:

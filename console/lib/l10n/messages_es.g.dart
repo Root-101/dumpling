@@ -268,6 +268,10 @@ class AppMessages$nav$es implements AppMessages$nav$en {
   @override
   String language({required Object name}) => 'Idioma: ${name}';
   @override
+  String get expand => 'Expandir menú';
+  @override
+  String get collapse => 'Contraer menú';
+  @override
   String get logout => 'Cerrar sesión';
 }
 
@@ -1695,6 +1699,8 @@ extension on AppMessagesEs {
             required Object count,
           }) => '${count} con fallos',
           'nav.language' => ({required Object name}) => 'Idioma: ${name}',
+          'nav.expand' => 'Expandir menú',
+          'nav.collapse' => 'Contraer menú',
           'nav.logout' => 'Cerrar sesión',
           'login.title' => 'Inicia sesión',
           'login.description' => 'Gestiona los backups de tus bases de datos.',
@@ -2313,11 +2319,11 @@ extension on AppMessagesEs {
           'backups.columnSource' => 'Origen',
           'backups.columnDestination' => 'Destino',
           'backups.columnSchedule' => 'Programación',
-          'backups.columnLastRun' => 'Último respaldo',
-          'backups.columnNextRun' => 'Próximo respaldo',
           _ => null,
         } ??
         switch (path) {
+          'backups.columnLastRun' => 'Último respaldo',
+          'backups.columnNextRun' => 'Próximo respaldo',
           'backups.allSources' => 'Todos los orígenes',
           'backups.allDestinations' => 'Todos los destinos',
           'backups.shown' => ({

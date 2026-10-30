@@ -5,7 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// Language selector of the rail (and the login): the flag of the current
 /// language in a [RailButton]; it opens a menu with the languages
 class LanguageWidget extends CubitView<LanguageCubit> {
-  const LanguageWidget({super.key});
+  /// In the expanded rail: the flag with the name of the language
+  final bool expanded;
+
+  const LanguageWidget({this.expanded = false, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,6 +16,7 @@ class LanguageWidget extends CubitView<LanguageCubit> {
       builder: (context, state) {
         return RailButton(
           tooltip: app.intl.nav.language(name: state.current.name),
+          label: expanded ? state.current.name : null,
           onPressed: (anchor) => _showMenu(anchor, state),
           icon: (_) => ClipRRect(
             borderRadius: app.dimensions.border.borderRadius.xs,

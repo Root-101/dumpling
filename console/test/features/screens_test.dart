@@ -333,6 +333,27 @@ void main() {
     expect(find.text('Delete “QA”?'), findsOneWidget);
   });
 
+  testWidgets('The notch of the rail expands it with the names and folds it', (
+    tester,
+  ) async {
+    when(() => auth.auth).thenReturn(session());
+    await pumpApp(tester);
+    RouteConfig.router.go('/workspaces/production');
+    await settle(tester);
+
+    final canvas = find.widgetWithText(RailButton, 'Pipeline editor');
+    expect(canvas, findsNothing);
+
+    await tester.tap(find.byTooltip('Expand menu'));
+    await settle(tester);
+    expect(canvas, findsOneWidget);
+    expect(find.widgetWithText(RailButton, 'Sign out'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Collapse menu'));
+    await settle(tester);
+    expect(canvas, findsNothing);
+  });
+
   testWidgets('A workspace opens on its backups and becomes the current one', (
     tester,
   ) async {

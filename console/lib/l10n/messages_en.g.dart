@@ -309,6 +309,12 @@ class AppMessages$nav$en {
   /// en: 'Language: {name: String}'
   String language({required String name}) => 'Language: ${name}';
 
+  /// en: 'Expand menu'
+  String get expand => 'Expand menu';
+
+  /// en: 'Collapse menu'
+  String get collapse => 'Collapse menu';
+
   /// en: 'Sign out'
   String get logout => 'Sign out';
 }
@@ -2196,6 +2202,8 @@ extension on AppMessages {
           'nav.runs' => 'Run log',
           'nav.failedRuns' => ({required int count}) => '${count} failing',
           'nav.language' => ({required String name}) => 'Language: ${name}',
+          'nav.expand' => 'Expand menu',
+          'nav.collapse' => 'Collapse menu',
           'nav.logout' => 'Sign out',
           'login.title' => 'Sign in',
           'login.description' => 'Manage your database backups.',
@@ -2804,11 +2812,11 @@ extension on AppMessages {
           'backups.columnSource' => 'Source',
           'backups.columnDestination' => 'Destination',
           'backups.columnSchedule' => 'Schedule',
-          'backups.columnLastRun' => 'Last backup',
-          'backups.columnNextRun' => 'Next backup',
           _ => null,
         } ??
         switch (path) {
+          'backups.columnLastRun' => 'Last backup',
+          'backups.columnNextRun' => 'Next backup',
           'backups.allSources' => 'All sources',
           'backups.allDestinations' => 'All destinations',
           'backups.shown' => ({

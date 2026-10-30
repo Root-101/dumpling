@@ -73,7 +73,7 @@ class _BaseScreenState extends State<BaseScreen> {
   }
 }
 
-class _Rail extends StatelessWidget {
+class _Rail extends StatefulWidget {
   final WorkspaceModel? current;
 
   /// The selected item, inside a workspace
@@ -89,70 +89,159 @@ class _Rail extends StatelessWidget {
   });
 
   @override
+  State<_Rail> createState() => _RailState();
+}
+
+class _RailState extends State<_Rail> {
+  /// Expanded, each item shows its name next to its icon
+  bool _expanded = false;
+
+  @override
   Widget build(BuildContext context) {
     final icons = app.assets.icons;
-    final workspace = current;
+    final workspace = widget.current;
+    final expanded = _expanded;
     Widget item(String name, String tooltip, SvgAsset icon, {Widget? badge}) =>
         RailButton(
           tooltip: tooltip,
-          selected: section == name,
+          label: expanded ? tooltip : null,
+          selected: widget.section == name,
           badge: badge,
           onPressed: workspace == null
               ? null
               : (_) => RouteNames.openWorkspace(workspace.slug, section: name),
           icon: (color) => icon.build(size: 20, color: color),
         );
+    final divider = Padding(
+      padding: EdgeInsets.symmetric(horizontal: expanded ? 0 : 8),
+      child: Container(
+        height: 1,
+        color: app.colors.neutral.grey5.withValues(alpha: 0.6),
+      ),
+    );
     final failing = workspace?.stats?.failing ?? 0;
-    return Container(
-      width: 64,
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      color: app.colors.primary.background2,
-      child: Column(
-        spacing: app.dimensions.padding.s,
-        children: [
-          _WorkspaceSwitcher(workspace: workspace, selected: onWorkspaces),
-          if (workspace != null) ...[
-            item(
-              RouteNames.backups,
-              app.intl.nav.backups,
-              icons.navigation.backups,
-            ),
-            item(
-              RouteNames.canvas,
-              app.intl.nav.canvas,
-              icons.navigation.pipeline,
-            ),
-            item(
-              RouteNames.sources,
-              app.intl.nav.sources,
-              icons.nodes.database,
-            ),
-            item(
-              RouteNames.destinations,
-              app.intl.nav.destinations,
-              icons.nodes.bucket,
-            ),
-            item(
-              RouteNames.runs,
-              failing > 0
-                  ? '${app.intl.nav.runs} · ${app.intl.nav.failedRuns(count: failing)}'
-                  : app.intl.nav.runs,
-              icons.navigation.events,
-              badge: failing > 0 ? RailBadge(count: failing) : null,
-            ),
-          ],
-          const Spacer(),
-          const LanguageWidget(),
-          RailButton(
-            tooltip: app.intl.nav.logout,
-            // the logout resets the canvas before the router could ask
-            onPressed: (_) async {
-              final auth = context.read<AuthCubit>();
-              if (await CanvasScreen.confirmLeave()) auth.logout();
-            },
-            icon: (color) => icons.actions.logout.build(size: 20, color: color),
+    return Stack(
+      children: [
+        Container(
+          width: expanded ? 220 : 64,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+          color: app.colors.primary.background2,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: app.dimensions.padding.s,
+            children: [
+              _WorkspaceSwitcher(
+                workspace: workspace,
+                selected: widget.onWorkspaces,
+                expanded: expanded,
+              ),
+              if (workspace != null) ...[
+                item(
+                  RouteNames.backups,
+                  app.intl.nav.backups,
+                  icons.nodes.clock,
+                ),
+                item(
+                  RouteNames.canvas,
+                  app.intl.nav.canvas,
+                  icons.navigation.pipeline,
+                ),
+                divider,
+                item(
+                  RouteNames.sources,
+                  app.intl.nav.sources,
+                  icons.nodes.database,
+                ),
+                item(
+                  RouteNames.destinations,
+                  app.intl.nav.destinations,
+                  icons.nodes.bucket,
+                ),
+                divider,
+                item(
+                  RouteNames.runs,
+                  failing > 0
+                      ? '${app.intl.nav.runs} · ${app.intl.nav.failedRuns(count: failing)}'
+                      : app.intl.nav.runs,
+                  icons.navigation.events,
+                  badge: failing > 0 ? RailBadge(count: failing) : null,
+                ),
+              ],
+              const Spacer(),
+              LanguageWidget(expanded: expanded),
+              RailButton(
+                tooltip: app.intl.nav.logout,
+                label: expanded ? app.intl.nav.logout : null,
+                // the logout resets the canvas before the router could ask
+                onPressed: (_) async {
+                  final auth = context.read<AuthCubit>();
+                  if (await CanvasScreen.confirmLeave()) auth.logout();
+                },
+                icon: (color) =>
+                    icons.actions.logout.build(size: 20, color: color),
+              ),
+            ],
           ),
-        ],
+        ),
+        Positioned(
+          top: 0,
+          bottom: 0,
+          right: 0,
+          child: Center(
+            child: _RailNotch(
+              expanded: expanded,
+              onPressed: () => setState(() => _expanded = !_expanded),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Tab on the middle of the rail's edge, inside it so it covers nothing of
+/// the page: it expands and collapses the rail, away from the items so a
+/// slip doesn't fold it
+class _RailNotch extends StatelessWidget {
+  final bool expanded;
+  final VoidCallback onPressed;
+
+  const _RailNotch({required this.expanded, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = app.colors;
+    const radius = BorderRadius.horizontal(left: Radius.circular(8));
+    final side = BorderSide(
+      color: colors.neutral.grey5.withValues(alpha: 0.75),
+    );
+    return Tooltip(
+      message: expanded ? app.intl.nav.collapse : app.intl.nav.expand,
+      child: Semantics(
+        button: true,
+        expanded: expanded,
+        child: Material(
+          color: colors.primary.background2,
+          shape: RoundedRectangleBorder(borderRadius: radius, side: side),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onPressed,
+            hoverColor: colors.surface.control,
+            child: SizedBox(
+              width: 14,
+              height: 48,
+              child: Center(
+                child: RotatedBox(
+                  quarterTurns: expanded ? 2 : 0,
+                  child: app.assets.icons.actions.chevron.build(
+                    size: 10,
+                    color: colors.neutral.grey4,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -164,7 +253,14 @@ class _WorkspaceSwitcher extends StatelessWidget {
   final WorkspaceModel? workspace;
   final bool selected;
 
-  const _WorkspaceSwitcher({required this.workspace, required this.selected});
+  /// In the expanded rail: the avatar with the workspace's name
+  final bool expanded;
+
+  const _WorkspaceSwitcher({
+    required this.workspace,
+    required this.selected,
+    required this.expanded,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -172,6 +268,7 @@ class _WorkspaceSwitcher extends StatelessWidget {
     if (current == null) {
       return RailButton(
         tooltip: app.intl.nav.workspaces,
+        label: expanded ? app.intl.nav.workspaces : null,
         selected: selected,
         onPressed: (_) => app.navigator.go(RouteNames.workspaces),
         icon: (color) =>
@@ -196,14 +293,34 @@ class _WorkspaceSwitcher extends StatelessWidget {
             child: InkWell(
               borderRadius: radius,
               onTap: () => app.navigator.go(RouteNames.workspaces),
-              child: SizedBox.square(
-                dimension: RailButton.size,
-                child: Center(
-                  child: WorkspaceAvatar(
-                    initial: current.initial,
-                    color: current.color,
-                    size: 30,
-                  ),
+              child: SizedBox(
+                height: RailButton.size,
+                child: Row(
+                  mainAxisAlignment: expanded
+                      ? MainAxisAlignment.start
+                      : MainAxisAlignment.center,
+                  children: [
+                    if (expanded) const SizedBox(width: 6),
+                    WorkspaceAvatar(
+                      initial: current.initial,
+                      color: current.color,
+                      size: 30,
+                    ),
+                    if (expanded) ...[
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          current.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ),

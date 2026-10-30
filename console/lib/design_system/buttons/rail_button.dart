@@ -2,8 +2,9 @@ import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Square button of the rail: 44x44 and radius 10, the icon in `grey3` and,
-/// when [selected], white over `purple`. [onPressed] gets the button's
-/// context, to anchor a menu to it
+/// when [selected], white over `purple`. With a [label] (the rail expanded) it
+/// is as wide as the rail, the icon with its name. [onPressed] gets the
+/// button's context, to anchor a menu to it
 class RailButton extends StatelessWidget {
   static const double size = 44;
 
@@ -14,8 +15,12 @@ class RailButton extends StatelessWidget {
   final Widget Function(Color color) icon;
   final bool selected;
 
-  /// Painted over the top right corner (e.g. how many configs fail)
+  /// Painted over the top right corner (e.g. how many configs fail); with a
+  /// [label], at the end of the row
   final Widget? badge;
+
+  /// The name next to the icon, when the rail is expanded
+  final String? label;
 
   const RailButton({
     required this.tooltip,
@@ -23,6 +28,7 @@ class RailButton extends StatelessWidget {
     required this.icon,
     this.selected = false,
     this.badge,
+    this.label,
     super.key,
   });
 
@@ -33,9 +39,44 @@ class RailButton extends StatelessWidget {
         : selected
         ? app.colors.neutral.white
         : app.colors.neutral.grey3;
+    final label = this.label;
+    final content = label == null
+        ? SizedBox.square(
+            dimension: size,
+            child: Center(child: icon(color)),
+          )
+        : SizedBox(
+            height: size,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                spacing: 12,
+                children: [
+                  icon(color),
+                  Expanded(
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: selected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
+                        color: color,
+                      ),
+                    ),
+                  ),
+                  ?badge,
+                ],
+              ),
+            ),
+          );
     return Tooltip(
-      message: tooltip,
+      // with its name on screen, the tooltip would only repeat it
+      message: label == null ? tooltip : '',
       child: Semantics(
+        label: label == null ? null : tooltip,
         selected: selected,
         button: true,
         child: Stack(
@@ -52,14 +93,11 @@ class RailButton extends StatelessWidget {
                   borderRadius: _radius,
                   hoverColor: app.colors.surface.control.withValues(alpha: 0.8),
                   onTap: onPressed == null ? null : () => onPressed!(context),
-                  child: SizedBox.square(
-                    dimension: size,
-                    child: Center(child: icon(color)),
-                  ),
+                  child: content,
                 ),
               ),
             ),
-            if (badge != null)
+            if (badge != null && label == null)
               Positioned(
                 top: 4,
                 right: 4,
