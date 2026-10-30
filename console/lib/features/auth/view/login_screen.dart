@@ -42,7 +42,12 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  /// Id of the [LoadingOverlay] over the form's side, not the whole screen
+  static const String _loadingId = 'login';
+
   void _onLogin() {
+    // Enter in a field still reaches here under the overlay
+    if (context.read<AuthCubit>().state is AuthProcessInProgressState) return;
     if (!_submitted) setState(() => _submitted = true);
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthCubit>().login(
@@ -61,6 +66,11 @@ class _LoginScreenState extends State<LoginScreen> {
         // autofill context first lets the browser offer to save the password
         if (state is AuthProcessingOKState) {
           TextInput.finishAutofillContext();
+        }
+        if (state is AuthProcessInProgressState) {
+          app.loading.show(id: _loadingId);
+        } else {
+          app.loading.hide(id: _loadingId);
         }
       },
       child: Scaffold(
@@ -83,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           tags: false,
                         ),
-                        _buildForm(),
+                        _withLoading(_buildForm()),
                       ],
                     ),
                   )
@@ -112,8 +122,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          child: Center(
-                            child: SingleChildScrollView(child: _buildForm()),
+                          child: _withLoading(
+                            Center(
+                              child: SingleChildScrollView(child: _buildForm()),
+                            ),
                           ),
                         ),
                       ),
@@ -131,6 +143,13 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
+  /// The blur and spinner of the sign-in, only over the form's side
+  Widget _withLoading(Widget child) => LoadingOverlay(
+    id: _loadingId,
+    overlayWidgetBuilder: LoadingOverlayStyles.form,
+    child: child,
+  );
 
   /// The panel with the version under it
   Widget _buildForm() {
@@ -171,7 +190,6 @@ class _LoginScreenState extends State<LoginScreen> {
               : AutovalidateMode.disabled,
           child: BlocBuilder<AuthCubit, AuthState>(
             builder: (context, state) {
-              final loading = state is AuthProcessInProgressState;
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -226,10 +244,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   18.gap(),
                   PrimaryButton.primary(
                     onPressed: _onLogin,
-                    isLoading: loading,
-                    title: loading
-                        ? app.intl.login.signingIn
-                        : app.intl.login.button,
+                    title: app.intl.login.button,
                     h: 48,
                   ),
                   18.gap(),

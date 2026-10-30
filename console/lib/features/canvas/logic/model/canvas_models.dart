@@ -111,6 +111,8 @@ class DestinationNode {
 
   String get bucket => settings['bucket'] ?? name;
 
+  TypeLook get look => DestinationTypeLook.lookOf(type);
+
   /// What its connection test sends: the saved settings with the folders of
   /// the canvas; without the secret key, which the service fills in
   DestinationDraft toDraft() => DestinationDraft(

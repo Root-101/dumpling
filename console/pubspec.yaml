@@ -51,6 +51,7 @@ flutter:
   assets:
     - assets/brand/
     - assets/icons/actions/
+    - assets/icons/destinations/
     - assets/icons/sources/
     - assets/icons/languages/
     - assets/icons/navigation/

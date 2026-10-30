@@ -11,6 +11,20 @@ class AppIcons {
   final NodesIcons nodes = const NodesIcons();
   final LanguageIcons language = const LanguageIcons();
   final SourcesIcons sources = const SourcesIcons();
+  final DestinationsIcons destinations = const DestinationsIcons();
+}
+
+/// Logos of the kinds of destination, in their own colors
+class DestinationsIcons {
+  const DestinationsIcons();
+
+  static const String _destinations = 'assets/icons/destinations';
+
+  SvgAsset get s3 => const SvgAsset('$_destinations/s3.svg');
+
+  SvgAsset get gdrive => const SvgAsset('$_destinations/gdrive.svg');
+
+  SvgAsset get dropbox => const SvgAsset('$_destinations/dropbox.svg');
 }
 
 /// Logos of the kinds of source, in their own colors

@@ -170,7 +170,6 @@ class SourceNodeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = app.colors;
-    final tint = source.look.color;
     final size = CanvasGeometry.sourceSize;
     // ports and buttons are siblings of the body: they stick out of it, and
     // only an UnboundedStack takes pointers outside of its size
@@ -191,17 +190,7 @@ class SourceNodeView extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    _Badge(
-                      background: tint.withValues(alpha: 0.16),
-                      child: Text(
-                        source.look.abbr,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: tint,
-                        ),
-                      ),
-                    ),
+                    TypeBadge(look: source.look),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Column(
@@ -678,13 +667,7 @@ class DestinationNodeView extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: Row(
                         children: [
-                          _Badge(
-                            background: const Color(0xFFF1EFF6),
-                            child: app.assets.icons.nodes.bucket.build(
-                              size: 17,
-                              color: colors.brand.primaryAction,
-                            ),
-                          ),
+                          TypeBadge(look: d.look),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Column(

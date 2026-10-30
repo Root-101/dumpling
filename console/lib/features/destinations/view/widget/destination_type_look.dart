@@ -3,13 +3,24 @@ import 'package:material_ui/material_ui.dart';
 
 /// How each type of destination shows: product names, not translated
 abstract class DestinationTypeLook {
-  static const Map<String, (String label, TypeLook look)> _types = {
-    DestinationTypes.s3: ('S3', TypeLook('S3', Color(0xFFE6B77E))),
-    'gdrive': ('Google Drive', TypeLook('GD', Color(0xFF5FD17F))),
-    'dropbox': ('Dropbox', TypeLook('DB', Color(0xFF8AA8FF))),
-    'azure': ('Azure Blob', TypeLook('AZ', Color(0xFF8AA8FF))),
-    'sftp': ('SFTP', TypeLook('FT', Color(0xFFD0CFD6))),
+  static final Map<String, (String label, TypeLook look)> _types = {
+    DestinationTypes.s3: (
+      'S3',
+      TypeLook('S3', const Color(0xFFE6B77E), _logos.s3),
+    ),
+    'gdrive': (
+      'Google Drive',
+      TypeLook('GD', const Color(0xFF5FD17F), _logos.gdrive),
+    ),
+    'dropbox': (
+      'Dropbox',
+      TypeLook('DB', const Color(0xFF8AA8FF), _logos.dropbox),
+    ),
+    'azure': ('Azure Blob', const TypeLook('AZ', Color(0xFF8AA8FF))),
+    'sftp': ('SFTP', const TypeLook('FT', Color(0xFFD0CFD6))),
   };
+
+  static const DestinationsIcons _logos = DestinationsIcons();
 
   static String labelOf(String type) => _types[type]?.$1 ?? type;
 

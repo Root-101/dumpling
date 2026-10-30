@@ -288,14 +288,14 @@ class _SourceFormState extends State<SourceForm> {
                 ],
                 1 => [
                   _buildSummary(full: false),
-                  ..._divider(),
+                  const StepDivider(),
                   StepTitle(app.intl.sources.connectionTitle),
                   app.dimensions.padding.l.gap(),
                   if (_type == SourceTypes.postgres) ..._buildPostgres(),
                 ],
                 _ => [
                   _buildSummary(),
-                  ..._divider(),
+                  const StepDivider(),
                   StepTitle(app.intl.sources.checkTitle),
                   if (_type == SourceTypes.postgres) ...[
                     app.dimensions.padding.l.gap(),
@@ -340,40 +340,14 @@ class _SourceFormState extends State<SourceForm> {
         : '${_hostController.text.trim()}:'
               '${_portController.text.trim().isEmpty ? PostgresSettingsModel.defaultPort : _portController.text.trim()}';
     final name = _nameController.text.trim();
-    return Row(
-      spacing: app.dimensions.padding.sm,
-      children: [
-        for (final (index, (label, value)) in [
-          (app.intl.sources.columnType, SourceTypeLook.labelOf(_type)),
-          (app.intl.sources.name, name.isEmpty ? '—' : name),
-          (app.intl.sources.host, host),
-        ].indexed)
-          Expanded(
-            child: full || index == 0
-                ? _UrlPart(label: label, value: value)
-                : const SizedBox(),
-          ),
+    return StepSummary([
+      (app.intl.sources.columnType, SourceTypeLook.labelOf(_type)),
+      if (full) ...[
+        (app.intl.sources.name, name.isEmpty ? '—' : name),
+        (app.intl.sources.host, host),
       ],
-    );
+    ]);
   }
-
-  /// Line between the summary and the step, across the dialog's padding
-  List<Widget> _divider() => [
-    app.dimensions.padding.xl.gap(),
-    LayoutBuilder(
-      builder: (context, constraints) => SizedBox(
-        height: 1,
-        child: OverflowBox(
-          minWidth: constraints.maxWidth + 40,
-          maxWidth: constraints.maxWidth + 40,
-          child: ColoredBox(
-            color: app.colors.neutral.grey5.withValues(alpha: 0.5),
-          ),
-        ),
-      ),
-    ),
-    app.dimensions.padding.xl.gap(),
-  ];
 
   Widget _buildTypes() {
     return LayoutBuilder(
@@ -616,7 +590,7 @@ class _SourceFormState extends State<SourceForm> {
             ].indexed) ...[
               if (index > 0) app.dimensions.padding.s.gap(),
               Expanded(
-                child: _UrlPart(label: label, value: value),
+                child: SummaryCell(label: label, value: value),
               ),
             ],
           ],
@@ -721,47 +695,6 @@ class _Segmented extends StatelessWidget {
               ),
             ),
           ],
-        ],
-      ),
-    );
-  }
-}
-
-/// A part read from the connection URL: *Host · pg-billing.internal*
-class _UrlPart extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _UrlPart({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: app.colors.primary.background2,
-        borderRadius: app.dimensions.border.borderRadius.s,
-        border: Border.all(
-          color: app.colors.neutral.grey5.withValues(alpha: 0.7),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(fontSize: 11, color: app.colors.neutral.grey4),
-          ),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontFamily: AppText.monoFamily,
-              fontSize: 12,
-              color: app.colors.neutral.grey2,
-            ),
-          ),
         ],
       ),
     );

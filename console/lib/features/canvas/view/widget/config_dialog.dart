@@ -321,8 +321,6 @@ class _ConfigDialogState extends State<ConfigDialog> {
     final dest = widget.destination;
     final folder = _c.folderId == null ? null : FolderPath.show(_c.folderId!);
     return [
-      _SectionHeader(n: 1, title: t.schedule),
-      const SizedBox(height: 10),
       _Summary(
         title: _c.name,
         sub: [
@@ -335,9 +333,7 @@ class _ConfigDialogState extends State<ConfigDialog> {
         ].join(' · '),
         onEdit: () => setState(() => _step = 0),
       ),
-      const SizedBox(height: 28),
-      _SectionHeader(n: 2, title: t.output),
-      const SizedBox(height: 14),
+      const StepDivider(),
       _Label(t.objectKey),
       const SizedBox(height: 6),
       _Input(
@@ -468,30 +464,6 @@ class _ConfigDialogState extends State<ConfigDialog> {
         ),
       ),
     ];
-  }
-}
-
-/// `1 · NAME & SCHEDULE`, the number apart
-class _SectionHeader extends StatelessWidget {
-  final int n;
-  final String title;
-
-  const _SectionHeader({required this.n, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(
-            text: '$n · ',
-            style: TextStyle(color: app.colors.text.subtle),
-          ),
-          TextSpan(text: title),
-        ],
-      ),
-      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-    );
   }
 }
 

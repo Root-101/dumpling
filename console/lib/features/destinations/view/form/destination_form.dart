@@ -282,6 +282,7 @@ class _DestinationFormState extends State<DestinationForm> {
         description: app.intl.destinations.formDescription,
         icon: app.assets.icons.nodes.bucket,
         loadingId: DestinationForm.loadingId,
+        fullHeight: true,
         steps: [
           app.intl.destinations.stepType,
           app.intl.destinations.stepConnection,
@@ -323,11 +324,15 @@ class _DestinationFormState extends State<DestinationForm> {
                   _buildTypes(),
                 ],
                 1 => [
+                  _buildSummary(full: false),
+                  const StepDivider(),
                   StepTitle(app.intl.destinations.connectionTitle),
                   app.dimensions.padding.l.gap(),
                   if (_type == DestinationTypes.s3) ..._buildS3(),
                 ],
                 _ => [
+                  _buildSummary(),
+                  const StepDivider(),
                   StepTitle(app.intl.destinations.foldersTitle),
                   app.dimensions.padding.m.gap(),
                   ..._buildFolders(),
@@ -350,6 +355,20 @@ class _DestinationFormState extends State<DestinationForm> {
         ),
       ),
     );
+  }
+
+  /// What the last step saves: type, name and bucket; not [full], only the
+  /// type picked in the first step
+  Widget _buildSummary({bool full = true}) {
+    String shown(TextEditingController c) =>
+        c.text.trim().isEmpty ? '—' : c.text.trim();
+    return StepSummary([
+      (app.intl.destinations.columnType, DestinationTypeLook.labelOf(_type)),
+      if (full) ...[
+        (app.intl.destinations.name, shown(_nameController)),
+        (app.intl.destinations.bucket, shown(_bucketController)),
+      ],
+    ]);
   }
 
   Widget _buildTypes() {

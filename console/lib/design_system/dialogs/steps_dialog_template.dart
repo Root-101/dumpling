@@ -263,6 +263,96 @@ class StepsDialogTemplate extends StatelessWidget {
   }
 }
 
+/// What the steps before chose, at the top of a step: [items] in a row of
+/// [slots] cells, the ones left over empty so each keeps its width
+class StepSummary extends StatelessWidget {
+  final List<(String label, String value)> items;
+  final int slots;
+
+  const StepSummary(this.items, {this.slots = 3, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      spacing: app.dimensions.padding.sm,
+      children: [
+        for (var i = 0; i < slots; i++)
+          Expanded(
+            child: i < items.length
+                ? SummaryCell(label: items[i].$1, value: items[i].$2)
+                : const SizedBox(),
+          ),
+      ],
+    );
+  }
+}
+
+/// A value with its label, in monospace: *Host · pg-billing.internal*
+class SummaryCell extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const SummaryCell({required this.label, required this.value, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: app.colors.primary.background2,
+        borderRadius: app.dimensions.border.borderRadius.s,
+        border: Border.all(
+          color: app.colors.neutral.grey5.withValues(alpha: 0.7),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontSize: 11, color: app.colors.neutral.grey4),
+          ),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontFamily: AppText.monoFamily,
+              fontSize: 12,
+              color: app.colors.neutral.grey2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Line between the [StepSummary] and the step, across the dialog's padding
+class StepDivider extends StatelessWidget {
+  const StepDivider({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: app.dimensions.padding.xl),
+      child: LayoutBuilder(
+        builder: (context, constraints) => SizedBox(
+          height: 1,
+          child: OverflowBox(
+            // the 20 of padding of the body on each side
+            minWidth: constraints.maxWidth + 40,
+            maxWidth: constraints.maxWidth + 40,
+            child: ColoredBox(
+              color: app.colors.neutral.grey5.withValues(alpha: 0.5),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// The question a step answers, at the top of it: *Where should backups go?*
 class StepTitle extends StatelessWidget {
   final String text;
