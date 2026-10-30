@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.0-rc.3
+
+- No changes in the console: a new version now shows on reload (the service serves it with
+  `Cache-Control: no-cache`).
+
 ## 0.1.0-rc.2
 
 - The wordmark has a version for light backgrounds (`docs/design/brand/wordmark-light.svg`):

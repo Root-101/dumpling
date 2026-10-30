@@ -58,6 +58,11 @@ hand.
 - [x] The README's wordmark readable on the light theme of GitHub, the repository public with its
   description and topics.
 
+## 0.1.0-rc.3
+
+- [x] A new version of the console shows on reload: its files are served with
+  `Cache-Control: no-cache`, so the browser revalidates them instead of keeping the old build.
+
 ## 0.2.0
 
 - Retention (needs ListObjects and DeleteObject in the destination).

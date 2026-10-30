@@ -28,6 +28,8 @@ void main() {
         expect(response.headers['referrer-policy'], 'no-referrer');
         // the console needs its inline scripts
         expect(response.headers['content-security-policy'], isNull);
+        // a new build is seen on reload, not after the heuristic cache
+        expect(response.headers['cache-control'], 'no-cache', reason: path);
       }
       // the API too, its errors included
       final api = await http.get(server.url('/api/nothing'));
