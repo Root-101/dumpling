@@ -47,8 +47,9 @@ hand.
   `DECISIONS.md` reviewed.
 - [x] End-to-end test (`service/tool/e2e/run.sh`) with the `Dockerfile` at the root: passed with
   MinIO on 2026-10-30.
-- [ ] A pass by hand over the last changes of the console: the rail and its notch, the dialogs in
-  steps, the placeholders of the object key, the local time on the config nodes, the sign-in.
+- [x] A pass by hand over the last changes of the console: the rail and its notch, the dialogs in
+  steps, the placeholders of the object key, the local time on the config nodes, the sign-in. On
+  the image of the end-to-end test; fixed: the expanded Run log repeated its failing count.
 - [ ] Merge `feature/poc` into `main` and tag `0.1.0-rc.1`.
 
 ## 0.2.0
