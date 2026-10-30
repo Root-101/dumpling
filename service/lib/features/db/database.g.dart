@@ -2993,6 +2993,17 @@ class $RunTableTable extends RunTable
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _durationMsMeta = const VerificationMeta(
+    'durationMs',
+  );
+  @override
+  late final GeneratedColumn<int> durationMs = GeneratedColumn<int>(
+    'duration_ms',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -3012,6 +3023,7 @@ class $RunTableTable extends RunTable
     log,
     startedAt,
     finishedAt,
+    durationMs,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3121,6 +3133,12 @@ class $RunTableTable extends RunTable
         finishedAt.isAcceptableOrUnknown(data['finished_at']!, _finishedAtMeta),
       );
     }
+    if (data.containsKey('duration_ms')) {
+      context.handle(
+        _durationMsMeta,
+        durationMs.isAcceptableOrUnknown(data['duration_ms']!, _durationMsMeta),
+      );
+    }
     return context;
   }
 
@@ -3206,6 +3224,10 @@ class $RunTableTable extends RunTable
         DriftSqlType.dateTime,
         data['${effectivePrefix}finished_at'],
       ),
+      durationMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_ms'],
+      ),
     );
   }
 
@@ -3261,6 +3283,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
   final String log;
   final DateTime startedAt;
   final DateTime? finishedAt;
+
+  /// How long it took, measured: the times above are stored to the second.
+  final int? durationMs;
   const RunTableData({
     required this.id,
     required this.workspaceSlug,
@@ -3279,6 +3304,7 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
     required this.log,
     required this.startedAt,
     this.finishedAt,
+    this.durationMs,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3326,6 +3352,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
     if (!nullToAbsent || finishedAt != null) {
       map['finished_at'] = Variable<DateTime>(finishedAt);
     }
+    if (!nullToAbsent || durationMs != null) {
+      map['duration_ms'] = Variable<int>(durationMs);
+    }
     return map;
   }
 
@@ -3358,6 +3387,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
       finishedAt: finishedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(finishedAt),
+      durationMs: durationMs == null && nullToAbsent
+          ? const Value.absent()
+          : Value(durationMs),
     );
   }
 
@@ -3392,6 +3424,7 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
       log: serializer.fromJson<String>(json['log']),
       startedAt: serializer.fromJson<DateTime>(json['startedAt']),
       finishedAt: serializer.fromJson<DateTime?>(json['finishedAt']),
+      durationMs: serializer.fromJson<int?>(json['durationMs']),
     );
   }
   @override
@@ -3423,6 +3456,7 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
       'log': serializer.toJson<String>(log),
       'startedAt': serializer.toJson<DateTime>(startedAt),
       'finishedAt': serializer.toJson<DateTime?>(finishedAt),
+      'durationMs': serializer.toJson<int?>(durationMs),
     };
   }
 
@@ -3444,6 +3478,7 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
     String? log,
     DateTime? startedAt,
     Value<DateTime?> finishedAt = const Value.absent(),
+    Value<int?> durationMs = const Value.absent(),
   }) => RunTableData(
     id: id ?? this.id,
     workspaceSlug: workspaceSlug ?? this.workspaceSlug,
@@ -3464,6 +3499,7 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
     log: log ?? this.log,
     startedAt: startedAt ?? this.startedAt,
     finishedAt: finishedAt.present ? finishedAt.value : this.finishedAt,
+    durationMs: durationMs.present ? durationMs.value : this.durationMs,
   );
   RunTableData copyWithCompanion(RunTableCompanion data) {
     return RunTableData(
@@ -3500,6 +3536,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
       finishedAt: data.finishedAt.present
           ? data.finishedAt.value
           : this.finishedAt,
+      durationMs: data.durationMs.present
+          ? data.durationMs.value
+          : this.durationMs,
     );
   }
 
@@ -3522,7 +3561,8 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
           ..write('pendingUpload: $pendingUpload, ')
           ..write('log: $log, ')
           ..write('startedAt: $startedAt, ')
-          ..write('finishedAt: $finishedAt')
+          ..write('finishedAt: $finishedAt, ')
+          ..write('durationMs: $durationMs')
           ..write(')'))
         .toString();
   }
@@ -3546,6 +3586,7 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
     log,
     startedAt,
     finishedAt,
+    durationMs,
   );
   @override
   bool operator ==(Object other) =>
@@ -3567,7 +3608,8 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
           other.pendingUpload == this.pendingUpload &&
           other.log == this.log &&
           other.startedAt == this.startedAt &&
-          other.finishedAt == this.finishedAt);
+          other.finishedAt == this.finishedAt &&
+          other.durationMs == this.durationMs);
 }
 
 class RunTableCompanion extends UpdateCompanion<RunTableData> {
@@ -3588,6 +3630,7 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
   final Value<String> log;
   final Value<DateTime> startedAt;
   final Value<DateTime?> finishedAt;
+  final Value<int?> durationMs;
   final Value<int> rowid;
   const RunTableCompanion({
     this.id = const Value.absent(),
@@ -3607,6 +3650,7 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
     this.log = const Value.absent(),
     this.startedAt = const Value.absent(),
     this.finishedAt = const Value.absent(),
+    this.durationMs = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   RunTableCompanion.insert({
@@ -3627,6 +3671,7 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
     this.log = const Value.absent(),
     required DateTime startedAt,
     this.finishedAt = const Value.absent(),
+    this.durationMs = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        workspaceSlug = Value(workspaceSlug),
@@ -3656,6 +3701,7 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
     Expression<String>? log,
     Expression<DateTime>? startedAt,
     Expression<DateTime>? finishedAt,
+    Expression<int>? durationMs,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3676,6 +3722,7 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
       if (log != null) 'log': log,
       if (startedAt != null) 'started_at': startedAt,
       if (finishedAt != null) 'finished_at': finishedAt,
+      if (durationMs != null) 'duration_ms': durationMs,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3698,6 +3745,7 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
     Value<String>? log,
     Value<DateTime>? startedAt,
     Value<DateTime?>? finishedAt,
+    Value<int?>? durationMs,
     Value<int>? rowid,
   }) {
     return RunTableCompanion(
@@ -3718,6 +3766,7 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
       log: log ?? this.log,
       startedAt: startedAt ?? this.startedAt,
       finishedAt: finishedAt ?? this.finishedAt,
+      durationMs: durationMs ?? this.durationMs,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3784,6 +3833,9 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
     if (finishedAt.present) {
       map['finished_at'] = Variable<DateTime>(finishedAt.value);
     }
+    if (durationMs.present) {
+      map['duration_ms'] = Variable<int>(durationMs.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3810,6 +3862,7 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
           ..write('log: $log, ')
           ..write('startedAt: $startedAt, ')
           ..write('finishedAt: $finishedAt, ')
+          ..write('durationMs: $durationMs, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -6781,6 +6834,7 @@ typedef $$RunTableTableCreateCompanionBuilder = RunTableCompanion Function({
   Value<String> log,
   required DateTime startedAt,
   Value<DateTime?> finishedAt,
+  Value<int?> durationMs,
   Value<int> rowid,
 });
 typedef $$RunTableTableUpdateCompanionBuilder = RunTableCompanion Function({
@@ -6801,6 +6855,7 @@ typedef $$RunTableTableUpdateCompanionBuilder = RunTableCompanion Function({
   Value<String> log,
   Value<DateTime> startedAt,
   Value<DateTime?> finishedAt,
+  Value<int?> durationMs,
   Value<int> rowid,
 });
 
@@ -6928,6 +6983,11 @@ class $$RunTableTableFilterComposer
 
   ColumnFilters<DateTime> get finishedAt => $composableBuilder(
     column: $table.finishedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7062,6 +7122,11 @@ class $$RunTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$WorkspaceTableTableOrderingComposer get workspaceSlug {
     final $$WorkspaceTableTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -7179,6 +7244,11 @@ class $$RunTableTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => column,
+  );
+
   $$WorkspaceTableTableAnnotationComposer get workspaceSlug {
     final $$WorkspaceTableTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -7271,6 +7341,7 @@ class $$RunTableTableTableManager
                 Value<String> log = const Value.absent(),
                 Value<DateTime> startedAt = const Value.absent(),
                 Value<DateTime?> finishedAt = const Value.absent(),
+                Value<int?> durationMs = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RunTableCompanion(
                 id: id,
@@ -7290,6 +7361,7 @@ class $$RunTableTableTableManager
                 log: log,
                 startedAt: startedAt,
                 finishedAt: finishedAt,
+                durationMs: durationMs,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -7311,6 +7383,7 @@ class $$RunTableTableTableManager
                 Value<String> log = const Value.absent(),
                 required DateTime startedAt,
                 Value<DateTime?> finishedAt = const Value.absent(),
+                Value<int?> durationMs = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RunTableCompanion.insert(
                 id: id,
@@ -7330,6 +7403,7 @@ class $$RunTableTableTableManager
                 log: log,
                 startedAt: startedAt,
                 finishedAt: finishedAt,
+                durationMs: durationMs,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

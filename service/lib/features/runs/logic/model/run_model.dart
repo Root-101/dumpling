@@ -48,7 +48,10 @@ class RunModel {
     'error': row.error,
     'started_at': row.startedAt.toUtc().toIso8601String(),
     'finished_at': row.finishedAt?.toUtc().toIso8601String(),
-    'duration_ms': row.finishedAt?.difference(row.startedAt).inMilliseconds,
+    // A run cut by a stop has no measure: the times give it to the second
+    'duration_ms':
+        row.durationMs ??
+        row.finishedAt?.difference(row.startedAt).inMilliseconds,
     if (withLog) 'log': jsonDecode(row.log),
   };
 }

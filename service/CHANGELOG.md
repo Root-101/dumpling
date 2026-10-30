@@ -20,7 +20,8 @@ The first release candidate: backups of PostgreSQL to S3-compatible storage, on 
   upload aborted on the next start; a part that fails for a moment is retried; `pg_dump` waits at
   most a minute for a locked table; one run per config at a time; runs cut by a stop are marked
   failed.
-- Run log with filters by status, source type and destination type, and the log of each run.
+- Run log with filters by status, source type and destination type, the log of each run and how
+  long it took, measured (the times of a run are stored to the second).
 - One admin from the environment, JWTs of 12 hours, failed logins limited per IP, a general rate
   limit per IP (`X-Forwarded-For` counted only from private addresses), requests of 2 minutes at
   most, credentials encrypted with AES-256-GCM and never returned (and asked again when they no

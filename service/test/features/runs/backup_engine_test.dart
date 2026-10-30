@@ -152,6 +152,8 @@ void main() {
       expect(run['destination_type'], 's3');
       expect(run['location'], 'backups/orders/orders/${run['id']}.dump.gz');
       expect(run['finished_at'], isNotNull);
+      // measured: the times are stored to the second, which made it 0
+      expect(run['duration_ms'], allOf(greaterThan(0), lessThan(60000)));
       expect(run['error'], isNull);
       expect(
         (run['log'] as List).map((l) => l['message']).join('\n'),

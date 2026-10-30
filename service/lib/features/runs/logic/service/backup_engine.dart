@@ -249,6 +249,7 @@ class BackupEngine {
           sizeBytes: Value(size),
           log: Value(logJson()),
           finishedAt: Value(DateTime.now().toUtc()),
+          durationMs: Value(watch.elapsedMilliseconds),
         ),
       );
       logger.info('Run succeeded', fields: {'run': run.id, 'bytes': size});
@@ -269,6 +270,7 @@ class BackupEngine {
           error: Value(error),
           log: Value(logJson()),
           finishedAt: Value(DateTime.now().toUtc()),
+          durationMs: Value(watch.elapsedMilliseconds),
         ),
       );
       logger.warning('Run failed', fields: {'run': run.id, 'error': error});

@@ -251,6 +251,9 @@ class RunTable extends Table {
 
   DateTimeColumn get finishedAt => dateTime().nullable()();
 
+  /// How long it took, measured: the times above are stored to the second.
+  IntColumn get durationMs => integer().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }
