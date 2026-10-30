@@ -1,6 +1,6 @@
 # The whole of Dumpling in one image: the service, the console it serves and pg_dump. Build from the
 # root of the repo (the console is built too):
-#   docker build -f service/Dockerfile -t dumpling .              # or: docker compose up -d --build
+#   docker build -t dumpling .              # or: docker compose up -d --build
 # Run with the SQLite database in a volume:
 #   docker run -p 8080:8080 -v dumpling-data:/data -e DUMPLING_ADMIN_USER=… \
 #     -e DUMPLING_ADMIN_PASSWORD=… -e JWT_SECRET=… -e SECRETS_ENCRYPTION_KEY=… dumpling

@@ -58,7 +58,7 @@ PostgreSQL without TLS, like the one of a plain `postgres` container, needs it o
 ### With Docker, the image alone
 
 ```bash
-docker build -f service/Dockerfile -t dumpling --build-arg PG_VERSION=18 .
+docker build -t dumpling --build-arg PG_VERSION=18 .
 docker run -p 8080:8080 -v dumpling-data:/data \
   -e DUMPLING_ADMIN_USER=… -e DUMPLING_ADMIN_PASSWORD=… \
   -e JWT_SECRET=… -e SECRETS_ENCRYPTION_KEY=… dumpling

@@ -7,9 +7,8 @@
 services:
   dumpling:
     build:
-      # The root, because the image also builds the console
+      # The root: the Dockerfile builds the service and the console
       context: .
-      dockerfile: service/Dockerfile
       args:
         PG_VERSION: ${PG_VERSION:-18}
     image: dumpling:0.1.0-rc.1

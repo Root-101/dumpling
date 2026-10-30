@@ -45,7 +45,7 @@ cleanup
 
 if [ "${SKIP_BUILD:-0}" != 1 ]; then
   echo "===== building $DUMPLING_IMAGE"
-  docker build -q -f "$ROOT/service/Dockerfile" -t "$DUMPLING_IMAGE" "$ROOT" || exit 1
+  docker build -q -t "$DUMPLING_IMAGE" "$ROOT" || exit 1
 fi
 
 docker network create "$NET" >/dev/null || exit 1

@@ -15,7 +15,7 @@ fvm dart run slang                         # after changing lib/i18n/*.i18n.yaml
 
 ## End-to-end test
 
-`tool/e2e/run.sh` builds the image (`service/Dockerfile`, from the root of the repo) and runs it
+`tool/e2e/run.sh` builds the image (the `Dockerfile` at the root of the repo) and runs it
 next to PostgreSQL and an S3 server in Docker. Through the API it backs up a seeded database in
 both dump formats, downloads each file from the bucket, restores it as
 [`docs/restore.md`](../docs/restore.md) says and compares the rows; a wrong password must fail.
