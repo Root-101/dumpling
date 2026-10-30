@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.0-rc.2
+
+- The wordmark has a version for light backgrounds (`docs/design/brand/wordmark-light.svg`):
+  the README shows one or the other with the theme of GitHub.
+
 ## 0.1.0-rc.1
 
 The first release candidate, on the API of the service.

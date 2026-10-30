@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0-rc.2
+
+- No changes in the service: the version follows the console's.
+
 ## 0.1.0-rc.1
 
 The first release candidate: backups of PostgreSQL to S3-compatible storage, on a schedule.

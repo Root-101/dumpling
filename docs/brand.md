@@ -63,8 +63,9 @@ The white and black versions, at every size and on a light background:
 
 **dump·ling** in DM Sans Bold, white on dark (`#1b1726` on light), with a **gray dot** (`#8c8a98`)
 between *dump* and *ling*. The full logo is the icon followed by the word. The console has both as
-SVG: [`wordmark.svg`](../console/assets/brand/wordmark.svg) (icon and word, the one the README
-shows) and [`name.svg`](../console/assets/brand/name.svg) (the word alone).
+SVG: [`wordmark.svg`](../console/assets/brand/wordmark.svg) (icon and word, for dark backgrounds)
+and [`name.svg`](../console/assets/brand/name.svg) (the word alone); [`wordmark-light.svg`](design/brand/wordmark-light.svg)
+is icon and word for light backgrounds. The README shows one or the other with the theme of GitHub.
 
 | Text          | Font            | Color                                           |
 |---------------|-----------------|-------------------------------------------------|

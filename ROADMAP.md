@@ -53,6 +53,11 @@ hand.
 - [x] Merge `feature/poc` into `main` and tag `0.1.0-rc.1`: released on 2026-10-30 as a
   [pre-release](https://github.com/Root-101/dumpling/releases/tag/0.1.0-rc.1).
 
+## 0.1.0-rc.2
+
+- [x] The README's wordmark readable on the light theme of GitHub, the repository public with its
+  description and topics.
+
 ## 0.2.0
 
 - Retention (needs ListObjects and DeleteObject in the destination).
