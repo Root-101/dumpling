@@ -39,6 +39,9 @@ client) is needed to run backups locally, and Docker for the image and the end-t
   [`SECURITY.md`](SECURITY.md) in the same change.
 - A non-obvious decision goes into [`DECISIONS.md`](DECISIONS.md), and a finished roadmap task is
   marked in [`ROADMAP.md`](ROADMAP.md), in the same change.
+- A route added or changed updates [`docs/api.md`](docs/api.md); a screen, URL or action of the
+  console, [`docs/console.md`](docs/console.md) and the design canvas, whose export
+  ([`docs/design/`](docs/design/README.md)) is regenerated before every release.
 
 ## Tests
 

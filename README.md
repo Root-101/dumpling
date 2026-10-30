@@ -13,17 +13,27 @@ goes where on a canvas (a database, a bucket and the backup between them) and Du
 > **Status: release candidate (`0.1.0-rc.1`).** It backs up and is tested end to end (a real
 > backup restored and compared), but it hasn't had long-running production use yet.
 
+![The pipeline editor of the console](docs/design/screens/07-canvas.png)
+
 ## What it does
 
 |                  |                                                                                                                                    |
 |------------------|------------------------------------------------------------------------------------------------------------------------------------|
-| **Sources**      | PostgreSQL (any version up to the `pg_dump` of the image, 18 by default) over TLS by default, custom (`-Fc`) or plain SQL dumps     |
+| **Sources**      | PostgreSQL (any version up to the `pg_dump` of the image, 18 by default) over TLS by default, custom (`-Fc`) or plain SQL dumps    |
 | **Destinations** | Any S3-compatible storage (AWS S3, MinIO, feather-io…), its root or folders in the bucket                                          |
 | **Canvas**       | Sources, destinations and the backups between them, connected by hand and saved in one go; a test run checks every flow first      |
 | **Backups**      | Cron schedules in UTC and Run now; gzip or none; object keys with placeholders (`{db}/{yyyy}-{MM}-{dd}`); streamed in 16 MiB parts |
 | **Monitoring**   | Health of every backup with its last and next run, and a run log with the log of each run                                          |
 | **Workspaces**   | Separate canvases for environments, clients or projects                                                                            |
 | **Console**      | English and Spanish; times in UTC with the local time next to them                                                                 |
+
+|                                                                    |                                                               |
+|--------------------------------------------------------------------|---------------------------------------------------------------|
+| ![Backups and their health](docs/design/screens/10-backups.png)    | ![A source, created in steps](docs/design/screens/16-new-source.png) |
+| ![A config and its object key](docs/design/screens/08-config.png)  | ![A run and its log](docs/design/screens/28-run-failed.png)   |
+
+Every screen, its URL and what it calls: [`docs/console.md`](docs/console.md). The whole design, as
+a PDF and images: [`docs/design/`](docs/design/README.md).
 
 **What it doesn't do (yet):** restore from the console (it is plain `pg_restore`, see
 [`docs/restore.md`](docs/restore.md)), retention of old backups, alerts, other databases (MySQL,
@@ -107,6 +117,11 @@ against real backups.
 
 ## Documentation
 
+- [`docs/api.md`](docs/api.md): the HTTP API, with real requests and responses.
+- [`docs/console.md`](docs/console.md): a tour of the console, screen by screen, with the calls each
+  one makes; and [`docs/design/`](docs/design/README.md), its design as a PDF and images.
+- [`docs/brand.md`](docs/brand.md): the logo, what it means, its versions, colors and type, and the
+  presentation images (files in [`docs/design/brand/`](docs/design/brand)).
 - [`docs/restore.md`](docs/restore.md): restoring a backup, step by step.
 - [`service/README.md`](service/README.md) and [`console/README.md`](console/README.md): running and
   testing each package, and the end-to-end test.
