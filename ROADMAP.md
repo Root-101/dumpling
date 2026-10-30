@@ -50,7 +50,13 @@ hand.
 - [x] A pass by hand over the last changes of the console: the rail and its notch, the dialogs in
   steps, the placeholders of the object key, the local time on the config nodes, the sign-in. On
   the image of the end-to-end test; fixed: the expanded Run log repeated its failing count.
-- [ ] Merge `feature/poc` into `main` and tag `0.1.0-rc.1`.
+- [x] Merge `feature/poc` into `main` and tag `0.1.0-rc.1`: released on 2026-10-30 as a
+  [pre-release](https://github.com/Root-101/dumpling/releases/tag/0.1.0-rc.1).
+
+## 0.1.0-rc.2
+
+- [x] The README's wordmark readable on the light theme of GitHub, the repository public with its
+  description and topics.
 
 ## 0.2.0
 

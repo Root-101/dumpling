@@ -1,4 +1,9 @@
-<p align="center"><img src="console/assets/brand/wordmark.svg" width="260" alt="Dumpling"></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="console/assets/brand/wordmark.svg">
+    <img src="docs/design/brand/wordmark-light.svg" width="260" alt="Dumpling">
+  </picture>
+</p>
 
 # Dumpling
 
@@ -10,7 +15,7 @@ goes where on a canvas (a database, a bucket and the backup between them) and Du
   schedules and the backups, keeps its data in SQLite and serves the API and the console.
 - **`console/`**: the web console, in Flutter Web. The service serves it: one image, one port.
 
-> **Status: release candidate (`0.1.0-rc.1`).** It backs up and is tested end to end (a real
+> **Status: release candidate (`0.1.0-rc.2`).** It backs up and is tested end to end (a real
 > backup restored and compared), but it hasn't had long-running production use yet.
 
 ![The pipeline editor of the console](docs/design/screens/07-canvas.png)
