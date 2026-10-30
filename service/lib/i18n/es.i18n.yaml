@@ -1,0 +1,42 @@
+# Mensajes de error del servicio en español. Los tipos de los parámetros están en en.i18n.yaml.
+# Tras cualquier cambio: `fvm dart run slang` (desde service/) y commit de los messages*.g.dart.
+errors:
+  auth:
+    invalidCredentials: 'Usuario o contraseña incorrectos'
+    tooManyLoginAttempts: 'Demasiados intentos de inicio de sesión fallidos'
+    invalidLoginRequest: 'Petición de inicio de sesión no válida'
+  workspaces:
+    notFound: 'El workspace "{slug}" no existe.'
+  sources:
+    notFound: 'El origen "{id}" no existe en este workspace.'
+    inUse: 'Hay configs que respaldan este origen ({configs}): bórralas o conéctalas a otro origen primero.'
+  destinations:
+    notFound: 'El destino "{id}" no existe en este workspace.'
+    inUse: 'Hay configs que escriben en este destino ({configs}): bórralas o conéctalas a otro destino primero.'
+    folderInUse: 'La config "{config}" escribe en "{folder}": muévela antes de quitar esa carpeta.'
+  configs:
+    notFound: 'La config "{id}" no existe en este workspace.'
+  runs:
+    notFound: 'La ejecución "{id}" no existe en este workspace.'
+    alreadyRunning: 'Esta config ya se está ejecutando: espera a que termine.'
+    invalidFilter: '{name} debe ser uno de: {values}'
+    invalidLimit: 'limit debe ir de 1 a {max}'
+  validations:
+    cron: 'No es una expresión cron válida (minuto hora día mes día-de-la-semana)'
+    objectKey: 'La clave del objeto no puede empezar por /'
+    objectKeyExtension: 'Quita la extensión: se agrega según el formato del dump y la compresión'
+    objectKeyDots: 'La clave del objeto no puede tener carpetas . o ..'
+    sourceTypeDisabled: 'Este tipo de origen todavía no está disponible'
+    destinationTypeDisabled: 'Este tipo de destino todavía no está disponible'
+    s3Endpoint: 'No es una URL de endpoint (https://s3.us-east-1.amazonaws.com, http://minio:9000)'
+    bucketName: 'No es un nombre de bucket válido: de 3 a 63 minúsculas, dígitos, puntos o guiones'
+    folderPath: 'Usa minúsculas, dígitos, - . _ y / entre ellos'
+    repeatedFolder: 'Cada carpeta solo puede aparecer una vez'
+    unknownSource: 'No existe ese origen en este workspace'
+    unknownDestination: 'No existe ese destino en este workspace'
+    unknownFolder: 'Elige una de las carpetas del destino'
+    folderOnRoot: 'Este destino no tiene carpetas: deja la carpeta vacía para escribir en la raíz'
+    unknownNode: 'No es un nodo de este workspace: uno nuevo lleva un id que empieza por new_'
+    repeatedNode: 'Cada nodo necesita su propio id'
+    canvasPosition: 'x e y deben estar entre -{max} y {max}'
+    postgresUrl: 'No es una URL de conexión de PostgreSQL (postgresql://usuario:contraseña@host:5432/base)'

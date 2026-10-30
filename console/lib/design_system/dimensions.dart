@@ -1,0 +1,111 @@
+import 'package:material_ui/material_ui.dart';
+
+class AppDimensions {
+  static final AppDimensions _instance = AppDimensions._internal();
+
+  AppDimensions._internal();
+
+  factory AppDimensions() => _instance;
+
+  final AppRadius radius = const AppRadius();
+
+  /// The scales of feather-io's design system
+  final AppBorder border = AppBorder();
+
+  final AppPadding padding = const AppPadding();
+}
+
+class AppBorder {
+  final AppRadiusValue radius = const AppRadiusValue();
+  late final AppBorderRadius borderRadius = AppBorderRadius(radius);
+  final AppBorderWidth width = const AppBorderWidth();
+}
+
+/// 3-step scale. An inner radius is the outer one minus the padding between
+/// them
+class AppRadiusValue {
+  const AppRadiusValue();
+
+  /// 4.0: checkboxes, badges and chips inside a bar
+  Radius get xs => const Radius.circular(4);
+
+  /// 8.0: controls (buttons, inputs, search, menus, segments)
+  Radius get s => const Radius.circular(8);
+
+  /// 12.0: cards, panels, dialogs and snackbars
+  Radius get m => const Radius.circular(12);
+
+  Radius get def => m;
+}
+
+class AppBorderRadius {
+  final AppRadiusValue radius;
+
+  const AppBorderRadius(this.radius);
+
+  BorderRadius get xs => BorderRadius.all(radius.xs);
+
+  BorderRadius get s => BorderRadius.all(radius.s);
+
+  BorderRadius get m => BorderRadius.all(radius.m);
+
+  BorderRadius get def => m;
+}
+
+class AppBorderWidth {
+  const AppBorderWidth();
+
+  /// 1.0
+  double get s => 1;
+
+  /// 1.5
+  double get m => 1.5;
+
+  /// 2.0
+  double get l => 2.0;
+
+  double get def => m;
+}
+
+class AppPadding {
+  const AppPadding();
+
+  /// 4.0
+  double get xs => 4.0;
+
+  /// 8.0
+  double get s => 8.0;
+
+  /// 10.0
+  double get sm => 10.0;
+
+  /// 12.0
+  double get m => 12.0;
+
+  /// 16.0
+  double get l => 16.0;
+
+  /// 20.0
+  double get xl => 20.0;
+
+  /// 24.0
+  double get xxl => 24.0;
+
+  double get def => m;
+}
+
+class AppRadius {
+  const AppRadius();
+
+  /// 6.0: key caps, folder rows
+  BorderRadius get xs => BorderRadius.circular(6);
+
+  /// 8.0: controls (buttons, inputs)
+  BorderRadius get s => BorderRadius.circular(8);
+
+  /// 10.0: floating panels and toolbars
+  BorderRadius get m => BorderRadius.circular(10);
+
+  /// 12.0: canvas nodes
+  BorderRadius get l => BorderRadius.circular(12);
+}

@@ -1,0 +1,34 @@
+#------- Dart / Flutter (service and console) -------#
+# pubspec.lock IS versioned: both are applications, their builds must be reproducible
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+console/.metadata
+
+# Directory created by dartdoc
+doc/api/
+
+# fvm
+.fvm/
+
+#------- IDE -------#
+.idea/
+*.iml
+.vscode/
+
+#------- Local -------#
+# secrets of docker compose (see .env.example)
+/.env
+.artifacts/
+.temp/
+
+# local run of the console: SERVICE_URL (see console/README.md)
+/console/web/env.js
+
+# local development of the service (see .env.example)
+/service/.env
+# SQLite database of the service in development (DATA_PATH), run from service/ or the root
+/service/data/
+/data/
