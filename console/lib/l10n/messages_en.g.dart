@@ -1915,6 +1915,20 @@ class AppMessages$canvas$inspector$en {
   /// en: 'Object key'
   String get objectKey => 'Object key';
 
+  /// en: 'What the placeholders write'
+  String get placeholders => 'What the placeholders write';
+
+  /// en: 'Each placeholder is replaced when the backup starts. Dates and times are in UTC.'
+  String get placeholdersIntro =>
+      'Each placeholder is replaced when the backup starts. Dates and times are in UTC.';
+
+  late final AppMessages$canvas$inspector$placeholderHelp$en placeholderHelp =
+      AppMessages$canvas$inspector$placeholderHelp$en._(_root);
+
+  /// en: 'Any other text in braces is written as it is.'
+  String get placeholdersOther =>
+      'Any other text in braces is written as it is.';
+
   /// en: 'Connect a destination to choose where it goes.'
   String get connectDestination =>
       'Connect a destination to choose where it goes.';
@@ -2055,6 +2069,37 @@ class AppMessages$canvas$guide$en {
 
   /// en: 'Place {name: String}'
   String place({required String name}) => 'Place ${name}';
+}
+
+// Path: canvas.inspector.placeholderHelp
+class AppMessages$canvas$inspector$placeholderHelp$en {
+  AppMessages$canvas$inspector$placeholderHelp$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Year, four digits (2026)'
+  String get year => 'Year, four digits (2026)';
+
+  /// en: 'Month, two digits (01-12)'
+  String get month => 'Month, two digits (01-12)';
+
+  /// en: 'Day of the month, two digits (01-31)'
+  String get day => 'Day of the month, two digits (01-31)';
+
+  /// en: 'Hour, two digits (00-23)'
+  String get hour => 'Hour, two digits (00-23)';
+
+  /// en: 'Minute, two digits (00-59)'
+  String get minute => 'Minute, two digits (00-59)';
+
+  /// en: 'Name of the database backed up'
+  String get db => 'Name of the database backed up';
+
+  /// en: 'Id of the run, different every time. Only written where you put it: without it, two backups with the same key overwrite each other.'
+  String get runId =>
+      'Id of the run, different every time. Only written where you put it: without it, two backups with the same key overwrite each other.';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -2625,6 +2670,21 @@ extension on AppMessages {
           'canvas.inspector.nextRun' => 'Next run',
           'canvas.inspector.output' => 'Output',
           'canvas.inspector.objectKey' => 'Object key',
+          'canvas.inspector.placeholders' => 'What the placeholders write',
+          'canvas.inspector.placeholdersIntro' => 'Each placeholder is replaced when the backup starts. Dates and times are in UTC.',
+          'canvas.inspector.placeholderHelp.year' => 'Year, four digits (2026)',
+          'canvas.inspector.placeholderHelp.month' =>
+            'Month, two digits (01-12)',
+          'canvas.inspector.placeholderHelp.day' =>
+            'Day of the month, two digits (01-31)',
+          'canvas.inspector.placeholderHelp.hour' => 'Hour, two digits (00-23)',
+          'canvas.inspector.placeholderHelp.minute' =>
+            'Minute, two digits (00-59)',
+          'canvas.inspector.placeholderHelp.db' =>
+            'Name of the database backed up',
+          'canvas.inspector.placeholderHelp.runId' => 'Id of the run, different every time. Only written where you put it: without it, two backups with the same key overwrite each other.',
+          'canvas.inspector.placeholdersOther' =>
+            'Any other text in braces is written as it is.',
           'canvas.inspector.connectDestination' =>
             'Connect a destination to choose where it goes.',
           'canvas.inspector.relativeToFolder' => ({
@@ -2746,6 +2806,9 @@ extension on AppMessages {
           'backups.columnSchedule' => 'Schedule',
           'backups.columnLastRun' => 'Last backup',
           'backups.columnNextRun' => 'Next backup',
+          _ => null,
+        } ??
+        switch (path) {
           'backups.allSources' => 'All sources',
           'backups.allDestinations' => 'All destinations',
           'backups.shown' => ({
@@ -2765,9 +2828,6 @@ extension on AppMessages {
           'backups.sortLast' => 'Last backup',
           'backups.sortLastSub' => 'Most recent first',
           'backups.sortLastOld' => 'Last backup (oldest)',
-          _ => null,
-        } ??
-        switch (path) {
           'backups.sortLastOldSub' => 'Oldest first',
           'backups.sortNext' => 'Next backup',
           'backups.sortNextSub' => 'Soonest first',

@@ -335,7 +335,10 @@ class _ConfigDialogState extends State<ConfigDialog> {
         onEdit: () => setState(() => _step = 0),
       ),
       const StepDivider(),
-      _Label(t.objectKey),
+      Row(
+        spacing: 4,
+        children: [_Label(t.objectKey), const _PlaceholdersInfo()],
+      ),
       const SizedBox(height: 6),
       _Input(
         value: _c.objectKey ?? '',
@@ -694,6 +697,61 @@ class _Label extends StatelessWidget {
       color: app.colors.text.secondary,
     ),
   );
+}
+
+/// Info icon by the object key: on hover or tap, what each placeholder writes
+/// (those of the service's `ObjectKey.render`)
+class _PlaceholdersInfo extends StatelessWidget {
+  const _PlaceholdersInfo();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = app.intl.canvas.inspector;
+    final h = t.placeholderHelp;
+    final colors = app.colors;
+    final mono = AppText.mono.copyWith(
+      fontSize: 12,
+      color: colors.brand.accent,
+    );
+    return Tooltip(
+      triggerMode: TooltipTriggerMode.tap,
+      showDuration: const Duration(seconds: 30),
+      constraints: const BoxConstraints(maxWidth: 380),
+      padding: const EdgeInsets.all(12),
+      richMessage: TextSpan(
+        children: [
+          TextSpan(text: '${t.placeholdersIntro}\n'),
+          for (final (key, text) in [
+            ('{yyyy}', h.year),
+            ('{MM}', h.month),
+            ('{dd}', h.day),
+            ('{HH}', h.hour),
+            ('{mm}', h.minute),
+            ('{db}', h.db),
+            ('{run_id}', h.runId),
+          ]) ...[
+            TextSpan(text: '\n$key', style: mono),
+            TextSpan(text: '  $text'),
+          ],
+          TextSpan(
+            text: '\n\n${t.placeholdersOther}',
+            style: TextStyle(color: colors.text.subtle),
+          ),
+        ],
+      ),
+      child: Semantics(
+        button: true,
+        label: t.placeholders,
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: app.assets.icons.actions.info.build(
+            size: 16,
+            color: colors.text.subtle,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _Help extends StatelessWidget {

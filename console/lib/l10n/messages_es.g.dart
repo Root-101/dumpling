@@ -1452,6 +1452,17 @@ class AppMessages$canvas$inspector$es
   @override
   String get objectKey => 'Object key';
   @override
+  String get placeholders => 'Qué escribe cada placeholder';
+  @override
+  String get placeholdersIntro =>
+      'Cada placeholder se reemplaza cuando empieza el backup. Las fechas y horas van en UTC.';
+  @override
+  late final AppMessages$canvas$inspector$placeholderHelp$es placeholderHelp =
+      AppMessages$canvas$inspector$placeholderHelp$es._(_root);
+  @override
+  String get placeholdersOther =>
+      'Cualquier otro texto entre llaves se escribe tal cual.';
+  @override
   String get connectDestination =>
       'Conecta un destino para elegir dónde se guarda.';
   @override
@@ -1562,6 +1573,31 @@ class AppMessages$canvas$guide$es implements AppMessages$canvas$guide$en {
   String get create => 'Crear uno';
   @override
   String place({required String name}) => 'Colocar ${name}';
+}
+
+// Path: canvas.inspector.placeholderHelp
+class AppMessages$canvas$inspector$placeholderHelp$es
+    implements AppMessages$canvas$inspector$placeholderHelp$en {
+  AppMessages$canvas$inspector$placeholderHelp$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get year => 'Año, cuatro dígitos (2026)';
+  @override
+  String get month => 'Mes, dos dígitos (01-12)';
+  @override
+  String get day => 'Día del mes, dos dígitos (01-31)';
+  @override
+  String get hour => 'Hora, dos dígitos (00-23)';
+  @override
+  String get minute => 'Minuto, dos dígitos (00-59)';
+  @override
+  String get db => 'Nombre de la base de datos respaldada';
+  @override
+  String get runId =>
+      'Id de la ejecución, distinto cada vez. Solo se escribe donde lo pongas: sin él, dos backups con la misma clave se sobrescriben.';
 }
 
 /// The flat map containing all translations for locale <es>.
@@ -2143,6 +2179,23 @@ extension on AppMessagesEs {
           'canvas.inspector.nextRun' => 'Próxima ejecución',
           'canvas.inspector.output' => 'Salida',
           'canvas.inspector.objectKey' => 'Object key',
+          'canvas.inspector.placeholders' => 'Qué escribe cada placeholder',
+          'canvas.inspector.placeholdersIntro' => 'Cada placeholder se reemplaza cuando empieza el backup. Las fechas y horas van en UTC.',
+          'canvas.inspector.placeholderHelp.year' =>
+            'Año, cuatro dígitos (2026)',
+          'canvas.inspector.placeholderHelp.month' =>
+            'Mes, dos dígitos (01-12)',
+          'canvas.inspector.placeholderHelp.day' =>
+            'Día del mes, dos dígitos (01-31)',
+          'canvas.inspector.placeholderHelp.hour' =>
+            'Hora, dos dígitos (00-23)',
+          'canvas.inspector.placeholderHelp.minute' =>
+            'Minuto, dos dígitos (00-59)',
+          'canvas.inspector.placeholderHelp.db' =>
+            'Nombre de la base de datos respaldada',
+          'canvas.inspector.placeholderHelp.runId' => 'Id de la ejecución, distinto cada vez. Solo se escribe donde lo pongas: sin él, dos backups con la misma clave se sobrescriben.',
+          'canvas.inspector.placeholdersOther' =>
+            'Cualquier otro texto entre llaves se escribe tal cual.',
           'canvas.inspector.connectDestination' =>
             'Conecta un destino para elegir dónde se guarda.',
           'canvas.inspector.relativeToFolder' => ({
@@ -2262,6 +2315,9 @@ extension on AppMessagesEs {
           'backups.columnSchedule' => 'Programación',
           'backups.columnLastRun' => 'Último respaldo',
           'backups.columnNextRun' => 'Próximo respaldo',
+          _ => null,
+        } ??
+        switch (path) {
           'backups.allSources' => 'Todos los orígenes',
           'backups.allDestinations' => 'Todos los destinos',
           'backups.shown' => ({
@@ -2281,9 +2337,6 @@ extension on AppMessagesEs {
           'backups.sortLast' => 'Último respaldo',
           'backups.sortLastSub' => 'El más reciente primero',
           'backups.sortLastOld' => 'Último respaldo (antiguo)',
-          _ => null,
-        } ??
-        switch (path) {
           'backups.sortLastOldSub' => 'El más antiguo primero',
           'backups.sortNext' => 'Próximo respaldo',
           'backups.sortNextSub' => 'El más cercano primero',

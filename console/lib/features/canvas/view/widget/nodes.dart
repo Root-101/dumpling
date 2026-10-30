@@ -291,6 +291,20 @@ class ConfigNodeView extends StatelessWidget {
       height: 16 / 11,
       color: colors.text.secondary,
     );
+    // the same time in local, small and grey under its row
+    Widget local(DateTime at) => Padding(
+      padding: const EdgeInsets.only(left: 14),
+      child: Text(
+        app.intl.time.local(time: time.format(at.toLocal())),
+        style: TextStyle(
+          fontSize: 10,
+          height: 14 / 10,
+          color: colors.text.subtle,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
     // ports and buttons are siblings of the body: they stick out of it, and
     // only an UnboundedStack takes pointers outside of its size
     return UnboundedStack(
@@ -398,6 +412,7 @@ class ConfigNodeView extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(14, 10, 14, 9),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
@@ -436,6 +451,7 @@ class ConfigNodeView extends StatelessWidget {
                           ),
                         ],
                       ),
+                      if (last != null) local(last.startedAt),
                       const SizedBox(height: 6),
                       Row(
                         children: [
@@ -470,6 +486,7 @@ class ConfigNodeView extends StatelessWidget {
                           ),
                         ],
                       ),
+                      if (next != null) local(next),
                     ],
                   ),
                 ),

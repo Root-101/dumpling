@@ -16,7 +16,7 @@ class CanvasGeometry {
   static bool longName(String name) => name.trim().length > readableName;
 
   static const Size sourceSize = Size(200, 88);
-  static const Size configSize = Size(240, 112);
+  static const Size configSize = Size(240, 140);
   static const double destinationWidth = 256;
   static const double destinationHeader = 60;
   static const double folderRow = 40;
