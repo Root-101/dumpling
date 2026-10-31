@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- A backup over TLS works again in the image: since rc.5 the service ran as `dumpling` with the
+  `HOME` of root, and `pg_dump` failed looking for a client certificate there
+  (`could not open certificate file "/root/.postgresql/postgresql.crt": Permission denied`). It
+  now runs with `HOME=/app`.
+
 ## 0.1.0-rc.6
 
 - No changes in the service: the version follows the console's.

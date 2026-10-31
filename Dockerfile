@@ -60,5 +60,6 @@ ENV DATA_PATH=/data \
     PG_DUMP_PATH=/usr/lib/postgresql/${PG_VERSION}/bin/pg_dump
 EXPOSE 8080
 # Starts as root only to give /data to dumpling (a Railway Volume is mounted owned by root), then
-# runs the service as dumpling; started as another user (--user) it runs as is
-CMD ["sh", "-c", "if [ \"$(id -u)\" = 0 ]; then chown -R dumpling:dumpling /data && exec setpriv --reuid=dumpling --regid=dumpling --init-groups /app/bin/main; fi; exec /app/bin/main"]
+# runs the service as dumpling, with its HOME (pg_dump looks there for client certificates: in
+# /root it can't even look); started as another user (--user) it runs as is
+CMD ["sh", "-c", "if [ \"$(id -u)\" = 0 ]; then chown -R dumpling:dumpling /data && exec env HOME=/app setpriv --reuid=dumpling --regid=dumpling --init-groups /app/bin/main; fi; exec /app/bin/main"]
