@@ -15,7 +15,7 @@ goes where on a canvas (a database, a bucket and the backup between them) and Du
   schedules and the backups, keeps its data in SQLite and serves the API and the console.
 - **`console/`**: the web console, in Flutter Web. The service serves it: one image, one port.
 
-> **Status: release candidate (`0.1.0-rc.4`).** It backs up and is tested end to end (a real
+> **Status: release candidate (`0.1.0-rc.5`).** It backs up and is tested end to end (a real
 > backup restored and compared), but it hasn't had long-running production use yet.
 
 ![The pipeline editor of the console](docs/design/screens/07-canvas.png)
@@ -78,6 +78,12 @@ docker run -p 8080:8080 -v dumpling-data:/data \
   -e DUMPLING_ADMIN_USER=… -e DUMPLING_ADMIN_PASSWORD=… \
   -e JWT_SECRET=… -e SECRETS_ENCRYPTION_KEY=… dumpling
 ```
+
+### On Railway
+
+Deploy the repository (it builds the `Dockerfile` of the root), add a Volume mounted on `/data` and
+the four required variables. Railway mounts the volume owned by root: the container gives it to
+the `dumpling` user when it starts, so nothing else is needed.
 
 ### Locally
 

@@ -168,3 +168,16 @@ A PostgreSQL or S3 server is chosen by the admin, but it is still another machin
 | Errors, versions and messages cut to 2000 characters                  | They are kept in every check and failed run, and the run log is never pruned                                                     |
 | S3 answers read up to 1 MiB, never compressed                         | S3 answers with a few hundred bytes of XML; a small gzip could grow to gigabytes in memory                                       |
 | Only the end of `pg_dump`'s stderr is kept, decoded leniently         | A server can make it write without end, and in the encoding of the database (a non-UTF-8 byte used to end the service)          |
+
+## 16. The service runs as `dumpling`, `/data` is given to it at start
+
+The image starts as root only to `chown -R dumpling:dumpling /data` and then runs the service as
+`dumpling` (uid 10001) with `setpriv`. Started as another user (`docker run --user`), it runs as
+is and the volume must already be writable by that user.
+
+| Decision                                         | Why                                                                                                                                  |
+|--------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| The service never runs as root                   | It talks to remote servers chosen by the admin and runs `pg_dump`: a flaw in either doesn't get root of the container                 |
+| `/data` is given to `dumpling` when it starts    | A Railway Volume is mounted owned by root, and `dumpling` couldn't create the database (`SqliteException(14)`, rc.4)                 |
+| Not `RAILWAY_RUN_UID=0` on the service           | It would run the whole service as root, and only on Railway; the fix in the image works on any platform that mounts the volume as root |
+| No `VOLUME` in the Dockerfile                    | Railway rejects it; the volume is mounted where it runs (`-v`, compose or a Railway Volume on `/data`)                               |
