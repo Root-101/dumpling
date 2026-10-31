@@ -78,6 +78,11 @@ hand.
 - [x] A config created on the canvas starts with the schedule, compression and object key of the
   workspace: its dialog shows them instead of empty fields.
 
+## 0.1.0-rc.7
+
+- [x] A backup over TLS works in the image: the service runs with `HOME=/app`, so `pg_dump` no
+  longer fails looking for a client certificate in `/root`.
+
 ## 0.2.0
 
 - Retention (needs ListObjects and DeleteObject in the destination).
