@@ -80,6 +80,8 @@ hand.
   size and last write of each folder; and the history of its connection checks, not only the last.
 - Source detail with the size of the database, the copies stored and the success rate of its
   runs; and the history of its connection checks, not only the last.
+- Source form: the connection test in step 2 (Connection), next to the fields it checks, instead
+  of in step 3 (Check & save); the TLS setting, which the test uses, moves with it.
 - `verify-full` with a CA for PostgreSQL sources (`require` and `disable` exist).
 - Download a backup from the console.
 - Events feed (changes, connection checks) and alerts.
