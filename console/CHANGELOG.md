@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0-rc.7
+
+- No changes in the console: the version follows the service's.
+
 ## 0.1.0-rc.6
 
 - A config created on the canvas starts with the schedule, compression and object key of the

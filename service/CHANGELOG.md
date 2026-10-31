@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.0-rc.7
 
 - A backup over TLS works again in the image: since rc.5 the service ran as `dumpling` with the
   `HOME` of root, and `pg_dump` failed looking for a client certificate there
