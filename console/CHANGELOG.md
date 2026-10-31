@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.0-rc.6
 
 - A config created on the canvas starts with the schedule, compression and object key of the
   workspace, so its dialog shows them instead of empty fields.

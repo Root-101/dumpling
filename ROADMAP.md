@@ -73,6 +73,11 @@ hand.
 - [x] The service opens its database on a Railway Volume: `/data` is given to `dumpling` when
   the container starts (Railway mounts it owned by root).
 
+## 0.1.0-rc.6
+
+- [x] A config created on the canvas starts with the schedule, compression and object key of the
+  workspace: its dialog shows them instead of empty fields.
+
 ## 0.2.0
 
 - Retention (needs ListObjects and DeleteObject in the destination).
