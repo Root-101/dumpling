@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0-rc.4
+
+- No changes in the console: the version follows the service's.
+
 ## 0.1.0-rc.3
 
 - No changes in the console: a new version now shows on reload (the service serves it with

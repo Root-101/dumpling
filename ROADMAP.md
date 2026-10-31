@@ -63,6 +63,11 @@ hand.
 - [x] A new version of the console shows on reload: its files are served with
   `Cache-Control: no-cache`, so the browser revalidates them instead of keeping the old build.
 
+## 0.1.0-rc.4
+
+- [x] The image deploys on Railway: the Dockerfile has no `VOLUME` (Railway rejects it); the
+  volume is mounted where it runs (`-v`, compose or a Railway Volume on `/data`).
+
 ## 0.2.0
 
 - Retention (needs ListObjects and DeleteObject in the destination).
