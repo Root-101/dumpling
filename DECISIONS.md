@@ -179,5 +179,6 @@ is and the volume must already be writable by that user.
 |--------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
 | The service never runs as root                   | It talks to remote servers chosen by the admin and runs `pg_dump`: a flaw in either doesn't get root of the container                 |
 | `/data` is given to `dumpling` when it starts    | A Railway Volume is mounted owned by root, and `dumpling` couldn't create the database (`SqliteException(14)`, rc.4)                 |
+| It runs with `HOME=/app`, the home of `dumpling` | `setpriv` keeps the `HOME` of root; `pg_dump` looks there for client certificates and, unable to enter `/root`, fails over TLS (rc.5) |
 | Not `RAILWAY_RUN_UID=0` on the service           | It would run the whole service as root, and only on Railway; the fix in the image works on any platform that mounts the volume as root |
 | No `VOLUME` in the Dockerfile                    | Railway rejects it; the volume is mounted where it runs (`-v`, compose or a Railway Volume on `/data`)                               |
