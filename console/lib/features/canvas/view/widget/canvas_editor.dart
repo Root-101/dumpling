@@ -462,7 +462,16 @@ class _CanvasEditorState extends State<CanvasEditor>
         _cubit.attachSource(link.id, config.id);
       } else if (target != null) {
         link.kind == NodeKind.source
-            ? _cubit.connect(link.id, target)
+            ? _cubit.connect(
+                link.id,
+                target,
+                defaults: app.di
+                    .find<WorkspaceCubit>()
+                    .state
+                    .data
+                    .current
+                    ?.defaults,
+              )
             : _cubit.relink(link.id, target);
       }
     }

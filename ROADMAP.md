@@ -73,6 +73,11 @@ hand.
 - [x] The service opens its database on a Railway Volume: `/data` is given to `dumpling` when
   the container starts (Railway mounts it owned by root).
 
+## 0.1.0-rc.6
+
+- [x] A config created on the canvas starts with the schedule, compression and object key of the
+  workspace: its dialog shows them instead of empty fields.
+
 ## 0.2.0
 
 - Retention (needs ListObjects and DeleteObject in the destination).
@@ -80,6 +85,11 @@ hand.
   size and last write of each folder; and the history of its connection checks, not only the last.
 - Source detail with the size of the database, the copies stored and the success rate of its
   runs; and the history of its connection checks, not only the last.
+- Source form: the connection test in step 2 (Connection), next to the fields it checks, instead
+  of in step 3 (Check & save); the TLS setting, which the test uses, moves with it.
+- Destination form: the same, the connection test in step 2 (Connection) instead of in step 3
+  (Folders & check); it writes in each folder, so in step 2 it would test the root and step 3
+  the folders.
 - `verify-full` with a CA for PostgreSQL sources (`require` and `disable` exist).
 - Download a backup from the console.
 - Events feed (changes, connection checks) and alerts.

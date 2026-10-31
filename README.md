@@ -15,7 +15,7 @@ goes where on a canvas (a database, a bucket and the backup between them) and Du
   schedules and the backups, keeps its data in SQLite and serves the API and the console.
 - **`console/`**: the web console, in Flutter Web. The service serves it: one image, one port.
 
-> **Status: release candidate (`0.1.0-rc.5`).** It backs up and is tested end to end (a real
+> **Status: release candidate (`0.1.0-rc.6`).** It backs up and is tested end to end (a real
 > backup restored and compared), but it hasn't had long-running production use yet.
 
 ![The pipeline editor of the console](docs/design/screens/07-canvas.png)

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.0-rc.6
+
+- A config created on the canvas starts with the schedule, compression and object key of the
+  workspace, so its dialog shows them instead of empty fields.
+
 ## 0.1.0-rc.5
 
 - No changes in the console: the version follows the service's.
