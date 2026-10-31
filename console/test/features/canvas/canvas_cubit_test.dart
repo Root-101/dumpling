@@ -107,6 +107,23 @@ void main() {
       (null, null, null),
     );
 
+    // with the defaults of the workspace, the config starts with them
+    cubit.connect(
+      'users',
+      const DropTarget('ca', null),
+      defaults: (
+        schedule: '0 4 * * *',
+        compression: 'gzip',
+        objectKey: '{source}/{date}',
+      ),
+    );
+    final withDefaults = cubit.state.data.selected!;
+    expect(
+      (withDefaults.schedule, withDefaults.compression, withDefaults.objectKey),
+      ('0 4 * * *', 'gzip', '{source}/{date}'),
+    );
+    cubit.deleteConfig(withDefaults.id);
+
     cubit.deleteConfig('j3'); // media is left an orphan
     expect(cubit.state.data.configs.any((c) => c.id == 'j3'), isFalse);
     expect(cubit.state.data.source('media'), isNotNull);
