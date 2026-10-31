@@ -11,7 +11,7 @@ unless you'd rather not.
 
 ## Supported versions
 
-Only the latest release gets security fixes (today `0.1.0-rc.3`).
+Only the latest release gets security fixes (today `0.1.0-rc.4`).
 
 ## Security model
 

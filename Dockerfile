@@ -59,6 +59,5 @@ WORKDIR /app
 USER dumpling
 ENV DATA_PATH=/data \
     PG_DUMP_PATH=/usr/lib/postgresql/${PG_VERSION}/bin/pg_dump
-VOLUME /data
 EXPOSE 8080
 CMD ["/app/bin/main"]
