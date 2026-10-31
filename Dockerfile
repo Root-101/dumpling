@@ -56,8 +56,9 @@ COPY --from=service /out/bundle/ /app/
 COPY --from=console /src/build/web/ /app/build/web/
 
 WORKDIR /app
-USER dumpling
 ENV DATA_PATH=/data \
     PG_DUMP_PATH=/usr/lib/postgresql/${PG_VERSION}/bin/pg_dump
 EXPOSE 8080
-CMD ["/app/bin/main"]
+# Starts as root only to give /data to dumpling (a Railway Volume is mounted owned by root), then
+# runs the service as dumpling; started as another user (--user) it runs as is
+CMD ["sh", "-c", "if [ \"$(id -u)\" = 0 ]; then chown -R dumpling:dumpling /data && exec setpriv --reuid=dumpling --regid=dumpling --init-groups /app/bin/main; fi; exec /app/bin/main"]
