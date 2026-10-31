@@ -79,6 +79,12 @@ docker run -p 8080:8080 -v dumpling-data:/data \
   -e JWT_SECRET=… -e SECRETS_ENCRYPTION_KEY=… dumpling
 ```
 
+### On Railway
+
+Deploy the repository (it builds the `Dockerfile` of the root), add a Volume mounted on `/data` and
+the four required variables. Railway mounts the volume owned by root: the container gives it to
+the `dumpling` user when it starts, so nothing else is needed.
+
 ### Locally
 
 Both packages pin their Flutter/Dart version with [FVM](https://fvm.app) (`.fvmrc`).

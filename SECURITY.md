@@ -46,6 +46,12 @@ reasons behind each decision are in [`DECISIONS.md`](DECISIONS.md).
 - A destination only writes: `PutObject` (multipart included) and `AbortMultipartUpload`. It never
   lists, reads nor deletes objects.
 
+**The container**
+
+- The service runs as `dumpling` (uid 10001), never as root. The container starts as root only to
+  give `/data` to that user (a Railway Volume is mounted owned by root) and drops to it with
+  `setpriv` before the service starts.
+
 **Input and output**
 
 - Every request body is validated before it is used (sizes, ports, hosts, cron expressions,
