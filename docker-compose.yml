@@ -11,7 +11,7 @@ services:
       context: .
       args:
         PG_VERSION: ${PG_VERSION:-18}
-    image: dumpling:0.1.0-rc.4
+    image: dumpling:0.1.0-rc.5
     restart: unless-stopped
     ports:
       - "8080:8080"

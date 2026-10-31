@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0-rc.5
+
+- No changes in the console: the version follows the service's.
+
 ## 0.1.0-rc.4
 
 - No changes in the console: the version follows the service's.

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.0-rc.5
+
+- The image starts on a Railway Volume: Railway mounts `/data` owned by root and the service, as
+  `dumpling`, couldn't open the database (`SqliteException(14)`). The container starts as root,
+  gives `/data` to `dumpling` and runs the service as `dumpling`.
+
 ## 0.1.0-rc.4
 
 - The image has no `VOLUME /data`, which Railway rejects: mount the volume on `/data` where it
