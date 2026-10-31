@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.0-rc.4
+
+- The image has no `VOLUME /data`, which Railway rejects: mount the volume on `/data` where it
+  runs (`docker run -v`, compose or a Railway Volume).
+
 ## 0.1.0-rc.3
 
 - The console is served with `Cache-Control: no-cache`: the browser revalidates every file (a 304
