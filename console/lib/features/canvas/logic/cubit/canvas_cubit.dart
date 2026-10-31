@@ -277,9 +277,14 @@ class CanvasCubit extends Cubit<CanvasState> {
   }
 
   /// A wire dropped from a source creates a config halfway. Its schedule,
-  /// compression and object key are the defaults of the workspace until
-  /// changed
-  void connect(String sourceId, DropTarget target) {
+  /// compression and object key start as the [defaults] of the workspace, so
+  /// its dialog shows them; without them they stay empty and the service
+  /// fills them in on save
+  void connect(
+    String sourceId,
+    DropTarget target, {
+    WorkspaceDefaults? defaults,
+  }) {
     final s = _data;
     final source = s.source(sourceId);
     final dest = s.destination(target.destinationId);
@@ -307,6 +312,9 @@ class CanvasCubit extends Cubit<CanvasState> {
       folderId: target.folderId,
       pos: pos,
       name: app.intl.canvas.newConfig,
+      schedule: defaults?.schedule,
+      compression: defaults?.compression,
+      objectKey: defaults?.objectKey,
     );
     _edit(
       s.copyWith(

@@ -178,8 +178,9 @@ class BackupConfig {
   final Offset pos;
   final String name;
 
-  /// Cron in UTC. Null in a new config: the default of the workspace, which
-  /// the service fills in on save. The same for [compression] and [objectKey]
+  /// Cron in UTC. A new config starts with the default of the workspace; null:
+  /// the service fills it in on save. The same for [compression] and
+  /// [objectKey]
   final String? schedule;
   final String? compression;
   final String? objectKey;

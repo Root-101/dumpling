@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0-rc.6
+
+- No changes in the service: the version follows the console's.
+
 ## 0.1.0-rc.5
 
 - The image starts on a Railway Volume: Railway mounts `/data` owned by root and the service, as

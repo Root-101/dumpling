@@ -16,6 +16,8 @@ class _MockSources extends Mock implements SourceRepo {}
 
 class _MockDestinations extends Mock implements DestinationRepo {}
 
+class _MockWorkspaces extends Mock implements WorkspaceCubit {}
+
 void main() {
   // the real fonts, so text overflows are the ones of the browser
   setUpAll(() async {
@@ -51,6 +53,26 @@ void main() {
     when(() => auth.auth).thenReturn(session());
     when(() => repo.get(workspace: 'production', token: 'jwt'))
         .thenAnswer((_) async => canvas ?? demoCanvas());
+    // the open workspace: a wire dropped on a bucket takes its defaults
+    final workspaces = _MockWorkspaces();
+    when(() => workspaces.state).thenReturn(
+      WorkspaceLoadingSuccessState(
+        data: const WorkspaceData.empty()
+            .withList([
+              const WorkspaceModel(
+                slug: 'production',
+                name: 'Production',
+                defaults: (
+                  schedule: '0 4 * * *',
+                  compression: 'none',
+                  objectKey: '{source}/{date}',
+                ),
+              ),
+            ])
+            .withCurrent('production'),
+      ),
+    );
+    app.di.put<WorkspaceCubit>(workspaces);
     final cubit = CanvasCubit(repo, sources, destinations, auth);
     await cubit.load('production');
     await tester.pumpWidget(
@@ -128,6 +150,8 @@ void main() {
     await tester.pump();
     expect(cubit.state.data.configs.length, s.configs.length + 1);
     expect(cubit.state.data.selected!.destinationId, 'ca');
+    // with the schedule of the workspace, so its dialog shows it
+    expect(cubit.state.data.selected!.schedule, '0 4 * * *');
   });
 
   testWidgets('only Space + drag pans; keys zoom, reset and close the config', (
@@ -329,7 +353,9 @@ void main() {
       await tester.enterText(find.widgetWithText(TextField, '0 2 * * 0'), '');
       await tester.pump();
       expect(
-        find.text('Not a valid cron expression (minute hour day month weekday)'),
+        find.text(
+          'Not a valid cron expression (minute hour day month weekday)',
+        ),
         findsNothing,
       );
       await tester.enterText(
