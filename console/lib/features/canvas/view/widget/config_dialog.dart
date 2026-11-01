@@ -246,7 +246,7 @@ class _ConfigDialogState extends State<ConfigDialog> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _Label(t.cron),
+                Row(spacing: 4, children: [_Label(t.cron), const _CronInfo()]),
                 const SizedBox(height: 6),
                 _Input(
                   value: schedule ?? '',
@@ -742,6 +742,87 @@ class _PlaceholdersInfo extends StatelessWidget {
       child: Semantics(
         button: true,
         label: t.placeholders,
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: app.assets.icons.actions.info.build(
+            size: 16,
+            color: colors.text.subtle,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Info icon by the cron: on hover or tap, its five fields drawn over a
+/// `* * * * *`, some examples and the syntax (that of the service's `Cron`)
+class _CronInfo extends StatelessWidget {
+  const _CronInfo();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = app.intl.canvas.inspector;
+    final f = t.cronField;
+    final e = t.cronExample;
+    final colors = app.colors;
+    final mono = AppText.mono.copyWith(fontSize: 12);
+    final accent = mono.copyWith(color: colors.brand.accent);
+    return Tooltip(
+      triggerMode: TooltipTriggerMode.tap,
+      showDuration: const Duration(seconds: 30),
+      constraints: const BoxConstraints(maxWidth: 400),
+      padding: const EdgeInsets.all(12),
+      richMessage: TextSpan(
+        children: [
+          TextSpan(text: '${t.cronInfoIntro}\n'),
+          // the fields over a `* * * * *`, in a dark box as the design draws it
+          WidgetSpan(
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: colors.primary.background1,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text:
+                          '┌───────────── ${f.minute}\n'
+                          '│ ┌─────────── ${f.hour}\n'
+                          '│ │ ┌───────── ${f.day}\n'
+                          '│ │ │ ┌─────── ${f.month}\n'
+                          '│ │ │ │ ┌───── ${f.weekday}\n'
+                          '│ │ │ │ │\n',
+                      style: mono,
+                    ),
+                    TextSpan(text: '* * * * *', style: accent),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          for (final (cron, text) in [
+            ('0 * * * *', e.hourly),
+            ('*/15 * * * *', e.quarter),
+            ('0 2 * * *', e.daily),
+            ('0 3 * * 0', e.sundays),
+            ('30 1 1 * *', e.monthly),
+          ]) ...[
+            // padded so the descriptions line up, as in the design
+            TextSpan(text: '\n${cron.padRight(14)}', style: accent),
+            TextSpan(text: text),
+          ],
+          TextSpan(
+            text: '\n\n${t.cronInfoSyntax}',
+            style: TextStyle(color: colors.text.subtle),
+          ),
+        ],
+      ),
+      child: Semantics(
+        button: true,
+        label: t.cronInfo,
         child: Padding(
           padding: const EdgeInsets.all(4),
           child: app.assets.icons.actions.info.build(

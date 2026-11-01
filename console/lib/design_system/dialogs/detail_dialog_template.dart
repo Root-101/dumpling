@@ -350,8 +350,8 @@ class DetailPanelTitle extends StatelessWidget {
   }
 }
 
-/// The aside of the detail: label over value (monospace when [mono]) and a
-/// button at the end, e.g. *Edit connection*
+/// The aside of the detail: label over value (monospace and selectable when
+/// [mono]) and a button at the end, e.g. *Edit connection*
 class DetailFields extends StatelessWidget {
   final String title;
   final List<(String label, String value, bool mono)> items;
@@ -392,12 +392,17 @@ class DetailFields extends StatelessWidget {
                     color: app.colors.neutral.grey4,
                   ),
                 ),
-                Text(
-                  value,
-                  style: mono
-                      ? AppText.mono.copyWith(fontSize: 13)
-                      : const TextStyle(fontSize: 13),
-                ),
+                if (mono)
+                  // a value of the connection (host, endpoint, bucket):
+                  // selectable, to copy it
+                  SelectionArea(
+                    child: Text(
+                      value,
+                      style: AppText.mono.copyWith(fontSize: 13),
+                    ),
+                  )
+                else
+                  Text(value, style: const TextStyle(fontSize: 13)),
               ],
             ),
           PrimaryButton.secondary(

@@ -85,7 +85,6 @@ class Dumpling {
     //--------------- Routes ---------------\\
     final staticFiles = _webBuild();
     final router = WinterRouter(
-      config: RouterConfig(onLoadedRoutes: DefaultOnLoadedRoutes.log()),
       routes: [
         ApiController().routing,
         // The console, when its build is next to the service (the release

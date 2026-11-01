@@ -90,7 +90,9 @@ class ConnectionTestBanner extends StatelessWidget {
           app.dimensions.padding.m.gap(),
           PrimaryButton.secondary(
             onPressed: testing ? null : onTest,
-            title: app.intl.connections.test,
+            title: this.check == null
+                ? app.intl.connections.test
+                : app.intl.connections.testAgain,
             color: app.colors.surface.control,
             h: 36,
             horizontalPadding: 14,

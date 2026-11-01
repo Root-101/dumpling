@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:console/app_exporter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -278,21 +280,54 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
           '${data.count(BackupHealth.failing)}',
           t.failingSub,
         ),
-        DetailStat(
-          t.nextBackupIn,
-          at == null ? '—' : _until(at),
-          next == null ? t.nothingScheduled : next.source.name,
+        _EverySecond(
+          onTick: () => _reloadOnceDue(at),
+          builder: (_) => DetailStat(
+            t.nextBackupIn,
+            at == null ? '—' : _dueText(at) ?? _until(at),
+            next == null ? t.nothingScheduled : next.source.name,
+          ),
         ),
       ],
     );
   }
 
-  /// `11 h 45 min`, never below a minute
+  /// The next run the list was reloaded for, so a due one reloads it once
+  DateTime? _reloadedFor;
+
+  /// Once the next backup is due (and a moment for the service to start it
+  /// and plan the next one), the list again: its run and the new countdown
+  void _reloadOnceDue(DateTime? at) {
+    if (at == null || at == _reloadedFor) return;
+    if (DateTime.now().isBefore(at.add(const Duration(seconds: 3)))) return;
+    _reloadedFor = at;
+    _reload();
+  }
+
+  /// Whether the list is reloading for [at], a next run already due: its row
+  /// shows it, the rest reload without a sign
+  bool _updating(DateTime? at) =>
+      at != null &&
+      cubit.state is BackupLoadingInProgressState &&
+      !DateTime.now().isBefore(at);
+
+  /// Once [at] is due: `Updating in 3…`, `2…`, `1…` until the list reloads,
+  /// and `Updating…` while it does; null before it is due (and after, if the
+  /// reload still has it due: then `0 s`)
+  String? _dueText(DateTime at) {
+    final late = DateTime.now().difference(at);
+    if (late.isNegative) return null;
+    if (_updating(at)) return app.intl.backups.updating;
+    final left = 3 - late.inSeconds;
+    return left > 0 ? app.intl.backups.updatingIn(seconds: left) : null;
+  }
+
+  /// `11 h 45 min`, `3 min 10 s`, and under a minute only the seconds
+  /// (`20 s`, `0 s` once it is due)
   static String _until(DateTime at) {
     final d = at.difference(DateTime.now());
-    return RunsScreen.durationOf(
-      d.inMinutes < 1 ? const Duration(minutes: 1) : d,
-    );
+    if (d.inMinutes < 1) return '${d.inSeconds.clamp(0, 59)} s';
+    return RunsScreen.durationOf(d);
   }
 
   List<AppTableColumn> _columns(BackupData data) {
@@ -535,7 +570,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
     final open = _open.contains(c.id);
     final running = health == BackupHealth.running;
     return [
-      _StatusChip(health: health),
+      _StatusChip(health: health, updating: _updating(next)),
       Row(
         children: [
           TypeBadge(look: backup.source.look),
@@ -654,7 +689,12 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
                 fontFeatures: [FontFeature.tabularFigures()],
               ),
             ),
-            Text(t.inTime(time: _until(next)), style: small),
+            _EverySecond(
+              builder: (_) => Text(
+                _dueText(next) ?? t.inTime(time: _until(next)),
+                style: small,
+              ),
+            ),
           ],
         ),
       Row(
@@ -725,11 +765,16 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
 class _StatusChip extends StatelessWidget {
   final BackupHealth health;
 
-  const _StatusChip({required this.health});
+  /// The list reloads for its next run, already due
+  final bool updating;
+
+  const _StatusChip({required this.health, this.updating = false});
 
   @override
   Widget build(BuildContext context) {
-    final color = BackupsScreen.colorOf(health);
+    final color = updating
+        ? app.colors.status.running
+        : BackupsScreen.colorOf(health);
     return Container(
       height: 26,
       padding: const EdgeInsets.symmetric(horizontal: 9),
@@ -741,7 +786,7 @@ class _StatusChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         spacing: 6,
         children: [
-          if (health == BackupHealth.running)
+          if (updating || health == BackupHealth.running)
             RunProgressRing(size: 12, color: color)
           else
             Container(
@@ -751,7 +796,10 @@ class _StatusChip extends StatelessWidget {
             ),
           Flexible(
             child: Text(
-              BackupsScreen.labelOf(health),
+              // short: the column is narrow
+              updating
+                  ? app.intl.common.loading
+                  : BackupsScreen.labelOf(health),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -1086,19 +1134,22 @@ class _RunLine extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: Text(
-                run.status == RunStatus.success
-                    ? location ?? '—'
-                    : run.status == RunStatus.running
-                    ? t.uploading
-                    : t.noFile,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppText.mono.copyWith(
-                  fontSize: 12,
-                  color: run.status == RunStatus.success
-                      ? colors.brand.accent
-                      : colors.neutral.grey4,
+              // where the file went is selectable, to copy it
+              child: SelectionArea(
+                child: Text(
+                  run.status == RunStatus.success
+                      ? location ?? '—'
+                      : run.status == RunStatus.running
+                      ? t.uploading
+                      : t.noFile,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppText.mono.copyWith(
+                    fontSize: 12,
+                    color: run.status == RunStatus.success
+                        ? colors.brand.accent
+                        : colors.neutral.grey4,
+                  ),
                 ),
               ),
             ),
@@ -1130,4 +1181,38 @@ class _RunLine extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Rebuilds [builder] every second, for a countdown that goes on between the
+/// loads of the screen; [onTick] first, on each one
+class _EverySecond extends StatefulWidget {
+  final WidgetBuilder builder;
+  final VoidCallback? onTick;
+
+  const _EverySecond({required this.builder, this.onTick});
+
+  @override
+  State<_EverySecond> createState() => _EverySecondState();
+}
+
+class _EverySecondState extends State<_EverySecond> {
+  late final Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      widget.onTick?.call();
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(context);
 }

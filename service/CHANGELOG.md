@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0
+
+- Winter 1.0.0, its first stable version (it was on `1.0.0-rc.6`).
+- Deleting a workspace cancels the schedules of its backups at once (before, each one still fired
+  once, found its config gone and cancelled itself).
+- The route table is no longer logged at start.
+
 ## 0.1.0-rc.7
 
 - A backup over TLS works again in the image: since rc.5 the service ran as `dumpling` with the

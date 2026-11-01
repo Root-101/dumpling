@@ -67,20 +67,91 @@
           align-items: center;
         }
 
+        /* As the Splash of the design, and as SplashScreen, which follows it */
         #splash {
           position: fixed;
           inset: 0;
           display: flex;
           justify-content: center;
           align-items: center;
-          background: #121019;
+          overflow: hidden;
+          color: #ffffff;
+          background-color: #121019;
+          background-image:
+            linear-gradient(rgba(157, 143, 208, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(157, 143, 208, 0.05) 1px, transparent 1px);
+          background-size: 48px 48px;
+          background-position: -1px -1px;
           z-index: 9999;
           transition: opacity 0.35s ease;
         }
 
+        #splash-glow {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          width: 760px;
+          height: 760px;
+          transform: translate(-50%, -50%);
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(157, 143, 208, 0.14) 0%, rgba(157, 143, 208, 0.05) 38%, rgba(157, 143, 208, 0) 70%);
+        }
+
+        #splash-content {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
         #splash-logo {
-          width: 132px;
-          height: 93px;
+          display: block;
+          width: 136px;
+          height: 96px;
+        }
+
+        #splash-name {
+          display: block;
+          width: 262px;
+          height: 70px;
+          margin-top: 28px;
+        }
+
+        #splash-text {
+          margin: 18px 0 0;
+          font-size: 16px;
+          line-height: 24px;
+          color: #8c8a98;
+        }
+
+        #splash-track {
+          position: relative;
+          width: 220px;
+          height: 4px;
+          margin-top: 28px;
+          border-radius: 2px;
+          background: #2c2939;
+          overflow: hidden;
+        }
+
+        .splash-bar {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 40%;
+          height: 100%;
+          border-radius: 2px;
+          background: #9d8fd0;
+          animation: splash-run 1.4s ease-in-out infinite;
+        }
+
+        @keyframes splash-run {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(250%); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .splash-bar { animation: none; transform: translateX(75%); }
         }
 
         .fade-out {
@@ -93,13 +164,20 @@
 <body>
 
 <!-- Splash -->
-<div id="splash" role="status" aria-live="polite">
-    <svg id="splash-logo" viewBox="0 0 88 62" aria-label="Dumpling"><rect x="4" y="15" width="16" height="16" rx="4" fill="#e6b77e"/><path d="M20 23H29M59 23H68" fill="none" stroke="#9d8fd0" stroke-width="4"/><rect x="31.5" y="9.5" width="25" height="27" rx="6.5" fill="none" stroke="#9d8fd0" stroke-width="5"/><rect x="68" y="15" width="16" height="16" rx="4" fill="#9d8fd0"/><path d="M12 47.5Q44 61.5 76 48.5M67.91 45.89L76 48.5L72.02 56.01" fill="none" stroke="#6d5bb5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div id="splash" role="status" aria-live="polite" aria-busy="true">
+    <div id="splash-glow" aria-hidden="true"></div>
+    <div id="splash-content">
+        <svg id="splash-logo" viewBox="0 0 88 62" aria-hidden="true"><rect x="4" y="15" width="16" height="16" rx="4" fill="#e6b77e"/><path d="M20 23H29M59 23H68" fill="none" stroke="#9d8fd0" stroke-width="4"/><rect x="31.5" y="9.5" width="25" height="27" rx="6.5" fill="none" stroke="#9d8fd0" stroke-width="5"/><rect x="68" y="15" width="16" height="16" rx="4" fill="#9d8fd0"/><path d="M12 47.5Q44 61.5 76 48.5M67.91 45.89L76 48.5L72.02 56.01" fill="none" stroke="#6d5bb5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <img id="splash-name" src="assets/assets/brand/name.svg" alt="Dumpling">
+        <p id="splash-text">Connecting to the backup service…</p>
+        <div id="splash-track" role="progressbar" aria-label="Loading"><span class="splash-bar"></span></div>
+    </div>
 </div>
 
 <script>
     if ((navigator.language || "").toLowerCase().startsWith("es")) {
       document.documentElement.lang = "es";
+      document.getElementById("splash-text").textContent = "Conectando con el servicio de respaldos…";
     }
 </script>
 
