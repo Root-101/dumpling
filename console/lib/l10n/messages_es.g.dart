@@ -98,7 +98,7 @@ class AppMessages$app$es implements AppMessages$app$en {
   @override
   String get needMoreSpace => 'Se necesita más espacio';
   @override
-  String get splashText => 'Cargando tus backups…';
+  String get splashText => 'Conectando con el servicio de respaldos…';
   @override
   String version({required Object version}) => 'Dumpling v${version}';
 }
@@ -1720,7 +1720,7 @@ extension on AppMessagesEs {
     return switch (path) {
           'app.name' => 'Dumpling',
           'app.needMoreSpace' => 'Se necesita más espacio',
-          'app.splashText' => 'Cargando tus backups…',
+          'app.splashText' => 'Conectando con el servicio de respaldos…',
           'app.version' => ({
             required Object version,
           }) => 'Dumpling v${version}',

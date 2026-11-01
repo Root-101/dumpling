@@ -81,8 +81,8 @@ class AppMessages$app$en {
   /// en: 'Need more space'
   String get needMoreSpace => 'Need more space';
 
-  /// en: 'Loading your backups…'
-  String get splashText => 'Loading your backups…';
+  /// en: 'Connecting to the backup service…'
+  String get splashText => 'Connecting to the backup service…';
 
   /// en: 'Dumpling v{version: String}'
   String version({required String version}) => 'Dumpling v${version}';
@@ -2252,7 +2252,7 @@ extension on AppMessages {
     return switch (path) {
           'app.name' => 'Dumpling',
           'app.needMoreSpace' => 'Need more space',
-          'app.splashText' => 'Loading your backups…',
+          'app.splashText' => 'Connecting to the backup service…',
           'app.version' => ({
             required String version,
           }) => 'Dumpling v${version}',

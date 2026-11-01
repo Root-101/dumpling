@@ -1,7 +1,7 @@
 app:
   name: 'Dumpling'
   needMoreSpace: 'Se necesita más espacio'
-  splashText: 'Cargando tus backups…'
+  splashText: 'Conectando con el servicio de respaldos…'
   version: 'Dumpling v{version}'
 
 common:

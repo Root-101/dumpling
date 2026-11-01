@@ -10,6 +10,10 @@
 - Backups: *Next backup in* counts down every second and shows only the seconds in its last minute
   (it stayed at `1 min 0 s`). Once the backup is due it says *Updating in 3…, 2…, 1…* and the list
   reloads with its run and the next one; meanwhile the due rows show *Loading*.
+- The splash follows the design: the mark, the name, *Connecting to the backup service…* and a bar
+  on the grid, the same from the first paint of the page until the console starts.
+- The console starts in the language of the browser when it is Spanish, and in English otherwise
+  (it always started in English); the one chosen with the flag still wins.
 - Where a file went, the log and the error of a run, the connection values of a source or
   destination and the error of a failed check can be selected and copied.
 

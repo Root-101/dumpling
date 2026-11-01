@@ -2,7 +2,8 @@
 
 A tour of the Dumpling web console: each screen, its URL and what it does. The images come from the
 design of the console ([`design/`](design/README.md)); the console itself speaks English and
-Spanish (the flag in the rail).
+Spanish (the flag in the rail): the language of the browser at first when it is Spanish, English
+otherwise, and the one chosen with the flag after that.
 
 The service serves the console on its own port (`http://localhost:8080` by default), on the same
 origin as the API. The console uses hash URLs, so the screen and its state go after `#`:
@@ -323,6 +324,11 @@ without their log lines) and [`GET /api/workspaces/{slug}/runs/{id}`](api.md#a-r
 its log.
 
 ## Loading and errors
+
+While it starts, the console shows its mark, its name and a bar, in the language of the browser
+(Spanish or English):
+
+![Starting](design/screens/36-splash.png)
 
 Each screen loads as a skeleton of itself:
 

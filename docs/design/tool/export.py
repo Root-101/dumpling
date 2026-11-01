@@ -62,6 +62,7 @@ SCREENS = [
     ('Navigation', 'rail-expanded', 'Proposal-A', 'The rail, expanded from its notch',
      [('class="rail-t"', 'class="rail-t" checked')]),
     ('Loading', 'loading', 'Backups-Loading', 'A screen while it loads: a skeleton of itself'),
+    ('Loading', 'splash', 'Splash', 'The console while it starts'),
 ]
 
 # (file name, artboard): the brand images, at their size on the canvas
