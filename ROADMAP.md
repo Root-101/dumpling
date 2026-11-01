@@ -6,84 +6,42 @@ Google Drive as a destination are a new implementation, not a change to the rest
 them is the **canvas**: a source, a destination and the config between them, drawn and connected by
 hand.
 
-## 0.1.0-rc.1 · Done
+## 0.1.0
 
-- **Foundations:** the service (Winter, drift + SQLite in WAL, slang, Problem Details) and the
-  console (Flutter Web, flutter_bloc, go_router), both in English and Spanish. Credentials
-  encrypted with AES-GCM and never returned. `SourceDriver` and `DestinationDriver` contracts with a
-  registry of types, the disabled ones shown. CI with analyze and tests of both packages.
-- **Release:** one image (the `Dockerfile` at the root) where the service serves the console;
-  `pg_dump` of `PG_VERSION` from the PostgreSQL packages; `docker-compose.yml` with a volume and
-  `.env.example`.
-- **Auth:** one admin from the environment, a JWT of 12 h without refresh, failed logins limited
-  per IP; a session that expires keeps the screen under a dialog that signs in again.
-- **Workspaces:** create, edit, delete by typing the name (the files in the buckets stay); defaults
-  for new configs; health stats on each card.
-- **Sources:** PostgreSQL by fields or connection URL, custom or plain dumps, TLS by default; a
-  test from the service that checks the server against the `pg_dump` of the image. MySQL, MariaDB,
-  MongoDB and Redis listed as disabled.
-- **Destinations:** S3-compatible with our own SigV4, optional folders as connection points, a
-  test that starts and aborts a multipart upload. Google Drive, Azure Blob, Dropbox and SFTP listed
-  as disabled.
-- **Canvas:** edited whole and saved in one transaction; configs with cron (UTC), object key
-  placeholders, compression and enabled; Run now, Test run of every flow, a guide for an empty
-  workspace.
+Built over the release candidates `0.1.0-rc.1` (2026-10-30) to `rc.8`; their changes, one by one,
+are in the changelogs of [`service/`](service/CHANGELOG.md) and [`console/`](console/CHANGELOG.md).
+
+- **Foundations:** the service (Winter 1.0.0, drift + SQLite in WAL, slang, Problem Details) and
+  the console (Flutter Web, flutter_bloc, go_router), in English and Spanish (the browser's
+  language at first). Credentials encrypted with AES-GCM and never returned. `SourceDriver` and
+  `DestinationDriver` contracts with a registry of types, the planned ones shown as disabled. CI
+  with analyze and tests of both packages.
+- **Release:** one image where the service serves the console, with the `pg_dump` of
+  `PG_VERSION`; `docker-compose.yml` and `.env.example`; it deploys on Railway (a Volume on
+  `/data`). A new console shows on reload (`Cache-Control: no-cache`).
+- **Auth:** one admin from the environment, a JWT of 12 h, failed logins limited per IP; an
+  expired session signs in again over the screen.
+- **Workspaces:** create, edit, delete by typing the name (which cancels its schedules; the files
+  in the buckets stay); defaults for new configs; health on each card.
+- **Sources and destinations:** PostgreSQL (fields or URL, custom or plain dumps, TLS by default)
+  and S3-compatible (our own SigV4, folders as connection points). Forms in steps: name and type,
+  then the connection with its test (*Next* waits for it), then options or folders, each new
+  folder tested before saving.
+- **Canvas:** edited whole and saved in one transaction; configs with cron (UTC, with an ⓘ),
+  object key placeholders, compression and enabled, starting with the workspace's defaults; Run
+  now, a Test run of every flow, a guide for an empty workspace.
 - **Backup engine:** cron scheduler; `pg_dump` → gzip → S3 multipart streamed without touching the
   disk; failed or cut uploads aborted; one run per config at a time, with its status, size, log and
   object key.
-- **Backups and run log:** health summary, configs with last and next run, filters and sort; the
-  run log with filters and the detail of each run; Not found and Connection lost pages.
+- **Backups and run log:** health summary, configs with last and next run, filters and sort, the
+  next backup counting down by the second and reloading once due; the run log with filters and the
+  detail of each run, its location, log and error selectable.
 - **Quality of life:** a path per screen; warnings for long names and double compression; leaving
-  an unsaved canvas asks first; Save only with changes; logos of the types; dialogs in steps as tall
-  as the screen; a rail that expands from a notch.
-- **Before the release:** restore guide (`docs/restore.md`), security pass (`SECURITY.md`),
-  end-to-end test in Docker, a review of the git history for secrets, every screen checked against
-  the design, a manual test from scratch on 2026-10-27, and a code audit (18 findings) and a
-  security audit (10 leads), all fixed.
-
-## 0.1.0-rc.1 · Pending
-
-- [x] Changelogs updated with the last changes of the console; README, `CONTRIBUTING.md` and
-  `DECISIONS.md` reviewed.
-- [x] End-to-end test (`service/tool/e2e/run.sh`) with the `Dockerfile` at the root: passed with
-  MinIO on 2026-10-30.
-- [x] A pass by hand over the last changes of the console: the rail and its notch, the dialogs in
-  steps, the placeholders of the object key, the local time on the config nodes, the sign-in. On
-  the image of the end-to-end test; fixed: the expanded Run log repeated its failing count.
-- [x] Merge `feature/poc` into `main` and tag `0.1.0-rc.1`: released on 2026-10-30 as a
-  [pre-release](https://github.com/Root-101/dumpling/releases/tag/0.1.0-rc.1).
-
-## 0.1.0-rc.2
-
-- [x] The README's wordmark readable on the light theme of GitHub, the repository public with its
-  description and topics.
-
-## 0.1.0-rc.3
-
-- [x] A new version of the console shows on reload: its files are served with
-  `Cache-Control: no-cache`, so the browser revalidates them instead of keeping the old build.
-
-## 0.1.0-rc.4
-
-- [x] The image deploys on Railway: the Dockerfile has no `VOLUME` (Railway rejects it); the
-  volume is mounted where it runs (`-v`, compose or a Railway Volume on `/data`).
-
-## 0.1.0-rc.5
-
-- [x] The service opens its database on a Railway Volume: `/data` is given to `dumpling` when
-  the container starts (Railway mounts it owned by root).
-
-## 0.1.0-rc.6
-
-- [x] A config created on the canvas starts with the schedule, compression and object key of the
-  workspace: its dialog shows them instead of empty fields.
-
-## 0.1.0-rc.7
-
-- [x] A backup over TLS works in the image: the service runs with `HOME=/app`, so `pg_dump` no
-  longer fails looking for a client certificate in `/root`.
-
-## 0.1.0-rc.8
+  an unsaved canvas asks first; a rail that expands from a notch; a splash, skeletons, Not found
+  and Connection lost pages.
+- **Checked:** restore guide (`docs/restore.md`), security model (`SECURITY.md`), end-to-end test
+  in Docker, git history reviewed for secrets, every screen against the design, a manual test from
+  scratch, and a code audit (18 findings) and a security audit (10 leads), all fixed.
 
 ## 0.2.0
 
