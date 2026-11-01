@@ -420,6 +420,30 @@ void main() {
     expect(find.text('Config name'), findsOneWidget);
   });
 
+  testWidgets('Backups whose next run is due show the reload', (tester) async {
+    when(() => auth.auth).thenReturn(session());
+    // the next runs of the fixture are past: reloading, their rows say so
+    whenListen(
+      backups,
+      const Stream<BackupState>.empty(),
+      initialState: BackupLoadingInProgressState(
+        data: const BackupData.empty('production').withCanvas(backupCanvas()),
+      ),
+    );
+    RouteConfig.router.go('/workspaces/production/backups');
+    await pumpApp(tester);
+    await settle(tester);
+
+    // the status and next run of the two scheduled rows, and the summary
+    expect(find.text('Loading'), findsNWidgets(2));
+    expect(find.text('Updating…'), findsNWidgets(2));
+    expect(
+      find.textContaining('Updating…', findRichText: true),
+      findsNWidgets(3),
+    );
+    expect(find.text('Success'), findsNothing);
+  });
+
   testWidgets(
     'Sources: usage, status, a locked delete, grid, detail and the form in steps',
     (tester) async {

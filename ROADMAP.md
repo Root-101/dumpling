@@ -85,16 +85,9 @@ hand.
 
 ## 0.1.0-rc.8
 
-- [x] Source form: the connection test in step 2 (Connection), next to the fields it checks,
-  instead of in step 3 (Check & save); the TLS setting, which the test uses, moves with it.
-- [x] Destination form: the same, the connection test in step 2 (Connection) instead of in step 3
-  (Folders & check); it writes in each folder, so in step 2 it would test the root and step 3
-  the folders.
-- [x] Add the info menu in config dialog > cron. Already in design.
-- [x] Backups, "Next backup in": under a minute it stays at `1 min 0s`; it should show only the
-  seconds (`20s`).
-- [x] Selectable text where copying makes sense: log files, URLs and file paths, like the
-  key/URL of the objects stored in S3.
+- [x] Backups, "Next backup in": once due, *Updating in 3…, 2…, 1…*, a reload and *Loading* on
+  the due rows; computed with the clock of the browser.
+- [x] Deleting a workspace cancels the schedules of its backups.
 
 ## 0.2.0
 
@@ -113,7 +106,11 @@ hand.
 - Events feed (changes, connection checks) and alerts.
 - Live runs over a websocket: the service pushes each run's step, bytes and percentage as it goes,
   and the run log and its dialog update without Refresh. Until then a run in progress shows a
-  generic bar and the bytes uploaded so far, and its log appears only when it ends.
+  generic bar and the bytes uploaded so far, and its log appears only when it ends. The same
+  socket tells Backups when a scheduled run starts and ends and the next one is planned, so the
+  countdown stays local and the screen updates without the reload it does once due (which stays,
+  for a socket that is down). The token goes in its first message (a browser can't send headers on
+  a WebSocket). To design in detail when it starts.
 - Account screen; users and changing the password.
 - Hardening left by the security audit: a new admin password ends the sessions already open;
   refuse to start with short secrets (today only a warning); pin the JWT algorithm and an
@@ -121,9 +118,40 @@ hand.
   password dropped when a source's host changes; a `Content-Security-Policy` for the console.
 - Copying connections between workspaces; zstd compression.
 - More sources (MySQL, MariaDB, MongoDB) and destinations (Google Drive, SFTP, local download).
-- To weigh: publish the image (Docker Hub or `ghcr.io`, amd64 and arm64), built by CI on each
-  tag, with a `docker-compose.yml` that pulls it (`image:` instead of `build:`) and the
-  `.env.example`, so running Dumpling needs no build. The secrets stay out of the image.
+
+## Docker image
+
+To weigh: publish the image, built by CI on each tag, so running Dumpling needs no clone and no
+build. The `Dockerfile` at the root is already publishable (one image, no secrets in it, no
+`VOLUME`); what is missing is the CI, the compose and the docs.
+
+- **A release workflow** (`.github/workflows/release.yml`) on `push: tags: ['*.*.*']`, with
+  `permissions: packages: write`: `docker/setup-qemu-action`, `setup-buildx-action`,
+  `login-action` (ghcr.io with `GITHUB_TOKEN`), `metadata-action` (`type=semver,pattern={{version}}`:
+  `latest` only on versions without `-rc`) and `build-push-action` with
+  `platforms: linux/amd64,linux/arm64` and `cache-from/to: type=gha`. It runs the tests first
+  (`needs:` a check job, or reuse `ci.yml`): a pushed tag publishes at once.
+- **`docker-compose.yml` pulls it:** `image: ghcr.io/root-101/dumpling:<version>` instead of
+  `build:`, so the compose and `.env.example` are all a user needs. The `build:` moves to a
+  `docker-compose.override.yml` or stays in the README (`docker build`).
+- **Docs:** "Run it" in the README starts with `docker run ghcr.io/...`; Railway, "Deploy from
+  image".
+- **Registry:** `ghcr.io` first (no extra secret, linked to the repo and its releases). Docker Hub
+  is easier to find but needs a token as a secret and rate-limits anonymous pulls; both at once is
+  a second login and a second line in `images:`.
+- **`PG_VERSION`:** a build arg, so each published image carries one `pg_dump`. Publish with 18
+  only: a newer `pg_dump` dumps older servers. Catch: a plain SQL dump of `pg_dump` 18 can carry
+  statements (`SET transaction_timeout`) that fail when restored into an older server. Tags per
+  version (`0.1.0-pg16`, a matrix) only if someone asks.
+- **arm64:** QEMU is slow, worst on the Flutter web build. `FROM --platform=$BUILDPLATFORM
+  debian:trixie-slim AS console` builds it once, natively (its output is JS, the same for every
+  arch). The Dart stage does compile per arch: QEMU (slow, works), or `ubuntu-24.04-arm` runners
+  (free on public repos) and a merged manifest. Start with QEMU.
+- **Gotchas:** on ghcr.io the package is born private (make it public after the first push); the
+  image name is lowercase (`root-101`, not `Root-101`).
+- **Check first:** that `dart build cli` builds for arm64 under QEMU with the build hook of
+  sqlite3, the likeliest to break: `docker buildx build --platform linux/arm64 .` locally, before
+  writing the workflow.
 
 ## After 1.0
 

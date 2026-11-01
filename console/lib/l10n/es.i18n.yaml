@@ -596,6 +596,8 @@ backups:
   nextBackup: 'Próximo respaldo'
   nextBackupIn: 'Próximo respaldo en'
   nothingScheduled: 'Nada programado'
+  updatingIn: 'Actualizando en {seconds}…'
+  updating: 'Actualizando…'
   search: 'Buscar respaldos'
   columnStatus: 'Estado'
   columnSource: 'Origen'

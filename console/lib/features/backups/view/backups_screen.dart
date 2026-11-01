@@ -284,7 +284,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
           onTick: () => _reloadOnceDue(at),
           builder: (_) => DetailStat(
             t.nextBackupIn,
-            at == null ? '—' : _until(at),
+            at == null ? '—' : _dueText(at) ?? _until(at),
             next == null ? t.nothingScheduled : next.source.name,
           ),
         ),
@@ -302,6 +302,24 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
     if (DateTime.now().isBefore(at.add(const Duration(seconds: 3)))) return;
     _reloadedFor = at;
     _reload();
+  }
+
+  /// Whether the list is reloading for [at], a next run already due: its row
+  /// shows it, the rest reload without a sign
+  bool _updating(DateTime? at) =>
+      at != null &&
+      cubit.state is BackupLoadingInProgressState &&
+      !DateTime.now().isBefore(at);
+
+  /// Once [at] is due: `Updating in 3…`, `2…`, `1…` until the list reloads,
+  /// and `Updating…` while it does; null before it is due (and after, if the
+  /// reload still has it due: then `0 s`)
+  String? _dueText(DateTime at) {
+    final late = DateTime.now().difference(at);
+    if (late.isNegative) return null;
+    if (_updating(at)) return app.intl.backups.updating;
+    final left = 3 - late.inSeconds;
+    return left > 0 ? app.intl.backups.updatingIn(seconds: left) : null;
   }
 
   /// `11 h 45 min`, `3 min 10 s`, and under a minute only the seconds
@@ -552,7 +570,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
     final open = _open.contains(c.id);
     final running = health == BackupHealth.running;
     return [
-      _StatusChip(health: health),
+      _StatusChip(health: health, updating: _updating(next)),
       Row(
         children: [
           TypeBadge(look: backup.source.look),
@@ -672,7 +690,10 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
               ),
             ),
             _EverySecond(
-              builder: (_) => Text(t.inTime(time: _until(next)), style: small),
+              builder: (_) => Text(
+                _dueText(next) ?? t.inTime(time: _until(next)),
+                style: small,
+              ),
             ),
           ],
         ),
@@ -744,11 +765,16 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
 class _StatusChip extends StatelessWidget {
   final BackupHealth health;
 
-  const _StatusChip({required this.health});
+  /// The list reloads for its next run, already due
+  final bool updating;
+
+  const _StatusChip({required this.health, this.updating = false});
 
   @override
   Widget build(BuildContext context) {
-    final color = BackupsScreen.colorOf(health);
+    final color = updating
+        ? app.colors.status.running
+        : BackupsScreen.colorOf(health);
     return Container(
       height: 26,
       padding: const EdgeInsets.symmetric(horizontal: 9),
@@ -760,7 +786,7 @@ class _StatusChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         spacing: 6,
         children: [
-          if (health == BackupHealth.running)
+          if (updating || health == BackupHealth.running)
             RunProgressRing(size: 12, color: color)
           else
             Container(
@@ -770,7 +796,10 @@ class _StatusChip extends StatelessWidget {
             ),
           Flexible(
             child: Text(
-              BackupsScreen.labelOf(health),
+              // short: the column is narrow
+              updating
+                  ? app.intl.common.loading
+                  : BackupsScreen.labelOf(health),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(

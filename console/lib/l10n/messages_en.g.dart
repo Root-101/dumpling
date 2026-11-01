@@ -1477,6 +1477,12 @@ class AppMessages$backups$en {
   /// en: 'Nothing scheduled'
   String get nothingScheduled => 'Nothing scheduled';
 
+  /// en: 'Updating in {seconds: int}…'
+  String updatingIn({required int seconds}) => 'Updating in ${seconds}…';
+
+  /// en: 'Updating…'
+  String get updating => 'Updating…';
+
   /// en: 'Search backups'
   String get search => 'Search backups';
 
@@ -2988,6 +2994,10 @@ extension on AppMessages {
           'backups.nextBackup' => 'Next backup',
           'backups.nextBackupIn' => 'Next backup in',
           'backups.nothingScheduled' => 'Nothing scheduled',
+          'backups.updatingIn' => ({
+            required int seconds,
+          }) => 'Updating in ${seconds}…',
+          'backups.updating' => 'Updating…',
           'backups.search' => 'Search backups',
           'backups.columnStatus' => 'Status',
           'backups.columnSource' => 'Source',

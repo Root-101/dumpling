@@ -596,6 +596,8 @@ backups:
   nextBackup: 'Next backup'
   nextBackupIn: 'Next backup in'
   nothingScheduled: 'Nothing scheduled'
+  updatingIn: 'Updating in {seconds: int}…'
+  updating: 'Updating…'
   search: 'Search backups'
   columnStatus: 'Status'
   columnSource: 'Source'

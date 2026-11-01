@@ -1127,6 +1127,10 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   @override
   String get nothingScheduled => 'Nada programado';
   @override
+  String updatingIn({required Object seconds}) => 'Actualizando en ${seconds}…';
+  @override
+  String get updating => 'Actualizando…';
+  @override
   String get search => 'Buscar respaldos';
   @override
   String get columnStatus => 'Estado';
@@ -2469,6 +2473,10 @@ extension on AppMessagesEs {
           'backups.nextBackup' => 'Próximo respaldo',
           'backups.nextBackupIn' => 'Próximo respaldo en',
           'backups.nothingScheduled' => 'Nada programado',
+          'backups.updatingIn' => ({
+            required Object seconds,
+          }) => 'Actualizando en ${seconds}…',
+          'backups.updating' => 'Actualizando…',
           'backups.search' => 'Buscar respaldos',
           'backups.columnStatus' => 'Estado',
           'backups.columnSource' => 'Origen',

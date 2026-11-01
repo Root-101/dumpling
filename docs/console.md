@@ -154,8 +154,11 @@ Until its first config, a guide in three steps: add a source, add a destination,
 
 Where a workspace opens. At the top, its health: how many backups are healthy, how many fail or are
 paused, and when the next one runs, counting down second by second (only the seconds in its last
-minute; once it is due, the list reloads with its run and the next one). Below, every config with its source and destination, schedule, last run
-(when, result, size, or the error under the date) and next run, with **Run now** on each row.
+minute). Once it is due it says *Updating in 3…, 2…, 1…* and the list reloads with its run and the
+next one: meanwhile the due rows show *Loading* as their status and *Updating…* as their next run,
+the rest reload without a sign. The countdown is the browser's clock against the service's next run.
+Below, every config with its source and destination, schedule, last run (when, result, size, or the
+error under the date) and next run, with **Run now** on each row.
 
 |                                                     |                                                 |
 |-----------------------------------------------------|-------------------------------------------------|

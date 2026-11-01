@@ -8,7 +8,8 @@
   and in the last step each new folder (*Check n folders*) before saving.
 - The cron of a config has an ⓘ, as in the design: its five fields, some examples and the syntax.
 - Backups: *Next backup in* counts down every second and shows only the seconds in its last minute
-  (it stayed at `1 min 0 s`); once the backup is due, the list reloads with its run and the next one.
+  (it stayed at `1 min 0 s`). Once the backup is due it says *Updating in 3…, 2…, 1…* and the list
+  reloads with its run and the next one; meanwhile the due rows show *Loading*.
 - Where a file went, the log and the error of a run, the connection values of a source or
   destination and the error of a failed check can be selected and copied.
 
