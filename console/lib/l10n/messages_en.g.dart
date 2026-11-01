@@ -2000,6 +2000,21 @@ class AppMessages$canvas$inspector$en {
   String get placeholdersOther =>
       'Any other text in braces is written as it is.';
 
+  /// en: 'How to read a cron expression'
+  String get cronInfo => 'How to read a cron expression';
+
+  /// en: 'Five fields separated by spaces, always in UTC.'
+  String get cronInfoIntro => 'Five fields separated by spaces, always in UTC.';
+
+  late final AppMessages$canvas$inspector$cronField$en cronField =
+      AppMessages$canvas$inspector$cronField$en._(_root);
+  late final AppMessages$canvas$inspector$cronExample$en cronExample =
+      AppMessages$canvas$inspector$cronExample$en._(_root);
+
+  /// en: '* means every value, */n every n, a-b a range and a,b a list.'
+  String get cronInfoSyntax =>
+      '* means every value, */n every n, a-b a range and a,b a list.';
+
   /// en: 'Connect a destination to choose where it goes.'
   String get connectDestination =>
       'Connect a destination to choose where it goes.';
@@ -2171,6 +2186,54 @@ class AppMessages$canvas$inspector$placeholderHelp$en {
   /// en: 'Id of the run, different every time. Only written where you put it: without it, two backups with the same key overwrite each other.'
   String get runId =>
       'Id of the run, different every time. Only written where you put it: without it, two backups with the same key overwrite each other.';
+}
+
+// Path: canvas.inspector.cronField
+class AppMessages$canvas$inspector$cronField$en {
+  AppMessages$canvas$inspector$cronField$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'minute (0–59)'
+  String get minute => 'minute (0–59)';
+
+  /// en: 'hour (0–23)'
+  String get hour => 'hour (0–23)';
+
+  /// en: 'day of month (1–31)'
+  String get day => 'day of month (1–31)';
+
+  /// en: 'month (1–12)'
+  String get month => 'month (1–12)';
+
+  /// en: 'day of week (0–6, Sunday = 0)'
+  String get weekday => 'day of week (0–6, Sunday = 0)';
+}
+
+// Path: canvas.inspector.cronExample
+class AppMessages$canvas$inspector$cronExample$en {
+  AppMessages$canvas$inspector$cronExample$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Every hour, on the hour'
+  String get hourly => 'Every hour, on the hour';
+
+  /// en: 'Every 15 minutes'
+  String get quarter => 'Every 15 minutes';
+
+  /// en: 'Every day at 02:00'
+  String get daily => 'Every day at 02:00';
+
+  /// en: 'Sundays at 03:00'
+  String get sundays => 'Sundays at 03:00';
+
+  /// en: 'The 1st of each month at 01:30'
+  String get monthly => 'The 1st of each month at 01:30';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -2791,6 +2854,23 @@ extension on AppMessages {
           'canvas.inspector.placeholderHelp.runId' => 'Id of the run, different every time. Only written where you put it: without it, two backups with the same key overwrite each other.',
           'canvas.inspector.placeholdersOther' =>
             'Any other text in braces is written as it is.',
+          'canvas.inspector.cronInfo' => 'How to read a cron expression',
+          'canvas.inspector.cronInfoIntro' =>
+            'Five fields separated by spaces, always in UTC.',
+          'canvas.inspector.cronField.minute' => 'minute (0–59)',
+          'canvas.inspector.cronField.hour' => 'hour (0–23)',
+          'canvas.inspector.cronField.day' => 'day of month (1–31)',
+          'canvas.inspector.cronField.month' => 'month (1–12)',
+          'canvas.inspector.cronField.weekday' =>
+            'day of week (0–6, Sunday = 0)',
+          'canvas.inspector.cronExample.hourly' => 'Every hour, on the hour',
+          'canvas.inspector.cronExample.quarter' => 'Every 15 minutes',
+          'canvas.inspector.cronExample.daily' => 'Every day at 02:00',
+          'canvas.inspector.cronExample.sundays' => 'Sundays at 03:00',
+          'canvas.inspector.cronExample.monthly' =>
+            'The 1st of each month at 01:30',
+          'canvas.inspector.cronInfoSyntax' =>
+            '* means every value, */n every n, a-b a range and a,b a list.',
           'canvas.inspector.connectDestination' =>
             'Connect a destination to choose where it goes.',
           'canvas.inspector.relativeToFolder' => ({
@@ -2870,6 +2950,9 @@ extension on AppMessages {
           'runs.day' => ({required String date}) => '${date} (UTC)',
           'runs.succeeded' => ({required int n}) => '${n} succeeded',
           'runs.failedCount' => ({required int n}) => '${n} failed',
+          _ => null,
+        } ??
+        switch (path) {
           'runs.savedIn' => ({
             required String size,
             required String duration,
@@ -2892,9 +2975,6 @@ extension on AppMessages {
           'runs.resultSuccess' => 'Backup saved',
           'runs.resultFailed' => 'The backup failed',
           'runs.resultRunning' => 'Running. Refresh to see how far it got.',
-          _ => null,
-        } ??
-        switch (path) {
           'backups.title' => 'Backups',
           'backups.description' =>
             'Every backup in this workspace, its last run and the next one.',

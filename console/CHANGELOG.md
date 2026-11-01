@@ -6,6 +6,7 @@
   type; the connection test is in the second, next to the fields it checks (with TLS, for a
   source), and *Next* waits for a test that connects. A destination tests its bucket root there,
   and in the last step each new folder (*Check n folders*) before saving.
+- The cron of a config has an ⓘ, as in the design: its five fields, some examples and the syntax.
 
 ## 0.1.0-rc.7
 

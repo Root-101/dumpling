@@ -90,7 +90,11 @@ hand.
 - [x] Destination form: the same, the connection test in step 2 (Connection) instead of in step 3
   (Folders & check); it writes in each folder, so in step 2 it would test the root and step 3
   the folders.
-- [ ] Add the info menu in config dialog > cron. Already in design.
+- [x] Add the info menu in config dialog > cron. Already in design.
+- [ ] Backups, "Next backup in": under a minute it stays at `1 min 0s`; it should show only the
+  seconds (`20s`).
+- [ ] Selectable text where copying makes sense: log files, URLs and file paths, like the
+  key/URL of the objects stored in S3.
 
 ## 0.2.0
 

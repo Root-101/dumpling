@@ -1515,6 +1515,20 @@ class AppMessages$canvas$inspector$es
   String get placeholdersOther =>
       'Cualquier otro texto entre llaves se escribe tal cual.';
   @override
+  String get cronInfo => 'Cómo leer una expresión cron';
+  @override
+  String get cronInfoIntro =>
+      'Cinco campos separados por espacios, siempre en UTC.';
+  @override
+  late final AppMessages$canvas$inspector$cronField$es cronField =
+      AppMessages$canvas$inspector$cronField$es._(_root);
+  @override
+  late final AppMessages$canvas$inspector$cronExample$es cronExample =
+      AppMessages$canvas$inspector$cronExample$es._(_root);
+  @override
+  String get cronInfoSyntax =>
+      '* es cualquier valor, */n cada n, a-b un rango y a,b una lista.';
+  @override
   String get connectDestination =>
       'Conecta un destino para elegir dónde se guarda.';
   @override
@@ -1650,6 +1664,46 @@ class AppMessages$canvas$inspector$placeholderHelp$es
   @override
   String get runId =>
       'Id de la ejecución, distinto cada vez. Solo se escribe donde lo pongas: sin él, dos backups con la misma clave se sobrescriben.';
+}
+
+// Path: canvas.inspector.cronField
+class AppMessages$canvas$inspector$cronField$es
+    implements AppMessages$canvas$inspector$cronField$en {
+  AppMessages$canvas$inspector$cronField$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get minute => 'minuto (0–59)';
+  @override
+  String get hour => 'hora (0–23)';
+  @override
+  String get day => 'día del mes (1–31)';
+  @override
+  String get month => 'mes (1–12)';
+  @override
+  String get weekday => 'día de la semana (0–6, domingo = 0)';
+}
+
+// Path: canvas.inspector.cronExample
+class AppMessages$canvas$inspector$cronExample$es
+    implements AppMessages$canvas$inspector$cronExample$en {
+  AppMessages$canvas$inspector$cronExample$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get hourly => 'Cada hora, en punto';
+  @override
+  String get quarter => 'Cada 15 minutos';
+  @override
+  String get daily => 'Todos los días a las 02:00';
+  @override
+  String get sundays => 'Los domingos a las 03:00';
+  @override
+  String get monthly => 'El día 1 de cada mes a las 01:30';
 }
 
 /// The flat map containing all translations for locale <es>.
@@ -2283,6 +2337,23 @@ extension on AppMessagesEs {
           'canvas.inspector.placeholderHelp.runId' => 'Id de la ejecución, distinto cada vez. Solo se escribe donde lo pongas: sin él, dos backups con la misma clave se sobrescriben.',
           'canvas.inspector.placeholdersOther' =>
             'Cualquier otro texto entre llaves se escribe tal cual.',
+          'canvas.inspector.cronInfo' => 'Cómo leer una expresión cron',
+          'canvas.inspector.cronInfoIntro' =>
+            'Cinco campos separados por espacios, siempre en UTC.',
+          'canvas.inspector.cronField.minute' => 'minuto (0–59)',
+          'canvas.inspector.cronField.hour' => 'hora (0–23)',
+          'canvas.inspector.cronField.day' => 'día del mes (1–31)',
+          'canvas.inspector.cronField.month' => 'mes (1–12)',
+          'canvas.inspector.cronField.weekday' =>
+            'día de la semana (0–6, domingo = 0)',
+          'canvas.inspector.cronExample.hourly' => 'Cada hora, en punto',
+          'canvas.inspector.cronExample.quarter' => 'Cada 15 minutos',
+          'canvas.inspector.cronExample.daily' => 'Todos los días a las 02:00',
+          'canvas.inspector.cronExample.sundays' => 'Los domingos a las 03:00',
+          'canvas.inspector.cronExample.monthly' =>
+            'El día 1 de cada mes a las 01:30',
+          'canvas.inspector.cronInfoSyntax' =>
+            '* es cualquier valor, */n cada n, a-b un rango y a,b una lista.',
           'canvas.inspector.connectDestination' =>
             'Conecta un destino para elegir dónde se guarda.',
           'canvas.inspector.relativeToFolder' => ({
@@ -2361,6 +2432,9 @@ extension on AppMessagesEs {
           'runs.day' => ({required String date}) => '${date} (UTC)',
           'runs.succeeded' => ({required int n}) => '${n} correctas',
           'runs.failedCount' => ({required int n}) => '${n} fallidas',
+          _ => null,
+        } ??
+        switch (path) {
           'runs.savedIn' => ({
             required String size,
             required String duration,
@@ -2383,9 +2457,6 @@ extension on AppMessagesEs {
           'runs.resultSuccess' => 'Respaldo guardado',
           'runs.resultFailed' => 'El respaldo falló',
           'runs.resultRunning' => 'En curso. Actualiza para ver cuánto avanzó.',
-          _ => null,
-        } ??
-        switch (path) {
           'backups.title' => 'Respaldos',
           'backups.description' => 'Cada respaldo de este workspace, su última ejecución y la siguiente.',
           'backups.openEditor' => 'Abrir editor',
