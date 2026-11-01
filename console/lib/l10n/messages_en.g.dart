@@ -81,8 +81,8 @@ class AppMessages$app$en {
   /// en: 'Need more space'
   String get needMoreSpace => 'Need more space';
 
-  /// en: 'Loading your backups…'
-  String get splashText => 'Loading your backups…';
+  /// en: 'Connecting to the backup service…'
+  String get splashText => 'Connecting to the backup service…';
 
   /// en: 'Dumpling v{version: String}'
   String version({required String version}) => 'Dumpling v${version}';
@@ -570,6 +570,12 @@ class AppMessages$connections$en {
   /// en: 'Test connection'
   String get test => 'Test connection';
 
+  /// en: 'Test again'
+  String get testAgain => 'Test again';
+
+  /// en: 'Test the connection to continue'
+  String get testToContinue => 'Test the connection to continue';
+
   /// en: 'Connected'
   String get connected => 'Connected';
 
@@ -682,14 +688,14 @@ class AppMessages$sources$en {
   /// en: 'Connect what you want to back up.'
   String get formDescription => 'Connect what you want to back up.';
 
-  /// en: 'Type'
-  String get stepType => 'Type';
+  /// en: 'Name & type'
+  String get stepType => 'Name & type';
 
   /// en: 'Connection'
   String get stepConnection => 'Connection';
 
-  /// en: 'Check & save'
-  String get stepCheck => 'Check & save';
+  /// en: 'Options & save'
+  String get stepOptions => 'Options & save';
 
   /// en: 'What do you want to back up?'
   String get typeTitle => 'What do you want to back up?';
@@ -697,14 +703,18 @@ class AppMessages$sources$en {
   /// en: 'How should Dumpling connect?'
   String get connectionTitle => 'How should Dumpling connect?';
 
-  /// en: 'Check and save'
-  String get checkTitle => 'Check and save';
+  /// en: 'Options and save'
+  String get optionsTitle => 'Options and save';
 
   /// en: 'Name'
   String get name => 'Name';
 
   /// en: 'e.g. orders-db'
   String get nameHint => 'e.g. orders-db';
+
+  /// en: 'How it appears on the canvas, in Backups and in Run logs.'
+  String get nameHelp =>
+      'How it appears on the canvas, in Backups and in Run logs.';
 
   /// en: '{name: String}-copy'
   String copyName({required String name}) => '${name}-copy';
@@ -784,8 +794,15 @@ class AppMessages$sources$en {
   String get sslDisableWarning =>
       'Without TLS the password and the data travel in clear: only for a database on a network you trust.';
 
-  /// en: 'Check the connection before saving the source.'
-  String get testIdle => 'Check the connection before saving the source.';
+  /// en: 'Checks the login, the access to the database and the TLS setting above.'
+  String get testIdle =>
+      'Checks the login, the access to the database and the TLS setting above.';
+
+  /// en: '✓ Tested · TLS on'
+  String get testedTlsOn => '✓ Tested · TLS on';
+
+  /// en: '✓ Tested · TLS off'
+  String get testedTlsOff => '✓ Tested · TLS off';
 
   /// en: 'Connected as {user: String}'
   String connectedAs({required String user}) => 'Connected as ${user}';
@@ -982,14 +999,14 @@ class AppMessages$destinations$en {
   /// en: 'Choose where backups are written.'
   String get formDescription => 'Choose where backups are written.';
 
-  /// en: 'Type'
-  String get stepType => 'Type';
+  /// en: 'Name & type'
+  String get stepType => 'Name & type';
 
   /// en: 'Connection'
   String get stepConnection => 'Connection';
 
-  /// en: 'Folders & check'
-  String get stepFolders => 'Folders & check';
+  /// en: 'Folders'
+  String get stepFolders => 'Folders';
 
   /// en: 'Where should backups go?'
   String get typeTitle => 'Where should backups go?';
@@ -997,14 +1014,17 @@ class AppMessages$destinations$en {
   /// en: 'How should Dumpling connect?'
   String get connectionTitle => 'How should Dumpling connect?';
 
-  /// en: 'Folders and connection check'
-  String get foldersTitle => 'Folders and connection check';
+  /// en: 'Folders'
+  String get foldersTitle => 'Folders';
 
   /// en: 'Name'
   String get name => 'Name';
 
   /// en: 'e.g. bucket-backups'
   String get nameHint => 'e.g. bucket-backups';
+
+  /// en: 'How it appears on the canvas and in Backups.'
+  String get nameHelp => 'How it appears on the canvas and in Backups.';
 
   /// en: '{name: String}-copy'
   String copyName({required String name}) => '${name}-copy';
@@ -1044,17 +1064,62 @@ class AppMessages$destinations$en {
   String get permissions =>
       'Permissions needed: s3:PutObject and s3:AbortMultipartUpload.';
 
-  /// en: 'Folders are optional. With at least one folder, each folder is a connection point on the canvas and the bucket root is not. With no folders, the bucket root is the only connection point.'
+  /// en: 'Optional. Each folder is a connection point on the canvas; with folders, the bucket root is not one. Each new folder is checked before saving.'
   String get foldersHelp =>
-      'Folders are optional. With at least one folder, each folder is a connection point on the canvas and the bucket root is not. With no folders, the bucket root is the only connection point.';
+      'Optional. Each folder is a connection point on the canvas; with folders, the bucket root is not one. Each new folder is checked before saving.';
 
-  /// en: 'Dumpling starts and aborts a multipart upload in each folder; nothing is left in the bucket.'
+  /// en: 'Dumpling starts and aborts a multipart upload at the bucket root; nothing is left in the bucket.'
   String get testIdle =>
-      'Dumpling starts and aborts a multipart upload in each folder; nothing is left in the bucket.';
+      'Dumpling starts and aborts a multipart upload at the bucket root; nothing is left in the bucket.';
+
+  /// en: '(one) {{n} folder hasn't been checked yet.} (other) {{n} folders haven't been checked yet.}'
+  String foldersPending({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} folder hasn\'t been checked yet.',
+        other: '${n} folders haven\'t been checked yet.',
+      );
+
+  /// en: 'All folders are writable.'
+  String get foldersAllChecked => 'All folders are writable.';
+
+  /// en: 'The bucket root was checked in step 2.'
+  String get foldersRootCheckedShort =>
+      'The bucket root was checked in step 2.';
+
+  /// en: 'Writable'
+  String get folderWritable => 'Writable';
+
+  /// en: 'Not checked'
+  String get folderNotChecked => 'Not checked';
+
+  /// en: 'No folders: backups go to the bucket root, already checked in step 2.'
+  String get foldersRootChecked =>
+      'No folders: backups go to the bucket root, already checked in step 2.';
+
+  /// en: '(one) {Check {n} folder} (other) {Check {n} folders}'
+  String checkFolders({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: 'Check ${n} folder',
+        other: 'Check ${n} folders',
+      );
+
+  /// en: 'Check again'
+  String get checkAgain => 'Check again';
+
+  /// en: 'Checking…'
+  String get checkingFolders => 'Checking…';
+
+  /// en: 'Check the new folders to save'
+  String get checkFoldersToSave => 'Check the new folders to save';
 
   /// en: '{bucket: String} · nothing was left in the bucket'
   String connectedSub({required String bucket}) =>
       '${bucket} · nothing was left in the bucket';
+
+  /// en: '✓ Root writable'
+  String get rootWritable => '✓ Root writable';
 
   /// en: 'Create destination'
   String get createButton => 'Create destination';
@@ -1411,6 +1476,12 @@ class AppMessages$backups$en {
 
   /// en: 'Nothing scheduled'
   String get nothingScheduled => 'Nothing scheduled';
+
+  /// en: 'Updating in {seconds: int}…'
+  String updatingIn({required int seconds}) => 'Updating in ${seconds}…';
+
+  /// en: 'Updating…'
+  String get updating => 'Updating…';
 
   /// en: 'Search backups'
   String get search => 'Search backups';
@@ -1935,6 +2006,21 @@ class AppMessages$canvas$inspector$en {
   String get placeholdersOther =>
       'Any other text in braces is written as it is.';
 
+  /// en: 'How to read a cron expression'
+  String get cronInfo => 'How to read a cron expression';
+
+  /// en: 'Five fields separated by spaces, always in UTC.'
+  String get cronInfoIntro => 'Five fields separated by spaces, always in UTC.';
+
+  late final AppMessages$canvas$inspector$cronField$en cronField =
+      AppMessages$canvas$inspector$cronField$en._(_root);
+  late final AppMessages$canvas$inspector$cronExample$en cronExample =
+      AppMessages$canvas$inspector$cronExample$en._(_root);
+
+  /// en: '* means every value, */n every n, a-b a range and a,b a list.'
+  String get cronInfoSyntax =>
+      '* means every value, */n every n, a-b a range and a,b a list.';
+
   /// en: 'Connect a destination to choose where it goes.'
   String get connectDestination =>
       'Connect a destination to choose where it goes.';
@@ -2108,6 +2194,54 @@ class AppMessages$canvas$inspector$placeholderHelp$en {
       'Id of the run, different every time. Only written where you put it: without it, two backups with the same key overwrite each other.';
 }
 
+// Path: canvas.inspector.cronField
+class AppMessages$canvas$inspector$cronField$en {
+  AppMessages$canvas$inspector$cronField$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'minute (0–59)'
+  String get minute => 'minute (0–59)';
+
+  /// en: 'hour (0–23)'
+  String get hour => 'hour (0–23)';
+
+  /// en: 'day of month (1–31)'
+  String get day => 'day of month (1–31)';
+
+  /// en: 'month (1–12)'
+  String get month => 'month (1–12)';
+
+  /// en: 'day of week (0–6, Sunday = 0)'
+  String get weekday => 'day of week (0–6, Sunday = 0)';
+}
+
+// Path: canvas.inspector.cronExample
+class AppMessages$canvas$inspector$cronExample$en {
+  AppMessages$canvas$inspector$cronExample$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Every hour, on the hour'
+  String get hourly => 'Every hour, on the hour';
+
+  /// en: 'Every 15 minutes'
+  String get quarter => 'Every 15 minutes';
+
+  /// en: 'Every day at 02:00'
+  String get daily => 'Every day at 02:00';
+
+  /// en: 'Sundays at 03:00'
+  String get sundays => 'Sundays at 03:00';
+
+  /// en: 'The 1st of each month at 01:30'
+  String get monthly => 'The 1st of each month at 01:30';
+}
+
 /// The flat map containing all translations for locale <en>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -2118,7 +2252,7 @@ extension on AppMessages {
     return switch (path) {
           'app.name' => 'Dumpling',
           'app.needMoreSpace' => 'Need more space',
-          'app.splashText' => 'Loading your backups…',
+          'app.splashText' => 'Connecting to the backup service…',
           'app.version' => ({
             required String version,
           }) => 'Dumpling v${version}',
@@ -2326,6 +2460,8 @@ extension on AppMessages {
           'connections.notTestedYet' => 'Not tested yet',
           'connections.testing' => 'Testing…',
           'connections.test' => 'Test connection',
+          'connections.testAgain' => 'Test again',
+          'connections.testToContinue' => 'Test the connection to continue',
           'connections.connected' => 'Connected',
           'connections.incompatible' => 'Incompatible',
           'connections.incompatibleTitle' =>
@@ -2374,14 +2510,16 @@ extension on AppMessages {
           'sources.newTitle' => 'New source',
           'sources.editTitle' => 'Edit source',
           'sources.formDescription' => 'Connect what you want to back up.',
-          'sources.stepType' => 'Type',
+          'sources.stepType' => 'Name & type',
           'sources.stepConnection' => 'Connection',
-          'sources.stepCheck' => 'Check & save',
+          'sources.stepOptions' => 'Options & save',
           'sources.typeTitle' => 'What do you want to back up?',
           'sources.connectionTitle' => 'How should Dumpling connect?',
-          'sources.checkTitle' => 'Check and save',
+          'sources.optionsTitle' => 'Options and save',
           'sources.name' => 'Name',
           'sources.nameHint' => 'e.g. orders-db',
+          'sources.nameHelp' =>
+            'How it appears on the canvas, in Backups and in Run logs.',
           'sources.copyName' => ({required String name}) => '${name}-copy',
           'sources.connectWith' => 'Connect with',
           'sources.byFields' => 'Fields',
@@ -2408,8 +2546,9 @@ extension on AppMessages {
           'sources.sslDisable' => 'Off',
           'sources.sslRequireHelp' => 'The connection is encrypted (the certificate is not checked) and the password never travels in clear.',
           'sources.sslDisableWarning' => 'Without TLS the password and the data travel in clear: only for a database on a network you trust.',
-          'sources.testIdle' =>
-            'Check the connection before saving the source.',
+          'sources.testIdle' => 'Checks the login, the access to the database and the TLS setting above.',
+          'sources.testedTlsOn' => '✓ Tested · TLS on',
+          'sources.testedTlsOff' => '✓ Tested · TLS off',
           'sources.connectedAs' => ({
             required String user,
           }) => 'Connected as ${user}',
@@ -2517,14 +2656,16 @@ extension on AppMessages {
           'destinations.newTitle' => 'New destination',
           'destinations.editTitle' => 'Edit destination',
           'destinations.formDescription' => 'Choose where backups are written.',
-          'destinations.stepType' => 'Type',
+          'destinations.stepType' => 'Name & type',
           'destinations.stepConnection' => 'Connection',
-          'destinations.stepFolders' => 'Folders & check',
+          'destinations.stepFolders' => 'Folders',
           'destinations.typeTitle' => 'Where should backups go?',
           'destinations.connectionTitle' => 'How should Dumpling connect?',
-          'destinations.foldersTitle' => 'Folders and connection check',
+          'destinations.foldersTitle' => 'Folders',
           'destinations.name' => 'Name',
           'destinations.nameHint' => 'e.g. bucket-backups',
+          'destinations.nameHelp' =>
+            'How it appears on the canvas and in Backups.',
           'destinations.copyName' => ({required String name}) => '${name}-copy',
           'destinations.endpoint' => 'Endpoint',
           'destinations.endpointHelp' => 'Any S3-compatible URL. For AWS use https://s3.<region>.amazonaws.com.',
@@ -2540,11 +2681,37 @@ extension on AppMessages {
             'Needed by most self-hosted S3 servers.',
           'destinations.permissions' =>
             'Permissions needed: s3:PutObject and s3:AbortMultipartUpload.',
-          'destinations.foldersHelp' => 'Folders are optional. With at least one folder, each folder is a connection point on the canvas and the bucket root is not. With no folders, the bucket root is the only connection point.',
-          'destinations.testIdle' => 'Dumpling starts and aborts a multipart upload in each folder; nothing is left in the bucket.',
+          'destinations.foldersHelp' => 'Optional. Each folder is a connection point on the canvas; with folders, the bucket root is not one. Each new folder is checked before saving.',
+          'destinations.testIdle' => 'Dumpling starts and aborts a multipart upload at the bucket root; nothing is left in the bucket.',
+          'destinations.foldersPending' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} folder hasn\'t been checked yet.',
+                  other: '${n} folders haven\'t been checked yet.',
+                ),
+          'destinations.foldersAllChecked' => 'All folders are writable.',
+          'destinations.foldersRootCheckedShort' =>
+            'The bucket root was checked in step 2.',
+          'destinations.folderWritable' => 'Writable',
+          'destinations.folderNotChecked' => 'Not checked',
+          'destinations.foldersRootChecked' => 'No folders: backups go to the bucket root, already checked in step 2.',
+          'destinations.checkFolders' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: 'Check ${n} folder',
+                  other: 'Check ${n} folders',
+                ),
+          'destinations.checkAgain' => 'Check again',
+          'destinations.checkingFolders' => 'Checking…',
+          'destinations.checkFoldersToSave' => 'Check the new folders to save',
           'destinations.connectedSub' => ({
             required String bucket,
           }) => '${bucket} · nothing was left in the bucket',
+          'destinations.rootWritable' => '✓ Root writable',
           'destinations.createButton' => 'Create destination',
           'destinations.created' => ({
             required String name,
@@ -2693,6 +2860,23 @@ extension on AppMessages {
           'canvas.inspector.placeholderHelp.runId' => 'Id of the run, different every time. Only written where you put it: without it, two backups with the same key overwrite each other.',
           'canvas.inspector.placeholdersOther' =>
             'Any other text in braces is written as it is.',
+          'canvas.inspector.cronInfo' => 'How to read a cron expression',
+          'canvas.inspector.cronInfoIntro' =>
+            'Five fields separated by spaces, always in UTC.',
+          'canvas.inspector.cronField.minute' => 'minute (0–59)',
+          'canvas.inspector.cronField.hour' => 'hour (0–23)',
+          'canvas.inspector.cronField.day' => 'day of month (1–31)',
+          'canvas.inspector.cronField.month' => 'month (1–12)',
+          'canvas.inspector.cronField.weekday' =>
+            'day of week (0–6, Sunday = 0)',
+          'canvas.inspector.cronExample.hourly' => 'Every hour, on the hour',
+          'canvas.inspector.cronExample.quarter' => 'Every 15 minutes',
+          'canvas.inspector.cronExample.daily' => 'Every day at 02:00',
+          'canvas.inspector.cronExample.sundays' => 'Sundays at 03:00',
+          'canvas.inspector.cronExample.monthly' =>
+            'The 1st of each month at 01:30',
+          'canvas.inspector.cronInfoSyntax' =>
+            '* means every value, */n every n, a-b a range and a,b a list.',
           'canvas.inspector.connectDestination' =>
             'Connect a destination to choose where it goes.',
           'canvas.inspector.relativeToFolder' => ({
@@ -2772,6 +2956,9 @@ extension on AppMessages {
           'runs.day' => ({required String date}) => '${date} (UTC)',
           'runs.succeeded' => ({required int n}) => '${n} succeeded',
           'runs.failedCount' => ({required int n}) => '${n} failed',
+          _ => null,
+        } ??
+        switch (path) {
           'runs.savedIn' => ({
             required String size,
             required String duration,
@@ -2807,14 +2994,15 @@ extension on AppMessages {
           'backups.nextBackup' => 'Next backup',
           'backups.nextBackupIn' => 'Next backup in',
           'backups.nothingScheduled' => 'Nothing scheduled',
+          'backups.updatingIn' => ({
+            required int seconds,
+          }) => 'Updating in ${seconds}…',
+          'backups.updating' => 'Updating…',
           'backups.search' => 'Search backups',
           'backups.columnStatus' => 'Status',
           'backups.columnSource' => 'Source',
           'backups.columnDestination' => 'Destination',
           'backups.columnSchedule' => 'Schedule',
-          _ => null,
-        } ??
-        switch (path) {
           'backups.columnLastRun' => 'Last backup',
           'backups.columnNextRun' => 'Next backup',
           'backups.allSources' => 'All sources',

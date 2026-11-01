@@ -5,8 +5,11 @@ class WorkspaceService {
   static const int maxSlugLength = 48;
 
   final WorkspaceTableRepo repo;
+  final ConfigTableRepo configs;
 
-  WorkspaceService() : repo = WorkspaceTableRepo(di.find());
+  WorkspaceService()
+    : repo = WorkspaceTableRepo(di.find()),
+      configs = ConfigTableRepo(di.find());
 
   Future<List<WorkspaceModel>> list() async {
     final stats = await repo.stats();
@@ -45,7 +48,10 @@ class WorkspaceService {
   /// the buckets stay where they are.
   Future<void> delete(String slug) async {
     await get(slug);
+    // The cascade deletes the configs; their tasks go with them
+    final ids = [for (final c in await configs.getAll(slug)) c.id];
     await repo.delete(slug);
+    ids.forEach(di.find<BackupEngine>().unschedule);
     logger.info('Workspace deleted', fields: {'workspace': slug});
   }
 

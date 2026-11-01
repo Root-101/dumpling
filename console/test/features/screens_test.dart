@@ -138,6 +138,8 @@ void main() {
     );
     when(() => backups.load(any())).thenAnswer((_) async {});
     when(() => backups.loadRecent(any())).thenAnswer((_) async {});
+    // a next run already due reloads the list
+    when(() => backups.reload()).thenAnswer((_) async {});
     registerFallbackValue(run('fallback'));
     when(() => runs.detail(any(), workspace: any(named: 'workspace')))
         .thenAnswer((_) async {});
@@ -162,7 +164,19 @@ void main() {
     // the dialogs and drawers make their own cubit with them
     app.di.put<WorkspaceRepo>(workspaceRepo);
     registerFallbackValue(const WorkspaceDraft(name: 'fallback'));
-    app.di.put<SourceRepo>(_MockSourceRepo());
+    registerFallbackValue(const SourceDraft(name: 'fallback', type: 'pg'));
+    registerFallbackValue(const DestinationDraft(name: 'fallback', type: 's3'));
+    // every test of a form connects
+    final sourceRepo = _MockSourceRepo();
+    when(
+      () => sourceRepo.testUnsaved(
+        workspace: any(named: 'workspace'),
+        draft: any(named: 'draft'),
+        sourceId: any(named: 'sourceId'),
+        token: any(named: 'token'),
+      ),
+    ).thenAnswer((_) async => check(CheckStatus.connected));
+    app.di.put<SourceRepo>(sourceRepo);
     app.di.put<DestinationRepo>(_MockDestinationRepo());
   });
 
@@ -406,6 +420,30 @@ void main() {
     expect(find.text('Config name'), findsOneWidget);
   });
 
+  testWidgets('Backups whose next run is due show the reload', (tester) async {
+    when(() => auth.auth).thenReturn(session());
+    // the next runs of the fixture are past: reloading, their rows say so
+    whenListen(
+      backups,
+      const Stream<BackupState>.empty(),
+      initialState: BackupLoadingInProgressState(
+        data: const BackupData.empty('production').withCanvas(backupCanvas()),
+      ),
+    );
+    RouteConfig.router.go('/workspaces/production/backups');
+    await pumpApp(tester);
+    await settle(tester);
+
+    // the status and next run of the two scheduled rows, and the summary
+    expect(find.text('Loading'), findsNWidgets(2));
+    expect(find.text('Updating…'), findsNWidgets(2));
+    expect(
+      find.textContaining('Updating…', findRichText: true),
+      findsNWidgets(3),
+    );
+    expect(find.text('Success'), findsNothing);
+  });
+
   testWidgets(
     'Sources: usage, status, a locked delete, grid, detail and the form in steps',
     (tester) async {
@@ -450,7 +488,7 @@ void main() {
       await tester.tap(find.byTooltip('Close').last);
       await settle(tester);
 
-      // the form: type, connection, then the summary with the test
+      // the form: name and type, connection with its test, then the summary
       await tester.tap(find.widgetWithText(PrimaryButton, 'New source'));
       await settle(tester);
       expect(find.text('Connect what you want to back up.'), findsOneWidget);
@@ -458,20 +496,7 @@ void main() {
       expect(find.text('Soon'), findsOneWidget);
       await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));
       await settle(tester);
-      expect(find.text('Step 2 of 3'), findsOneWidget);
-
-      await tester.tap(find.text('Connection URL').first);
-      await settle(tester);
-      await tester.enterText(
-        find.ancestor(
-          of: find.text('postgresql://user:password@host:5432/database'),
-          matching: find.byType(TextField),
-        ),
-        'postgresql://dumpling_backup:pw@pg-billing.internal/billing',
-      );
-      await settle(tester);
-      expect(find.text('pg-billing.internal'), findsOneWidget);
-      expect(find.text('5432'), findsOneWidget);
+      expect(find.text('Required'), findsOneWidget); // the name, first
 
       final name = find.ancestor(
         of: find.text('e.g. orders-db'),
@@ -487,10 +512,36 @@ void main() {
       expect(find.text(longName), findsNothing);
       await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));
       await settle(tester);
-      expect(find.text('Check and save'), findsOneWidget);
+      expect(find.text('billing-db'), findsOneWidget); // in the summary
+      // Next waits for a test that connects
+      expect(find.text('Test the connection to continue'), findsOneWidget);
+      expect(find.text('Not tested yet'), findsOneWidget);
+      expect(find.text('TLS'), findsOneWidget);
+
+      await tester.tap(find.text('Connection URL').first);
+      await settle(tester);
+      await tester.enterText(
+        find.ancestor(
+          of: find.text('postgresql://user:password@host:5432/database'),
+          matching: find.byType(TextField),
+        ),
+        'postgresql://dumpling_backup:pw@pg-billing.internal/billing',
+      );
+      await settle(tester);
+      expect(find.text('pg-billing.internal'), findsOneWidget);
+      expect(find.text('5432'), findsOneWidget);
+      await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));
+      await settle(tester);
+      expect(find.text('Test the connection to continue'), findsOneWidget);
+      await tester.ensureVisible(find.text('Test connection'));
+      await tester.tap(find.text('Test connection'));
+      await settle(tester);
+      expect(find.text('Test the connection to continue'), findsNothing);
+      await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));
+      await settle(tester);
+      expect(find.text('Options and save'), findsOneWidget);
       expect(find.text('pg-billing.internal:5432'), findsOneWidget);
       expect(find.text('Dump format'), findsOneWidget);
-      expect(find.text('Not tested yet'), findsOneWidget);
     },
   );
 
@@ -566,21 +617,83 @@ void main() {
     await tester.tap(find.byTooltip('Close').last);
     await settle(tester);
 
-    // the form: type, then the connection, which Next checks
+    // the form: name and type, then the connection, which its test checks
     await tester.tap(find.widgetWithText(PrimaryButton, 'New destination'));
     await settle(tester);
     expect(find.text('Where should backups go?'), findsOneWidget);
     expect(find.text('Step 1 of 3'), findsOneWidget);
+    await tester.enterText(
+      find.ancestor(
+        of: find.text('e.g. bucket-backups'),
+        matching: find.byType(TextField),
+      ),
+      'backups',
+    );
     await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));
     await settle(tester);
     expect(find.text('Path-style addressing'), findsOneWidget);
-    await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));
+    expect(find.text('Test the connection to continue'), findsOneWidget);
+    await tester.ensureVisible(find.text('Test connection'));
+    await tester.tap(find.text('Test connection'));
     await settle(tester);
-    expect(find.text('Step 2 of 3'), findsOneWidget);
     expect(find.text('Required'), findsWidgets);
     await tester.tap(find.widgetWithText(PrimaryButton, 'Back'));
     await settle(tester);
     expect(find.text('Where should backups go?'), findsOneWidget);
+
+    // the root tested in step 2, each new folder in step 3
+    final repo = app.di.find<DestinationRepo>() as _MockDestinationRepo;
+    final tested = <List<String>>[];
+    when(
+      () => repo.testUnsaved(
+        workspace: any(named: 'workspace'),
+        draft: any(named: 'draft'),
+        destinationId: any(named: 'destinationId'),
+        token: any(named: 'token'),
+      ),
+    ).thenAnswer((call) async {
+      tested.add((call.namedArguments[#draft] as DestinationDraft).folders);
+      return check(CheckStatus.connected);
+    });
+    await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));
+    await settle(tester);
+    final fields = find.descendant(
+      of: find.byType(StepsDialogTemplate),
+      matching: find.byType(TextField),
+    );
+    for (final (index, value) in {
+      0: 'https://s3.us-east-1.amazonaws.com',
+      1: 'bucket',
+      3: 'AKIA',
+      4: 'secret',
+    }.entries.map((e) => (e.key, e.value))) {
+      await tester.enterText(fields.at(index), value);
+    }
+    await settle(tester);
+    await tester.ensureVisible(find.text('Test connection'));
+    await tester.tap(find.text('Test connection'));
+    await settle(tester);
+    await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));
+    await settle(tester);
+    expect(
+      find.text(
+        'No folders: backups go to the bucket root, already checked in step 2.',
+      ),
+      findsOneWidget,
+    );
+    await tester.enterText(find.byType(TextField).last, 'daily');
+    await tester.tap(find.widgetWithText(PrimaryButton, 'Add folder'));
+    await settle(tester);
+    expect(find.text("1 folder hasn't been checked yet."), findsOneWidget);
+    expect(find.text('Check the new folders to save'), findsOneWidget);
+    await tester.tap(find.widgetWithText(PrimaryButton, 'Check 1 folder'));
+    await settle(tester);
+    expect(find.text('All folders are writable.'), findsOneWidget);
+    expect(find.text('Step 3 of 3'), findsOneWidget);
+    expect(tested, [
+      <String>[],
+      ['daily'],
+    ]);
   });
 
   testWidgets('Run log: the runs by day, and a run opens in a dialog', (

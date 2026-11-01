@@ -225,5 +225,5 @@ class ApiController {
   );
 
   static FilterConfig _permission(String permission) =>
-      FilterConfig([AuthFilter(rules: hasPermission(permission))]);
+      FilterConfig([AuthFilter(rule: hasPermission(permission))]);
 }

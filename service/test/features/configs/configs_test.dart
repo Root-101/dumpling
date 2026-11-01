@@ -4,6 +4,7 @@ library;
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:service/dumpling.dart';
 import 'package:test/test.dart';
 
 import '../../support/test_server.dart';
@@ -243,16 +244,19 @@ void main() {
         },
       });
       final target = await createdId('$base/destinations', destination([]));
-      await createdId('$base/configs', {
+      final id = await createdId('$base/configs', {
         'name': 'c',
         'source_id': source,
         'destination_id': target,
       });
+      final scheduler = di.find<Scheduler>();
+      expect(scheduler[BackupEngine.taskName(id)], isNotNull);
       final deleted = await http.delete(
         server.url(base),
         headers: server.auth(),
       );
       expect(deleted.statusCode, 204);
+      expect(scheduler[BackupEngine.taskName(id)], isNull);
     });
   });
 }

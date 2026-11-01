@@ -2,7 +2,8 @@
 
 A tour of the Dumpling web console: each screen, its URL and what it does. The images come from the
 design of the console ([`design/`](design/README.md)); the console itself speaks English and
-Spanish (the flag in the rail).
+Spanish (the flag in the rail): the language of the browser at first when it is Spanish, English
+otherwise, and the one chosen with the flag after that.
 
 The service serves the console on its own port (`http://localhost:8080` by default), on the same
 origin as the API. The console uses hash URLs, so the screen and its state go after `#`:
@@ -116,7 +117,9 @@ up: each source connects and `pg_dump` can dump it, each destination takes a wri
 Opened from its node (its pencil, or double click), in three steps:
 
 1. **Name & schedule:** the name, the frequency (hourly, daily, weekly or a cron, in UTC) and
-   whether it is enabled, with the next run it gives. An empty cron takes the workspace's.
+   whether it is enabled, with the next run it gives. An empty cron takes the workspace's; the ⓘ
+   by it shows how to read one: its five fields, some examples and the syntax (`*`, `*/n`, `a-b`,
+   `a,b`).
 2. **Output:** the **object key**, the name of the file in the bucket, relative to the folder it
    writes to and without extension (the service adds `.dump` or `.sql`, and `.gz` with gzip). The
    info icon next to it lists its placeholders: `{yyyy}`, `{MM}`, `{dd}`, `{HH}`, `{mm}` (the start
@@ -151,15 +154,20 @@ Until its first config, a guide in three steps: add a source, add a destination,
 **URL:** `/#/workspaces/{slug}/backups`; a run of a backup: `/#/workspaces/{slug}/backups/runs/{id}`
 
 Where a workspace opens. At the top, its health: how many backups are healthy, how many fail or are
-paused, and when the next one runs. Below, every config with its source and destination, schedule, last run
-(when, result, size, or the error under the date) and next run, with **Run now** on each row.
+paused, and when the next one runs, counting down second by second (only the seconds in its last
+minute). Once it is due it says *Updating in 3…, 2…, 1…* and the list reloads with its run and the
+next one: meanwhile the due rows show *Loading* as their status and *Updating…* as their next run,
+the rest reload without a sign. The countdown is the browser's clock against the service's next run.
+Below, every config with its source and destination, schedule, last run (when, result, size, or the
+error under the date) and next run, with **Run now** on each row.
 
 |                                                     |                                                 |
 |-----------------------------------------------------|-------------------------------------------------|
 | ![Filters](design/screens/11-backups-filters.png)   | ![Sort](design/screens/12-backups-sort.png)     |
 | **Filters** by status, source and destination, and a search | **Sort** by the last backup (newest or oldest first), the next one or the source name |
 
-A row opens its recent runs; each one opens its details, the same as in the run log.
+A row opens its recent runs, with where each file went (selectable, to copy it); each one opens
+its details, the same as in the run log.
 
 ![Recent runs](design/screens/13-backups-run.png)
 
@@ -186,15 +194,17 @@ connection check.
 
 A dialog in three steps, as tall as the screen; each step starts with what the steps before chose.
 
-1. **Type:** PostgreSQL. MySQL, MariaDB, MongoDB and Redis are shown as *Soon*.
-2. **Connection:** a name, and the connection by fields (host, port, database, user, password) or by
-   a connection URL, which the console reads to show its parts (`sslmode` in it is understood). The
-   password is stored encrypted and never shown again; editing, an empty password keeps the saved
-   one. Use a read-only role.
-3. **Check & save:** the summary, the dump format (custom, `pg_dump -Fc`, or plain SQL), TLS (on by
-   default; off only for a database on a network you trust, with a warning) and the connection
-   test, which the service runs, never the browser, so the database can be in its internal network.
-   It also says whether the `pg_dump` of the image can dump that server's version.
+1. **Name & type:** a name, as the canvas, Backups and the run log show it, and the type:
+   PostgreSQL. MySQL, MariaDB, MongoDB and Redis are shown as *Soon*.
+2. **Connection:** the connection by fields (host, port, database, user, password) or by
+   a connection URL, which the console reads to show its parts (`sslmode` in it is understood), TLS
+   (on by default; off only for a database on a network you trust, with a warning) and the
+   connection test, next to the fields it checks. The service runs it, never the browser, so the
+   database can be in its internal network, and it also says whether the `pg_dump` of the image can
+   dump that server's version. *Next* waits for a test that connects. The password is stored
+   encrypted and never shown again; editing, an empty password keeps the saved one. Use a read-only
+   role.
+3. **Options & save:** the summary and the dump format (custom, `pg_dump -Fc`, or plain SQL).
 
 ### Its options
 
@@ -242,15 +252,17 @@ is the only one. A folder a backup writes to can't be deleted.
 
 The same dialog in three steps:
 
-1. **Type:** S3, any S3-compatible storage. Google Drive, Azure Blob, Dropbox and SFTP are shown as
-   *Soon*.
-2. **Connection:** a name, the endpoint (for AWS, `https://s3.<region>.amazonaws.com`), the bucket,
+1. **Name & type:** a name, as the canvas and Backups show it, and the type: S3, any S3-compatible
+   storage. Google Drive, Azure Blob, Dropbox and SFTP are shown as *Soon*.
+2. **Connection:** the endpoint (for AWS, `https://s3.<region>.amazonaws.com`), the bucket,
    the region (optional), the access key and its secret key (stored encrypted, never shown again),
    and path-style addressing, needed by most self-hosted S3 servers. The key needs `s3:PutObject`
-   and `s3:AbortMultipartUpload`.
-3. **Folders & check:** the summary, the folders (optional) and the connection test, which starts
-   a multipart upload in each folder and aborts it, so it proves the key, the bucket and the write
-   permission there without leaving anything behind.
+   and `s3:AbortMultipartUpload`. The connection test starts a multipart upload at the bucket root
+   and aborts it, so it proves the key, the bucket and the write permission without leaving
+   anything behind; *Next* waits for one that connects.
+3. **Folders:** the summary and the folders (optional). Each new folder is tested the same way
+   (*Check n folders*) before saving; editing, the saved ones count as tested until the connection
+   changes.
 
 ### Its options
 
@@ -293,8 +305,10 @@ so a filtered log can be shared:
 ![Run log, filters](design/screens/27-run-log-filters.png)
 
 A run opens its details: its steps (connect, dump, upload), where the file went, its size and
-duration, the error of a failed one, and its log, which can be copied. The password of a source
-never appears in it.
+duration, the error of a failed one, and its log, which can be copied whole or in part: where the
+file went, the error and the log are selectable, as are the connection values (host, endpoint,
+bucket) in the detail of a source or destination and the error of a failed connection check. The
+password of a source never appears in it.
 
 ![A failed run](design/screens/28-run-failed.png)
 
@@ -310,6 +324,11 @@ without their log lines) and [`GET /api/workspaces/{slug}/runs/{id}`](api.md#a-r
 its log.
 
 ## Loading and errors
+
+While it starts, the console shows its mark, its name and a bar, in the language of the browser
+(Spanish or English):
+
+![Starting](design/screens/36-splash.png)
 
 Each screen loads as a skeleton of itself:
 

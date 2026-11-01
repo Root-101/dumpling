@@ -64,10 +64,10 @@ class LanguageCubit extends Cubit<LanguageState> {
     WidgetsBinding.instance.reassembleApplication();
   }
 
+  /// The language chosen before; none yet, the browser's when it is one of
+  /// ours (`es-MX` → `es`), and otherwise English
   LanguageModel _resolve({required String? key}) {
-    if (key == null) {
-      return defaultLanguage;
-    }
+    key ??= WidgetsBinding.instance.platformDispatcher.locale.languageCode;
     return languages.firstWhere(
       (element) => element.key == key,
       orElse: () => defaultLanguage,
