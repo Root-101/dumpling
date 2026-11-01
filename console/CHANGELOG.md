@@ -7,6 +7,10 @@
   source), and *Next* waits for a test that connects. A destination tests its bucket root there,
   and in the last step each new folder (*Check n folders*) before saving.
 - The cron of a config has an ⓘ, as in the design: its five fields, some examples and the syntax.
+- Backups: *Next backup in* counts down every second and shows only the seconds in its last minute
+  (it stayed at `1 min 0 s`); once the backup is due, the list reloads with its run and the next one.
+- Where a file went, the log and the error of a run, the connection values of a source or
+  destination and the error of a failed check can be selected and copied.
 
 ## 0.1.0-rc.7
 

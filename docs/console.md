@@ -153,7 +153,8 @@ Until its first config, a guide in three steps: add a source, add a destination,
 **URL:** `/#/workspaces/{slug}/backups`; a run of a backup: `/#/workspaces/{slug}/backups/runs/{id}`
 
 Where a workspace opens. At the top, its health: how many backups are healthy, how many fail or are
-paused, and when the next one runs. Below, every config with its source and destination, schedule, last run
+paused, and when the next one runs, counting down second by second (only the seconds in its last
+minute; once it is due, the list reloads with its run and the next one). Below, every config with its source and destination, schedule, last run
 (when, result, size, or the error under the date) and next run, with **Run now** on each row.
 
 |                                                     |                                                 |
@@ -161,7 +162,8 @@ paused, and when the next one runs. Below, every config with its source and dest
 | ![Filters](design/screens/11-backups-filters.png)   | ![Sort](design/screens/12-backups-sort.png)     |
 | **Filters** by status, source and destination, and a search | **Sort** by the last backup (newest or oldest first), the next one or the source name |
 
-A row opens its recent runs; each one opens its details, the same as in the run log.
+A row opens its recent runs, with where each file went (selectable, to copy it); each one opens
+its details, the same as in the run log.
 
 ![Recent runs](design/screens/13-backups-run.png)
 
@@ -299,8 +301,10 @@ so a filtered log can be shared:
 ![Run log, filters](design/screens/27-run-log-filters.png)
 
 A run opens its details: its steps (connect, dump, upload), where the file went, its size and
-duration, the error of a failed one, and its log, which can be copied. The password of a source
-never appears in it.
+duration, the error of a failed one, and its log, which can be copied whole or in part: where the
+file went, the error and the log are selectable, as are the connection values (host, endpoint,
+bucket) in the detail of a source or destination and the error of a failed connection check. The
+password of a source never appears in it.
 
 ![A failed run](design/screens/28-run-failed.png)
 

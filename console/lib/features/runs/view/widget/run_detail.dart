@@ -179,21 +179,27 @@ class _Result extends StatelessWidget {
     final (String title, Widget body) = switch (run.status) {
       RunStatus.success => (
         t.resultSuccess,
-        Text(
-          run.location ?? '—',
-          style: AppText.mono.copyWith(
-            fontSize: 12,
-            color: colors.text.primary,
+        // selectable: to copy where the file went
+        SelectionArea(
+          child: Text(
+            run.location ?? '—',
+            style: AppText.mono.copyWith(
+              fontSize: 12,
+              color: colors.text.primary,
+            ),
           ),
         ),
       ),
       RunStatus.failed => (
         t.resultFailed,
-        Text(
-          run.error ?? '—',
-          style: AppText.mono.copyWith(
-            fontSize: 12,
-            color: colors.text.primary,
+        // selectable: to copy the error
+        SelectionArea(
+          child: Text(
+            run.error ?? '—',
+            style: AppText.mono.copyWith(
+              fontSize: 12,
+              color: colors.text.primary,
+            ),
           ),
         ),
       ),
@@ -519,29 +525,35 @@ class _Log extends StatelessWidget {
                   run.status == RunStatus.running ? t.logWhenDone : t.noLog,
                   style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
                 )
-              : Text.rich(
-                  TextSpan(
-                    children: [
-                      for (final (i, line) in log.indexed)
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text:
-                                  '${app.dateFormatter.clock.format(line.at.toUtc())}  ',
-                              style: mono.copyWith(color: colors.surface.wire),
-                            ),
-                            TextSpan(
-                              text: line.message,
-                              style: line.message.startsWith('Failed:')
-                                  ? mono.copyWith(color: colors.status.error)
-                                  : null,
-                            ),
-                            if (i < log.length - 1) const TextSpan(text: '\n'),
-                          ],
-                        ),
-                    ],
+              // selectable, to copy a few lines (the button copies it all)
+              : SelectionArea(
+                  child: Text.rich(
+                    TextSpan(
+                      children: [
+                        for (final (i, line) in log.indexed)
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text:
+                                    '${app.dateFormatter.clock.format(line.at.toUtc())}  ',
+                                style: mono.copyWith(
+                                  color: colors.surface.wire,
+                                ),
+                              ),
+                              TextSpan(
+                                text: line.message,
+                                style: line.message.startsWith('Failed:')
+                                    ? mono.copyWith(color: colors.status.error)
+                                    : null,
+                              ),
+                              if (i < log.length - 1)
+                                const TextSpan(text: '\n'),
+                            ],
+                          ),
+                      ],
+                    ),
+                    style: mono.copyWith(height: 20 / 12),
                   ),
-                  style: mono.copyWith(height: 20 / 12),
                 ),
         ),
       ],

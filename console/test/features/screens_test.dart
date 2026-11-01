@@ -138,6 +138,8 @@ void main() {
     );
     when(() => backups.load(any())).thenAnswer((_) async {});
     when(() => backups.loadRecent(any())).thenAnswer((_) async {});
+    // a next run already due reloads the list
+    when(() => backups.reload()).thenAnswer((_) async {});
     registerFallbackValue(run('fallback'));
     when(() => runs.detail(any(), workspace: any(named: 'workspace')))
         .thenAnswer((_) async {});

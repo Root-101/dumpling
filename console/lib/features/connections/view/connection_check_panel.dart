@@ -61,9 +61,15 @@ class ConnectionCheckPanel extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: Text(
-                    detail,
-                    style: TextStyle(fontSize: 13, color: colors.neutral.grey3),
+                  // selectable: a failed check shows the server's error
+                  child: SelectionArea(
+                    child: Text(
+                      detail,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: colors.neutral.grey3,
+                      ),
+                    ),
                   ),
                 ),
                 if (check != null && !testing)
