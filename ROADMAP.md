@@ -98,6 +98,11 @@ hand.
 
 ## 0.2.0
 
+- Benchmarks, with a script that repeats them and its results in the repo (like feather-io's): the
+  memory of the service at rest, during a backup and after it, and how long a backup takes, by
+  size of the database. Measured by hand on 0.1.0-rc.8 (the image, PostgreSQL 18 and feather-io,
+  a 200 MB database): ~15 MiB at rest, ~100 MiB at the peak of a backup (the 16 MiB parts it
+  uploads, plus ~11 MiB of `pg_dump`) and ~66 MiB minutes after it, memory Dart doesn't give back.
 - Retention (needs ListObjects and DeleteObject in the destination).
 - Destination detail with what is in the bucket (ListObjects): used space, objects, and the files,
   size and last write of each folder; and the history of its connection checks, not only the last.
