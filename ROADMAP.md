@@ -87,8 +87,9 @@ build. The `Dockerfile` at the root is already publishable (one image, no secret
 - **`docker-compose.yml` pulls it:** `image: ghcr.io/root-101/dumpling:<version>` instead of
   `build:`, so the compose and `.env.example` are all a user needs. The `build:` moves to a
   `docker-compose.override.yml` or stays in the README (`docker build`).
-- **Docs:** "Run it" in the README starts with `docker run ghcr.io/...`; Railway, "Deploy from
-  image".
+- **Docs:** "Run it" in the README starts with `docker run ghcr.io/...`.
+- **The Railway template** deploys the published image instead of building the repo (the build
+  takes minutes, the Flutter SDK included); its `PG_VERSION` variable goes away with the build.
 - **Registry:** `ghcr.io` first (no extra secret, linked to the repo and its releases). Docker Hub
   is easier to find but needs a token as a secret and rate-limits anonymous pulls; both at once is
   a second login and a second line in `images:`.
