@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- No changes in the console: the README drops its Railway section, now that the
+  [Railway template](https://railway.com/deploy/dumpling) explains the deploy in its overview.
+
 ## 0.1.0
 
 - The source and destination forms follow the design: the name goes in the first step, with the
