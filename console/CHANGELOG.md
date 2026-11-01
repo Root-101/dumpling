@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0-rc.8
+
+- The source and destination forms follow the design: the name goes in the first step, with the
+  type; the connection test is in the second, next to the fields it checks (with TLS, for a
+  source), and *Next* waits for a test that connects. A destination tests its bucket root there,
+  and in the last step each new folder (*Check n folders*) before saving.
+
 ## 0.1.0-rc.7
 
 - No changes in the console: the version follows the service's.

@@ -186,15 +186,17 @@ connection check.
 
 A dialog in three steps, as tall as the screen; each step starts with what the steps before chose.
 
-1. **Type:** PostgreSQL. MySQL, MariaDB, MongoDB and Redis are shown as *Soon*.
-2. **Connection:** a name, and the connection by fields (host, port, database, user, password) or by
-   a connection URL, which the console reads to show its parts (`sslmode` in it is understood). The
-   password is stored encrypted and never shown again; editing, an empty password keeps the saved
-   one. Use a read-only role.
-3. **Check & save:** the summary, the dump format (custom, `pg_dump -Fc`, or plain SQL), TLS (on by
-   default; off only for a database on a network you trust, with a warning) and the connection
-   test, which the service runs, never the browser, so the database can be in its internal network.
-   It also says whether the `pg_dump` of the image can dump that server's version.
+1. **Name & type:** a name, as the canvas, Backups and the run log show it, and the type:
+   PostgreSQL. MySQL, MariaDB, MongoDB and Redis are shown as *Soon*.
+2. **Connection:** the connection by fields (host, port, database, user, password) or by
+   a connection URL, which the console reads to show its parts (`sslmode` in it is understood), TLS
+   (on by default; off only for a database on a network you trust, with a warning) and the
+   connection test, next to the fields it checks. The service runs it, never the browser, so the
+   database can be in its internal network, and it also says whether the `pg_dump` of the image can
+   dump that server's version. *Next* waits for a test that connects. The password is stored
+   encrypted and never shown again; editing, an empty password keeps the saved one. Use a read-only
+   role.
+3. **Options & save:** the summary and the dump format (custom, `pg_dump -Fc`, or plain SQL).
 
 ### Its options
 
@@ -242,15 +244,17 @@ is the only one. A folder a backup writes to can't be deleted.
 
 The same dialog in three steps:
 
-1. **Type:** S3, any S3-compatible storage. Google Drive, Azure Blob, Dropbox and SFTP are shown as
-   *Soon*.
-2. **Connection:** a name, the endpoint (for AWS, `https://s3.<region>.amazonaws.com`), the bucket,
+1. **Name & type:** a name, as the canvas and Backups show it, and the type: S3, any S3-compatible
+   storage. Google Drive, Azure Blob, Dropbox and SFTP are shown as *Soon*.
+2. **Connection:** the endpoint (for AWS, `https://s3.<region>.amazonaws.com`), the bucket,
    the region (optional), the access key and its secret key (stored encrypted, never shown again),
    and path-style addressing, needed by most self-hosted S3 servers. The key needs `s3:PutObject`
-   and `s3:AbortMultipartUpload`.
-3. **Folders & check:** the summary, the folders (optional) and the connection test, which starts
-   a multipart upload in each folder and aborts it, so it proves the key, the bucket and the write
-   permission there without leaving anything behind.
+   and `s3:AbortMultipartUpload`. The connection test starts a multipart upload at the bucket root
+   and aborts it, so it proves the key, the bucket and the write permission without leaving
+   anything behind; *Next* waits for one that connects.
+3. **Folders:** the summary and the folders (optional). Each new folder is tested the same way
+   (*Check n folders*) before saving; editing, the saved ones count as tested until the connection
+   changes.
 
 ### Its options
 

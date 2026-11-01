@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0-rc.8
+
+- Winter 1.0.0, its first stable version (it was on `1.0.0-rc.6`).
+
 ## 0.1.0-rc.7
 
 - A backup over TLS works again in the image: since rc.5 the service ran as `dumpling` with the

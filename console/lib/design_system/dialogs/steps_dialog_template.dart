@@ -33,6 +33,10 @@ class StepsDialogTemplate extends StatelessWidget {
   /// Set apart on the left of the footer, e.g. *Delete config*
   final Widget? footerLeading;
 
+  /// What *Next* is waiting for, e.g. *Test the connection to continue*; it
+  /// takes the place of *Step n of m*, in the warning color
+  final String? blockedNote;
+
   /// Id of its [LoadingOverlay], to cover it while the form saves
   final Object? loadingId;
   final double width;
@@ -50,6 +54,7 @@ class StepsDialogTemplate extends StatelessWidget {
     required this.child,
     required this.actions,
     this.footerLeading,
+    this.blockedNote,
     this.loadingId,
     this.width = 720,
     this.fullHeight = false,
@@ -141,11 +146,20 @@ class StepsDialogTemplate extends StatelessWidget {
               ?footerLeading,
               Expanded(
                 child: Text(
-                  app.intl.common.stepOf(n: current + 1, total: steps.length),
+                  blockedNote ??
+                      app.intl.common.stepOf(
+                        n: current + 1,
+                        total: steps.length,
+                      ),
                   textAlign: footerLeading == null
                       ? TextAlign.start
                       : TextAlign.end,
-                  style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: blockedNote == null
+                        ? colors.neutral.grey4
+                        : app.colors.status.warning,
+                  ),
                 ),
               ),
               ...actions,
@@ -266,7 +280,7 @@ class StepsDialogTemplate extends StatelessWidget {
 /// What the steps before chose, at the top of a step: [items] in a row of
 /// [slots] cells, the ones left over empty so each keeps its width
 class StepSummary extends StatelessWidget {
-  final List<(String label, String value)> items;
+  final List<SummaryCell> items;
   final int slots;
 
   const StepSummary(this.items, {this.slots = 3, super.key});
@@ -277,22 +291,25 @@ class StepSummary extends StatelessWidget {
       spacing: app.dimensions.padding.sm,
       children: [
         for (var i = 0; i < slots; i++)
-          Expanded(
-            child: i < items.length
-                ? SummaryCell(label: items[i].$1, value: items[i].$2)
-                : const SizedBox(),
-          ),
+          Expanded(child: i < items.length ? items[i] : const SizedBox()),
       ],
     );
   }
 }
 
-/// A value with its label, in monospace: *Host · pg-billing.internal*
+/// A value with its label, in monospace: *Host · pg-billing.internal*;
+/// [color] for a value that is a state, like *✓ Tested*
 class SummaryCell extends StatelessWidget {
   final String label;
   final String value;
+  final Color? color;
 
-  const SummaryCell({required this.label, required this.value, super.key});
+  const SummaryCell({
+    required this.label,
+    required this.value,
+    this.color,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -319,7 +336,7 @@ class SummaryCell extends StatelessWidget {
             style: TextStyle(
               fontFamily: AppText.monoFamily,
               fontSize: 12,
-              color: app.colors.neutral.grey2,
+              color: color ?? app.colors.neutral.grey2,
             ),
           ),
         ],

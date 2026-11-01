@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Dialog of a source in three steps: its type, how it connects (fields or a
-/// connection URL), and a summary with the dump format and the test of that
-/// connection (always run by the service). Once saved it reloads the list
+/// connection URL, TLS) with the test of that connection (always run by the
+/// service), and a summary with the dump format. Once saved it reloads the list
 class SourceForm extends StatefulWidget {
   /// Opens the dialog with its own [SourceFormCubit]. With [source] it edits
   /// it; with [duplicate] too it creates a copy (the password isn't copied:
@@ -65,7 +65,7 @@ class _SourceFormState extends State<SourceForm> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  /// 0: type, 1: connection, 2: summary, dump format and the test
+  /// 0: type, 1: connection and the test, 2: summary and dump format
   int _step = 0;
 
   late String _type;
@@ -153,9 +153,16 @@ class _SourceFormState extends State<SourceForm> {
 
   static const int _lastStep = 2;
 
+  /// The last test reached the server (a newer server or a missing `pg_dump`
+  /// still shows, but doesn't stop it from being saved)
+  bool get _connected => _check != null && _check!.status != CheckStatus.failed;
+
+  /// The connection step waits for a test that connects
+  bool get _blocked => _step == 1 && !_connected;
+
   /// *Next* checks the fields of the step on screen; on the last one it saves
   void _next() {
-    if (_busy || !_validate()) return;
+    if (_busy || !_validate() || _blocked) return;
     if (_step == _lastStep) {
       cubit.save(_draft(), tested: _check != null);
       return;
@@ -183,7 +190,8 @@ class _SourceFormState extends State<SourceForm> {
   /// A change makes the last test stale and clears the API error of [field]
   void _changed(String field) {
     setState(() {
-      _check = null;
+      // the name isn't part of the connection
+      if (field != SourceFormField.name) _check = null;
       if (_serverErrors.containsKey(field)) {
         _serverErrors = {..._serverErrors}..remove(field);
       }
@@ -216,13 +224,10 @@ class _SourceFormState extends State<SourceForm> {
                 : null;
             // back to the step of the field the service refused
             final fields = state.fieldErrors.keys;
-            if (fields.contains(SourceFormField.type)) {
+            if (fields.contains(SourceFormField.type) ||
+                fields.contains(SourceFormField.name)) {
               _step = 0;
-            } else if (fields.any(
-              (f) =>
-                  f != SourceFormField.dumpFormat &&
-                  f != SourceFormField.sslMode,
-            )) {
+            } else if (fields.any((f) => f != SourceFormField.dumpFormat)) {
               _step = 1;
             }
           });
@@ -249,9 +254,10 @@ class _SourceFormState extends State<SourceForm> {
         steps: [
           app.intl.sources.stepType,
           app.intl.sources.stepConnection,
-          app.intl.sources.stepCheck,
+          app.intl.sources.stepOptions,
         ],
         current: _step,
+        blockedNote: _blocked ? app.intl.connections.testToContinue : null,
         actions: [
           PrimaryButton.secondary(
             onPressed: _back,
@@ -265,7 +271,7 @@ class _SourceFormState extends State<SourceForm> {
                 : _editing
                 ? app.intl.common.saveChanges
                 : app.intl.sources.createButton,
-            onPressed: _next,
+            onPressed: _blocked ? null : _next,
           ),
         ],
         child: Form(
@@ -282,6 +288,22 @@ class _SourceFormState extends State<SourceForm> {
               ],
               ...switch (_step) {
                 0 => [
+                  AppFormInput(
+                    controller: _nameController,
+                    label: app.intl.sources.name,
+                    hint: app.intl.sources.nameHint,
+                    helperText: app.intl.sources.nameHelp,
+                    autofocus: !_editing,
+                    maxLength: _nameMaxLength,
+                    warningText: CanvasGeometry.longName(_nameController.text)
+                        ? app.intl.common.longName
+                        : null,
+                    errorText: _serverErrors[SourceFormField.name],
+                    validator: _required,
+                    onChange: (_) => _changed(SourceFormField.name),
+                    onSubmitted: (_) => _next(),
+                  ),
+                  app.dimensions.padding.l.gap(),
                   StepTitle(app.intl.sources.typeTitle),
                   app.dimensions.padding.m.gap(),
                   _buildTypes(),
@@ -291,15 +313,8 @@ class _SourceFormState extends State<SourceForm> {
                   const StepDivider(),
                   StepTitle(app.intl.sources.connectionTitle),
                   app.dimensions.padding.l.gap(),
-                  if (_type == SourceTypes.postgres) ..._buildPostgres(),
-                ],
-                _ => [
-                  _buildSummary(),
-                  const StepDivider(),
-                  StepTitle(app.intl.sources.checkTitle),
                   if (_type == SourceTypes.postgres) ...[
-                    app.dimensions.padding.l.gap(),
-                    ..._buildDumpFormat(),
+                    ..._buildPostgres(),
                     app.dimensions.padding.l.gap(),
                     ..._buildSslMode(),
                     app.dimensions.padding.xl.gap(),
@@ -323,6 +338,15 @@ class _SourceFormState extends State<SourceForm> {
                     ),
                   ],
                 ],
+                _ => [
+                  _buildSummary(),
+                  const StepDivider(),
+                  StepTitle(app.intl.sources.optionsTitle),
+                  if (_type == SourceTypes.postgres) ...[
+                    app.dimensions.padding.l.gap(),
+                    ..._buildDumpFormat(),
+                  ],
+                ],
               },
             ],
           ),
@@ -331,8 +355,8 @@ class _SourceFormState extends State<SourceForm> {
     );
   }
 
-  /// What the last step saves: type, name and where it connects; not [full],
-  /// only the type picked in the first step, in the first of the three cells
+  /// What the last step saves: name, host and the tested connection; not
+  /// [full], the type and name picked in the first step
   Widget _buildSummary({bool full = true}) {
     final parts = _byUrl ? _urlParts() : null;
     final host = _byUrl
@@ -340,12 +364,34 @@ class _SourceFormState extends State<SourceForm> {
         : '${_hostController.text.trim()}:'
               '${_portController.text.trim().isEmpty ? PostgresSettingsModel.defaultPort : _portController.text.trim()}';
     final name = _nameController.text.trim();
+    if (!full) {
+      return StepSummary([
+        SummaryCell(
+          label: app.intl.sources.columnType,
+          value: SourceTypeLook.labelOf(_type),
+        ),
+        SummaryCell(
+          label: app.intl.sources.name,
+          value: _nameController.text.trim().isEmpty
+              ? '—'
+              : _nameController.text.trim(),
+        ),
+      ]);
+    }
     return StepSummary([
-      (app.intl.sources.columnType, SourceTypeLook.labelOf(_type)),
-      if (full) ...[
-        (app.intl.sources.name, name.isEmpty ? '—' : name),
-        (app.intl.sources.host, host),
-      ],
+      SummaryCell(
+        label: app.intl.sources.name,
+        value: name.isEmpty ? '—' : name,
+      ),
+      SummaryCell(label: app.intl.sources.host, value: host),
+      // the last step is reached only after a test that connected
+      SummaryCell(
+        label: app.intl.connections.connection,
+        value: _sslMode == PostgresSettingsModel.sslDisable
+            ? app.intl.sources.testedTlsOff
+            : app.intl.sources.testedTlsOn,
+        color: app.colors.status.success,
+      ),
     ]);
   }
 
@@ -384,21 +430,6 @@ class _SourceFormState extends State<SourceForm> {
   List<Widget> _buildPostgres() {
     final gap = app.dimensions.padding.sm;
     return [
-      AppFormInput(
-        controller: _nameController,
-        label: app.intl.sources.name,
-        hint: app.intl.sources.nameHint,
-        autofocus: !_editing,
-        maxLength: _nameMaxLength,
-        warningText: CanvasGeometry.longName(_nameController.text)
-            ? app.intl.common.longName
-            : null,
-        errorText: _serverErrors[SourceFormField.name],
-        validator: _required,
-        onChange: (_) => _changed(SourceFormField.name),
-        onSubmitted: (_) => _next(),
-      ),
-      app.dimensions.padding.l.gap(),
       _label(app.intl.sources.connectWith),
       app.dimensions.padding.s.gap(),
       _Segmented(
@@ -702,10 +733,12 @@ class _Segmented extends StatelessWidget {
 }
 
 /// *Next*, and on the last step *Create source* / *Save changes*, disabled
-/// while it is being tested or saved
+/// while it is being tested or saved, or until the connection connects
 class _NextButton extends StatelessWidget {
   final String title;
-  final VoidCallback onPressed;
+
+  /// null: waiting for a test that connects
+  final VoidCallback? onPressed;
 
   const _NextButton({required this.title, required this.onPressed});
 

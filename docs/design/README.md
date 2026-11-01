@@ -21,9 +21,9 @@ its versions, its rules and the identity images) and **Later · 0.2.0**.
 
 ## Keeping it up to date
 
-**When a change touches what the console looks like, update the canvas in the same change, and
-before every release regenerate this export and review [`../console.md`](../console.md)** (a new
-screen, URL or action gets its section there).
+**When a change touches what the console looks like, in that same change: update the canvas,
+regenerate this export, update [`../console.md`](../console.md) and compare in the browser what was
+built with the canvas until they match** (a new screen, URL or action gets its section there).
 
 1. Download the canvas files into a folder, as the artifact serves them: `project/canvas.json`,
    `project/*.dc.html` and the uploaded assets the artboards use (the logos of the source and

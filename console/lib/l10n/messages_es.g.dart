@@ -459,6 +459,10 @@ class AppMessages$connections$es implements AppMessages$connections$en {
   @override
   String get test => 'Probar conexión';
   @override
+  String get testAgain => 'Probar de nuevo';
+  @override
+  String get testToContinue => 'Prueba la conexión para continuar';
+  @override
   String get connected => 'Conectado';
   @override
   String get incompatible => 'Incompatible';
@@ -540,21 +544,24 @@ class AppMessages$sources$es implements AppMessages$sources$en {
   @override
   String get formDescription => 'Conecta lo que quieres respaldar.';
   @override
-  String get stepType => 'Tipo';
+  String get stepType => 'Nombre y tipo';
   @override
   String get stepConnection => 'Conexión';
   @override
-  String get stepCheck => 'Revisar y guardar';
+  String get stepOptions => 'Opciones y guardar';
   @override
   String get typeTitle => '¿Qué quieres respaldar?';
   @override
   String get connectionTitle => '¿Cómo se conecta Dumpling?';
   @override
-  String get checkTitle => 'Revisa y guarda';
+  String get optionsTitle => 'Opciones y guardar';
   @override
   String get name => 'Nombre';
   @override
   String get nameHint => 'p. ej. orders-db';
+  @override
+  String get nameHelp =>
+      'Cómo aparece en el canvas, en Backups y en el registro de ejecuciones.';
   @override
   String copyName({required Object name}) => '${name}-copia';
   @override
@@ -610,7 +617,12 @@ class AppMessages$sources$es implements AppMessages$sources$en {
   String get sslDisableWarning =>
       'Sin TLS la contraseña y los datos viajan en claro: solo para una base de datos en una red de confianza.';
   @override
-  String get testIdle => 'Revisa la conexión antes de guardar el source.';
+  String get testIdle =>
+      'Revisa el usuario, el acceso a la base de datos y el TLS de arriba.';
+  @override
+  String get testedTlsOn => '✓ Probada · TLS activo';
+  @override
+  String get testedTlsOff => '✓ Probada · sin TLS';
   @override
   String connectedAs({required Object user}) => 'Conectado como ${user}';
   @override
@@ -756,21 +768,23 @@ class AppMessages$destinations$es implements AppMessages$destinations$en {
   @override
   String get formDescription => 'Elige dónde se escriben los backups.';
   @override
-  String get stepType => 'Tipo';
+  String get stepType => 'Nombre y tipo';
   @override
   String get stepConnection => 'Conexión';
   @override
-  String get stepFolders => 'Carpetas y prueba';
+  String get stepFolders => 'Carpetas';
   @override
   String get typeTitle => '¿A dónde van los backups?';
   @override
   String get connectionTitle => '¿Cómo se conecta Dumpling?';
   @override
-  String get foldersTitle => 'Carpetas y prueba de conexión';
+  String get foldersTitle => 'Carpetas';
   @override
   String get name => 'Nombre';
   @override
   String get nameHint => 'p. ej. bucket-backups';
+  @override
+  String get nameHelp => 'Cómo aparece en el canvas y en Backups.';
   @override
   String copyName({required Object name}) => '${name}-copia';
   @override
@@ -800,13 +814,47 @@ class AppMessages$destinations$es implements AppMessages$destinations$en {
       'Permisos necesarios: s3:PutObject y s3:AbortMultipartUpload.';
   @override
   String get foldersHelp =>
-      'Las carpetas son opcionales. Con al menos una, cada carpeta es un punto de conexión del canvas y la raíz del bucket no. Sin carpetas, la raíz del bucket es el único punto de conexión.';
+      'Opcionales. Cada carpeta es un punto de conexión del canvas; con carpetas, la raíz del bucket no lo es. Cada carpeta nueva se prueba antes de guardar.';
   @override
   String get testIdle =>
-      'Dumpling inicia y cancela una subida multipart en cada carpeta; no queda nada en el bucket.';
+      'Dumpling inicia y cancela una subida multipart en la raíz del bucket; no queda nada en el bucket.';
+  @override
+  String foldersPending({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: '${n} carpeta sin probar todavía.',
+        other: '${n} carpetas sin probar todavía.',
+      );
+  @override
+  String get foldersAllChecked => 'Se puede escribir en todas las carpetas.';
+  @override
+  String get foldersRootCheckedShort =>
+      'La raíz del bucket se probó en el paso 2.';
+  @override
+  String get folderWritable => 'Con escritura';
+  @override
+  String get folderNotChecked => 'Sin probar';
+  @override
+  String get foldersRootChecked =>
+      'Sin carpetas: los backups van a la raíz del bucket, ya probada en el paso 2.';
+  @override
+  String checkFolders({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: 'Probar ${n} carpeta',
+        other: 'Probar ${n} carpetas',
+      );
+  @override
+  String get checkAgain => 'Probar de nuevo';
+  @override
+  String get checkingFolders => 'Probando…';
+  @override
+  String get checkFoldersToSave => 'Prueba las carpetas nuevas para guardar';
   @override
   String connectedSub({required Object bucket}) =>
       '${bucket} · no quedó nada en el bucket';
+  @override
+  String get rootWritable => '✓ Raíz con escritura';
   @override
   String get createButton => 'Crear destination';
   @override
@@ -1826,6 +1874,8 @@ extension on AppMessagesEs {
           'connections.notTestedYet' => 'Todavía sin probar',
           'connections.testing' => 'Probando…',
           'connections.test' => 'Probar conexión',
+          'connections.testAgain' => 'Probar de nuevo',
+          'connections.testToContinue' => 'Prueba la conexión para continuar',
           'connections.connected' => 'Conectado',
           'connections.incompatible' => 'Incompatible',
           'connections.incompatibleTitle' =>
@@ -1874,14 +1924,15 @@ extension on AppMessagesEs {
           'sources.newTitle' => 'Nuevo source',
           'sources.editTitle' => 'Editar source',
           'sources.formDescription' => 'Conecta lo que quieres respaldar.',
-          'sources.stepType' => 'Tipo',
+          'sources.stepType' => 'Nombre y tipo',
           'sources.stepConnection' => 'Conexión',
-          'sources.stepCheck' => 'Revisar y guardar',
+          'sources.stepOptions' => 'Opciones y guardar',
           'sources.typeTitle' => '¿Qué quieres respaldar?',
           'sources.connectionTitle' => '¿Cómo se conecta Dumpling?',
-          'sources.checkTitle' => 'Revisa y guarda',
+          'sources.optionsTitle' => 'Opciones y guardar',
           'sources.name' => 'Nombre',
           'sources.nameHint' => 'p. ej. orders-db',
+          'sources.nameHelp' => 'Cómo aparece en el canvas, en Backups y en el registro de ejecuciones.',
           'sources.copyName' => ({required Object name}) => '${name}-copia',
           'sources.connectWith' => 'Conectar con',
           'sources.byFields' => 'Campos',
@@ -1909,8 +1960,9 @@ extension on AppMessagesEs {
           'sources.sslDisable' => 'Desactivado',
           'sources.sslRequireHelp' => 'La conexión va cifrada (sin comprobar el certificado) y la contraseña nunca viaja en claro.',
           'sources.sslDisableWarning' => 'Sin TLS la contraseña y los datos viajan en claro: solo para una base de datos en una red de confianza.',
-          'sources.testIdle' =>
-            'Revisa la conexión antes de guardar el source.',
+          'sources.testIdle' => 'Revisa el usuario, el acceso a la base de datos y el TLS de arriba.',
+          'sources.testedTlsOn' => '✓ Probada · TLS activo',
+          'sources.testedTlsOff' => '✓ Probada · sin TLS',
           'sources.connectedAs' => ({
             required Object user,
           }) => 'Conectado como ${user}',
@@ -2021,14 +2073,15 @@ extension on AppMessagesEs {
           'destinations.editTitle' => 'Editar destination',
           'destinations.formDescription' =>
             'Elige dónde se escriben los backups.',
-          'destinations.stepType' => 'Tipo',
+          'destinations.stepType' => 'Nombre y tipo',
           'destinations.stepConnection' => 'Conexión',
-          'destinations.stepFolders' => 'Carpetas y prueba',
+          'destinations.stepFolders' => 'Carpetas',
           'destinations.typeTitle' => '¿A dónde van los backups?',
           'destinations.connectionTitle' => '¿Cómo se conecta Dumpling?',
-          'destinations.foldersTitle' => 'Carpetas y prueba de conexión',
+          'destinations.foldersTitle' => 'Carpetas',
           'destinations.name' => 'Nombre',
           'destinations.nameHint' => 'p. ej. bucket-backups',
+          'destinations.nameHelp' => 'Cómo aparece en el canvas y en Backups.',
           'destinations.copyName' => ({
             required Object name,
           }) => '${name}-copia',
@@ -2047,11 +2100,39 @@ extension on AppMessagesEs {
             'La necesitan casi todos los servidores S3 propios.',
           'destinations.permissions' =>
             'Permisos necesarios: s3:PutObject y s3:AbortMultipartUpload.',
-          'destinations.foldersHelp' => 'Las carpetas son opcionales. Con al menos una, cada carpeta es un punto de conexión del canvas y la raíz del bucket no. Sin carpetas, la raíz del bucket es el único punto de conexión.',
-          'destinations.testIdle' => 'Dumpling inicia y cancela una subida multipart en cada carpeta; no queda nada en el bucket.',
+          'destinations.foldersHelp' => 'Opcionales. Cada carpeta es un punto de conexión del canvas; con carpetas, la raíz del bucket no lo es. Cada carpeta nueva se prueba antes de guardar.',
+          'destinations.testIdle' => 'Dumpling inicia y cancela una subida multipart en la raíz del bucket; no queda nada en el bucket.',
+          'destinations.foldersPending' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: '${n} carpeta sin probar todavía.',
+                  other: '${n} carpetas sin probar todavía.',
+                ),
+          'destinations.foldersAllChecked' =>
+            'Se puede escribir en todas las carpetas.',
+          'destinations.foldersRootCheckedShort' =>
+            'La raíz del bucket se probó en el paso 2.',
+          'destinations.folderWritable' => 'Con escritura',
+          'destinations.folderNotChecked' => 'Sin probar',
+          'destinations.foldersRootChecked' => 'Sin carpetas: los backups van a la raíz del bucket, ya probada en el paso 2.',
+          'destinations.checkFolders' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: 'Probar ${n} carpeta',
+                  other: 'Probar ${n} carpetas',
+                ),
+          'destinations.checkAgain' => 'Probar de nuevo',
+          'destinations.checkingFolders' => 'Probando…',
+          'destinations.checkFoldersToSave' =>
+            'Prueba las carpetas nuevas para guardar',
           'destinations.connectedSub' => ({
             required Object bucket,
           }) => '${bucket} · no quedó nada en el bucket',
+          'destinations.rootWritable' => '✓ Raíz con escritura',
           'destinations.createButton' => 'Crear destination',
           'destinations.created' => ({
             required Object name,
@@ -2302,6 +2383,9 @@ extension on AppMessagesEs {
           'runs.resultSuccess' => 'Respaldo guardado',
           'runs.resultFailed' => 'El respaldo falló',
           'runs.resultRunning' => 'En curso. Actualiza para ver cuánto avanzó.',
+          _ => null,
+        } ??
+        switch (path) {
           'backups.title' => 'Respaldos',
           'backups.description' => 'Cada respaldo de este workspace, su última ejecución y la siguiente.',
           'backups.openEditor' => 'Abrir editor',
@@ -2319,9 +2403,6 @@ extension on AppMessagesEs {
           'backups.columnSource' => 'Origen',
           'backups.columnDestination' => 'Destino',
           'backups.columnSchedule' => 'Programación',
-          _ => null,
-        } ??
-        switch (path) {
           'backups.columnLastRun' => 'Último respaldo',
           'backups.columnNextRun' => 'Próximo respaldo',
           'backups.allSources' => 'Todos los orígenes',

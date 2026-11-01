@@ -85,11 +85,12 @@ hand.
 
 ## 0.1.0-rc.8
 
-- [ ] Source form: the connection test in step 2 (Connection), next to the fields it checks,
+- [x] Source form: the connection test in step 2 (Connection), next to the fields it checks,
   instead of in step 3 (Check & save); the TLS setting, which the test uses, moves with it.
-- [ ] Destination form: the same, the connection test in step 2 (Connection) instead of in step 3
+- [x] Destination form: the same, the connection test in step 2 (Connection) instead of in step 3
   (Folders & check); it writes in each folder, so in step 2 it would test the root and step 3
   the folders.
+- [ ] Add the info menu in config dialog > cron. Already in design.
 
 ## 0.2.0
 
