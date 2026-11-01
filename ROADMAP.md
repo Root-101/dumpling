@@ -85,10 +85,6 @@ hand.
 
 ## 0.1.0-rc.8
 
-- [x] Backups, "Next backup in": once due, *Updating in 3…, 2…, 1…*, a reload and *Loading* on
-  the due rows; computed with the clock of the browser.
-- [x] Deleting a workspace cancels the schedules of its backups.
-
 ## 0.2.0
 
 - Benchmarks, with a script that repeats them and its results in the repo (like feather-io's): the
@@ -111,7 +107,6 @@ hand.
   countdown stays local and the screen updates without the reload it does once due (which stays,
   for a socket that is down). The token goes in its first message (a browser can't send headers on
   a WebSocket). To design in detail when it starts.
-- Account screen; users and changing the password.
 - Hardening left by the security audit: a new admin password ends the sessions already open;
   refuse to start with short secrets (today only a warning); pin the JWT algorithm and an
   audience; a retention for the run log; no redirects followed by the S3 client; the stored
@@ -163,3 +158,14 @@ build. The `Dockerfile` at the root is already publishable (one image, no secret
   (`reltuples`, `TABLE_ROWS`, `estimatedDocumentCount`), never `count(*)`; what the user can't
   read shows as not available; the last result is kept with its time instead of querying on every
   visit.
+
+## Random ideas
+
+Loose ideas for possible improvements, not planned or weighed yet.
+
+- Backup preview: a "Preview" on a backup shows what it holds without restoring it. The service
+  downloads the file from the bucket, `pg_restore --list` gives the tree of schemas and tables,
+  and picking a table shows its first rows, parsed from its `COPY` block
+  (`pg_restore -a -t <table> -n <schema> -f -`). A plain SQL backup is already text. To check
+  first: that the image carries `pg_restore` next to `pg_dump`, and the cost of downloading a big
+  backup whole just to preview it.
