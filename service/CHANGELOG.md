@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0-rc.8
+## 0.1.0
 
 - Winter 1.0.0, its first stable version (it was on `1.0.0-rc.6`).
 - Deleting a workspace cancels the schedules of its backups at once (before, each one still fired

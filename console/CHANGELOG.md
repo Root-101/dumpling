@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0-rc.8
+## 0.1.0
 
 - The source and destination forms follow the design: the name goes in the first step, with the
   type; the connection test is in the second, next to the fields it checks (with TLS, for a

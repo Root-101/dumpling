@@ -17,8 +17,8 @@ both (see [Sources and destinations](#sources-and-destinations)).
   schedules and the backups, keeps its data in SQLite and serves the API and the console.
 - **`console/`**: the web console, in Flutter Web. The service serves it: one image, one port.
 
-> **Status: release candidate (`0.1.0-rc.7`).** It backs up and is tested end to end (a real
-> backup restored and compared), but it hasn't had long-running production use yet.
+> **Status: `0.1.0`, the first release.** It backs up and is tested end to end (a real backup
+> restored and compared), but it hasn't had long-running production use yet.
 
 ![The pipeline editor of the console](docs/design/screens/07-canvas.png)
 
