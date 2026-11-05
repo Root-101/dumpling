@@ -10,6 +10,7 @@ class ApiController {
   final ConfigController configController;
   final RunController runController;
   final CanvasController canvasController;
+  final TransferController transferController;
 
   ApiController()
     : authController = AuthController(),
@@ -18,7 +19,8 @@ class ApiController {
       destinationController = DestinationController(),
       configController = ConfigController(),
       runController = RunController(),
-      canvasController = CanvasController();
+      canvasController = CanvasController(),
+      transferController = TransferController();
 
   Route get routing => Route.parent(
     path: '/api',
@@ -64,6 +66,18 @@ class ApiController {
         path: '/workspaces/{slug}',
         handler: workspaceController.delete,
         filterConfig: _permission(Permissions.workspaceDelete),
+      ),
+      Route.get(
+        key: 'workspace.export',
+        path: '/export',
+        handler: transferController.export,
+        filterConfig: _permission(Permissions.workspaceExport),
+      ),
+      Route.post(
+        key: 'workspace.import',
+        path: '/import',
+        handler: transferController.import,
+        filterConfig: _permission(Permissions.workspaceImport),
       ),
       Route.get(
         key: 'source.types',

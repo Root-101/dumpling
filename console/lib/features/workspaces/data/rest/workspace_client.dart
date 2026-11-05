@@ -42,6 +42,31 @@ class WorkspaceClient extends BaseClient {
     return WorkspaceResponse.fromJson(rawResponse.data);
   }
 
+  /// The export file of [slug], or of every workspace when null, as JSON
+  Future<Map<String, dynamic>> export({String? slug, String? token}) async {
+    Response rawResponse = await dio.get(
+      '$baseUrl/export',
+      queryParameters: {'workspace': ?slug},
+      options: options(token: token),
+    );
+    return rawResponse.data;
+  }
+
+  /// Adds the workspaces of an export [file]; returns them as created
+  Future<List<WorkspaceResponse>> import({
+    required Map<String, dynamic> file,
+    String? token,
+  }) async {
+    Response rawResponse = await dio.post(
+      '$baseUrl/import',
+      data: file,
+      options: options(token: token),
+    );
+    return (rawResponse.data as List)
+        .map((e) => WorkspaceResponse.fromJson(e))
+        .toList();
+  }
+
   /// With everything in it; the files already in the buckets stay
   Future<void> delete({required String slug, String? token}) async {
     await dio.delete('$_workspacesUrl/$slug', options: options(token: token));

@@ -17,10 +17,10 @@ both (see [Sources and destinations](#sources-and-destinations)).
   schedules and the backups, keeps its data in SQLite and serves the API and the console.
 - **`console/`**: the web console, in Flutter Web. The service serves it: one image, one port.
 
-> **Status: `0.1.1`.** It backs up and is tested end to end (a real backup
+> **Status: `0.1.2`.** It backs up and is tested end to end (a real backup
 > restored and compared), but it hasn't had long-running production use yet.
 
-![The pipeline editor of the console](docs/design/screens/07-canvas.png)
+![The pipeline editor of the console](docs/design/screens/09-canvas.png)
 
 ## Why Dumpling
 
@@ -65,8 +65,8 @@ both (see [Sources and destinations](#sources-and-destinations)).
 
 |                                                                   |                                                                      |
 |-------------------------------------------------------------------|----------------------------------------------------------------------|
-| ![Backups and their health](docs/design/screens/10-backups.png)   | ![A source, created in steps](docs/design/screens/16-new-source.png) |
-| ![A config and its object key](docs/design/screens/08-config.png) | ![A run and its log](docs/design/screens/28-run-failed.png)          |
+| ![Backups and their health](docs/design/screens/12-backups.png)   | ![A source, created in steps](docs/design/screens/18-new-source.png) |
+| ![A config and its object key](docs/design/screens/10-config.png) | ![A run and its log](docs/design/screens/30-run-failed.png)          |
 
 Every screen, its URL and what it calls: [`docs/console.md`](docs/console.md). The whole design, as
 a PDF and images: [`docs/design/`](docs/design/README.md).
@@ -113,19 +113,20 @@ Each one is a driver behind the same contract, so adding one doesn't change the 
 
 ### With Docker Compose
 
-From the root of the repo, with the four secrets in a `.env` file (see
+Each release publishes its image, for amd64 and arm64: `ghcr.io/root-101/dumpling:<version>`
+(`latest` is the last one that isn't a release candidate). With
+[`docker-compose.yml`](docker-compose.yml) and the four secrets in a `.env` file next to it (see
 [`.env.example`](.env.example)) or in the environment of the shell:
 
 ```bash
 cp .env.example .env      # and fill in the admin user, its password and two long random secrets
-docker compose up -d --build
+docker compose up -d
 ```
 
 - Console and API: <http://localhost:8080>, sign in with `DUMPLING_ADMIN_USER` /
   `DUMPLING_ADMIN_PASSWORD`.
 - Its SQLite database lives in the `dumpling-data` volume; the backups, in your buckets.
-- `PG_VERSION` in the `.env` chooses the `pg_dump` of the image (it dumps servers of that version or
-  older); change it and run `docker compose up -d --build`.
+- The image carries the `pg_dump` of PostgreSQL 18, which dumps servers of that version or older.
 
 Keep `SECRETS_ENCRYPTION_KEY`: the passwords of the databases and the keys of the buckets are
 encrypted with it, and changing it makes them unreadable.
@@ -136,10 +137,16 @@ PostgreSQL without TLS, like the one of a plain `postgres` container, needs it o
 ### With Docker, the image alone
 
 ```bash
-docker build -t dumpling --build-arg PG_VERSION=18 .
-docker run -p 8080:8080 -v dumpling-data:/data \
-  -e DUMPLING_ADMIN_USER=… -e DUMPLING_ADMIN_PASSWORD=… \
-  -e JWT_SECRET=… -e SECRETS_ENCRYPTION_KEY=… dumpling
+docker run -p 8080:8080 -v dumpling-data:/data   -e DUMPLING_ADMIN_USER=… -e DUMPLING_ADMIN_PASSWORD=…   -e JWT_SECRET=… -e SECRETS_ENCRYPTION_KEY=… ghcr.io/root-101/dumpling:0.1.2
+```
+
+### Building the image
+
+From the root of the repo. `PG_VERSION` chooses another `pg_dump`; tagged with the name of the
+compose, `docker compose up -d` runs this one:
+
+```bash
+docker build -t ghcr.io/root-101/dumpling:0.1.2 --build-arg PG_VERSION=18 .
 ```
 
 ### Locally
@@ -179,18 +186,19 @@ fvm flutter run -d chrome --web-port=8081
 
 ## Upgrading
 
-In 0.x the database has no migrations: when a version changes its schema, the SQLite file is
-created again, empty. Before upgrading to one of those, export the configuration of your
-workspaces and import it once the new version runs (export and import arrive with item 11 of the
-[roadmap](ROADMAP.md); until then, the workspaces are made again by hand). The backups already in
-your buckets are not touched.
+In 0.x the Dumpling database has no migrations: when a version changes its schema, the SQLite file
+is created again, empty. Before upgrading to one of those, export your workspaces (*Export all* in
+Workspaces, since 0.1.2) and import the file once the new version runs, with the same
+`SECRETS_ENCRYPTION_KEY`. The backups already in your buckets are not touched.
 
 From the version you run (left) to the one you upgrade to (top), 🔴 means export first and — means
 nothing to do:
 
-| From \ To | 0.1.1 |
-|-----------|:-----:|
-| 0.1.0     |   —   |
+| From \ To | 0.1.0 | 0.1.1 | 0.1.2 |
+|-----------|:-----:|:-----:|:-----:|
+| 0.1.0     |   —   |   —   |   —   |
+| 0.1.1     |       |   —   |   —   |
+| 0.1.2     |       |       |   —   |
 
 ## Restoring
 

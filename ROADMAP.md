@@ -45,33 +45,21 @@ are in the changelogs of [`service/`](service/CHANGELOG.md) and [`console/`](con
 
 ## Seen after 0.1.0
 
-Things noticed using 0.1.0, numbered to do them in any order.
+Things noticed using 0.1.0, numbered to do them in any order. What is already done is in the
+[changelog](CHANGELOG.md).
 
-1. Publish the image to the GitHub Container Registry (the plan is in [Docker image](#docker-image)).
-2. Backups: the "in X h Y min" of the next run shows its two biggest units, with days as the
-   largest: `30d 5h` or `1d 3h` instead of `719h 39min`; under a day, hours and minutes; under an
-   hour, minutes and seconds. The clock at the foot of the table ticks on its own; today it only
-   changes on a reload.
-3. Reorder by hand, dragging them: backups, sources, destinations and the folders of a
+1. Reorder by hand, dragging them: backups, sources, destinations and the folders of a
    destination. The order is saved in the service (a new position column in each table). In
    Backups it is a "Manual" option of the sort selector, and dragging works only with it chosen.
-4. "Nuevo source" in the Spanish console: the word *source* is left untranslated.
-5. Check that an S3 endpoint ending in `/` works.
-6. The cron ⓘ in the config dialog: a wider popup, it sometimes wraps into two lines.
-7. A backup before a release: when a backend deploys a version with a migration, it asks Dumpling
+2. A backup before a release: when a backend deploys a version with a migration, it asks Dumpling
    (a request from its pipeline) to back up its database before running the migration. Needs
    API keys or users allowed only to run a given config. To talk through before designing it.
-8. When restoring exists: back up the target database first, rename it, create a new database and
+3. When restoring exists: back up the target database first, rename it, create a new database and
    restore into that one, so a restore that goes wrong loses nothing.
-9. Encrypt the dump before uploading it to the bucket. To talk through how before implementing it.
-10. A disabled config shows a "Disabled" tag instead of its cron, on the canvas and in Backups;
-    in the config dialog, disabling it disables the cron field.
-11. Export and import the configuration (workspaces, sources, destinations, canvas) as a file, so
-    a schema change in 0.x keeps the data without migrations: export, upgrade, import. From the
-    Workspaces list: export all of them, or one from its card, to a JSON file. Credentials go
-    encrypted as they are stored, so the import needs the same key; the run log of the last month
-    goes too. Import opens a dialog where the file is dropped or picked; it adds its workspaces to
-    the list, and a name already taken gets another (`Prod (2)`).
+4. Encrypt the dump before uploading it to the bucket. To talk through how before implementing it.
+5. Dumpling itself as a source of each workspace: its export (0.1.2) goes through the same backups
+   as any database (schedule, compression, destination, run log), so the file lands in a bucket on
+   its own. To talk through.
 
 ## 0.2.0
 
@@ -104,7 +92,7 @@ Things noticed using 0.1.0, numbered to do them in any order.
 
 ## Docker image
 
-To weigh: publish the image, built by CI on each tag, so running Dumpling needs no clone and no
+Done for 0.1.2 (`.github/workflows/release.yml`), except the Railway template. The plan: publish the image, built by CI on each tag, so running Dumpling needs no clone and no
 build. The `Dockerfile` at the root is already publishable (one image, no secrets in it, no
 `VOLUME`); what is missing is the CI, the compose and the docs.
 

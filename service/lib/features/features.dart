@@ -5,5 +5,6 @@ export 'db/database.dart';
 export 'runs/runs.dart';
 export 'destinations/destinations.dart';
 export 'sources/sources.dart';
+export 'transfer/transfer.dart';
 export 'workspaces/workspaces.dart';
 export 'api_controller.dart';

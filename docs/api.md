@@ -241,6 +241,56 @@ DELETE /api/workspaces/docs-tour
 `204`. Deletes the workspace with its sources, destinations, configs and runs. The backup files
 already in the buckets stay where they are.
 
+### Export workspaces
+
+```http
+GET /api/export?workspace=docs-tour
+```
+
+Without `workspace`, every workspace. The file an import reads back:
+
+```json
+{
+  "format": "dumpling",
+  "version": 1,
+  "exported_at": "2026-11-05T16:12:40.000Z",
+  "workspaces": [
+    {
+      "workspace": {"name": "Docs tour", "description": "Examples of api.md", "color": 4280391411, "defaults": {"schedule": "30 1 * * *", "compression": "none", "object_key": "{db}/{yyyy}-{MM}-{dd}-{run_id}"}},
+      "canvas": {"sources": […], "destinations": […], "configs": […]},
+      "secrets": {"src_qnr4bf2dwuxtg3uz": "q1Zk…", "dst_6zzbgd4gbnfidygl": "Rw0C…"},
+      "runs": […]
+    }
+  ]
+}
+```
+
+`canvas` is what [Get the canvas](#get-the-canvas) answers (each node with its `position`).
+`secrets` holds the credentials of each source and destination as they are stored: encrypted with
+`SECRETS_ENCRYPTION_KEY` and bound to the id of their row, never in clear. `runs` are the runs of
+the last 30 days that ended, with their log, oldest first. `version` is the version of the format,
+not of Dumpling.
+
+### Import workspaces
+
+```http
+POST /api/import
+Content-Type: application/json
+
+{"format": "dumpling", "version": 1, "workspaces": […]}
+```
+
+`201` with the workspaces created, as in [Create a workspace](#create-a-workspace). The body is an
+export as it came out. Each workspace is added, never merged: a name already taken gets the first
+free `Name (2)`, `Name (3)`…, and its nodes and runs get new ids (the same file can be imported
+twice). Everything is checked before the first workspace is written, and a failure deletes the
+ones already added: all or none.
+
+A `422` names what failed: `format` or `version` when it isn't an export this Dumpling reads,
+`workspaces[0].secrets.src_…` when a credential doesn't decrypt (another `SECRETS_ENCRYPTION_KEY`),
+or a field under `workspaces[0].canvas` as in [Save the canvas](#save-the-canvas). The configs come
+back enabled or disabled as they were, and their schedules start.
+
 ## Sources
 
 The databases to back up. The `password` is write-only: it is stored encrypted and **never

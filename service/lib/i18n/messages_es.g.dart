@@ -85,6 +85,9 @@ class ServiceMessages$errors$es implements ServiceMessages$errors$en {
   late final ServiceMessages$errors$runs$es runs =
       ServiceMessages$errors$runs$es._(_root);
   @override
+  late final ServiceMessages$errors$transfer$es transfer =
+      ServiceMessages$errors$transfer$es._(_root);
+  @override
   late final ServiceMessages$errors$validations$es validations =
       ServiceMessages$errors$validations$es._(_root);
 }
@@ -184,6 +187,24 @@ class ServiceMessages$errors$runs$es implements ServiceMessages$errors$runs$en {
       '${name} debe ser uno de: ${values}';
   @override
   String invalidLimit({required Object max}) => 'limit debe ir de 1 a ${max}';
+}
+
+// Path: errors.transfer
+class ServiceMessages$errors$transfer$es
+    implements ServiceMessages$errors$transfer$en {
+  ServiceMessages$errors$transfer$es._(this._root);
+
+  final ServiceMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get notAnExport => 'No es un fichero exportado por Dumpling';
+  @override
+  String version({required Object version}) =>
+      'Este fichero es de otra versión del formato de exportación: este Dumpling lee la versión ${version}';
+  @override
+  String get secrets =>
+      'Las credenciales de este fichero no se descifran con esta SECRETS_ENCRYPTION_KEY: impórtalo en un Dumpling con la misma clave que el que lo exportó';
 }
 
 // Path: errors.validations
@@ -290,6 +311,12 @@ extension on ServiceMessagesEs {
       'errors.runs.invalidLimit' => ({
         required Object max,
       }) => 'limit debe ir de 1 a ${max}',
+      'errors.transfer.notAnExport' =>
+        'No es un fichero exportado por Dumpling',
+      'errors.transfer.version' => ({
+        required Object version,
+      }) => 'Este fichero es de otra versión del formato de exportación: este Dumpling lee la versión ${version}',
+      'errors.transfer.secrets' => 'Las credenciales de este fichero no se descifran con esta SECRETS_ENCRYPTION_KEY: impórtalo en un Dumpling con la misma clave que el que lo exportó',
       'errors.validations.cron' => 'No es una expresión cron válida (minuto hora día mes día-de-la-semana)',
       'errors.validations.objectKey' =>
         'La clave del objeto no puede empezar por /',

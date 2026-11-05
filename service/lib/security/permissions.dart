@@ -8,6 +8,8 @@ abstract final class Permissions {
   static const String workspaceCreate = 'workspace.create';
   static const String workspaceUpdate = 'workspace.update';
   static const String workspaceDelete = 'workspace.delete';
+  static const String workspaceExport = 'workspace.export';
+  static const String workspaceImport = 'workspace.import';
 
   static const String sourceList = 'source.list';
   static const String sourceGet = 'source.get';
@@ -44,6 +46,8 @@ abstract final class Permissions {
     workspaceCreate,
     workspaceUpdate,
     workspaceDelete,
+    workspaceExport,
+    workspaceImport,
     sourceList,
     sourceGet,
     sourceCreate,

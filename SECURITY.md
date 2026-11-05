@@ -11,7 +11,7 @@ unless you'd rather not.
 
 ## Supported versions
 
-Only the latest release gets security fixes (today `0.1.1`).
+Only the latest release gets security fixes (today `0.1.2`).
 
 ## Security model
 
@@ -35,7 +35,9 @@ reasons behind each decision are in [`DECISIONS.md`](DECISIONS.md).
 - Database passwords and S3 secret keys are stored encrypted with AES-256-GCM (key derived from
   `SECRETS_ENCRYPTION_KEY`), each with its own random nonce and bound to its row: a value copied
   to another source doesn't decrypt. They are never returned by the API nor shown again in the
-  console; an edit without a new password keeps the saved one.
+  console; an edit without a new password keeps the saved one. An export
+  (`GET /api/export`) carries them only as stored, encrypted: the file is useless without
+  `SECRETS_ENCRYPTION_KEY`, but keep it like a backup of the database.
 - The connection to PostgreSQL uses TLS by default (`ssl_mode` `require`, which doesn't check the
   certificate) and never sends the password in clear. A source set to `disable` sends the password
   (if the server asks for it in clear) and the data unencrypted: only for a database on a network
