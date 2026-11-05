@@ -43,6 +43,36 @@ are in the changelogs of [`service/`](service/CHANGELOG.md) and [`console/`](con
   in Docker, git history reviewed for secrets, every screen against the design, a manual test from
   scratch, and a code audit (18 findings) and a security audit (10 leads), all fixed.
 
+## Seen after 0.1.0
+
+Things noticed using 0.1.0, numbered to do them in any order.
+
+1. Publish the image to the GitHub Container Registry (the plan is in [Docker image](#docker-image)).
+2. Backups: the "in X h Y min" of the next run shows its two biggest units, with days as the
+   largest: `30d 5h` or `1d 3h` instead of `719h 39min`; under a day, hours and minutes; under an
+   hour, minutes and seconds. The clock at the foot of the table ticks on its own; today it only
+   changes on a reload.
+3. Reorder by hand, dragging them: backups, sources, destinations and the folders of a
+   destination. The order is saved in the service (a new position column in each table). In
+   Backups it is a "Manual" option of the sort selector, and dragging works only with it chosen.
+4. "Nuevo source" in the Spanish console: the word *source* is left untranslated.
+5. Check that an S3 endpoint ending in `/` works.
+6. The cron ⓘ in the config dialog: a wider popup, it sometimes wraps into two lines.
+7. A backup before a release: when a backend deploys a version with a migration, it asks Dumpling
+   (a request from its pipeline) to back up its database before running the migration. Needs
+   API keys or users allowed only to run a given config. To talk through before designing it.
+8. When restoring exists: back up the target database first, rename it, create a new database and
+   restore into that one, so a restore that goes wrong loses nothing.
+9. Encrypt the dump before uploading it to the bucket. To talk through how before implementing it.
+10. A disabled config shows a "Disabled" tag instead of its cron, on the canvas and in Backups;
+    in the config dialog, disabling it disables the cron field.
+11. Export and import the configuration (workspaces, sources, destinations, canvas) as a file, so
+    a schema change in 0.x keeps the data without migrations: export, upgrade, import. From the
+    Workspaces list: export all of them, or one from its card, to a JSON file. Credentials go
+    encrypted as they are stored, so the import needs the same key; the run log of the last month
+    goes too. Import opens a dialog where the file is dropped or picked; it adds its workspaces to
+    the list, and a name already taken gets another (`Prod (2)`).
+
 ## 0.2.0
 
 - Benchmarks, with a script that repeats them and its results in the repo (like feather-io's): the

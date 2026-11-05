@@ -177,6 +177,21 @@ fvm flutter run -d chrome --web-port=8081
 | `LOGIN_MAX_FAILURES`, `LOGIN_LOCK_SECONDS`, `LOGIN_FAILURE_DELAY_MS` | `10`, `900`, `1000`                        | Failed logins that lock an IP, for how long, and the wait after each failure |
 | `LOG_LEVEL`, `LOG_FORMAT`                                            | `info`, readable                           | `LOG_FORMAT=json` writes one JSON object per line                            |
 
+## Upgrading
+
+In 0.x the database has no migrations: when a version changes its schema, the SQLite file is
+created again, empty. Before upgrading to one of those, export the configuration of your
+workspaces and import it once the new version runs (export and import arrive with item 11 of the
+[roadmap](ROADMAP.md); until then, the workspaces are made again by hand). The backups already in
+your buckets are not touched.
+
+From the version you run (left) to the one you upgrade to (top), 🔴 means export first and — means
+nothing to do:
+
+| From \ To | 0.1.1 |
+|-----------|:-----:|
+| 0.1.0     |   —   |
+
 ## Restoring
 
 A backup is one file in your bucket: `pg_restore` (custom format) or `psql` (plain SQL) restores it.
