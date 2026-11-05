@@ -242,24 +242,42 @@ class _WorkspaceCardState extends State<WorkspaceCard> {
             ),
           ),
           app.dimensions.padding.s.gap(),
-          _SettingsButton(workspace: _workspace),
+          _SquareButton(
+            tooltip: app.intl.workspaces.transfer.exportOf(
+              name: _workspace.name,
+            ),
+            icon: app.assets.icons.actions.export,
+            onTap: () => WorkspaceExport.run(workspace: _workspace),
+          ),
+          app.dimensions.padding.s.gap(),
+          _SquareButton(
+            tooltip: app.intl.workspaces.settingsOf(name: _workspace.name),
+            icon: app.assets.icons.navigation.settings,
+            onTap: () => WorkspaceSettings.open(context, _workspace),
+          ),
         ],
       ),
     );
   }
 }
 
-/// Opens [WorkspaceSettings]: a bordered square with the icon
-class _SettingsButton extends StatelessWidget {
-  final WorkspaceModel workspace;
+/// A bordered square with an icon: export, settings
+class _SquareButton extends StatelessWidget {
+  final String tooltip;
+  final SvgAsset icon;
+  final VoidCallback onTap;
 
-  const _SettingsButton({required this.workspace});
+  const _SquareButton({
+    required this.tooltip,
+    required this.icon,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final radius = app.dimensions.border.borderRadius.s;
     return Tooltip(
-      message: app.intl.workspaces.settingsOf(name: workspace.name),
+      message: tooltip,
       child: Material(
         color: app.colors.surface.control,
         shape: RoundedRectangleBorder(
@@ -269,14 +287,11 @@ class _SettingsButton extends StatelessWidget {
         child: InkWell(
           borderRadius: radius,
           mouseCursor: SystemMouseCursors.click,
-          onTap: () => WorkspaceSettings.open(context, workspace),
+          onTap: onTap,
           child: SizedBox.square(
             dimension: 38,
             child: Center(
-              child: app.assets.icons.navigation.settings.build(
-                size: 18,
-                color: app.colors.neutral.white,
-              ),
+              child: icon.build(size: 18, color: app.colors.neutral.white),
             ),
           ),
         ),

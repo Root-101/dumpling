@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+- Workspaces: **Export all** downloads every workspace as a JSON file, and each card exports its
+  own; **Import** opens a dialog to drop or choose that file, shows what it adds (a taken name as
+  `Prod (2)`) and adds it.
+
 ## 0.1.1
 
 - No changes in the console: the README drops its Railway section, now that the

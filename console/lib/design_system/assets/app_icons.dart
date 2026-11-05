@@ -137,6 +137,16 @@ class ActionsIcons {
 
   /// Points right; rotate it for the other directions
   SvgAsset get chevron => const SvgAsset('$_actions/chevron.svg');
+
+  /// An arrow out of a tray: export to a file
+  SvgAsset get export => const SvgAsset('$_actions/export.svg');
+
+  /// An arrow into a tray: import a file
+  SvgAsset get import => const SvgAsset('$_actions/import.svg');
+
+  SvgAsset get file => const SvgAsset('$_actions/file.svg');
+
+  SvgAsset get lock => const SvgAsset('$_actions/lock.svg');
 }
 
 class SvgAsset {

@@ -546,6 +546,8 @@ class AppMessages$workspaces$en {
   /// en: 'Settings for {name: String}'
   String settingsOf({required String name}) => 'Settings for ${name}';
 
+  late final AppMessages$workspaces$transfer$en transfer =
+      AppMessages$workspaces$transfer$en._(_root);
   late final AppMessages$workspaces$settings$en settings =
       AppMessages$workspaces$settings$en._(_root);
 }
@@ -1621,6 +1623,96 @@ class AppMessages$backups$en {
       'Connect a source to a destination in the pipeline editor to create one.';
 }
 
+// Path: workspaces.transfer
+class AppMessages$workspaces$transfer$en {
+  AppMessages$workspaces$transfer$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Import'
+  String get import => 'Import';
+
+  /// en: 'Export all'
+  String get exportAll => 'Export all';
+
+  /// en: 'Export {name: String} to a file'
+  String exportOf({required String name}) => 'Export ${name} to a file';
+
+  /// en: 'Exported to {file: String}'
+  String exported({required String file}) => 'Exported to ${file}';
+
+  /// en: 'Import workspaces'
+  String get importTitle => 'Import workspaces';
+
+  /// en: 'From a file exported by Dumpling. Its workspaces are added to the list; nothing here is replaced.'
+  String get importDescription =>
+      'From a file exported by Dumpling. Its workspaces are added to the list; nothing here is replaced.';
+
+  /// en: 'Drop the exported file here'
+  String get drop => 'Drop the exported file here';
+
+  /// en: 'A .json made by Export in Workspaces'
+  String get dropHint => 'A .json made by Export in Workspaces';
+
+  /// en: 'Choose a file'
+  String get choose => 'Choose a file';
+
+  /// en: 'Change'
+  String get change => 'Change';
+
+  /// en: 'exported {time: String}'
+  String exportedAt({required String time}) => 'exported ${time}';
+
+  /// en: 'This file is not an export of Dumpling: choose a .json made by Export in Workspaces.'
+  String get notAnExport =>
+      'This file is not an export of Dumpling: choose a .json made by Export in Workspaces.';
+
+  /// en: '(one) {{n} workspace to add} (other) {{n} workspaces to add}'
+  String toAdd({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} workspace to add',
+        other: '${n} workspaces to add',
+      );
+
+  /// en: 'as'
+  String get as => 'as';
+
+  /// en: 'Name taken'
+  String get nameTaken => 'Name taken';
+
+  /// en: '{sources: int} sources · {destinations: int} destinations · {configs: int} backups · {runs: int} runs'
+  String counts({
+    required int sources,
+    required int destinations,
+    required int configs,
+    required int runs,
+  }) =>
+      '${sources} sources · ${destinations} destinations · ${configs} backups · ${runs} runs';
+
+  /// en: 'Credentials come encrypted: they only work with the same SECRETS_ENCRYPTION_KEY as the Dumpling that exported them. The run log brings its last month.'
+  String get keyNote =>
+      'Credentials come encrypted: they only work with the same SECRETS_ENCRYPTION_KEY as the Dumpling that exported them. The run log brings its last month.';
+
+  /// en: '(one) {Import {n} workspace} (other) {Import {n} workspaces}'
+  String importCount({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: 'Import ${n} workspace',
+        other: 'Import ${n} workspaces',
+      );
+
+  /// en: '(one) {{n} workspace imported} (other) {{n} workspaces imported}'
+  String imported({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} workspace imported',
+        other: '${n} workspaces imported',
+      );
+}
+
 // Path: workspaces.settings
 class AppMessages$workspaces$settings$en {
   AppMessages$workspaces$settings$en._(this._root);
@@ -2418,6 +2510,58 @@ extension on AppMessages {
           'workspaces.settingsOf' => ({
             required String name,
           }) => 'Settings for ${name}',
+          'workspaces.transfer.import' => 'Import',
+          'workspaces.transfer.exportAll' => 'Export all',
+          'workspaces.transfer.exportOf' => ({
+            required String name,
+          }) => 'Export ${name} to a file',
+          'workspaces.transfer.exported' => ({
+            required String file,
+          }) => 'Exported to ${file}',
+          'workspaces.transfer.importTitle' => 'Import workspaces',
+          'workspaces.transfer.importDescription' => 'From a file exported by Dumpling. Its workspaces are added to the list; nothing here is replaced.',
+          'workspaces.transfer.drop' => 'Drop the exported file here',
+          'workspaces.transfer.dropHint' =>
+            'A .json made by Export in Workspaces',
+          'workspaces.transfer.choose' => 'Choose a file',
+          'workspaces.transfer.change' => 'Change',
+          'workspaces.transfer.exportedAt' => ({
+            required String time,
+          }) => 'exported ${time}',
+          'workspaces.transfer.notAnExport' => 'This file is not an export of Dumpling: choose a .json made by Export in Workspaces.',
+          'workspaces.transfer.toAdd' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} workspace to add',
+                  other: '${n} workspaces to add',
+                ),
+          'workspaces.transfer.as' => 'as',
+          'workspaces.transfer.nameTaken' => 'Name taken',
+          'workspaces.transfer.counts' => ({
+            required int sources,
+            required int destinations,
+            required int configs,
+            required int runs,
+          }) => '${sources} sources · ${destinations} destinations · ${configs} backups · ${runs} runs',
+          'workspaces.transfer.keyNote' => 'Credentials come encrypted: they only work with the same SECRETS_ENCRYPTION_KEY as the Dumpling that exported them. The run log brings its last month.',
+          'workspaces.transfer.importCount' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: 'Import ${n} workspace',
+                  other: 'Import ${n} workspaces',
+                ),
+          'workspaces.transfer.imported' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} workspace imported',
+                  other: '${n} workspaces imported',
+                ),
           'workspaces.settings.title' => 'Workspace settings',
           'workspaces.settings.description' => 'Applies only to this workspace',
           'workspaces.settings.general' => 'General',
@@ -2934,6 +3078,9 @@ extension on AppMessages {
           'runs.search' => 'Search by backup, source or destination',
           'runs.columnStatus' => 'Status',
           'runs.columnSource' => 'Source',
+          _ => null,
+        } ??
+        switch (path) {
           'runs.columnDestination' => 'Destination',
           'runs.columnStarted' => 'Started',
           'runs.columnDuration' => 'Duration',
@@ -2956,9 +3103,6 @@ extension on AppMessages {
           'runs.day' => ({required String date}) => '${date} (UTC)',
           'runs.succeeded' => ({required int n}) => '${n} succeeded',
           'runs.failedCount' => ({required int n}) => '${n} failed',
-          _ => null,
-        } ??
-        switch (path) {
           'runs.savedIn' => ({
             required String size,
             required String duration,
