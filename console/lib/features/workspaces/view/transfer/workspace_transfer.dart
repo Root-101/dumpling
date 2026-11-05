@@ -538,17 +538,20 @@ class _NameTakenBadge extends StatelessWidget {
     return Container(
       height: 20,
       padding: const EdgeInsets.symmetric(horizontal: 7),
-      alignment: Alignment.center,
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.16),
         borderRadius: app.dimensions.border.borderRadius.xs,
       ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: color,
+      // as wide as the text: a Wrap gives it the whole row
+      child: Center(
+        widthFactor: 1,
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: color,
+          ),
         ),
       ),
     );
