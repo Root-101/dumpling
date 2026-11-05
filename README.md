@@ -20,7 +20,7 @@ both (see [Sources and destinations](#sources-and-destinations)).
 > **Status: `0.1.1`.** It backs up and is tested end to end (a real backup
 > restored and compared), but it hasn't had long-running production use yet.
 
-![The pipeline editor of the console](docs/design/screens/07-canvas.png)
+![The pipeline editor of the console](docs/design/screens/09-canvas.png)
 
 ## Why Dumpling
 
@@ -65,8 +65,8 @@ both (see [Sources and destinations](#sources-and-destinations)).
 
 |                                                                   |                                                                      |
 |-------------------------------------------------------------------|----------------------------------------------------------------------|
-| ![Backups and their health](docs/design/screens/10-backups.png)   | ![A source, created in steps](docs/design/screens/16-new-source.png) |
-| ![A config and its object key](docs/design/screens/08-config.png) | ![A run and its log](docs/design/screens/28-run-failed.png)          |
+| ![Backups and their health](docs/design/screens/12-backups.png)   | ![A source, created in steps](docs/design/screens/18-new-source.png) |
+| ![A config and its object key](docs/design/screens/10-config.png) | ![A run and its log](docs/design/screens/30-run-failed.png)          |
 
 Every screen, its URL and what it calls: [`docs/console.md`](docs/console.md). The whole design, as
 a PDF and images: [`docs/design/`](docs/design/README.md).

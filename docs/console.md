@@ -36,14 +36,14 @@ hours. In a window narrower than 900 px the brand goes above the form.
 When the token expires, the screen you were on stays (an unsaved canvas too) under a dialog that
 signs in again, or goes to this page:
 
-![Session expired](design/screens/33-session-expired.png)
+![Session expired](design/screens/35-session-expired.png)
 
 **Behind it:** [`POST /api/auth/login`](api.md#log-in) with `{"username", "password"}`, which
 answers the token every other call sends as `Authorization: Bearer …`. Signing out only forgets it.
 
 ## Navigation
 
-![The rail, expanded](design/screens/34-rail-expanded.png)
+![The rail, expanded](design/screens/36-rail-expanded.png)
 
 The rail on the left: at the top the **current workspace**, which opens the list of workspaces;
 then **Backups** and the **Pipeline editor**, **Sources** and **Destinations**, and the **Run log**,
@@ -88,11 +88,15 @@ runs. The files already in the buckets stay.
 (`dumpling-production-2026-11-05.json`). The file carries the canvas, the credentials encrypted as
 they are stored and the run log of the last month.
 
+![Import workspaces](design/screens/07-import.png)
+
 **Import** opens a dialog: drop the file on it or **Choose a file**. It shows the file and the
 workspaces it adds, with their counts; a name already taken shows *as* `Production (2)` and *Name
 taken*. **Import n workspaces** adds them and reloads the list. A file that isn't an export, or
 whose credentials don't decrypt with this `SECRETS_ENCRYPTION_KEY`, shows why above the file and
 adds nothing.
+
+![What the file adds](design/screens/08-import-file.png)
 
 **Behind it:** [`GET /api/workspaces`](api.md#list-workspaces) for the cards (with their
 statistics), [`POST /api/workspaces`](api.md#create-a-workspace) to create one,
@@ -103,7 +107,7 @@ to export and import.
 
 ## Pipeline editor
 
-![The canvas](design/screens/07-canvas.png)
+![The canvas](design/screens/09-canvas.png)
 
 **URL:** `/#/workspaces/{slug}/canvas`
 
@@ -127,7 +131,7 @@ up: each source connects and `pg_dump` can dump it, each destination takes a wri
 
 ### A config
 
-![A config in its dialog](design/screens/08-config.png)
+![A config in its dialog](design/screens/10-config.png)
 
 Opened from its node (its pencil, or double click), in three steps:
 
@@ -149,7 +153,7 @@ warning under its field, which doesn't block saving.
 
 ### An empty workspace
 
-![Getting started](design/screens/09-getting-started.png)
+![Getting started](design/screens/11-getting-started.png)
 
 Until its first config, a guide in three steps: add a source, add a destination, connect them.
 
@@ -164,7 +168,7 @@ Until its first config, a guide in three steps: add a source, add a destination,
 
 ## Backups
 
-![Backups](design/screens/10-backups.png)
+![Backups](design/screens/12-backups.png)
 
 **URL:** `/#/workspaces/{slug}/backups`; a run of a backup: `/#/workspaces/{slug}/backups/runs/{id}`
 
@@ -178,13 +182,13 @@ error under the date) and next run, with **Run now** on each row.
 
 |                                                     |                                                 |
 |-----------------------------------------------------|-------------------------------------------------|
-| ![Filters](design/screens/11-backups-filters.png)   | ![Sort](design/screens/12-backups-sort.png)     |
+| ![Filters](design/screens/13-backups-filters.png)   | ![Sort](design/screens/14-backups-sort.png)     |
 | **Filters** by status, source and destination, and a search | **Sort** by the last backup (newest or oldest first), the next one or the source name |
 
 A row opens its recent runs, with where each file went (selectable, to copy it); each one opens
 its details, the same as in the run log.
 
-![Recent runs](design/screens/13-backups-run.png)
+![Recent runs](design/screens/15-backups-run.png)
 
 **Behind it:** [`GET /api/workspaces/{slug}/configs`](api.md#list-configs) for the rows (each with
 its `last_run` and `next_run`), [`GET /api/workspaces/{slug}/runs?config={id}`](api.md#run-log)
@@ -193,7 +197,7 @@ for the recent runs of one, [`GET /api/workspaces/{slug}/runs/{id}`](api.md#a-ru
 
 ## Sources
 
-![Sources](design/screens/14-sources.png)
+![Sources](design/screens/16-sources.png)
 
 **URL:** `/#/workspaces/{slug}/sources`; a source: `/#/workspaces/{slug}/sources/{id}`
 
@@ -201,11 +205,11 @@ The databases this workspace backs up, as a list or as cards, with a search and 
 each one's name, type and server version, host, how many backups use it and the result of its last
 connection check.
 
-![Sources, grid view](design/screens/15-sources-grid.png)
+![Sources, grid view](design/screens/17-sources-grid.png)
 
 ### New source
 
-![New source](design/screens/16-new-source.png)
+![New source](design/screens/18-new-source.png)
 
 A dialog in three steps, as tall as the screen; each step starts with what the steps before chose.
 
@@ -223,17 +227,17 @@ A dialog in three steps, as tall as the screen; each step starts with what the s
 
 ### Its options
 
-![Options of a source](design/screens/17-source-menu.png)
+![Options of a source](design/screens/19-source-menu.png)
 
 View details, edit, duplicate (without the password), test the connection again, or delete it,
 only when no backup uses it (the menu says how many do):
 
-![Delete a source](design/screens/18-source-delete.png)
+![Delete a source](design/screens/20-source-delete.png)
 
 The detail shows the backups that dump it (with their schedule, last and next run), the last check
 and the connection:
 
-![Source detail](design/screens/19-source-detail.png)
+![Source detail](design/screens/21-source-detail.png)
 
 **Behind it:**
 
@@ -250,7 +254,7 @@ and the connection:
 
 ## Destinations
 
-![Destinations](design/screens/20-destinations.png)
+![Destinations](design/screens/22-destinations.png)
 
 **URL:** `/#/workspaces/{slug}/destinations`; a destination: `/#/workspaces/{slug}/destinations/{id}`
 
@@ -259,11 +263,11 @@ row opens the folders of its bucket, to add or delete them there: with at least 
 folder is a connection point on the canvas and the root of the bucket is not; with none, the root
 is the only one. A folder a backup writes to can't be deleted.
 
-![Destinations, grid view](design/screens/21-destinations-grid.png)
+![Destinations, grid view](design/screens/23-destinations-grid.png)
 
 ### New destination
 
-![New destination](design/screens/22-new-destination.png)
+![New destination](design/screens/24-new-destination.png)
 
 The same dialog in three steps:
 
@@ -281,16 +285,16 @@ The same dialog in three steps:
 
 ### Its options
 
-![Options of a destination](design/screens/23-destination-menu.png)
+![Options of a destination](design/screens/25-destination-menu.png)
 
 The same as a source: view details, edit, duplicate (without the secret key), test, or delete, only
 when no backup writes to it.
 
-![Delete a destination](design/screens/24-destination-delete.png)
+![Delete a destination](design/screens/26-destination-delete.png)
 
 The detail shows the backups that write to each folder, the last check and the connection:
 
-![Destination detail](design/screens/25-destination-detail.png)
+![Destination detail](design/screens/27-destination-detail.png)
 
 **Behind it:**
 
@@ -307,7 +311,7 @@ The detail shows the backups that write to each folder, the last check and the c
 
 ## Run log
 
-![Run log](design/screens/26-run-log.png)
+![Run log](design/screens/28-run-log.png)
 
 **URL:** `/#/workspaces/{slug}/runs` (`?status=` `running`, `success` or `failed`, `?source=` and
 `?destination=` a type, like `postgres` or `s3`); a run: `/#/workspaces/{slug}/runs/{id}`
@@ -317,7 +321,7 @@ destination, how it was started (its schedule or Run now), when, how long it too
 its status. A search, and filters by status, source type and destination type, which go in the URL
 so a filtered log can be shared:
 
-![Run log, filters](design/screens/27-run-log-filters.png)
+![Run log, filters](design/screens/29-run-log-filters.png)
 
 A run opens its details: its steps (connect, dump, upload), where the file went, its size and
 duration, the error of a failed one, and its log, which can be copied whole or in part: where the
@@ -325,11 +329,11 @@ file went, the error and the log are selectable, as are the connection values (h
 bucket) in the detail of a source or destination and the error of a failed connection check. The
 password of a source never appears in it.
 
-![A failed run](design/screens/28-run-failed.png)
+![A failed run](design/screens/30-run-failed.png)
 
 |                                                      |                                                          |
 |------------------------------------------------------|----------------------------------------------------------|
-| ![A run in progress](design/screens/29-run-running.png) | ![A run that succeeded](design/screens/30-run-succeeded.png) |
+| ![A run in progress](design/screens/31-run-running.png) | ![A run that succeeded](design/screens/32-run-succeeded.png) |
 | **In progress**: the step it is on and the bytes uploaded so far | **Succeeded**: where the file went, to restore it |
 
 To restore a backup, see [`restore.md`](restore.md).
@@ -343,13 +347,13 @@ its log.
 While it starts, the console shows its mark, its name and a bar, in the language of the browser
 (Spanish or English):
 
-![Starting](design/screens/36-splash.png)
+![Starting](design/screens/38-splash.png)
 
 Each screen loads as a skeleton of itself:
 
-![Loading](design/screens/35-loading.png)
+![Loading](design/screens/37-loading.png)
 
 |                                                      |                                                          |
 |------------------------------------------------------|----------------------------------------------------------|
-| ![Not found](design/screens/31-not-found.png)        | ![Connection lost](design/screens/32-connection-lost.png) |
+| ![Not found](design/screens/33-not-found.png)        | ![Connection lost](design/screens/34-connection-lost.png) |
 | **Not found**: an unknown URL or workspace, with the way back to the workspaces; an unknown id shows a notice over its screen instead | **Connection lost**: the service doesn't answer; it names the service's address and tries again |
