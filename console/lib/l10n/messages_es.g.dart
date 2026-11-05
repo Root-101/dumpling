@@ -504,14 +504,14 @@ class AppMessages$sources$es implements AppMessages$sources$en {
 
   // Translations
   @override
-  String get title => 'Sources';
+  String get title => 'Orígenes';
   @override
   String get description =>
       'Lo que respalda este workspace: bases de datos PostgreSQL.';
   @override
-  String get create => 'Nuevo source';
+  String get create => 'Nuevo origen';
   @override
-  String get search => 'Buscar sources';
+  String get search => 'Buscar orígenes';
   @override
   String get columnName => 'Nombre';
   @override
@@ -523,7 +523,7 @@ class AppMessages$sources$es implements AppMessages$sources$en {
   @override
   String get columnStatus => 'Estado';
   @override
-  String get emptyTitle => 'Todavía no hay sources';
+  String get emptyTitle => 'Todavía no hay orígenes';
   @override
   String get emptyDescription => 'Conecta una base de datos para respaldarla.';
   @override
@@ -534,16 +534,16 @@ class AppMessages$sources$es implements AppMessages$sources$en {
         other: 'Lo usan ${n} backups. Quítalos primero.',
       );
   @override
-  String deleteTitle({required Object name}) => '¿Eliminar el source ${name}?';
+  String deleteTitle({required Object name}) => '¿Eliminar el origen ${name}?';
   @override
   String get deleteConfirm =>
       'Ningún backup lo usa. Su conexión y su contraseña guardadas se borran de este workspace.';
   @override
-  String deleted({required Object name}) => 'Source ${name} eliminado';
+  String deleted({required Object name}) => 'Origen ${name} eliminado';
   @override
-  String get newTitle => 'Nuevo source';
+  String get newTitle => 'Nuevo origen';
   @override
-  String get editTitle => 'Editar source';
+  String get editTitle => 'Editar origen';
   @override
   String get formDescription => 'Conecta lo que quieres respaldar.';
   @override
@@ -629,11 +629,11 @@ class AppMessages$sources$es implements AppMessages$sources$en {
   @override
   String connectedAs({required Object user}) => 'Conectado como ${user}';
   @override
-  String get createButton => 'Crear source';
+  String get createButton => 'Crear origen';
   @override
-  String created({required Object name}) => 'Source ${name} creado';
+  String created({required Object name}) => 'Origen ${name} creado';
   @override
-  String saved({required Object name}) => 'Source ${name} guardado';
+  String saved({required Object name}) => 'Origen ${name} guardado';
   @override
   String detailDescription({required Object type}) =>
       'Una base de datos ${type} que este workspace respalda.';
@@ -644,18 +644,18 @@ class AppMessages$sources$es implements AppMessages$sources$en {
       (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
         n,
         zero: 'ninguno aún',
-        one: 'en ${n} destination',
-        other: 'en ${n} destinations',
+        one: 'en ${n} destino',
+        other: 'en ${n} destinos',
       );
   @override
   String get statLastBackup => 'Último backup';
   @override
-  String get sectionUses => 'Backups de este source';
+  String get sectionUses => 'Backups de este origen';
   @override
   String get openEditor => 'Abrir editor';
   @override
   String get noUses =>
-      'Ningún backup lo usa todavía. Conéctalo a un destination en el editor de pipelines.';
+      'Ningún backup lo usa todavía. Conéctalo a un destino en el editor de pipelines.';
   @override
   String get columnBackup => 'Backup';
   @override
@@ -682,14 +682,14 @@ class AppMessages$destinations$es implements AppMessages$destinations$en {
 
   // Translations
   @override
-  String get title => 'Destinations';
+  String get title => 'Destinos';
   @override
   String get description =>
       'Donde este workspace escribe los backups: buckets S3.';
   @override
-  String get create => 'Nuevo destination';
+  String get create => 'Nuevo destino';
   @override
-  String get search => 'Buscar destinations';
+  String get search => 'Buscar destinos';
   @override
   String get columnName => 'Nombre';
   @override
@@ -716,7 +716,7 @@ class AppMessages$destinations$es implements AppMessages$destinations$en {
   String hideFolders({required Object name}) =>
       'Ocultar las carpetas de ${name}';
   @override
-  String get emptyTitle => 'Todavía no hay destinations';
+  String get emptyTitle => 'Todavía no hay destinos';
   @override
   String get emptyDescription => 'Agrega un bucket donde escribir los backups.';
   @override
@@ -727,13 +727,12 @@ class AppMessages$destinations$es implements AppMessages$destinations$en {
         other: 'Lo usan ${n} backups. Quítalos primero.',
       );
   @override
-  String deleteTitle({required Object name}) =>
-      '¿Eliminar el destination ${name}?';
+  String deleteTitle({required Object name}) => '¿Eliminar el destino ${name}?';
   @override
   String get deleteConfirm =>
       'Ningún backup lo usa. Su conexión y sus llaves guardadas se borran de este workspace. Los archivos que ya están en el bucket se quedan ahí.';
   @override
-  String deleted({required Object name}) => 'Destination ${name} eliminado';
+  String deleted({required Object name}) => 'Destino ${name} eliminado';
   @override
   String get noFolders =>
       'Sin carpetas · la raíz del bucket es el único punto de conexión';
@@ -765,9 +764,9 @@ class AppMessages$destinations$es implements AppMessages$destinations$en {
   @override
   String folderDeleted({required Object path}) => 'Carpeta ${path} eliminada';
   @override
-  String get newTitle => 'Nuevo destination';
+  String get newTitle => 'Nuevo destino';
   @override
-  String get editTitle => 'Editar destination';
+  String get editTitle => 'Editar destino';
   @override
   String get formDescription => 'Elige dónde se escriben los backups.';
   @override
@@ -859,11 +858,11 @@ class AppMessages$destinations$es implements AppMessages$destinations$en {
   @override
   String get rootWritable => '✓ Raíz con escritura';
   @override
-  String get createButton => 'Crear destination';
+  String get createButton => 'Crear destino';
   @override
-  String created({required Object name}) => 'Destination ${name} creado';
+  String created({required Object name}) => 'Destino ${name} creado';
   @override
-  String saved({required Object name}) => 'Destination ${name} guardado';
+  String saved({required Object name}) => 'Destino ${name} guardado';
   @override
   String get detailDescription =>
       'Un bucket donde este workspace escribe backups.';
@@ -2078,17 +2077,17 @@ extension on AppMessagesEs {
           'connections.checkNote' => 'Antes de cada ejecución y al probarla',
           'connections.connection' => 'Conexión',
           'connections.editConnection' => 'Editar conexión',
-          'sources.title' => 'Sources',
+          'sources.title' => 'Orígenes',
           'sources.description' =>
             'Lo que respalda este workspace: bases de datos PostgreSQL.',
-          'sources.create' => 'Nuevo source',
-          'sources.search' => 'Buscar sources',
+          'sources.create' => 'Nuevo origen',
+          'sources.search' => 'Buscar orígenes',
           'sources.columnName' => 'Nombre',
           'sources.columnType' => 'Tipo',
           'sources.columnHost' => 'Host',
           'sources.columnBackups' => 'Backups',
           'sources.columnStatus' => 'Estado',
-          'sources.emptyTitle' => 'Todavía no hay sources',
+          'sources.emptyTitle' => 'Todavía no hay orígenes',
           'sources.emptyDescription' =>
             'Conecta una base de datos para respaldarla.',
           'sources.inUse' =>
@@ -2101,13 +2100,13 @@ extension on AppMessagesEs {
                 ),
           'sources.deleteTitle' => ({
             required Object name,
-          }) => '¿Eliminar el source ${name}?',
+          }) => '¿Eliminar el origen ${name}?',
           'sources.deleteConfirm' => 'Ningún backup lo usa. Su conexión y su contraseña guardadas se borran de este workspace.',
           'sources.deleted' => ({
             required Object name,
-          }) => 'Source ${name} eliminado',
-          'sources.newTitle' => 'Nuevo source',
-          'sources.editTitle' => 'Editar source',
+          }) => 'Origen ${name} eliminado',
+          'sources.newTitle' => 'Nuevo origen',
+          'sources.editTitle' => 'Editar origen',
           'sources.formDescription' => 'Conecta lo que quieres respaldar.',
           'sources.stepType' => 'Nombre y tipo',
           'sources.stepConnection' => 'Conexión',
@@ -2151,13 +2150,13 @@ extension on AppMessagesEs {
           'sources.connectedAs' => ({
             required Object user,
           }) => 'Conectado como ${user}',
-          'sources.createButton' => 'Crear source',
+          'sources.createButton' => 'Crear origen',
           'sources.created' => ({
             required Object name,
-          }) => 'Source ${name} creado',
+          }) => 'Origen ${name} creado',
           'sources.saved' => ({
             required Object name,
-          }) => 'Source ${name} guardado',
+          }) => 'Origen ${name} guardado',
           'sources.detailDescription' => ({
             required Object type,
           }) => 'Una base de datos ${type} que este workspace respalda.',
@@ -2168,13 +2167,13 @@ extension on AppMessagesEs {
                 PluralResolvers.cardinal('es'))(
                   n,
                   zero: 'ninguno aún',
-                  one: 'en ${n} destination',
-                  other: 'en ${n} destinations',
+                  one: 'en ${n} destino',
+                  other: 'en ${n} destinos',
                 ),
           'sources.statLastBackup' => 'Último backup',
-          'sources.sectionUses' => 'Backups de este source',
+          'sources.sectionUses' => 'Backups de este origen',
           'sources.openEditor' => 'Abrir editor',
-          'sources.noUses' => 'Ningún backup lo usa todavía. Conéctalo a un destination en el editor de pipelines.',
+          'sources.noUses' => 'Ningún backup lo usa todavía. Conéctalo a un destino en el editor de pipelines.',
           'sources.columnBackup' => 'Backup',
           'sources.columnSchedule' => 'Horario',
           'sources.columnLastRun' => 'Última ejecución',
@@ -2183,11 +2182,11 @@ extension on AppMessagesEs {
           'sources.paused' => 'En pausa',
           'sources.neverRun' => 'Aún no se ejecuta',
           'sources.passwordStored' => '•••••••• · guardada cifrada',
-          'destinations.title' => 'Destinations',
+          'destinations.title' => 'Destinos',
           'destinations.description' =>
             'Donde este workspace escribe los backups: buckets S3.',
-          'destinations.create' => 'Nuevo destination',
-          'destinations.search' => 'Buscar destinations',
+          'destinations.create' => 'Nuevo destino',
+          'destinations.search' => 'Buscar destinos',
           'destinations.columnName' => 'Nombre',
           'destinations.columnType' => 'Tipo',
           'destinations.columnEndpoint' => 'Endpoint',
@@ -2208,7 +2207,7 @@ extension on AppMessagesEs {
           'destinations.hideFolders' => ({
             required Object name,
           }) => 'Ocultar las carpetas de ${name}',
-          'destinations.emptyTitle' => 'Todavía no hay destinations',
+          'destinations.emptyTitle' => 'Todavía no hay destinos',
           'destinations.emptyDescription' =>
             'Agrega un bucket donde escribir los backups.',
           'destinations.inUse' =>
@@ -2221,11 +2220,11 @@ extension on AppMessagesEs {
                 ),
           'destinations.deleteTitle' => ({
             required Object name,
-          }) => '¿Eliminar el destination ${name}?',
+          }) => '¿Eliminar el destino ${name}?',
           'destinations.deleteConfirm' => 'Ningún backup lo usa. Su conexión y sus llaves guardadas se borran de este workspace. Los archivos que ya están en el bucket se quedan ahí.',
           'destinations.deleted' => ({
             required Object name,
-          }) => 'Destination ${name} eliminado',
+          }) => 'Destino ${name} eliminado',
           'destinations.noFolders' =>
             'Sin carpetas · la raíz del bucket es el único punto de conexión',
           'destinations.folderUsed' =>
@@ -2254,8 +2253,8 @@ extension on AppMessagesEs {
           'destinations.folderDeleted' => ({
             required Object path,
           }) => 'Carpeta ${path} eliminada',
-          'destinations.newTitle' => 'Nuevo destination',
-          'destinations.editTitle' => 'Editar destination',
+          'destinations.newTitle' => 'Nuevo destino',
+          'destinations.editTitle' => 'Editar destino',
           'destinations.formDescription' =>
             'Elige dónde se escriben los backups.',
           'destinations.stepType' => 'Nombre y tipo',
@@ -2318,13 +2317,13 @@ extension on AppMessagesEs {
             required Object bucket,
           }) => '${bucket} · no quedó nada en el bucket',
           'destinations.rootWritable' => '✓ Raíz con escritura',
-          'destinations.createButton' => 'Crear destination',
+          'destinations.createButton' => 'Crear destino',
           'destinations.created' => ({
             required Object name,
-          }) => 'Destination ${name} creado',
+          }) => 'Destino ${name} creado',
           'destinations.saved' => ({
             required Object name,
-          }) => 'Destination ${name} guardado',
+          }) => 'Destino ${name} guardado',
           'destinations.detailDescription' =>
             'Un bucket donde este workspace escribe backups.',
           'destinations.statBackups' => 'Backups',

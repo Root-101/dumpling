@@ -57,7 +57,7 @@ Things noticed using 0.1.0, numbered to do them in any order.
 3. Reorder by hand, dragging them: backups, sources, destinations and the folders of a
    destination. The order is saved in the service (a new position column in each table). In
    Backups it is a "Manual" option of the sort selector, and dragging works only with it chosen.
-4. "Nuevo source" in the Spanish console: the word *source* is left untranslated.
+4. "Nuevo source" in the Spanish console: the word *source* is left untranslated. Done for 0.1.2.
 5. Check that an S3 endpoint ending in `/` works.
 6. The cron ⓘ in the config dialog: a wider popup, it sometimes wraps into two lines.
 7. A backup before a release: when a backend deploys a version with a migration, it asks Dumpling
