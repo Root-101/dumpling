@@ -49,6 +49,19 @@ class RunTableRepo {
     };
   }
 
+  /// The runs of [workspace] that ended, started at [since] or later, oldest
+  /// first: what an export carries.
+  Future<List<RunTableData>> finishedSince(String workspace, DateTime since) =>
+      (_db.select(_db.runTable)
+            ..where(
+              (tbl) =>
+                  tbl.workspaceSlug.equals(workspace) &
+                  tbl.startedAt.isBiggerOrEqualValue(since) &
+                  tbl.status.equalsValue(RunStatus.running).not(),
+            )
+            ..orderBy([(tbl) => OrderingTerm.asc(tbl.startedAt)]))
+          .get();
+
   Future<RunTableData?> get(String workspace, String id) =>
       (_db.select(_db.runTable)..where(
             (tbl) => tbl.workspaceSlug.equals(workspace) & tbl.id.equals(id),

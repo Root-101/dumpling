@@ -73,6 +73,8 @@ class ServiceMessages$errors$en {
       ServiceMessages$errors$configs$en._(_root);
   late final ServiceMessages$errors$runs$en runs =
       ServiceMessages$errors$runs$en._(_root);
+  late final ServiceMessages$errors$transfer$en transfer =
+      ServiceMessages$errors$transfer$en._(_root);
   late final ServiceMessages$errors$validations$en validations =
       ServiceMessages$errors$validations$en._(_root);
 }
@@ -181,6 +183,26 @@ class ServiceMessages$errors$runs$en {
 
   /// en: 'limit must be from 1 to {max: int}'
   String invalidLimit({required int max}) => 'limit must be from 1 to ${max}';
+}
+
+// Path: errors.transfer
+class ServiceMessages$errors$transfer$en {
+  ServiceMessages$errors$transfer$en._(this._root);
+
+  final ServiceMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Not a file exported by Dumpling'
+  String get notAnExport => 'Not a file exported by Dumpling';
+
+  /// en: 'This file is of another version of the export format: this Dumpling reads version {version: int}'
+  String version({required int version}) =>
+      'This file is of another version of the export format: this Dumpling reads version ${version}';
+
+  /// en: 'The credentials of this file do not decrypt with this SECRETS_ENCRYPTION_KEY: import it on a Dumpling with the same key as the one that exported it'
+  String get secrets =>
+      'The credentials of this file do not decrypt with this SECRETS_ENCRYPTION_KEY: import it on a Dumpling with the same key as the one that exported it';
 }
 
 // Path: errors.validations
@@ -302,6 +324,11 @@ extension on ServiceMessages {
       'errors.runs.invalidLimit' => ({
         required int max,
       }) => 'limit must be from 1 to ${max}',
+      'errors.transfer.notAnExport' => 'Not a file exported by Dumpling',
+      'errors.transfer.version' => ({
+        required int version,
+      }) => 'This file is of another version of the export format: this Dumpling reads version ${version}',
+      'errors.transfer.secrets' => 'The credentials of this file do not decrypt with this SECRETS_ENCRYPTION_KEY: import it on a Dumpling with the same key as the one that exported it',
       'errors.validations.cron' =>
         'Not a valid cron expression (minute hour day month weekday)',
       'errors.validations.objectKey' => 'The object key cannot start with /',

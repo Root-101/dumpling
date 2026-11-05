@@ -23,6 +23,10 @@ errors:
     alreadyRunning: 'This config is already running: wait for it to end.'
     invalidFilter: '{name: String} must be one of: {values: String}'
     invalidLimit: 'limit must be from 1 to {max: int}'
+  transfer:
+    notAnExport: 'Not a file exported by Dumpling'
+    version: 'This file is of another version of the export format: this Dumpling reads version {version: int}'
+    secrets: 'The credentials of this file do not decrypt with this SECRETS_ENCRYPTION_KEY: import it on a Dumpling with the same key as the one that exported it'
   # Validation rules of the service's own requests (Winter translates its validators)
   validations:
     cron: 'Not a valid cron expression (minute hour day month weekday)'
