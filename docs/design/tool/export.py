@@ -32,6 +32,8 @@ SCREENS = [
     ('Workspaces', 'new-workspace', 'Workspaces', 'New workspace'),
     ('Workspaces', 'workspace-settings', 'Settings', 'Workspace settings'),
     ('Workspaces', 'workspace-delete', 'Settings-Delete', 'Delete a workspace, confirmed with its name'),
+    ('Workspaces', 'import', 'Workspaces-Import-Drop', 'Import workspaces: drop or choose an exported file'),
+    ('Workspaces', 'import-file', 'Workspaces-Import', 'Import workspaces: what the file adds, a taken name as Name (2)'),
     ('Pipeline editor', 'canvas', 'Proposal-A', 'The canvas: source, config and destination'),
     ('Pipeline editor', 'config', 'Proposal-A-Config', 'A config in its dialog in steps'),
     ('Pipeline editor', 'getting-started', 'Getting-Started', 'An empty workspace and its guide'),

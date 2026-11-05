@@ -225,11 +225,14 @@ class _Uses extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      config.schedule,
-                      style: AppText.mono.copyWith(fontSize: 13),
-                    ),
-                    Text(config.enabled ? t.cronUtc : t.paused, style: muted),
+                    if (config.enabled) ...[
+                      Text(
+                        config.schedule,
+                        style: AppText.mono.copyWith(fontSize: 13),
+                      ),
+                      Text(t.cronUtc, style: muted),
+                    ] else
+                      Text(app.intl.canvas.disabled),
                   ],
                 ),
                 switch (config.lastRun) {

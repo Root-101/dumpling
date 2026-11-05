@@ -145,6 +145,32 @@ workspaces:
   creating: 'Creating…'
   created: 'Workspace {name: String} created'
   settingsOf: 'Settings for {name: String}'
+  transfer:
+    import: 'Import'
+    exportAll: 'Export all'
+    exportOf: 'Export {name: String} to a file'
+    exported: 'Exported to {file: String}'
+    importTitle: 'Import workspaces'
+    importDescription: 'From a file exported by Dumpling. Its workspaces are added to the list; nothing here is replaced.'
+    drop: 'Drop the exported file here'
+    dropHint: 'A .json made by Export in Workspaces'
+    choose: 'Choose a file'
+    change: 'Change'
+    exportedAt: 'exported {time: String}'
+    notAnExport: 'This file is not an export of Dumpling: choose a .json made by Export in Workspaces.'
+    toAdd(plural, param=n):
+      one: '{n} workspace to add'
+      other: '{n} workspaces to add'
+    as: 'as'
+    nameTaken: 'Name taken'
+    counts: '{sources: int} sources · {destinations: int} destinations · {configs: int} backups · {runs: int} runs'
+    keyNote: 'Credentials come encrypted: they only work with the same SECRETS_ENCRYPTION_KEY as the Dumpling that exported them. The run log brings its last month.'
+    importCount(plural, param=n):
+      one: 'Import {n} workspace'
+      other: 'Import {n} workspaces'
+    imported(plural, param=n):
+      one: '{n} workspace imported'
+      other: '{n} workspaces imported'
   settings:
     title: 'Workspace settings'
     description: 'Applies only to this workspace'

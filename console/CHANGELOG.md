@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.1.2
+
+- Workspaces: **Export all** downloads every workspace as a JSON file, and each card exports its
+  own; **Import** opens a dialog to drop or choose that file, shows what it adds (a taken name as
+  `Prod (2)`) and adds it.
+- The settings button of a workspace is a gear; the export arrow points down (the file comes to
+  you) and the import arrow up.
+- Deleting a workspace: the name to type stands out, and Enter deletes once it matches.
+- Backups: a next run more than a day away reads `30 d 5 h` instead of `725 h 39 min` (and so do
+  the durations of runs); the clock at the foot of the table ticks on its own.
+- Spanish: *Orígenes* and *Destinos* everywhere; their own screens said *source* and
+  *destination* (`Nuevo source`).
+- The cron ⓘ of a config opens wider (480 px), so its lines don't wrap.
+- A disabled config shows *Disabled* instead of its cron, on the canvas, in Backups and in the
+  detail of its source; in its dialog, turning it off turns off the frequency and the cron.
+
 ## 0.1.1
 
 - No changes in the console: the README drops its Railway section, now that the

@@ -366,7 +366,7 @@ class ConfigNodeView extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                if (schedule != null) ...[
+                                if (schedule != null || !config.enabled) ...[
                                   const SizedBox(width: 6),
                                   Container(
                                     height: 20,
@@ -378,23 +378,34 @@ class ConfigNodeView extends StatelessWidget {
                                       color: colors.surface.control,
                                       borderRadius: BorderRadius.circular(5),
                                     ),
-                                    child: Text(
-                                      schedule,
-                                      style: AppText.mono.copyWith(
-                                        fontSize: 11,
-                                        color: colors.text.secondary,
-                                      ),
-                                    ),
+                                    // disabled: the tag says so instead of
+                                    // a cron that doesn't run
+                                    child: config.enabled
+                                        ? Text(
+                                            schedule!,
+                                            style: AppText.mono.copyWith(
+                                              fontSize: 11,
+                                              color: colors.text.secondary,
+                                            ),
+                                          )
+                                        : Text(
+                                            app.intl.canvas.disabled,
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600,
+                                              color: colors.text.secondary,
+                                            ),
+                                          ),
                                   ),
                                 ],
                               ],
                             ),
                             Text(
-                              schedule == null
+                              !config.enabled
+                                  ? app.intl.canvas.inspector.enabledOff
+                                  : schedule == null
                                   ? app.intl.canvas.workspaceDefault
-                                  : config.enabled
-                                  ? Frequency.of(schedule).label
-                                  : app.intl.canvas.disabled,
+                                  : Frequency.of(schedule).label,
                               style: AppText.meta,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,

@@ -4,11 +4,13 @@ name: CI
 on:
   push:
     branches: [develop, main]
+  # release.yml runs it before publishing the image
+  workflow_call:
 
 jobs:
   check:
     name: ${{ matrix.package }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -17,7 +19,7 @@ jobs:
       run:
         working-directory: ${{ matrix.package }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # the version pinned for fvm
       - id: fvm

@@ -1,17 +1,14 @@
 # Dumpling in one container: the service runs the backups and serves the console as static files.
-# The variables come from the environment of the shell, or from a .env file next to this one
-# (see .env.example); the shell wins. The four secrets have no default:
+# The image is the one published on each release (ghcr.io); to run one built from the repo, build
+# it with this name first (see the README). The variables come from the environment of the shell,
+# or from a .env file next to this one (see .env.example); the shell wins. The four secrets have
+# no default:
 #   cp .env.example .env    # and fill in the secrets
-#   docker compose up -d --build
+#   docker compose up -d
 # Console and API at http://localhost:8080.
 services:
   dumpling:
-    build:
-      # The root: the Dockerfile builds the service and the console
-      context: .
-      args:
-        PG_VERSION: ${PG_VERSION:-18}
-    image: dumpling:0.1.1
+    image: ghcr.io/root-101/dumpling:0.1.2
     restart: unless-stopped
     ports:
       - "8080:8080"

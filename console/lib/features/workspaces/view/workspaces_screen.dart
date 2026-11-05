@@ -46,6 +46,22 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
             title: app.intl.workspaces.title,
             description: app.intl.workspaces.description,
             actions: [
+              PrimaryButton.secondary(
+                onPressed: () => WorkspaceImportDialog.open(context),
+                title: app.intl.workspaces.transfer.import,
+                icon: app.assets.icons.actions.import,
+                color: app.colors.surface.control,
+                h: 40,
+                horizontalPadding: 16,
+              ),
+              PrimaryButton.secondary(
+                onPressed: WorkspaceExport.run,
+                title: app.intl.workspaces.transfer.exportAll,
+                icon: app.assets.icons.actions.export,
+                color: app.colors.surface.control,
+                h: 40,
+                horizontalPadding: 16,
+              ),
               PrimaryButton.primary(
                 onPressed: () => WorkspaceForm.open(context),
                 title: app.intl.workspaces.create,

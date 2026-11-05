@@ -59,6 +59,26 @@ class WorkspaceRepo {
     }
   }
 
+  Future<Map<String, dynamic>> export({String? slug, String? token}) async {
+    try {
+      return await _client.export(slug: slug, token: token);
+    } catch (e) {
+      throw ExceptionConverter.parse(e);
+    }
+  }
+
+  Future<List<WorkspaceModel>> import({
+    required Map<String, dynamic> file,
+    String? token,
+  }) async {
+    try {
+      final response = await _client.import(file: file, token: token);
+      return response.map((e) => e.toModel()).toList();
+    } catch (e) {
+      throw ExceptionConverter.parse(e);
+    }
+  }
+
   /// The workspace opened last, so the rail keeps showing it on the list of
   /// workspaces and after a reload
   Future<void> saveLast(String slug) async {

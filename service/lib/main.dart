@@ -53,6 +53,9 @@ class Dumpling {
       )
       ..addDeserializer(
         Deserializer<CanvasRequest>.json(CanvasRequest.fromJson),
+      )
+      ..addDeserializer(
+        Deserializer<ImportRequest>.json(ImportRequest.fromJson),
       );
 
     //--------------- DB ---------------\\

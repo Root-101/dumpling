@@ -68,7 +68,7 @@ class AppSimpleTable extends StatelessWidget {
 
   /// Info line at the bottom of the table, and [hintEnd] on its right
   final String? hint;
-  final String? hintEnd;
+  final Widget? hintEnd;
 
   final double minWidth;
 
@@ -211,7 +211,8 @@ class AppSimpleTable extends StatelessWidget {
       child: Row(
         children: [
           Expanded(child: Text(text, style: style)),
-          if (hintEnd != null) Text(hintEnd!, style: style),
+          if (hintEnd != null)
+            DefaultTextStyle.merge(style: style, child: hintEnd!),
         ],
       ),
     );

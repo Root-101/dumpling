@@ -42,6 +42,29 @@ void main() {
   List<int> expected(int length) => List.generate(length, (i) => i % 251);
 
   group('S3Uploader', () {
+    test(
+      'Should write to the same place with an endpoint ending in /',
+      () async {
+        for (final end in ['/', '//']) {
+          s3.reset();
+          final slashed = S3Client(
+            endpoint: Uri.parse('${s3.endpoint}$end'),
+            region: FakeS3.region,
+            bucket: 'backups',
+            accessKeyId: FakeS3.accessKeyId,
+            secretAccessKey: FakeS3.secretAccessKey,
+            pathStyle: true,
+          );
+          await S3Uploader(
+            slashed,
+            partSize: 1000,
+          ).upload('a.dump', bytes(250));
+          expect(s3.requests.single, startsWith('PUT /backups/a.dump'));
+          expect(s3.objects['backups/a.dump'], expected(250));
+        }
+      },
+    );
+
     test('Should send a stream that fits in one part with PutObject', () async {
       final size = await S3Uploader(
         client,
