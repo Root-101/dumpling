@@ -179,18 +179,19 @@ fvm flutter run -d chrome --web-port=8081
 
 ## Upgrading
 
-In 0.x the database has no migrations: when a version changes its schema, the SQLite file is
-created again, empty. Before upgrading to one of those, export the configuration of your
-workspaces and import it once the new version runs (export and import arrive with item 11 of the
-[roadmap](ROADMAP.md); until then, the workspaces are made again by hand). The backups already in
-your buckets are not touched.
+In 0.x the Dumpling database has no migrations: when a version changes its schema, the SQLite file
+is created again, empty. Before upgrading to one of those, export your workspaces (*Export all* in
+Workspaces, since 0.1.2) and import the file once the new version runs, with the same
+`SECRETS_ENCRYPTION_KEY`. The backups already in your buckets are not touched.
 
 From the version you run (left) to the one you upgrade to (top), 🔴 means export first and — means
 nothing to do:
 
-| From \ To | 0.1.1 |
-|-----------|:-----:|
-| 0.1.0     |   —   |
+| From \ To | 0.1.0 | 0.1.1 | 0.1.2 |
+|-----------|:-----:|:-----:|:-----:|
+| 0.1.0     |   —   |   —   |   —   |
+| 0.1.1     |       |   —   |   —   |
+| 0.1.2     |       |       |   —   |
 
 ## Restoring
 

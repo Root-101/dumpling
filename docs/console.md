@@ -81,10 +81,25 @@ runs. The files already in the buckets stay.
 
 ![Delete a workspace](design/screens/06-workspace-delete.png)
 
+### Export and import
+
+**Export all**, at the top, downloads every workspace as one JSON file
+(`dumpling-export-2026-11-05.json`); the export button of a card, only that one
+(`dumpling-production-2026-11-05.json`). The file carries the canvas, the credentials encrypted as
+they are stored and the run log of the last month.
+
+**Import** opens a dialog: drop the file on it or **Choose a file**. It shows the file and the
+workspaces it adds, with their counts; a name already taken shows *as* `Production (2)` and *Name
+taken*. **Import n workspaces** adds them and reloads the list. A file that isn't an export, or
+whose credentials don't decrypt with this `SECRETS_ENCRYPTION_KEY`, shows why above the file and
+adds nothing.
+
 **Behind it:** [`GET /api/workspaces`](api.md#list-workspaces) for the cards (with their
 statistics), [`POST /api/workspaces`](api.md#create-a-workspace) to create one,
-[`PUT /api/workspaces/{slug}`](api.md#edit-a-workspace) to edit it and its defaults, and
-[`DELETE /api/workspaces/{slug}`](api.md#delete-a-workspace) to delete it.
+[`PUT /api/workspaces/{slug}`](api.md#edit-a-workspace) to edit it and its defaults,
+[`DELETE /api/workspaces/{slug}`](api.md#delete-a-workspace) to delete it, and
+[`GET /api/export`](api.md#export-workspaces) and [`POST /api/import`](api.md#import-workspaces)
+to export and import.
 
 ## Pipeline editor
 
