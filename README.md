@@ -113,19 +113,20 @@ Each one is a driver behind the same contract, so adding one doesn't change the 
 
 ### With Docker Compose
 
-From the root of the repo, with the four secrets in a `.env` file (see
+Each release publishes its image, for amd64 and arm64: `ghcr.io/root-101/dumpling:<version>`
+(`latest` is the last one that isn't a release candidate). With
+[`docker-compose.yml`](docker-compose.yml) and the four secrets in a `.env` file next to it (see
 [`.env.example`](.env.example)) or in the environment of the shell:
 
 ```bash
 cp .env.example .env      # and fill in the admin user, its password and two long random secrets
-docker compose up -d --build
+docker compose up -d
 ```
 
 - Console and API: <http://localhost:8080>, sign in with `DUMPLING_ADMIN_USER` /
   `DUMPLING_ADMIN_PASSWORD`.
 - Its SQLite database lives in the `dumpling-data` volume; the backups, in your buckets.
-- `PG_VERSION` in the `.env` chooses the `pg_dump` of the image (it dumps servers of that version or
-  older); change it and run `docker compose up -d --build`.
+- The image carries the `pg_dump` of PostgreSQL 18, which dumps servers of that version or older.
 
 Keep `SECRETS_ENCRYPTION_KEY`: the passwords of the databases and the keys of the buckets are
 encrypted with it, and changing it makes them unreadable.
@@ -136,10 +137,16 @@ PostgreSQL without TLS, like the one of a plain `postgres` container, needs it o
 ### With Docker, the image alone
 
 ```bash
-docker build -t dumpling --build-arg PG_VERSION=18 .
-docker run -p 8080:8080 -v dumpling-data:/data \
-  -e DUMPLING_ADMIN_USER=… -e DUMPLING_ADMIN_PASSWORD=… \
-  -e JWT_SECRET=… -e SECRETS_ENCRYPTION_KEY=… dumpling
+docker run -p 8080:8080 -v dumpling-data:/data   -e DUMPLING_ADMIN_USER=… -e DUMPLING_ADMIN_PASSWORD=…   -e JWT_SECRET=… -e SECRETS_ENCRYPTION_KEY=… ghcr.io/root-101/dumpling:0.1.2
+```
+
+### Building the image
+
+From the root of the repo. `PG_VERSION` chooses another `pg_dump`; tagged with the name of the
+compose, `docker compose up -d` runs this one:
+
+```bash
+docker build -t ghcr.io/root-101/dumpling:0.1.2 --build-arg PG_VERSION=18 .
 ```
 
 ### Locally

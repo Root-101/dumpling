@@ -48,6 +48,8 @@ are in the changelogs of [`service/`](service/CHANGELOG.md) and [`console/`](con
 Things noticed using 0.1.0, numbered to do them in any order.
 
 1. Publish the image to the GitHub Container Registry (the plan is in [Docker image](#docker-image)).
+   Done for 0.1.2: `release.yml` publishes it on each tag; by hand, after the first push, the
+   package made public and the Railway template moved to the image.
 2. Backups: the "in X h Y min" of the next run shows its two biggest units, with days as the
    largest: `30d 5h` or `1d 3h` instead of `719h 39min`; under a day, hours and minutes; under an
    hour, minutes and seconds. The clock at the foot of the table ticks on its own; today it only
@@ -108,7 +110,7 @@ Things noticed using 0.1.0, numbered to do them in any order.
 
 ## Docker image
 
-To weigh: publish the image, built by CI on each tag, so running Dumpling needs no clone and no
+Done for 0.1.2 (`.github/workflows/release.yml`), except the Railway template. The plan: publish the image, built by CI on each tag, so running Dumpling needs no clone and no
 build. The `Dockerfile` at the root is already publishable (one image, no secrets in it, no
 `VOLUME`); what is missing is the CI, the compose and the docs.
 

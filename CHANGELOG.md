@@ -13,6 +13,10 @@ release candidates before 0.1.0 are summed up in the [roadmap](ROADMAP.md#010).
   taken as `Prod (2)`. The credentials only decrypt with the same `SECRETS_ENCRYPTION_KEY` as the
   Dumpling that exported them. It is how the data crosses a version that changes the schema of
   the database (see [Upgrading](README.md#upgrading)).
+- **The image is published** on each release, for amd64 and arm64:
+  `ghcr.io/root-101/dumpling:<version>` (`latest`, the last one without `-rc`). The
+  `docker-compose.yml` runs it instead of building the repo, so it and `.env.example` are all
+  that is needed; `PG_VERSION` is only a build arg now (the published image carries 18).
 - API: `GET /api/export` (`?workspace=<slug>` for one) and `POST /api/import`, with the
   permissions `workspace.export` and `workspace.import`.
 - Console: the settings of a workspace behind a gear; in the delete confirmation the name to type
