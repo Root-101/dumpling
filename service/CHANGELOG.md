@@ -8,6 +8,11 @@
   `Name (2)` and with new ids. The credentials are decrypted with this `SECRETS_ENCRYPTION_KEY`
   and encrypted again bound to their new rows: another key is a 422 that names them. New
   permissions `workspace.export` and `workspace.import`.
+- The image is published to `ghcr.io/root-101/dumpling` on each version tag, for amd64 and arm64,
+  once the checks pass (`release.yml`); its console stage is built once, on the platform of the
+  builder.
+- An S3 endpoint ending in `/` writes to the same place as without it (it already did; a test
+  keeps it so).
 
 ## 0.1.1
 

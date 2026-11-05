@@ -75,7 +75,7 @@ Things noticed using 0.1.0, numbered to do them in any order.
     Workspaces list: export all of them, or one from its card, to a JSON file. Credentials go
     encrypted as they are stored, so the import needs the same key; the run log of the last month
     goes too. Import opens a dialog where the file is dropped or picked; it adds its workspaces to
-    the list, and a name already taken gets another (`Prod (2)`). In progress for 0.1.2.
+    the list, and a name already taken gets another (`Prod (2)`). Done for 0.1.2.
 
     b) Dumpling itself as a source of each workspace: its export goes through the same backups as
     any database (schedule, compression, destination, run log), so the file lands in a bucket on
