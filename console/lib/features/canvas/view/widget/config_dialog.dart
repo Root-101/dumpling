@@ -232,10 +232,13 @@ class _ConfigDialogState extends State<ConfigDialog> {
         values: Frequency.values,
         labelOf: (f) => f.label,
         value: schedule == null ? null : Frequency.of(schedule),
-        onChanged: (f) {
-          if (f == Frequency.cron) return;
-          _set(_c.copyWith(schedule: () => Frequency.apply(f, schedule)));
-        },
+        // it writes the cron: off with it
+        onChanged: !_c.enabled
+            ? null
+            : (f) {
+                if (f == Frequency.cron) return;
+                _set(_c.copyWith(schedule: () => Frequency.apply(f, schedule)));
+              },
       ),
       const SizedBox(height: 12),
       Row(
@@ -252,7 +255,9 @@ class _ConfigDialogState extends State<ConfigDialog> {
                   value: schedule ?? '',
                   hint: app.intl.canvas.workspaceDefault,
                   mono: true,
-                  error: _cronError,
+                  // a disabled config only runs with Run now: no cron to edit
+                  enabled: _c.enabled,
+                  error: _c.enabled ? _cronError : null,
                   // empty: back to the default of the workspace
                   onChanged: (v) => _set(
                     _c.copyWith(
@@ -611,6 +616,7 @@ class _Input extends StatefulWidget {
   final String? error;
   final bool mono;
   final int? maxLength;
+  final bool enabled;
   final ValueChanged<String> onChanged;
 
   const _Input({
@@ -620,6 +626,7 @@ class _Input extends StatefulWidget {
     this.error,
     this.mono = false,
     this.maxLength,
+    this.enabled = true,
   });
 
   @override
@@ -658,9 +665,10 @@ class _InputState extends State<_Input> {
       controller: _controller,
       onChanged: widget.onChanged,
       maxLength: widget.maxLength,
+      enabled: widget.enabled,
       style: (widget.mono ? AppText.mono : const TextStyle()).copyWith(
         fontSize: widget.mono ? 12 : 13,
-        color: colors.text.primary,
+        color: widget.enabled ? colors.text.primary : colors.text.subtle,
       ),
       decoration: InputDecoration(
         hintText: widget.hint,
@@ -675,6 +683,7 @@ class _InputState extends State<_Input> {
           vertical: 14,
         ),
         enabledBorder: border(colors.surface.border),
+        disabledBorder: border(colors.surface.border.withValues(alpha: 0.5)),
         focusedBorder: border(colors.brand.primary, 2),
         errorBorder: border(colors.status.error),
         focusedErrorBorder: border(colors.status.error, 2),

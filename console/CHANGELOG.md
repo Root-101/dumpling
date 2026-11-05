@@ -13,6 +13,8 @@
 - Spanish: *Orígenes* and *Destinos* everywhere; their own screens said *source* and
   *destination* (`Nuevo source`).
 - The cron ⓘ of a config opens wider (480 px), so its lines don't wrap.
+- A disabled config shows *Disabled* instead of its cron, on the canvas, in Backups and in the
+  detail of its source; in its dialog, turning it off turns off the frequency and the cron.
 
 ## 0.1.1
 

@@ -69,7 +69,7 @@ Things noticed using 0.1.0, numbered to do them in any order.
    restore into that one, so a restore that goes wrong loses nothing.
 9. Encrypt the dump before uploading it to the bucket. To talk through how before implementing it.
 10. A disabled config shows a "Disabled" tag instead of its cron, on the canvas and in Backups;
-    in the config dialog, disabling it disables the cron field.
+    in the config dialog, disabling it disables the cron field. Done for 0.1.2.
 11. Export and import the configuration (workspaces, sources, destinations, canvas) as a file, so
     a schema change in 0.x keeps the data without migrations: export, upgrade, import. From the
     Workspaces list: export all of them, or one from its card, to a JSON file. Credentials go

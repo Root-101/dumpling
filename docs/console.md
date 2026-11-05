@@ -138,7 +138,8 @@ Opened from its node (its pencil, or double click), in three steps:
 1. **Name & schedule:** the name, the frequency (hourly, daily, weekly or a cron, in UTC) and
    whether it is enabled, with the next run it gives. An empty cron takes the workspace's; the ⓘ
    by it shows how to read one: its five fields, some examples and the syntax (`*`, `*/n`, `a-b`,
-   `a,b`).
+   `a,b`). A disabled config only runs with *Run now*: its frequency and cron are off, and the
+   canvas and Backups show *Disabled* where its cron goes.
 2. **Output:** the **object key**, the name of the file in the bucket, relative to the folder it
    writes to and without extension (the service adds `.dump` or `.sql`, and `.gz` with gzip). The
    info icon next to it lists its placeholders: `{yyyy}`, `{MM}`, `{dd}`, `{HH}`, `{mm}` (the start

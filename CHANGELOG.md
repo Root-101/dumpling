@@ -22,7 +22,8 @@ release candidates before 0.1.0 are summed up in the [roadmap](ROADMAP.md#010).
 - Console: the settings of a workspace behind a gear; in the delete confirmation the name to type
   stands out, and Enter deletes once it matches. In Backups, a next run days away reads
   `30 d 5 h`, and the clock at the foot of the table ticks on its own. In Spanish, the screens of
-  sources and destinations say *origen* and *destino*.
+  sources and destinations say *origen* and *destino*. A disabled config shows *Disabled*
+  instead of its cron, and its dialog turns the cron off with it.
 
 ## 0.1.1
 

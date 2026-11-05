@@ -630,15 +630,16 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            schedule == null
+            !c.enabled
+                ? app.intl.canvas.disabled
+                : schedule == null
                 ? app.intl.canvas.workspaceDefault
-                : c.enabled
-                ? Frequency.of(schedule).label
-                : t.paused,
+                : Frequency.of(schedule).label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          if (schedule != null)
+          // disabled: no cron, it doesn't run
+          if (schedule != null && c.enabled)
             Text(schedule, style: AppText.mono.copyWith(fontSize: 11)),
         ],
       ),
