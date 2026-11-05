@@ -15,6 +15,8 @@ release candidates before 0.1.0 are summed up in the [roadmap](ROADMAP.md#010).
   the database (see [Upgrading](README.md#upgrading)).
 - API: `GET /api/export` (`?workspace=<slug>` for one) and `POST /api/import`, with the
   permissions `workspace.export` and `workspace.import`.
+- Console: the settings of a workspace behind a gear; in the delete confirmation the name to type
+  stands out, and Enter deletes once it matches.
 
 ## 0.1.1
 

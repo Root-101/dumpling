@@ -300,7 +300,7 @@ class _WorkspaceImportDialogState extends State<WorkspaceImportDialog> {
                 shape: BoxShape.circle,
               ),
               alignment: Alignment.center,
-              child: app.assets.icons.actions.export.build(
+              child: app.assets.icons.actions.import.build(
                 size: 22,
                 color: colors.primary.primaryLight,
               ),

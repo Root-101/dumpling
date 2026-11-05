@@ -850,6 +850,12 @@ class _DeleteDialogState extends State<_DeleteDialog> {
 
   bool get _ok => _typed.text.trim() == widget.workspace.name;
 
+  void _delete() {
+    if (!_ok) return;
+    Navigator.of(context).pop();
+    widget.onConfirm();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = app.colors;
@@ -925,11 +931,27 @@ class _DeleteDialogState extends State<_DeleteDialog> {
                         style: const TextStyle(fontSize: 13),
                         children: [
                           TextSpan(text: '${t.typeBefore} '),
-                          TextSpan(
-                            text: widget.workspace.name,
-                            style: AppText.mono.copyWith(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
+                          WidgetSpan(
+                            alignment: PlaceholderAlignment.middle,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 1,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colors.primary.primaryFaded.withValues(
+                                  alpha: 0.2,
+                                ),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                widget.workspace.name,
+                                style: AppText.mono.copyWith(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: colors.primary.primaryLight,
+                                ),
+                              ),
                             ),
                           ),
                           TextSpan(text: ' ${t.typeAfter}'),
@@ -940,6 +962,7 @@ class _DeleteDialogState extends State<_DeleteDialog> {
                       controller: _typed,
                       autofocus: true,
                       onChange: (_) => setState(() {}),
+                      onSubmitted: (_) => _delete(),
                     ),
                   ],
                 ),
@@ -955,12 +978,7 @@ class _DeleteDialogState extends State<_DeleteDialog> {
                       w: 100,
                     ),
                     PrimaryButton.primary(
-                      onPressed: _ok
-                          ? () {
-                              Navigator.of(context).pop();
-                              widget.onConfirm();
-                            }
-                          : null,
+                      onPressed: _ok ? _delete : null,
                       title: t.deleteButton,
                       color: colors.primary.errorAction,
                       h: 40,

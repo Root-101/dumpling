@@ -5,6 +5,9 @@
 - Workspaces: **Export all** downloads every workspace as a JSON file, and each card exports its
   own; **Import** opens a dialog to drop or choose that file, shows what it adds (a taken name as
   `Prod (2)`) and adds it.
+- The settings button of a workspace is a gear; the export arrow points down (the file comes to
+  you) and the import arrow up.
+- Deleting a workspace: the name to type stands out, and Enter deletes once it matches.
 
 ## 0.1.1
 

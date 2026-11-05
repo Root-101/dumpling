@@ -76,7 +76,7 @@ name (`Test workspace` → `test-workspace`), is unique and doesn't change on a 
 
 A dialog over the list, in tabs: **General** (name, description, color), **Defaults** (the
 schedule, compression and object key a new config starts with) and **Delete**. Deleting asks you to
-type the name of the workspace and says what goes with it: its sources, destinations, configs and
+type the name of the workspace (highlighted; Enter deletes once it matches) and says what goes with it: its sources, destinations, configs and
 runs. The files already in the buckets stay.
 
 ![Delete a workspace](design/screens/06-workspace-delete.png)
