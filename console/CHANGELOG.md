@@ -12,6 +12,7 @@
   the durations of runs); the clock at the foot of the table ticks on its own.
 - Spanish: *Orígenes* and *Destinos* everywhere; their own screens said *source* and
   *destination* (`Nuevo source`).
+- The cron ⓘ of a config opens wider (480 px), so its lines don't wrap.
 
 ## 0.1.1
 

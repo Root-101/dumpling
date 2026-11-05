@@ -60,7 +60,8 @@ Things noticed using 0.1.0, numbered to do them in any order.
 4. "Nuevo source" in the Spanish console: the word *source* is left untranslated. Done for 0.1.2.
 5. Check that an S3 endpoint ending in `/` works. Checked for 0.1.2: it does (the slashes at the
    end are dropped before signing), and a test keeps it so.
-6. The cron ⓘ in the config dialog: a wider popup, it sometimes wraps into two lines.
+6. The cron ⓘ in the config dialog: a wider popup, it sometimes wraps into two lines. Done for
+   0.1.2.
 7. A backup before a release: when a backend deploys a version with a migration, it asks Dumpling
    (a request from its pipeline) to back up its database before running the migration. Needs
    API keys or users allowed only to run a given config. To talk through before designing it.

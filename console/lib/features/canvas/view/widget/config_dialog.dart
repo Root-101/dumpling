@@ -770,7 +770,7 @@ class _CronInfo extends StatelessWidget {
     return Tooltip(
       triggerMode: TooltipTriggerMode.tap,
       showDuration: const Duration(seconds: 30),
-      constraints: const BoxConstraints(maxWidth: 400),
+      constraints: const BoxConstraints(maxWidth: 480),
       padding: const EdgeInsets.all(12),
       richMessage: TextSpan(
         children: [
