@@ -322,7 +322,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
     return left > 0 ? app.intl.backups.updatingIn(seconds: left) : null;
   }
 
-  /// `11 h 45 min`, `3 min 10 s`, and under a minute only the seconds
+  /// `30 d 5 h`, `11 h 45 min`, `3 min 10 s`, and under a minute only the seconds
   /// (`20 s`, `0 s` once it is due)
   static String _until(DateTime at) {
     final d = at.difference(DateTime.now());
@@ -403,7 +403,6 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
 
   Widget _buildTable(BackupData data) {
     final t = app.intl.backups;
-    final now = DateTime.now();
     final format = app.dateFormatter.time;
     return AppSimpleTable(
       minWidth: 1120,
@@ -448,9 +447,17 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
           : t.showing(shown: data.visible.length, total: data.backups.length),
       hintEnd: data.backups.isEmpty
           ? null
-          : t.timesNote(
-              utc: format.format(now.toUtc()),
-              local: format.format(now),
+          // the clock goes on between the loads of the screen
+          : _EverySecond(
+              builder: (_) {
+                final now = DateTime.now();
+                return Text(
+                  t.timesNote(
+                    utc: format.format(now.toUtc()),
+                    local: format.format(now),
+                  ),
+                );
+              },
             ),
       placeholder: data.backups.isEmpty
           ? AppTablePlaceholder(

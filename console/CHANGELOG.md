@@ -8,6 +8,8 @@
 - The settings button of a workspace is a gear; the export arrow points down (the file comes to
   you) and the import arrow up.
 - Deleting a workspace: the name to type stands out, and Enter deletes once it matches.
+- Backups: a next run more than a day away reads `30 d 5 h` instead of `725 h 39 min` (and so do
+  the durations of runs); the clock at the foot of the table ticks on its own.
 
 ## 0.1.1
 

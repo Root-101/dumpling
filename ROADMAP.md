@@ -53,7 +53,7 @@ Things noticed using 0.1.0, numbered to do them in any order.
 2. Backups: the "in X h Y min" of the next run shows its two biggest units, with days as the
    largest: `30d 5h` or `1d 3h` instead of `719h 39min`; under a day, hours and minutes; under an
    hour, minutes and seconds. The clock at the foot of the table ticks on its own; today it only
-   changes on a reload.
+   changes on a reload. Done for 0.1.2.
 3. Reorder by hand, dragging them: backups, sources, destinations and the folders of a
    destination. The order is saved in the service (a new position column in each table). In
    Backups it is a "Manual" option of the sort selector, and dragging works only with it chosen.

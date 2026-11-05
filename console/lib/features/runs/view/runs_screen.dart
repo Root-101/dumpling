@@ -38,7 +38,7 @@ class RunsScreen extends StatefulWidget {
     super.key,
   });
 
-  /// `—` while it runs, `0.4 s`, `42 s`, `3 min 5 s`, `1 h 2 min`
+  /// `—` while it runs, `0.4 s`, `42 s`, `3 min 5 s`, `1 h 2 min`, `30 d 5 h`
   static String durationOf(Duration? d) {
     if (d == null) return '—';
     // a step under a second
@@ -47,7 +47,8 @@ class RunsScreen extends StatefulWidget {
     }
     if (d.inMinutes == 0) return '${d.inSeconds} s';
     if (d.inHours == 0) return '${d.inMinutes} min ${d.inSeconds % 60} s';
-    return '${d.inHours} h ${d.inMinutes % 60} min';
+    if (d.inDays == 0) return '${d.inHours} h ${d.inMinutes % 60} min';
+    return '${d.inDays} d ${d.inHours % 24} h';
   }
 
   @override
