@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- `GET /api/health`, without a token: `200` `{"status": "up"}` when the service and its
+  database answer, `503` `{"status": "down"}` when the database doesn't.
+
 ## 0.1.3
 
 - The schema changes: `source`, `destination`, `destination_folder` and `config` get a `position`;

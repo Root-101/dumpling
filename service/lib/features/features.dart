@@ -4,6 +4,7 @@ export 'configs/configs.dart';
 export 'db/database.dart';
 export 'runs/runs.dart';
 export 'destinations/destinations.dart';
+export 'health/health.dart';
 export 'sources/sources.dart';
 export 'transfer/transfer.dart';
 export 'workspaces/workspaces.dart';

@@ -1,7 +1,7 @@
 import 'package:service/dumpling.dart';
 
-/// The API of the console, under `/api`. Everything but the login needs a
-/// token with the permission of the endpoint (see [Permissions]).
+/// The API of the console, under `/api`. Everything but the login and the
+/// health check needs a token with the permission of the endpoint (see [Permissions]).
 class ApiController {
   final AuthController authController;
   final WorkspaceController workspaceController;
@@ -11,6 +11,7 @@ class ApiController {
   final RunController runController;
   final CanvasController canvasController;
   final TransferController transferController;
+  final HealthController healthController;
 
   ApiController()
     : authController = AuthController(),
@@ -20,12 +21,18 @@ class ApiController {
       configController = ConfigController(),
       runController = RunController(),
       canvasController = CanvasController(),
-      transferController = TransferController();
+      transferController = TransferController(),
+      healthController = HealthController();
 
   Route get routing => Route.parent(
     path: '/api',
     filterConfig: [JwtFilter()].toFilterConfig(),
     routes: [
+      Route.get(
+        key: 'health',
+        path: '/health',
+        handler: healthController.health,
+      ),
       Route.post(
         key: 'auth.login',
         path: '/auth/login',
