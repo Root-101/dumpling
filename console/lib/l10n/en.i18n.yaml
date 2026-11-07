@@ -718,7 +718,9 @@ apiKeys:
   access: 'Access'
   permissions: 'Permissions · {n: int} of {total: int}'
   limit: 'Only some configs'
-  limitHint: 'It runs only these and sees only their runs. Off: every config of the workspace, new ones too.'
+  limitHint: "It runs only these and sees only their runs, and can't create configs nor use the canvas. Off: every config of the workspace, new ones too."
+  limitOff: 'Only for configs and runs: give the key a permission on them to limit it.'
+  notLimitable: 'Not with Only some configs: it reaches every config'
   noConfigs: 'This workspace has no configs yet.'
   renewNote: "The key itself doesn't change. To renew it, create another and delete this one."
   summaryAll: 'All configs · {n: int} permissions'

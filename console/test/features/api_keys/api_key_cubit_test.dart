@@ -84,6 +84,30 @@ void main() {
     expect(grouped, ApiKeyPermissions.all);
   });
 
+  test('a limited key matches the template without the canvas', () {
+    final full = ApiKeyPermissions.of(ApiKeyAccess.full, limited: true);
+    expect(full, isNot(contains('canvas.get')));
+    expect(full, isNot(contains('config.create')));
+    expect(ApiKeyAccess.of(full, limited: true), ApiKeyAccess.full);
+    expect(ApiKeyAccess.of(full), ApiKeyAccess.custom);
+    expect(
+      apiKey(
+        'deploy',
+        permissions: ApiKeyPermissions.of(ApiKeyAccess.read, limited: true),
+        configIds: ['cfg_orders'],
+      ).access,
+      ApiKeyAccess.read,
+    );
+    // every limited permission is one of the form, as the service lists them
+    expect(
+      ApiKeyPermissions.all.toSet(),
+      containsAll([
+        ...ApiKeyPermissions.limitable,
+        ...ApiKeyPermissions.notLimitable,
+      ]),
+    );
+  });
+
   test('searches and filters by access, config and permission', () async {
     final cubit = await loaded();
     expect(visible(cubit), ['deploy', 'grafana', 'provisioning']);

@@ -1779,9 +1779,17 @@ class AppMessages$apiKeys$en {
   /// en: 'Only some configs'
   String get limit => 'Only some configs';
 
-  /// en: 'It runs only these and sees only their runs. Off: every config of the workspace, new ones too.'
+  /// en: 'It runs only these and sees only their runs, and can't create configs nor use the canvas. Off: every config of the workspace, new ones too.'
   String get limitHint =>
-      'It runs only these and sees only their runs. Off: every config of the workspace, new ones too.';
+      'It runs only these and sees only their runs, and can\'t create configs nor use the canvas. Off: every config of the workspace, new ones too.';
+
+  /// en: 'Only for configs and runs: give the key a permission on them to limit it.'
+  String get limitOff =>
+      'Only for configs and runs: give the key a permission on them to limit it.';
+
+  /// en: 'Not with Only some configs: it reaches every config'
+  String get notLimitable =>
+      'Not with Only some configs: it reaches every config';
 
   /// en: 'This workspace has no configs yet.'
   String get noConfigs => 'This workspace has no configs yet.';
@@ -3635,7 +3643,10 @@ extension on AppMessages {
             required int total,
           }) => 'Permissions · ${n} of ${total}',
           'apiKeys.limit' => 'Only some configs',
-          'apiKeys.limitHint' => 'It runs only these and sees only their runs. Off: every config of the workspace, new ones too.',
+          'apiKeys.limitHint' => 'It runs only these and sees only their runs, and can\'t create configs nor use the canvas. Off: every config of the workspace, new ones too.',
+          'apiKeys.limitOff' => 'Only for configs and runs: give the key a permission on them to limit it.',
+          'apiKeys.notLimitable' =>
+            'Not with Only some configs: it reaches every config',
           'apiKeys.noConfigs' => 'This workspace has no configs yet.',
           'apiKeys.renewNote' => 'The key itself doesn\'t change. To renew it, create another and delete this one.',
           'apiKeys.summaryAll' => ({

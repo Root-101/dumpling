@@ -35,14 +35,19 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
   late final TextEditingController _name = TextEditingController(
     text: widget.apiKey?.name ?? '',
   );
+  late bool _limit =
+      (widget.apiKey?.limited ?? false) &&
+      widget.apiKey!.permissions.any(ApiKeyPermissions.limitable.contains);
   late Set<String> _permissions = {
     ...?widget.apiKey?.permissions ??
         ApiKeyPermissions.templates[ApiKeyAccess.run],
-  };
-  late bool _limit = widget.apiKey?.limited ?? false;
+  }..removeAll(_limit ? ApiKeyPermissions.notLimitable : const []);
   late final Set<String> _configs = {...?widget.apiKey?.configIds};
 
   bool get _editing => widget.apiKey != null;
+
+  /// The limit only changes the configs and runs a key sees
+  bool get _canLimit => _permissions.any(ApiKeyPermissions.limitable.contains);
 
   @override
   void dispose() {
@@ -81,7 +86,7 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
     final t = app.intl.apiKeys;
     final colors = app.colors;
     final data = widget.cubit.state.data;
-    final access = ApiKeyAccess.of(_permissions);
+    final access = ApiKeyAccess.of(_permissions, limited: _limit);
     final label = TextStyle(
       fontSize: 13,
       fontWeight: FontWeight.w600,
@@ -157,7 +162,7 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
                         selected: access == template,
                         onTap: () => setState(
                           () => _permissions = {
-                            ...ApiKeyPermissions.templates[template]!,
+                            ...ApiKeyPermissions.of(template, limited: _limit),
                           },
                         ),
                       ),
@@ -167,8 +172,10 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
               _PermissionGrid(
                 selected: _permissions,
                 custom: access == ApiKeyAccess.custom,
+                locked: _limit ? ApiKeyPermissions.notLimitable : const [],
                 onToggle: (key) => setState(() {
                   if (!_permissions.remove(key)) _permissions.add(key);
+                  if (!_canLimit) _limit = false;
                 }),
               ),
             ],
@@ -179,9 +186,18 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
             children: [
               AppSwitchTile(
                 title: t.limit,
-                subtitle: t.limitHint,
+                subtitle: _canLimit ? t.limitHint : t.limitOff,
                 value: _limit,
-                onChanged: () => setState(() => _limit = !_limit),
+                onChanged: _canLimit
+                    ? () => setState(() {
+                        _limit = !_limit;
+                        if (_limit) {
+                          _permissions.removeAll(
+                            ApiKeyPermissions.notLimitable,
+                          );
+                        }
+                      })
+                    : null,
               ),
               if (_limit)
                 data.configs.isEmpty
@@ -297,11 +313,15 @@ class _TemplateCard extends StatelessWidget {
 class _PermissionGrid extends StatelessWidget {
   final Set<String> selected;
   final bool custom;
+
+  /// Off and disabled: what a key limited to some configs can't have
+  final List<String> locked;
   final void Function(String key) onToggle;
 
   const _PermissionGrid({
     required this.selected,
     required this.custom,
+    required this.locked,
     required this.onToggle,
   });
 
@@ -375,11 +395,15 @@ class _PermissionGrid extends StatelessWidget {
                             children: [
                               for (final p in permissions)
                                 Tooltip(
-                                  message: '${p.description} (${p.key})',
+                                  message: locked.contains(p.key)
+                                      ? t.notLimitable
+                                      : '${p.description} (${p.key})',
                                   child: _CheckLabel(
                                     label: p.label,
                                     selected: selected.contains(p.key),
-                                    onTap: () => onToggle(p.key),
+                                    onTap: locked.contains(p.key)
+                                        ? null
+                                        : () => onToggle(p.key),
                                   ),
                                 ),
                             ],
@@ -397,11 +421,11 @@ class _PermissionGrid extends StatelessWidget {
   }
 }
 
-/// A box and its word, as a checkbox
+/// A box and its word, as a checkbox; dimmed without [onTap]
 class _CheckLabel extends StatelessWidget {
   final String label;
   final bool selected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _CheckLabel({
     required this.label,
@@ -415,24 +439,30 @@ class _CheckLabel extends StatelessWidget {
     return Semantics(
       checked: selected,
       button: true,
+      enabled: onTap != null,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(4),
-        child: SizedBox(
-          height: 26,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 6,
-            children: [
-              _CheckBox(selected: selected),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: selected ? colors.text.primary : colors.neutral.grey3,
+        child: Opacity(
+          opacity: onTap == null ? 0.4 : 1,
+          child: SizedBox(
+            height: 26,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 6,
+              children: [
+                _CheckBox(selected: selected),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: selected
+                        ? colors.text.primary
+                        : colors.neutral.grey3,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

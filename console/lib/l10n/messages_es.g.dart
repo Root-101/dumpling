@@ -1340,7 +1340,13 @@ class AppMessages$apiKeys$es implements AppMessages$apiKeys$en {
   String get limit => 'Solo algunas configs';
   @override
   String get limitHint =>
-      'Ejecuta solo estas y ve solo sus ejecuciones. Apagado: todas las configs del workspace, también las nuevas.';
+      'Ejecuta solo estas y ve solo sus ejecuciones, y no puede crear configs ni usar el canvas. Apagado: todas las configs del workspace, también las nuevas.';
+  @override
+  String get limitOff =>
+      'Solo para configs y ejecuciones: dale a la key un permiso sobre ellas para limitarla.';
+  @override
+  String get notLimitable =>
+      'No con Solo algunas configs: alcanza todas las configs';
   @override
   String get noConfigs => 'Este workspace aún no tiene configs.';
   @override
@@ -3005,7 +3011,10 @@ extension on AppMessagesEs {
             required Object total,
           }) => 'Permisos · ${n} de ${total}',
           'apiKeys.limit' => 'Solo algunas configs',
-          'apiKeys.limitHint' => 'Ejecuta solo estas y ve solo sus ejecuciones. Apagado: todas las configs del workspace, también las nuevas.',
+          'apiKeys.limitHint' => 'Ejecuta solo estas y ve solo sus ejecuciones, y no puede crear configs ni usar el canvas. Apagado: todas las configs del workspace, también las nuevas.',
+          'apiKeys.limitOff' => 'Solo para configs y ejecuciones: dale a la key un permiso sobre ellas para limitarla.',
+          'apiKeys.notLimitable' =>
+            'No con Solo algunas configs: alcanza todas las configs',
           'apiKeys.noConfigs' => 'Este workspace aún no tiene configs.',
           'apiKeys.renewNote' =>
             'La key no cambia. Para renovarla, crea otra y borra esta.',

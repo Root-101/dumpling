@@ -7,11 +7,12 @@ enum ApiKeyAccess {
   full,
   custom;
 
-  /// The template [permissions] are, or [custom]
-  static ApiKeyAccess of(Iterable<String> permissions) {
+  /// The template [permissions] are, or [custom]. A key [limited] to some
+  /// configs matches the template without what it can't have
+  static ApiKeyAccess of(Iterable<String> permissions, {bool limited = false}) {
     final set = permissions.toSet();
     for (final access in [run, read, full]) {
-      final template = ApiKeyPermissions.templates[access]!;
+      final template = ApiKeyPermissions.of(access, limited: limited);
       if (set.length == template.length && set.containsAll(template)) {
         return access;
       }
@@ -60,6 +61,32 @@ abstract final class ApiKeyPermissions {
     ],
     ApiKeyAccess.full: all,
   };
+
+  /// What a key limited to some configs sees only for them: without one of
+  /// these the limit changes nothing, as the service says
+  static const List<String> limitable = [
+    'config.list',
+    'config.get',
+    'config.update',
+    'config.delete',
+    'config.run',
+    'run.list',
+    'run.get',
+  ];
+
+  /// What a key limited to some configs can't have: the canvas reaches every
+  /// config, and one it created would be out of its reach
+  static const List<String> notLimitable = [
+    'config.create',
+    'canvas.get',
+    'canvas.save',
+  ];
+
+  /// The permissions of [access], without [notLimitable] when [limited]
+  static List<String> of(ApiKeyAccess access, {bool limited = false}) => [
+    for (final p in templates[access]!)
+      if (!limited || !notLimitable.contains(p)) p,
+  ];
 
   static const List<String> all = [
     'workspace.get',
@@ -194,7 +221,7 @@ class ApiKeyModel {
     this.key,
   });
 
-  ApiKeyAccess get access => ApiKeyAccess.of(permissions);
+  ApiKeyAccess get access => ApiKeyAccess.of(permissions, limited: limited);
 
   bool get limited => configIds.isNotEmpty;
 
