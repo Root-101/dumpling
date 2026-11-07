@@ -182,3 +182,16 @@ is and the volume must already be writable by that user.
 | It runs with `HOME=/app`, the home of `dumpling` | `setpriv` keeps the `HOME` of root; `pg_dump` looks there for client certificates and, unable to enter `/root`, fails over TLS (rc.5) |
 | Not `RAILWAY_RUN_UID=0` on the service           | It would run the whole service as root, and only on Railway; the fix in the image works on any platform that mounts the volume as root |
 | No `VOLUME` in the Dockerfile                    | Railway rejects it; the volume is mounted where it runs (`-v`, compose or a Railway Volume on `/data`)                               |
+
+## 17. The order set by hand
+
+Sources, destinations, the folders of a destination and configs keep a `position`: the order the
+user dragged them to. The lists answer in it, a new one goes last.
+
+| Decision                                                   | Why                                                                                                                                         |
+|------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| The position is the index in the list that is saved        | The canvas save, the import and the folders of a destination already send whole lists: their order is the order, no field in the JSON       |
+| `PUT …/order` takes every id of the workspace, each once   | A partial order leaves the rest without a defined place; a 422 is clearer than guessing where they go                                      |
+| Dragging only with no search or filter on                  | Dropping a row among some of them has several readings for the ones hidden (before it, in its place, first): each moves rows you can't see |
+| It reuses the permission `*.update`                        | Reordering edits the list; a key of its own would add nothing until there are users with fewer permissions                                 |
+| The canvas sends the nodes in the order it loaded them     | It splits them into placed and off the canvas; concatenating both would reorder them on every save                                         |

@@ -184,7 +184,11 @@ error under the date) and next run, with **Run now** on each row.
 |                                                     |                                                 |
 |-----------------------------------------------------|-------------------------------------------------|
 | ![Filters](design/screens/13-backups-filters.png)   | ![Sort](design/screens/14-backups-sort.png)     |
-| **Filters** by status, source and destination, and a search | **Sort** by the last backup (newest or oldest first), the next one or the source name |
+| **Filters** by status, source and destination, and a search | **Sort** by the last backup (newest or oldest first), the next one, the source name or by hand |
+
+**Manual**, the last option of the sort, is the order set by hand: each row gets a handle (⠿) to
+drag it, and the order is saved as it drops. With a search or a filter on, the handles are dimmed
+(*Clear the search and filters to reorder*): a part of the list has no clear place in the whole.
 
 A row opens its recent runs, with where each file went (selectable, to copy it); each one opens
 its details, the same as in the run log.
@@ -194,7 +198,8 @@ its details, the same as in the run log.
 **Behind it:** [`GET /api/workspaces/{slug}/configs`](api.md#list-configs) for the rows (each with
 its `last_run` and `next_run`), [`GET /api/workspaces/{slug}/runs?config={id}`](api.md#run-log)
 for the recent runs of one, [`GET /api/workspaces/{slug}/runs/{id}`](api.md#a-run-and-its-log) for a run, and
-[`POST /api/workspaces/{slug}/configs/{id}/run`](api.md#run-now) for Run now.
+[`POST /api/workspaces/{slug}/configs/{id}/run`](api.md#run-now) for Run now, and
+[`PUT /api/workspaces/{slug}/configs/order`](api.md#reorder-sources) when a row is dragged.
 
 ## Sources
 
@@ -204,7 +209,9 @@ for the recent runs of one, [`GET /api/workspaces/{slug}/runs/{id}`](api.md#a-ru
 
 The databases this workspace backs up, as a list or as cards, with a search and a filter by type:
 each one's name, type and server version, host, how many backups use it and the result of its last
-connection check.
+connection check. In the list, the handle (⠿) at the start of a row drags it to another place, kept
+by the service (and by the canvas, Backups' *Manual* sort and an export); with a search or a filter
+on, it is dimmed. The cards keep the same order but don't drag.
 
 ![Sources, grid view](design/screens/17-sources-grid.png)
 
@@ -251,6 +258,7 @@ and the connection:
 | Edit                         | [`PUT /api/workspaces/{slug}/sources/{id}`](api.md#edit-a-source)                                      |
 | Test a saved one             | [`POST /api/workspaces/{slug}/sources/{id}/test`](api.md#test-a-saved-source)                            |
 | Delete                       | [`DELETE /api/workspaces/{slug}/sources/{id}`](api.md#delete-a-source)                                   |
+| Drag a row                   | [`PUT /api/workspaces/{slug}/sources/order`](api.md#reorder-sources)                                     |
 | The backups of the detail    | [`GET /api/workspaces/{slug}/configs`](api.md#list-configs)                                              |
 
 ## Destinations
@@ -262,7 +270,8 @@ and the connection:
 The buckets this workspace writes to, as a list or as cards, with a search and a filter by type. A
 row opens the folders of its bucket, to add or delete them there: with at least one folder, each
 folder is a connection point on the canvas and the root of the bucket is not; with none, the root
-is the only one. A folder a backup writes to can't be deleted.
+is the only one. A folder a backup writes to can't be deleted. Rows and folders drag by their handle
+(⠿), as in Sources; a folder keeps its place on the canvas too.
 
 ![Destinations, grid view](design/screens/23-destinations-grid.png)
 
@@ -280,9 +289,9 @@ The same dialog in three steps:
    and `s3:AbortMultipartUpload`. The connection test starts a multipart upload at the bucket root
    and aborts it, so it proves the key, the bucket and the write permission without leaving
    anything behind; *Next* waits for one that connects.
-3. **Folders:** the summary and the folders (optional). Each new folder is tested the same way
-   (*Check n folders*) before saving; editing, the saved ones count as tested until the connection
-   changes.
+3. **Folders:** the summary and the folders (optional), dragged by their handle into the order
+   they keep. Each new folder is tested the same way (*Check n folders*) before saving; editing,
+   the saved ones count as tested until the connection changes.
 
 ### Its options
 
@@ -305,7 +314,8 @@ The detail shows the backups that write to each folder, the last check and the c
 | The list                            | [`GET /api/workspaces/{slug}/destinations`](api.md#list-destinations)                                         |
 | Test the form, before saving        | [`POST /api/workspaces/{slug}/destinations/test`](api.md#test-a-destination-before-saving) (`?destination={id}` editing: the saved secret key) |
 | Create                              | [`POST /api/workspaces/{slug}/destinations`](api.md#create-a-destination)                                     |
-| Edit, add or delete a folder        | [`PUT /api/workspaces/{slug}/destinations/{id}`](api.md#edit-a-destination)                                 |
+| Edit, add, delete or drag a folder  | [`PUT /api/workspaces/{slug}/destinations/{id}`](api.md#edit-a-destination)                                 |
+| Drag a row                          | [`PUT /api/workspaces/{slug}/destinations/order`](api.md#reorder-sources)                                     |
 | Test a saved one                    | [`POST /api/workspaces/{slug}/destinations/{id}/test`](api.md#test-a-saved-destination)                       |
 | Delete                              | [`DELETE /api/workspaces/{slug}/destinations/{id}`](api.md#delete-a-destination)                              |
 | The backups of the detail           | [`GET /api/workspaces/{slug}/configs`](api.md#list-configs)                                                   |
