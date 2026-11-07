@@ -11,7 +11,7 @@ unless you'd rather not.
 
 ## Supported versions
 
-Only the latest release gets security fixes (today `0.1.3`).
+Only the latest release gets security fixes (today `0.1.4`).
 
 ## Security model
 
@@ -22,8 +22,8 @@ reasons behind each decision are in [`DECISIONS.md`](DECISIONS.md).
 
 - One user, the admin (`DUMPLING_ADMIN_USER` / `DUMPLING_ADMIN_PASSWORD`), signs in to the console
   and gets a JWT (HS256, `JWT_SECRET`) that expires in 12 hours; tokens without an expiry are
-  rejected. Every route of the API but the login needs it, in the `Authorization` header: never a
-  cookie, so there is no CSRF.
+  rejected. Every route of the API but the login and `GET /api/health` (it only says `up` or
+  `down`) needs it, in the `Authorization` header: never a cookie, so there is no CSRF.
 - The username and password are compared in constant time. Each failed login waits 1 second, and
   10 in a row lock the client IP for 15 minutes, even with the right password afterward
   (`LOGIN_MAX_FAILURES`, `LOGIN_LOCK_SECONDS`, `LOGIN_FAILURE_DELAY_MS`).

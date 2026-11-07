@@ -16,7 +16,7 @@ their kind: `src_…` for sources, `dst_…` for destinations, `cfg_…` for con
 | Who                                          | How                                                                                          |
 |----------------------------------------------|----------------------------------------------------------------------------------------------|
 | The console (and anything else that logs in) | `Authorization: Bearer <access_token>`, from [`POST /api/auth/login`](#log-in)              |
-| Nobody                                       | Only `POST /api/auth/login` (and the console's own files, outside `/api`)                   |
+| Nobody                                       | Only `POST /api/auth/login`, [`GET /api/health`](#health) and the console's own files       |
 
 There is one user, the admin of the environment (`DUMPLING_ADMIN_USER`, `DUMPLING_ADMIN_PASSWORD`).
 Its token lasts 12 hours, has every permission, and there is no refresh: then the console asks to
@@ -116,6 +116,20 @@ GET /api/auth/session
 
 Who the token belongs to and when it expires (epoch milliseconds, to the second). A quick way to
 check that a token still works; the console itself doesn't call it.
+
+## Health
+
+```http
+GET /api/health
+```
+
+```json
+{"status": "up"}
+```
+
+For load balancers and container checks: no token, and nothing else in the answer. `up` means the
+service answers and so does its database; if the database doesn't, it is a `503` with
+`{"status": "down"}` and the error goes to the log.
 
 ## Types of sources and destinations
 
