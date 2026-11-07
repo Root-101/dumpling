@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- The confirmations (delete a source, destination or backup, discard the canvas) look as in the
+  design: the title and the text to the left, Cancel and the action to the right, without a ✕.
+
 ## 0.1.5
 
 - A dropped row no longer shows the old order for a frame before taking its place.
