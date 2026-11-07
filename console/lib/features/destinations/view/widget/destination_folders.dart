@@ -66,23 +66,11 @@ class _DestinationFoldersState extends State<DestinationFolders> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ReorderableListView(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              buildDefaultDragHandles: false,
-              onReorderItem: widget.onMove,
-              proxyDecorator: (child, _, _) => Material(
-                color: app.colors.primary.background2,
-                elevation: 6,
-                child: child,
-              ),
-              children: [
-                for (final (index, folder) in folders.indexed)
-                  KeyedSubtree(
-                    key: ValueKey(folder),
-                    child: _buildFolder(index, folder),
-                  ),
-              ],
+            AppReorderableList<String>(
+              items: folders,
+              keyOf: (folder) => folder,
+              onReorder: widget.onMove,
+              itemBuilder: _buildFolder,
             ),
             if (folders.isEmpty)
               SizedBox(

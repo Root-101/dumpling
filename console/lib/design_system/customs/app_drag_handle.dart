@@ -41,3 +41,64 @@ List<T> reordered<T>(List<T> list, int from, int to) {
   result.insert(to, result.removeAt(from));
   return result;
 }
+
+/// A [ReorderableListView] of [items] moved by their [AppDragHandle]s. On a
+/// drop it shows the new order right away and then calls [onReorder]: the
+/// list drops its gap in that same frame, and a cubit's state comes a frame
+/// later, so waiting for it shows the old order for a moment
+class AppReorderableList<T> extends StatefulWidget {
+  final List<T> items;
+
+  /// Unique per item, kept across the moves
+  final Object Function(T item) keyOf;
+  final Widget Function(int index, T item) itemBuilder;
+  final void Function(int from, int to) onReorder;
+
+  const AppReorderableList({
+    required this.items,
+    required this.keyOf,
+    required this.itemBuilder,
+    required this.onReorder,
+    super.key,
+  });
+
+  @override
+  State<AppReorderableList<T>> createState() => _AppReorderableListState<T>();
+}
+
+class _AppReorderableListState<T> extends State<AppReorderableList<T>> {
+  late List<T> _items = widget.items;
+
+  @override
+  void didUpdateWidget(AppReorderableList<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _items = widget.items;
+  }
+
+  void _move(int from, int to) {
+    setState(() => _items = reordered(_items, from, to));
+    widget.onReorder(from, to);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ReorderableListView(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      buildDefaultDragHandles: false,
+      onReorderItem: _move,
+      proxyDecorator: (child, _, _) => Material(
+        color: app.colors.primary.background2,
+        elevation: 6,
+        child: child,
+      ),
+      children: [
+        for (final (index, item) in _items.indexed)
+          KeyedSubtree(
+            key: ValueKey(widget.keyOf(item)),
+            child: widget.itemBuilder(index, item),
+          ),
+      ],
+    );
+  }
+}

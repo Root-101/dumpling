@@ -126,30 +126,15 @@ class AppSimpleTable extends StatelessWidget {
         if (onReorder == null)
           for (final row in rows) _buildBodyRow(row, divider)
         else
-          ReorderableListView(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            buildDefaultDragHandles: false,
-            onReorderItem: onReorder!,
-            proxyDecorator: (child, _, _) => Material(
-              color: app.colors.primary.background2,
-              elevation: 6,
-              child: child,
+          AppReorderableList<AppTableRow>(
+            items: rows,
+            keyOf: (row) => row.id!,
+            onReorder: onReorder!,
+            itemBuilder: (index, row) => _buildBodyRow(
+              row,
+              divider,
+              handle: AppDragHandle(index: index, blocked: reorderBlocked),
             ),
-            children: [
-              for (final (index, row) in rows.indexed)
-                KeyedSubtree(
-                  key: ValueKey(row.id ?? index),
-                  child: _buildBodyRow(
-                    row,
-                    divider,
-                    handle: AppDragHandle(
-                      index: index,
-                      blocked: reorderBlocked,
-                    ),
-                  ),
-                ),
-            ],
           ),
         ?placeholder,
         if (hint != null) _buildHint(hint!),
