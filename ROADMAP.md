@@ -48,13 +48,10 @@ are in the changelogs of [`service/`](service/CHANGELOG.md) and [`console/`](con
 Things noticed using 0.1.0, numbered to do them in any order. What is already done is in the
 [changelog](CHANGELOG.md).
 
-1. A backup before a release: when a backend deploys a version with a migration, it asks Dumpling
-   (a request from its pipeline) to back up its database before running the migration. Needs
-   API keys or users allowed only to run a given config. `To talk through before designing it.`
-2. When restoring exists: back up the target database first, rename it, create a new database and
+1. When restoring exists: back up the target database first, rename it, create a new database and
    restore into that one, so a restore that goes wrong loses nothing.
-3. Encrypt the dump before uploading it to the bucket. `To talk through how before implementing it.`
-4. Dumpling itself as a source of each workspace: its export (0.1.2) goes through the same backups
+2. Encrypt the dump before uploading it to the bucket. `To talk through how before implementing it.`
+3. Dumpling itself as a source of each workspace: its export (0.1.2) goes through the same backups
    as any database (schedule, compression, destination, run log), so the file lands in a bucket on
    its own. `To talk through.`
 
@@ -73,13 +70,14 @@ Things noticed using 0.1.0, numbered to do them in any order. What is already do
 - `verify-full` with a CA for PostgreSQL sources (`require` and `disable` exist).
 - Download a backup from the console.
 - Events feed (changes, connection checks) and alerts.
-- Live runs over a websocket: the service pushes each run's step, bytes and percentage as it goes,
-  and the run log and its dialog update without Refresh. Until then a run in progress shows a
-  generic bar and the bytes uploaded so far, and its log appears only when it ends. The same
-  socket tells Backups when a scheduled run starts and ends and the next one is planned, so the
-  countdown stays local and the screen updates without the reload it does once due (which stays,
-  for a socket that is down). The token goes in its first message (a browser can't send headers on
-  a WebSocket). To design in detail when it starts.
+- Live runs in the console: the run log and its dialog follow each run's step, bytes and
+  percentage as it goes, without Refresh. The service already streams one run as Server-Sent Events
+  (`GET …/runs/{id}/events`, made for pipelines); the console can follow a run with it, or with a
+  stream of the whole workspace. Until then a run in progress shows a generic bar and the bytes
+  uploaded so far, and its log appears only when it ends. The same stream tells Backups when a
+  scheduled run starts and ends and the next one is planned, so the countdown stays local and the
+  screen updates without the reload it does once due (which stays, for a stream that is down). To
+  design in detail when it starts.
 - Hardening left by the security audit: a new admin password ends the sessions already open;
   refuse to start with short secrets (today only a warning); pin the JWT algorithm and an
   audience; a retention for the run log; no redirects followed by the S3 client; the stored
