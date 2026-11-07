@@ -1016,7 +1016,10 @@ service keeps only its hash.
 ```
 
 A permission a key can't have, none, or a config of another workspace is a `422` on `permissions`
-or `config_ids`. Keys don't expire: to renew one, create another and delete the old one.
+or `config_ids`. The limit to some configs applies to `config.list`, `config.get`, `config.update`,
+`config.delete`, `config.run`, `run.list` and `run.get`: `config_ids` without one of them is a
+`422`, and so is a limited key with `config.create`, `canvas.get` or `canvas.save` (the canvas reads
+and saves every config, and a config it created would be out of its reach). Keys don't expire: to renew one, create another and delete the old one.
 
 ### Edit an API key
 

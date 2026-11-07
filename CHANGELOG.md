@@ -10,7 +10,8 @@ release candidates before 0.1.0 are summed up in the [roadmap](ROADMAP.md#010).
   workspaces before upgrading and import them after (see [Upgrading](README.md#upgrading)).
 - **API keys.** Each workspace has keys for other systems: a deploy pipeline that backs up its
   database before a migration, a script, a dashboard. A key has the permissions it was given (with
-  templates: *Run backups*, *Read only*, *Full access*) and optionally only some configs; it is sent
+  templates: *Run backups*, *Read only*, *Full access*) and optionally only some configs (then it can't create configs nor use the
+  canvas); it is sent
   as a Bearer token or with Basic auth, shown once, and doesn't expire. The new **API keys** screen
   lists, searches, filters, sorts, creates, edits and deletes them. Guide:
   [`docs/integrations.md`](docs/integrations.md).

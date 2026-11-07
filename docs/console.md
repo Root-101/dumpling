@@ -380,7 +380,9 @@ log.
 **New API key** opens its form: a name (the run log shows it), a template that marks its
 permissions, and the permissions themselves by resource, each with a tooltip of what it allows
 (changing one makes it *Custom*). **Only some configs** limits it to the ones chosen: it runs only
-those and sees only their runs. Editing a key changes all of that, never the key itself.
+those and sees only their runs. It is off and dimmed, with the reason under it, while the key has no
+permission on configs or runs (the limit wouldn't change anything); on, *Create* configs and the
+*Canvas* are unchecked and dimmed, since they reach every config. Editing a key changes all of that, never the key itself.
 
 ![New API key](design/screens/35-new-api-key.png)
 

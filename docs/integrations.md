@@ -13,7 +13,7 @@ In the console, **API keys** in the rail of the workspace, then **New API key**:
 - **Access:** *Run backups* is enough for a pipeline: it starts backups and follows their runs.
   The permissions can also be marked one by one; each one says what it allows.
 - **Only some configs:** limit it to the backup of the database the pipeline deploys. It runs only
-  those configs and sees only their runs.
+  those configs and sees only their runs (and can't create configs nor use the canvas).
 
 The key (`dmp_…`) is shown once: copy it into a secret of your pipeline (`DUMPLING_KEY`). Keys
 don't expire; to renew one, create another and delete the old one.
