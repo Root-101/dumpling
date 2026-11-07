@@ -4,7 +4,7 @@ What changes in each version of Dumpling, from 0.1.0. The detail of each package
 changelogs of [`service/`](service/CHANGELOG.md) and [`console/`](console/CHANGELOG.md); the
 release candidates before 0.1.0 are summed up in the [roadmap](ROADMAP.md#010).
 
-## Unreleased
+## 0.1.5
 
 - Console: a dragged row drops into place without a flicker of the old order.
 

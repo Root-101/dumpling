@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5
+
+- Nothing in the service; the version follows the console.
+
 ## 0.1.4
 
 - `GET /api/health`, without a token: `200` `{"status": "up"}` when the service and its

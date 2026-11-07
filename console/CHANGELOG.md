@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.5
 
 - A dropped row no longer shows the old order for a frame before taking its place.
 
