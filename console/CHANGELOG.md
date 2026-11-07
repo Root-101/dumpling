@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- **API keys** in the rail: the keys of the workspace with their access (*Run backups*, *Read
+  only*, *Full access* or *Custom*), configs, creation and last use (and the last run they
+  started); a search, filters by access, config and permission, and rows that drag into order.
+  The form has templates and every permission with a tooltip of what it allows, and can limit the
+  key to some configs; a new key is shown once, with a button to copy it and a `curl` to use it.
+- Run log: who started a run (*API · the key*) with the label it was sent as a chip, the status
+  *Queued* with an hourglass, a filter *Started by*, and the search finds labels and keys. The
+  detail of a run says *Started by: API* and the key and label under it.
+- Backups and the canvas show a queued run as running: Run now on a config that runs queues the
+  new run instead of failing.
 - The confirmations (delete a source, destination or backup, discard the canvas) look as in the
   design: the title and the text to the left, Cancel and the action to the right, without a ✕.
 

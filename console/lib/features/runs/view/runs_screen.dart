@@ -29,6 +29,7 @@ class RunsScreen extends StatefulWidget {
   final String? openId;
 
   /// The filters of the URL: `?status=failed&source=postgres&destination=s3`
+  /// and `by=api`
   final Map<String, String> filters;
 
   const RunsScreen({
@@ -102,6 +103,7 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
   static const String _status = 'status';
   static const String _source = 'source';
   static const String _destination = 'destination';
+  static const String _by = 'by';
 
   /// The URL has the filters, so the log can be reloaded or shared filtered
   void _filter(String key, String? value) => _go(
@@ -122,7 +124,10 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
     cubit
       ..filterStatus(RunStatus.values.asNameMap()[f[_status]])
       ..filterSourceType(f[_source])
-      ..filterDestinationType(f[_destination]);
+      ..filterDestinationType(f[_destination])
+      ..filterTrigger(
+        const {'schedule', 'manual', 'api'}.contains(f[_by]) ? f[_by] : null,
+      );
   }
 
   /// The run of the URL over the log, once it is loaded
@@ -384,6 +389,23 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
       ),
       groups: [
         AppFilterGroup(
+          title: t.columnStartedBy,
+          options: [
+            all(data.trigger == null, () => _filter(_by, null)),
+            for (final (trigger, label) in [
+              ('schedule', t.scheduled),
+              ('manual', t.manual),
+              ('api', t.api),
+            ])
+              AppFilterOption(
+                label: label,
+                selected: data.trigger == trigger,
+                count: runs.where((r) => r.trigger == trigger).length,
+                onTap: () => _filter(_by, trigger),
+              ),
+          ],
+        ),
+        AppFilterGroup(
           title: t.columnStatus,
           options: [
             all(data.status == null, () => _filter(_status, null)),
@@ -522,6 +544,7 @@ class _RunRow extends StatelessWidget {
         duration: RunsScreen.durationOf(run.duration),
       ),
       RunStatus.failed => run.error ?? '—',
+      RunStatus.queued => t.queued,
       RunStatus.running =>
         size != null && size > 0
             ? t.soFar(size: app.storageFormatter.formatSize(size))
@@ -581,10 +604,19 @@ class _RunRow extends StatelessWidget {
           ),
           14.gap(),
           SizedBox(
-            width: 90,
-            child: Text(
-              run.manual ? t.manual : t.scheduled,
-              style: TextStyle(fontSize: 11, color: colors.neutral.grey4),
+            width: 130,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 4,
+              children: [
+                Text(
+                  run.startedBy,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 11, color: colors.neutral.grey4),
+                ),
+                if (run.label case final label?) RunLabelChip(label),
+              ],
             ),
           ),
           SizedBox(

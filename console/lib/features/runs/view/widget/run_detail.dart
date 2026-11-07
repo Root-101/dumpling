@@ -205,6 +205,13 @@ class _Result extends StatelessWidget {
       ),
       // shortcut: no live progress (the service only stores the bytes so far),
       // a generic bar until the run updates come over a websocket (ROADMAP)
+      RunStatus.queued => (
+        t.queued,
+        Text(
+          t.resultQueued,
+          style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+        ),
+      ),
       RunStatus.running => (
         size != null && size > 0
             ? t.soFar(size: app.storageFormatter.formatSize(size))
@@ -313,8 +320,18 @@ class _Meta extends StatelessWidget {
           Text(RunsScreen.durationOf(run.duration), style: value),
         ),
         item(
-          t.columnTrigger,
-          Text(run.manual ? t.manual : t.scheduled, style: value),
+          t.columnStartedBy,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(run.byApi ? t.api : run.startedBy, style: value),
+              if (run.byApi)
+                Text(
+                  [?run.keyName, ?run.label].join(' · '),
+                  style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+                ),
+            ],
+          ),
         ),
         item(
           t.columnSize,
@@ -522,7 +539,10 @@ class _Log extends StatelessWidget {
               : log.isEmpty
               // the service writes the log when the run ends
               ? Text(
-                  run.status == RunStatus.running ? t.logWhenDone : t.noLog,
+                  run.status == RunStatus.running ||
+                          run.status == RunStatus.queued
+                      ? t.logWhenDone
+                      : t.noLog,
                   style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
                 )
               // selectable, to copy a few lines (the button copies it all)

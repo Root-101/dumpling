@@ -96,6 +96,11 @@ class RouteConfig {
                 itemName: RouteNames.run,
                 builder: RunsScreen.navigator.builder,
               ),
+              GoRoute(
+                name: ApiKeysScreen.navigator.name,
+                path: ApiKeysScreen.navigator.path,
+                builder: ApiKeysScreen.navigator.builder,
+              ),
             ],
           ),
         ],

@@ -277,12 +277,13 @@ class ConfigNodeView extends StatelessWidget {
     final lastColor = switch (last?.status) {
       RunStatus.success => colors.status.success,
       RunStatus.failed => colors.status.error,
-      RunStatus.running || null => colors.status.pending,
+      RunStatus.running || RunStatus.queued || null => colors.status.pending,
     };
     final lastLabel = switch (last?.status) {
       RunStatus.success => app.intl.canvas.runStatus.success,
       RunStatus.failed => app.intl.canvas.runStatus.failed,
       RunStatus.running => app.intl.canvas.runStatus.running,
+      RunStatus.queued => app.intl.canvas.runStatus.queued,
       null => '',
     };
     final schedule = config.schedule;

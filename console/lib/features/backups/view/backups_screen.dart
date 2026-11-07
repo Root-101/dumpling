@@ -669,6 +669,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
                       ? ''
                       : app.storageFormatter.formatSize(last.sizeBytes!),
                 RunStatus.failed => last.error ?? '',
+                RunStatus.queued => app.intl.canvas.runStatus.queued,
                 RunStatus.running => t.startedAgo(
                   time: RunsScreen.durationOf(
                     DateTime.now().difference(last.startedAt),

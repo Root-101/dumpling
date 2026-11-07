@@ -173,6 +173,12 @@ class _RailState extends State<_Rail> {
                   badge: failing > 0 ? RailBadge(count: failing) : null,
                   label: app.intl.nav.runs,
                 ),
+                divider,
+                item(
+                  RouteNames.apiKeys,
+                  app.intl.nav.apiKeys,
+                  icons.navigation.keys,
+                ),
               ],
               const Spacer(),
               LanguageWidget(expanded: expanded),

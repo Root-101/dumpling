@@ -34,7 +34,7 @@ class RunModel {
   final String destinationName;
   final String destinationType;
 
-  /// `schedule` or `manual`
+  /// `schedule`, `manual` (Run now) or `api` (a request with an API key)
   final String trigger;
   final RunStatus status;
 
@@ -44,6 +44,12 @@ class RunModel {
   final String? error;
   final DateTime startedAt;
   final DateTime? finishedAt;
+
+  /// What the request that started it sent (`v1.4.2`), if any
+  final String? label;
+
+  /// The API key that started it, by the name it had then
+  final String? keyName;
 
   /// Only in the detail of a run; null in the list
   final List<RunLogLine>? log;
@@ -63,6 +69,8 @@ class RunModel {
     this.sizeBytes,
     this.error,
     this.finishedAt,
+    this.label,
+    this.keyName,
     this.log,
   });
 
@@ -84,11 +92,22 @@ class RunModel {
       error: json['error'],
       startedAt: DateTime.parse(json['started_at']),
       finishedAt: finished == null ? null : DateTime.parse(finished),
+      label: json['label'],
+      keyName: json['key_name'],
       log: log?.map((e) => RunLogLine.fromJson(e)).toList(),
     );
   }
 
   bool get manual => trigger == 'manual';
+
+  bool get byApi => trigger == 'api';
+
+  /// `By schedule`, `Manual` or `API · deploy-key`
+  String get startedBy => byApi
+      ? [app.intl.runs.api, ?keyName].join(' · ')
+      : manual
+      ? app.intl.runs.manual
+      : app.intl.runs.scheduled;
 
   Duration? get duration => finishedAt?.difference(startedAt);
 
@@ -108,6 +127,11 @@ class RunModel {
         a == null || b == null ? null : b.at.difference(a.at);
 
     switch (status) {
+      case RunStatus.queued:
+        return const [
+          RunStep(RunStepState.waiting),
+          RunStep(RunStepState.waiting),
+        ];
       case RunStatus.success:
         return [
           RunStep(RunStepState.done, between(checking, connected)),

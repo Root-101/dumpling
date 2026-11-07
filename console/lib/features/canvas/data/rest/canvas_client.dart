@@ -29,8 +29,8 @@ class CanvasClient extends BaseClient {
     return CanvasResponse.fromJson(rawResponse.data);
   }
 
-  /// Starts a run of the saved [configId]; 202 with the run, still running.
-  /// A 409 when one is already in progress
+  /// Starts a run of the saved [configId]; 202 with the run, running, or
+  /// queued when one is already in progress
   Future<Map<String, dynamic>> runNow({
     required String workspace,
     required String configId,

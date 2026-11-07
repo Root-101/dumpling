@@ -68,6 +68,13 @@ void main() {
     ]);
   });
 
+  test('queued: both steps wait their turn', () {
+    expect(states(run(RunStatus.queued, {})), [
+      RunStepState.waiting,
+      RunStepState.waiting,
+    ]);
+  });
+
   test('a run of a deleted config comes without config_id', () {
     final r = RunModel.fromJson({
       'id': 'r1',
