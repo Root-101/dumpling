@@ -118,7 +118,7 @@ class AppGlobal {
   factory AppGlobal() => _instance;
 
   /// The version shown under the login (the `version` of pubspec.yaml)
-  static const String version = '0.1.3';
+  static const String version = '0.1.4';
 
   BuildContext get context => navigatorKey.currentContext!;
 

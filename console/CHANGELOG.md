@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4
+
+- Nothing in the console; the version follows the service.
+
 ## 0.1.3
 
 - Sources, destinations and the folders of a destination (under its row and in its form) drag by a

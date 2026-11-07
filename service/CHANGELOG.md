@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.4
 
 - `GET /api/health`, without a token: `200` `{"status": "up"}` when the service and its
   database answer, `503` `{"status": "down"}` when the database doesn't.
