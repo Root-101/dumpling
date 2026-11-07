@@ -120,12 +120,25 @@ void main() {
 
     test('Should forbid a valid token without the permission (403)', () async {
       final token = sign({
-        'sub': testUser,
+        'sub': 'someone-else',
         'permissions': <String>[],
         'exp': inOneHour(),
       });
       expect(await sessionWith(token), 403);
     });
+
+    test(
+      'Should give the admin every permission, also one newer than its token',
+      () async {
+        // signed before an upgrade added the permissions it lacks
+        final token = sign({
+          'sub': testUser,
+          'permissions': <String>[],
+          'exp': inOneHour(),
+        });
+        expect(await sessionWith(token), 200);
+      },
+    );
 
     test('Should reject a request without a token', () async {
       final response = await http.get(server.url('/api/auth/session'));
