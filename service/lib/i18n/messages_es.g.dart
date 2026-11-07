@@ -277,6 +277,12 @@ class ServiceMessages$errors$validations$es
   @override
   String get unknownConfig => 'No existe esa config en este workspace';
   @override
+  String get limitWithout =>
+      'Limitar a algunas configs necesita un permiso sobre configs o ejecuciones';
+  @override
+  String get notLimitable =>
+      'Una API key limitada a algunas configs no puede crear configs ni usar el canvas';
+  @override
   String label({required Object max}) =>
       'Hasta ${max} letras, dígitos, . _ o -';
   @override
@@ -371,6 +377,8 @@ extension on ServiceMessagesEs {
       'errors.validations.permission' => 'Usa solo permisos de un workspace: una API key no puede tener los demás',
       'errors.validations.unknownConfig' =>
         'No existe esa config en este workspace',
+      'errors.validations.limitWithout' => 'Limitar a algunas configs necesita un permiso sobre configs o ejecuciones',
+      'errors.validations.notLimitable' => 'Una API key limitada a algunas configs no puede crear configs ni usar el canvas',
       'errors.validations.label' => ({
         required Object max,
       }) => 'Hasta ${max} letras, dígitos, . _ o -',

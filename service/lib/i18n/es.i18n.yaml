@@ -46,6 +46,8 @@ errors:
     order: 'Lista cada id del workspace, una sola vez y nada más'
     permission: 'Usa solo permisos de un workspace: una API key no puede tener los demás'
     unknownConfig: 'No existe esa config en este workspace'
+    limitWithout: 'Limitar a algunas configs necesita un permiso sobre configs o ejecuciones'
+    notLimitable: 'Una API key limitada a algunas configs no puede crear configs ni usar el canvas'
     label: 'Hasta {max} letras, dígitos, . _ o -'
     canvasPosition: 'x e y deben estar entre -{max} y {max}'
     postgresUrl: 'No es una URL de conexión de PostgreSQL (postgresql://usuario:contraseña@host:5432/base)'

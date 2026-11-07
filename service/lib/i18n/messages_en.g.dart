@@ -292,6 +292,14 @@ class ServiceMessages$errors$validations$en {
   /// en: 'There is no such config in this workspace'
   String get unknownConfig => 'There is no such config in this workspace';
 
+  /// en: 'Limiting to some configs needs a permission on configs or runs'
+  String get limitWithout =>
+      'Limiting to some configs needs a permission on configs or runs';
+
+  /// en: 'A key limited to some configs cannot create configs nor use the canvas'
+  String get notLimitable =>
+      'A key limited to some configs cannot create configs nor use the canvas';
+
   /// en: 'Up to {max: int} letters, digits, . _ or -'
   String label({required int max}) => 'Up to ${max} letters, digits, . _ or -';
 
@@ -384,6 +392,9 @@ extension on ServiceMessages {
       'errors.validations.permission' => 'Use only permissions of a workspace: an API key cannot have the others',
       'errors.validations.unknownConfig' =>
         'There is no such config in this workspace',
+      'errors.validations.limitWithout' =>
+        'Limiting to some configs needs a permission on configs or runs',
+      'errors.validations.notLimitable' => 'A key limited to some configs cannot create configs nor use the canvas',
       'errors.validations.label' => ({
         required int max,
       }) => 'Up to ${max} letters, digits, . _ or -',

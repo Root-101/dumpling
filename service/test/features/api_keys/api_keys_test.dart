@@ -3,6 +3,7 @@ library;
 
 import 'dart:convert';
 
+import 'package:drift/drift.dart' show Value;
 import 'package:http/http.dart' as http;
 import 'package:service/dumpling.dart';
 import 'package:test/test.dart';
@@ -252,10 +253,40 @@ void main() {
         {
           'permissions': ['config.run'],
         },
+        // the limit changes nothing without a permission on configs or runs
+        {
+          'name': 'x',
+          'permissions': ['source.list'],
+          'config_ids': [nightly],
+        },
+        // the canvas and a new config would get out of the limit
+        for (final p in ['canvas.get', 'canvas.save', 'config.create'])
+          {
+            'name': 'x',
+            'permissions': ['config.run', p],
+            'config_ids': [nightly],
+          },
       ]) {
         final response = await createKey(body);
         expect(response.statusCode, 422, reason: '$body ${response.body}');
       }
+    });
+
+    test('Should drop the canvas from a limited key stored with it', () async {
+      final created = await key(['config.run'], configs: [nightly]);
+      final db = di.find<AppDatabase>();
+      await (db.update(
+        db.apiKeyTable,
+      )..where((t) => t.id.equals(created['id']))).write(
+        const ApiKeyTableCompanion(
+          permissions: Value('["config.run","canvas.get"]'),
+        ),
+      );
+      final canvas = await http.get(
+        server.url('$base/canvas'),
+        headers: bearer(created['key']),
+      );
+      expect(canvas.statusCode, 403);
     });
 
     test('Should change a key without changing its secret', () async {

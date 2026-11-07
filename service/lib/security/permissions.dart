@@ -110,4 +110,24 @@ abstract final class Permissions {
     canvasGet,
     canvasSave,
   ];
+
+  /// What a key limited to some configs sees only for them: without one of
+  /// these, the limit changes nothing.
+  static const List<String> limitable = [
+    configList,
+    configGet,
+    configUpdate,
+    configDelete,
+    configRun,
+    runList,
+    runGet,
+  ];
+
+  /// What a key limited to some configs can't have: the canvas reads and
+  /// saves every config, and a config it creates would be out of its reach.
+  static const List<String> notLimitable = [
+    configCreate,
+    canvasGet,
+    canvasSave,
+  ];
 }

@@ -113,7 +113,12 @@ class ApiKeyService {
         configs: configIds.isEmpty ? null : configIds.toSet(),
       ),
       // Never more than a key may have, whatever is stored
-      model.permissions.where(Permissions.grantable.contains).toSet(),
+      model.permissions
+          .where(Permissions.grantable.contains)
+          .where(
+            (p) => configIds.isEmpty || !Permissions.notLimitable.contains(p),
+          )
+          .toSet(),
     );
   }
 

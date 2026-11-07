@@ -34,6 +34,20 @@ class ApiKeyRequest implements Validatable {
       (list) => (list ?? const []).every((id) => id is String)
           ? null
           : intl.errors.validations.unknownConfig,
+    )
+    ..field('config_ids', configIds).custom(
+      (list) =>
+          (list ?? const []).isEmpty ||
+              (permissions ?? const []).any(Permissions.limitable.contains)
+          ? null
+          : intl.errors.validations.limitWithout,
+    )
+    ..field('permissions', permissions).custom(
+      (list) =>
+          (configIds ?? const []).isEmpty ||
+              !(list ?? const []).any(Permissions.notLimitable.contains)
+          ? null
+          : intl.errors.validations.notLimitable,
     );
 
   String get trimmedName => name!.trim();
