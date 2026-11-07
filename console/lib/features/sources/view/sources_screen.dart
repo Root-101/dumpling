@@ -256,9 +256,11 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
       ),
       body: _view == AppView.grid ? _buildGrid(data) : null,
       columns: _columns,
+      onReorder: cubit.reorder,
+      reorderBlocked: data.filtered ? app.intl.common.clearToReorder : null,
       rows: [
         for (final source in data.visibleSources)
-          AppTableRow(_buildCells(data, source)),
+          AppTableRow(_buildCells(data, source), id: source.id),
       ],
       placeholder: data.sources.isEmpty
           ? AppTablePlaceholder(

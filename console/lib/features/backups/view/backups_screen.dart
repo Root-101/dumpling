@@ -424,10 +424,14 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
         ],
       ),
       columns: _columns(data),
+      // dragging only in the manual sort, and with every row shown
+      onReorder: data.sort == BackupSort.manual ? cubit.reorder : null,
+      reorderBlocked: data.filtered ? app.intl.common.clearToReorder : null,
       rows: [
         for (final backup in data.visible)
           AppTableRow(
             _buildCells(backup),
+            id: backup.config.id,
             minHeight: 64,
             onTap: () => _toggle(backup),
             background: _open.contains(backup.config.id)
@@ -837,6 +841,7 @@ class _SortButton extends StatelessWidget {
       BackupSort.lastRunOldest => (t.sortLastOld, t.sortLastOldSub),
       BackupSort.nextRun => (t.sortNext, t.sortNextSub),
       BackupSort.name => (t.sortName, t.sortNameSub),
+      BackupSort.manual => (t.sortManual, t.sortManualSub),
     };
   }
 

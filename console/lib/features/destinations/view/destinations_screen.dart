@@ -290,10 +290,13 @@ class _DestinationsScreenState extends State<DestinationsScreen>
       ),
       body: _view == AppView.grid ? _buildGrid(data) : null,
       columns: _columns,
+      onReorder: cubit.reorder,
+      reorderBlocked: data.filtered ? app.intl.common.clearToReorder : null,
       rows: [
         for (final destination in data.visibleDestinations)
           AppTableRow(
             _buildCells(data, destination),
+            id: destination.id,
             minHeight: 58,
             expanded: _open.contains(destination.id)
                 ? DestinationFolders(
@@ -302,6 +305,8 @@ class _DestinationsScreenState extends State<DestinationsScreen>
                         data.folderUsageOf(destination, folder),
                     onAdd: (path) => cubit.addFolder(destination, path),
                     onDelete: (path) => cubit.deleteFolder(destination, path),
+                    onMove: (from, to) =>
+                        cubit.moveFolder(destination, from, to),
                   )
                 : null,
           ),

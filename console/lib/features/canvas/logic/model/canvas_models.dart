@@ -331,6 +331,10 @@ class CanvasModel {
   final List<BackupConfig> configs;
   final Map<String, String> ids;
 
+  /// The place of each source and destination in its list, as the service
+  /// keeps them (dragged by hand): a save sends them back in that order
+  final Map<String, int> order;
+
   const CanvasModel({
     required this.sources,
     required this.sourcePool,
@@ -338,5 +342,6 @@ class CanvasModel {
     required this.destinationPool,
     required this.configs,
     this.ids = const {},
+    this.order = const {},
   });
 }

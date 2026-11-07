@@ -17,6 +17,9 @@ class CanvasData {
   final List<SourceNode> sourcePool;
   final List<DestinationNode> destinationPool;
 
+  /// See [CanvasModel.order]
+  final Map<String, int> order;
+
   const CanvasData({
     required this.sources,
     required this.configs,
@@ -27,6 +30,7 @@ class CanvasData {
     this.loaded = false,
     this.selectedId,
     this.seq = 1,
+    this.order = const {},
   });
 
   const CanvasData.empty([this.workspace])
@@ -37,7 +41,8 @@ class CanvasData {
       sourcePool = const [],
       destinationPool = const [],
       selectedId = null,
-      seq = 1;
+      seq = 1,
+      order = const {};
 
   /// [canvas] loaded (or just saved); the selection follows its new id
   CanvasData withCanvas(CanvasModel canvas) {
@@ -52,6 +57,7 @@ class CanvasData {
       destinationPool: canvas.destinationPool,
       selectedId: canvas.configs.any((c) => c.id == selected) ? selected : null,
       seq: seq,
+      order: canvas.order,
     );
   }
 
@@ -106,6 +112,7 @@ class CanvasData {
     seq: seq ?? this.seq,
     sourcePool: sourcePool ?? this.sourcePool,
     destinationPool: destinationPool ?? this.destinationPool,
+    order: order,
   );
 }
 

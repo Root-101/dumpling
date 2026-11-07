@@ -59,6 +59,15 @@ class DestinationModel {
     folders: folders,
     lastCheck: check,
   );
+
+  DestinationModel withFolders(List<String> folders) => DestinationModel(
+    id: id,
+    name: name,
+    type: type,
+    s3: s3,
+    folders: folders,
+    lastCheck: lastCheck,
+  );
 }
 
 class DestinationTypeModel {

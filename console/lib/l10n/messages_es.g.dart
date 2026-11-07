@@ -158,6 +158,10 @@ class AppMessages$common$es implements AppMessages$common$en {
   @override
   String get clearSearch => 'Limpiar búsqueda y filtros';
   @override
+  String get dragToReorder => 'Arrastra para ordenar';
+  @override
+  String get clearToReorder => 'Quita la búsqueda y los filtros para ordenar';
+  @override
   String shownOf({required Object shown, required Object total}) =>
       '${shown} de ${total}';
   @override
@@ -1180,6 +1184,10 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   @override
   String get sortNameSub => 'De la A a la Z';
   @override
+  String get sortManual => 'Manual';
+  @override
+  String get sortManualSub => 'Arrastra las filas para ordenarlas';
+  @override
   String inTime({required Object time}) => 'en ${time}';
   @override
   String startedAgo({required Object time}) => 'Empezó hace ${time}';
@@ -1821,6 +1829,9 @@ extension on AppMessagesEs {
           'common.saveChanges' => 'Guardar cambios',
           'common.noMatches' => 'Nada coincide con tu búsqueda',
           'common.clearSearch' => 'Limpiar búsqueda y filtros',
+          'common.dragToReorder' => 'Arrastra para ordenar',
+          'common.clearToReorder' =>
+            'Quita la búsqueda y los filtros para ordenar',
           'common.shownOf' => ({
             required Object shown,
             required Object total,
@@ -2538,11 +2549,11 @@ extension on AppMessagesEs {
           'runs.title' => 'Registro de ejecuciones',
           'runs.description' => 'Cada ejecución de respaldo de este workspace, programada o manual. Horas en UTC, tu hora local debajo.',
           'runs.search' => 'Buscar por respaldo, origen o destino',
-          'runs.columnStatus' => 'Estado',
-          'runs.columnSource' => 'Origen',
           _ => null,
         } ??
         switch (path) {
+          'runs.columnStatus' => 'Estado',
+          'runs.columnSource' => 'Origen',
           'runs.columnDestination' => 'Destino',
           'runs.columnStarted' => 'Inicio',
           'runs.columnDuration' => 'Duración',
@@ -2634,6 +2645,8 @@ extension on AppMessagesEs {
           'backups.sortNextSub' => 'El más cercano primero',
           'backups.sortName' => 'Nombre del origen',
           'backups.sortNameSub' => 'De la A a la Z',
+          'backups.sortManual' => 'Manual',
+          'backups.sortManualSub' => 'Arrastra las filas para ordenarlas',
           'backups.inTime' => ({required Object time}) => 'en ${time}',
           'backups.startedAgo' => ({
             required Object time,

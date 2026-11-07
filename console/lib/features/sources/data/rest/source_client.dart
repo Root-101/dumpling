@@ -62,6 +62,19 @@ class SourceClient extends BaseClient {
     return SourceResponse.fromJson(rawResponse.data);
   }
 
+  /// Saves the order of every source of [workspace], as [ids] list them
+  Future<void> reorder({
+    required String workspace,
+    required List<String> ids,
+    String? token,
+  }) async {
+    await dio.put(
+      '${_sourcesUrl(workspace)}/order',
+      data: {'ids': ids},
+      options: options(token: token),
+    );
+  }
+
   Future<void> delete({
     required String workspace,
     required String id,

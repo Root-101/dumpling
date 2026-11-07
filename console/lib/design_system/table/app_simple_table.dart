@@ -42,8 +42,12 @@ class AppTableRow {
   /// Under the cells while [expanded] is shown
   final Color? background;
 
+  /// What the row shows, unique in the table: needed to drag it
+  final Object? id;
+
   const AppTableRow(
     this.cells, {
+    this.id,
     this.minHeight = 56,
     this.expanded,
     this.onTap,
@@ -75,6 +79,13 @@ class AppSimpleTable extends StatelessWidget {
   /// Replaces the column titles and the rows, e.g. the same items as cards
   final Widget? body;
 
+  /// With it each row starts with an [AppDragHandle] and moves by dragging
+  /// it from `from` to `to` (see [reordered])
+  final void Function(int from, int to)? onReorder;
+
+  /// Why the rows can't move now (a filter on): the handles are dimmed
+  final String? reorderBlocked;
+
   const AppSimpleTable({
     required this.columns,
     required this.rows,
@@ -84,8 +95,12 @@ class AppSimpleTable extends StatelessWidget {
     this.hintEnd,
     this.minWidth = 760,
     this.body,
+    this.onReorder,
+    this.reorderBlocked,
     super.key,
   });
+
+  static const double _handleWidth = 32;
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +115,7 @@ class AppSimpleTable extends StatelessWidget {
             border: Border(bottom: BorderSide(color: app.colors.neutral.grey5)),
           ),
           child: _buildRow([
+            if (onReorder != null) const SizedBox(),
             for (final column in columns)
               Text(
                 column.title,
@@ -107,24 +123,33 @@ class AppSimpleTable extends StatelessWidget {
               ),
           ]),
         ),
-        for (final row in rows)
-          Container(
-            decoration: BoxDecoration(
-              color: row.background,
-              border: Border(bottom: divider),
+        if (onReorder == null)
+          for (final row in rows) _buildBodyRow(row, divider)
+        else
+          ReorderableListView(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            buildDefaultDragHandles: false,
+            onReorderItem: onReorder!,
+            proxyDecorator: (child, _, _) => Material(
+              color: app.colors.primary.background2,
+              elevation: 6,
+              child: child,
             ),
-            child: Column(
-              children: [
-                InkWell(
-                  onTap: row.onTap,
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(minHeight: row.minHeight),
-                    child: _buildRow(row.cells),
+            children: [
+              for (final (index, row) in rows.indexed)
+                KeyedSubtree(
+                  key: ValueKey(row.id ?? index),
+                  child: _buildBodyRow(
+                    row,
+                    divider,
+                    handle: AppDragHandle(
+                      index: index,
+                      blocked: reorderBlocked,
+                    ),
                   ),
                 ),
-                ?row.expanded,
-              ],
-            ),
+            ],
           ),
         ?placeholder,
         if (hint != null) _buildHint(hint!),
@@ -171,12 +196,40 @@ class AppSimpleTable extends StatelessWidget {
     );
   }
 
+  Widget _buildBodyRow(AppTableRow row, BorderSide divider, {Widget? handle}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: row.background,
+        border: Border(bottom: divider),
+      ),
+      child: Column(
+        children: [
+          InkWell(
+            onTap: row.onTap,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: row.minHeight),
+              child: _buildRow([?handle, ...row.cells]),
+            ),
+          ),
+          ?row.expanded,
+        ],
+      ),
+    );
+  }
+
+  /// The columns, after the one of the handles when the rows move
+  List<AppTableColumn> get _columns => [
+    if (onReorder != null)
+      const AppTableColumn('', width: _handleWidth, compact: true),
+    ...columns,
+  ];
+
   Widget _buildRow(List<Widget> cells) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: app.dimensions.padding.xs),
       child: Row(
         children: [
-          for (final (index, column) in columns.indexed)
+          for (final (index, column) in _columns.indexed)
             column.width == null
                 ? Expanded(
                     flex: column.flex,

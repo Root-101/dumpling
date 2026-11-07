@@ -166,6 +166,12 @@ class AppMessages$common$en {
   /// en: 'Clear search and filters'
   String get clearSearch => 'Clear search and filters';
 
+  /// en: 'Drag to reorder'
+  String get dragToReorder => 'Drag to reorder';
+
+  /// en: 'Clear the search and filters to reorder'
+  String get clearToReorder => 'Clear the search and filters to reorder';
+
   /// en: '{shown: int} of {total: int}'
   String shownOf({required int shown, required int total}) =>
       '${shown} of ${total}';
@@ -1554,6 +1560,12 @@ class AppMessages$backups$en {
   /// en: 'A to Z'
   String get sortNameSub => 'A to Z';
 
+  /// en: 'Manual'
+  String get sortManual => 'Manual';
+
+  /// en: 'Drag the rows to order them'
+  String get sortManualSub => 'Drag the rows to order them';
+
   /// en: 'in {time: String}'
   String inTime({required String time}) => 'in ${time}';
 
@@ -2372,6 +2384,8 @@ extension on AppMessages {
           'common.saveChanges' => 'Save changes',
           'common.noMatches' => 'Nothing matches your search',
           'common.clearSearch' => 'Clear search and filters',
+          'common.dragToReorder' => 'Drag to reorder',
+          'common.clearToReorder' => 'Clear the search and filters to reorder',
           'common.shownOf' => ({
             required int shown,
             required int total,
@@ -3076,11 +3090,11 @@ extension on AppMessages {
           'runs.title' => 'Run log',
           'runs.description' => 'Every backup run in this workspace, scheduled or manual. Times in UTC, your local time below.',
           'runs.search' => 'Search by backup, source or destination',
-          'runs.columnStatus' => 'Status',
-          'runs.columnSource' => 'Source',
           _ => null,
         } ??
         switch (path) {
+          'runs.columnStatus' => 'Status',
+          'runs.columnSource' => 'Source',
           'runs.columnDestination' => 'Destination',
           'runs.columnStarted' => 'Started',
           'runs.columnDuration' => 'Duration',
@@ -3173,6 +3187,8 @@ extension on AppMessages {
           'backups.sortNextSub' => 'Soonest first',
           'backups.sortName' => 'Source name',
           'backups.sortNameSub' => 'A to Z',
+          'backups.sortManual' => 'Manual',
+          'backups.sortManualSub' => 'Drag the rows to order them',
           'backups.inTime' => ({required String time}) => 'in ${time}',
           'backups.startedAgo' => ({
             required String time,

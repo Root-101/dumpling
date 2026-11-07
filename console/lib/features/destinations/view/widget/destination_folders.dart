@@ -2,7 +2,8 @@ import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The folders of a destination, opened under its row: how many backups
-/// write to each one, and the way to add a folder or delete an unused one
+/// write to each one, and the way to add a folder, delete an unused one or
+/// drag one to another place
 class DestinationFolders extends StatefulWidget {
   final DestinationModel destination;
 
@@ -10,12 +11,14 @@ class DestinationFolders extends StatefulWidget {
   final int Function(String? folder) usageOf;
   final ValueChanged<String> onAdd;
   final ValueChanged<String> onDelete;
+  final void Function(int from, int to) onMove;
 
   const DestinationFolders({
     required this.destination,
     required this.usageOf,
     required this.onAdd,
     required this.onDelete,
+    required this.onMove,
     super.key,
   });
 
@@ -63,7 +66,24 @@ class _DestinationFoldersState extends State<DestinationFolders> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            for (final folder in folders) _buildFolder(folder),
+            ReorderableListView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              buildDefaultDragHandles: false,
+              onReorderItem: widget.onMove,
+              proxyDecorator: (child, _, _) => Material(
+                color: app.colors.primary.background2,
+                elevation: 6,
+                child: child,
+              ),
+              children: [
+                for (final (index, folder) in folders.indexed)
+                  KeyedSubtree(
+                    key: ValueKey(folder),
+                    child: _buildFolder(index, folder),
+                  ),
+              ],
+            ),
             if (folders.isEmpty)
               SizedBox(
                 height: 40,
@@ -94,7 +114,7 @@ class _DestinationFoldersState extends State<DestinationFolders> {
     );
   }
 
-  Widget _buildFolder(String folder) {
+  Widget _buildFolder(int index, String folder) {
     final used = widget.usageOf(folder);
     final shown = FolderPath.show(folder);
     return SizedBox(
@@ -102,6 +122,8 @@ class _DestinationFoldersState extends State<DestinationFolders> {
       child: Row(
         children: [
           Container(width: 12, height: 1, color: app.colors.neutral.grey5),
+          const SizedBox(width: 10),
+          AppDragHandle(index: index),
           const SizedBox(width: 10),
           app.assets.icons.nodes.folder.build(
             size: 16,
