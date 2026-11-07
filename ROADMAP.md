@@ -48,18 +48,18 @@ are in the changelogs of [`service/`](service/CHANGELOG.md) and [`console/`](con
 Things noticed using 0.1.0, numbered to do them in any order. What is already done is in the
 [changelog](CHANGELOG.md).
 
-1. Reorder by hand, dragging them: backups, sources, destinations and the folders of a
-   destination. The order is saved in the service (a new position column in each table). In
-   Backups it is a "Manual" option of the sort selector, and dragging works only with it chosen.
+1. ~~Reorder by hand, dragging them: backups, sources, destinations and the folders of a
+   destination.~~ Done, in the [changelog](CHANGELOG.md) (*Unreleased*).
+   `Breaks the database: the version that brings it is 🔴 (export, upgrade, import).`
 2. A backup before a release: when a backend deploys a version with a migration, it asks Dumpling
    (a request from its pipeline) to back up its database before running the migration. Needs
-   API keys or users allowed only to run a given config. To talk through before designing it.
+   API keys or users allowed only to run a given config. `To talk through before designing it.`
 3. When restoring exists: back up the target database first, rename it, create a new database and
    restore into that one, so a restore that goes wrong loses nothing.
-4. Encrypt the dump before uploading it to the bucket. To talk through how before implementing it.
+4. Encrypt the dump before uploading it to the bucket. `To talk through how before implementing it.`
 5. Dumpling itself as a source of each workspace: its export (0.1.2) goes through the same backups
    as any database (schedule, compression, destination, run log), so the file lands in a bucket on
-   its own. To talk through.
+   its own. `To talk through.`
 
 ## 0.2.0
 
