@@ -4,6 +4,18 @@ What changes in each version of Dumpling, from 0.1.0. The detail of each package
 changelogs of [`service/`](service/CHANGELOG.md) and [`console/`](console/CHANGELOG.md); the
 release candidates before 0.1.0 are summed up in the [roadmap](ROADMAP.md#010).
 
+## 0.1.3
+
+- 🔴 **The database changes** (a `position` column in four tables): export your workspaces
+  before upgrading and import them after (see [Upgrading](README.md#upgrading)).
+- **Order by hand.** Sources, destinations, the folders of a destination and backups drag by a
+  handle (⠿) into the order you want, and the service keeps it: the lists, the canvas and an
+  export follow it. In Backups it is the *Manual* sort. With a search or a filter on, the handles
+  are dimmed.
+- API: `PUT /api/workspaces/{slug}/sources/order`, `…/destinations/order` and `…/configs/order`,
+  with every id of the workspace in the new order. The folders of a destination come back in the
+  order they were sent, no longer alphabetical.
+
 ## 0.1.2
 
 - **Export and import of workspaces.** Workspaces exports every workspace to a JSON file, and each

@@ -15,6 +15,16 @@ class SourceController {
     return ResponseEntity.ok(body: sources);
   }
 
+  Future<ResponseEntity> reorder(RequestEntity request) async {
+    final body = await request.body<OrderRequest>();
+
+    final items = await sourceService.reorder(
+      request.pathParams['slug']!,
+      body,
+    );
+    return ResponseEntity.ok(body: items);
+  }
+
   Future<ResponseEntity> get(RequestEntity request) async {
     final source = await sourceService.get(
       request.pathParams['slug']!,

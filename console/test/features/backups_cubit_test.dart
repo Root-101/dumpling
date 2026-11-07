@@ -60,6 +60,30 @@ void main() {
     expect(data.next!.config.id, 'j1');
   });
 
+  test('the manual sort keeps the saved order and drags in it', () async {
+    when(
+      () => configs.reorder(
+        workspace: 'production',
+        ids: ['j3', 'j1', 'j2'],
+        token: 'jwt',
+      ),
+    ).thenAnswer((_) async {});
+    final cubit = await loaded();
+    cubit.sort(BackupSort.manual);
+    expect(visible(cubit), ['j1', 'j2', 'j3']);
+    await cubit.reorder(2, 0);
+    expect(visible(cubit), ['j3', 'j1', 'j2']);
+    verify(
+      () => configs.reorder(
+        workspace: 'production',
+        ids: ['j3', 'j1', 'j2'],
+        token: 'jwt',
+      ),
+    ).called(1);
+    cubit.filterSource('users');
+    expect(cubit.state.data.filtered, isTrue);
+  });
+
   test('the filter, the search and the sort', () async {
     final cubit = await loaded();
     // the last backup first; one that never ran goes last

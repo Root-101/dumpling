@@ -45,5 +45,6 @@ errors:
     folderOnRoot: 'This destination has no folders: leave the folder empty to write to the root'
     unknownNode: 'Not a node of this workspace: a new one has an id that starts with new_'
     repeatedNode: 'Each node needs its own id'
+    order: 'List every id of the workspace, each once and nothing else'
     canvasPosition: 'x and y must be between -{max: int} and {max}'
     postgresUrl: 'Not a PostgreSQL connection URL (postgresql://user:password@host:5432/database)'

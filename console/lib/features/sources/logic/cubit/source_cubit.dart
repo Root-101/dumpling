@@ -123,6 +123,29 @@ class SourceCubit extends Cubit<SourceState> {
     await reload();
   }
 
+  /// Moves the source at [from] to [to] (with no filter on, the list shown
+  /// is the whole one) and saves the order; back as it was if that fails
+  Future<void> reorder(int from, int to) async {
+    final before = state.data;
+    final sources = reordered(before.sources, from, to);
+    emit(SourceLoadingSuccessState(data: before._copy(sources: sources)));
+    try {
+      await _repo.reorder(
+        workspace: before.workspace!,
+        ids: [for (final s in sources) s.id],
+        token: _token,
+      );
+    } catch (e) {
+      if (state.data.workspace != before.workspace) return;
+      emit(
+        SourceProcessingErrorState(
+          ExceptionConverter.parse(e).message,
+          data: before,
+        ),
+      );
+    }
+  }
+
   /// After signing out
   void reset() => emit(const SourceInitialState());
 }
@@ -272,6 +295,9 @@ class SourceData {
 
   /// How many filters are on (the search box apart)
   int get activeFilters => type == null ? 0 : 1;
+
+  /// The rows can be dragged only when they are all shown
+  bool get filtered => activeFilters > 0 || query.trim().isNotEmpty;
 }
 
 abstract class SourceState {

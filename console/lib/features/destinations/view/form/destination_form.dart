@@ -267,6 +267,11 @@ class _DestinationFormState extends State<DestinationForm> {
     _changed(DestinationFormField.folders);
   }
 
+  void _moveFolder(int from, int to) {
+    setState(() => _folders = reordered(_folders, from, to));
+    _changed(DestinationFormField.folders);
+  }
+
   void _removeFolder(String path) {
     setState(() => _folders = _folders.where((f) => f != path).toList());
     _changed(DestinationFormField.folders);
@@ -640,19 +645,34 @@ class _DestinationFormState extends State<DestinationForm> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                for (final folder in _folders)
-                  _FolderRow(
-                    path: folder,
-                    // a backup writes to it: the service would refuse it
-                    locked: (widget.folderUsage[folder] ?? 0) > 0,
-                    state: _checkedFolders.contains(folder)
-                        ? _FolderState.writable
-                        : testing && _foldersUnderTest.contains(folder)
-                        ? _FolderState.checking
-                        : _FolderState.notChecked,
-                    border: border,
-                    onRemove: () => _removeFolder(folder),
+                ReorderableListView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  buildDefaultDragHandles: false,
+                  onReorderItem: _moveFolder,
+                  proxyDecorator: (child, _, _) => Material(
+                    color: app.colors.primary.background2,
+                    elevation: 6,
+                    child: child,
                   ),
+                  children: [
+                    for (final (index, folder) in _folders.indexed)
+                      _FolderRow(
+                        key: ValueKey(folder),
+                        index: index,
+                        path: folder,
+                        // a backup writes to it: the service would refuse it
+                        locked: (widget.folderUsage[folder] ?? 0) > 0,
+                        state: _checkedFolders.contains(folder)
+                            ? _FolderState.writable
+                            : testing && _foldersUnderTest.contains(folder)
+                            ? _FolderState.checking
+                            : _FolderState.notChecked,
+                        border: border,
+                        onRemove: () => _removeFolder(folder),
+                      ),
+                  ],
+                ),
                 if (_folders.isEmpty)
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -762,6 +782,7 @@ enum _FolderState { writable, checking, notChecked }
 /// A folder of the form: its path, whether it took the test object, and the
 /// button that removes it
 class _FolderRow extends StatelessWidget {
+  final int index;
   final String path;
   final bool locked;
   final _FolderState state;
@@ -769,11 +790,13 @@ class _FolderRow extends StatelessWidget {
   final VoidCallback onRemove;
 
   const _FolderRow({
+    required this.index,
     required this.path,
     required this.locked,
     required this.state,
     required this.border,
     required this.onRemove,
+    super.key,
   });
 
   @override
@@ -794,6 +817,8 @@ class _FolderRow extends StatelessWidget {
       decoration: BoxDecoration(border: Border(bottom: border)),
       child: Row(
         children: [
+          AppDragHandle(index: index),
+          const SizedBox(width: 10),
           app.assets.icons.nodes.folder.build(
             size: 16,
             color: app.colors.neutral.grey3,

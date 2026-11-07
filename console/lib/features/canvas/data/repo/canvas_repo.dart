@@ -138,6 +138,10 @@ extension CanvasResponseMapping on CanvasResponse {
       ],
       configs: configs.map(config).toList(),
       ids: ids,
+      order: {
+        for (final (i, s) in sources.indexed) s['id'] as String: i,
+        for (final (i, d) in destinations.indexed) d['id'] as String: i,
+      },
     );
   }
 }
@@ -148,12 +152,25 @@ extension CanvasDataMapping on CanvasData {
   /// an orphan one, and leaving it out deletes it
   CanvasRequest toRequest() {
     Map<String, double> position(Offset p) => {'x': p.dx, 'y': p.dy};
+    // on the canvas or off it, each list keeps its order; new ones last
+    List<(T, bool)> inOrder<T>(
+      List<T> placed,
+      List<T> pool,
+      String Function(T) id,
+    ) {
+      final all = [
+        for (final n in placed) (n, true),
+        for (final n in pool) (n, false),
+      ];
+      int rank(int i) => order[id(all[i].$1)] ?? order.length + i;
+      final indexes = [for (var i = 0; i < all.length; i++) i]
+        ..sort((a, b) => rank(a).compareTo(rank(b)));
+      return [for (final i in indexes) all[i]];
+    }
+
     return CanvasRequest(
       sources: [
-        for (final (s, placed) in [
-          for (final s in sources) (s, true),
-          for (final s in sourcePool) (s, false),
-        ])
+        for (final (s, placed) in inOrder(sources, sourcePool, (s) => s.id))
           {
             'id': s.id,
             'position': placed ? position(s.pos) : null,
@@ -163,10 +180,11 @@ extension CanvasDataMapping on CanvasData {
           },
       ],
       destinations: [
-        for (final (d, placed) in [
-          for (final d in destinations) (d, true),
-          for (final d in destinationPool) (d, false),
-        ])
+        for (final (d, placed) in inOrder(
+          destinations,
+          destinationPool,
+          (d) => d.id,
+        ))
           {
             'id': d.id,
             'position': placed ? position(d.pos) : null,

@@ -257,6 +257,8 @@ class ServiceMessages$errors$validations$es
   @override
   String get repeatedNode => 'Cada nodo necesita su propio id';
   @override
+  String get order => 'Lista cada id del workspace, una sola vez y nada más';
+  @override
   String canvasPosition({required Object max}) =>
       'x e y deben estar entre -${max} y ${max}';
   @override
@@ -342,6 +344,8 @@ extension on ServiceMessagesEs {
       'errors.validations.folderOnRoot' => 'Este destino no tiene carpetas: deja la carpeta vacía para escribir en la raíz',
       'errors.validations.unknownNode' => 'No es un nodo de este workspace: uno nuevo lleva un id que empieza por new_',
       'errors.validations.repeatedNode' => 'Cada nodo necesita su propio id',
+      'errors.validations.order' =>
+        'Lista cada id del workspace, una sola vez y nada más',
       'errors.validations.canvasPosition' => ({
         required Object max,
       }) => 'x e y deben estar entre -${max} y ${max}',

@@ -103,6 +103,12 @@ class ApiController {
         handler: sourceController.testUnsaved,
         filterConfig: _permission(Permissions.sourceTest),
       ),
+      Route.put(
+        key: 'source.reorder',
+        path: '/workspaces/{slug}/sources/order',
+        handler: sourceController.reorder,
+        filterConfig: _permission(Permissions.sourceUpdate),
+      ),
       Route.get(
         key: 'source.get',
         path: '/workspaces/{slug}/sources/{id}',
@@ -151,6 +157,12 @@ class ApiController {
         handler: destinationController.testUnsaved,
         filterConfig: _permission(Permissions.destinationTest),
       ),
+      Route.put(
+        key: 'destination.reorder',
+        path: '/workspaces/{slug}/destinations/order',
+        handler: destinationController.reorder,
+        filterConfig: _permission(Permissions.destinationUpdate),
+      ),
       Route.get(
         key: 'destination.get',
         path: '/workspaces/{slug}/destinations/{id}',
@@ -186,6 +198,12 @@ class ApiController {
         path: '/workspaces/{slug}/configs',
         handler: configController.create,
         filterConfig: _permission(Permissions.configCreate),
+      ),
+      Route.put(
+        key: 'config.reorder',
+        path: '/workspaces/{slug}/configs/order',
+        handler: configController.reorder,
+        filterConfig: _permission(Permissions.configUpdate),
       ),
       Route.get(
         key: 'config.get',

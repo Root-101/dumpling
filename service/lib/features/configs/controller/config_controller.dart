@@ -10,6 +10,16 @@ class ConfigController {
     return ResponseEntity.ok(body: configs);
   }
 
+  Future<ResponseEntity> reorder(RequestEntity request) async {
+    final body = await request.body<OrderRequest>();
+
+    final items = await configService.reorder(
+      request.pathParams['slug']!,
+      body,
+    );
+    return ResponseEntity.ok(body: items);
+  }
+
   Future<ResponseEntity> get(RequestEntity request) async {
     final config = await configService.get(
       request.pathParams['slug']!,

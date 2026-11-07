@@ -324,6 +324,7 @@ GET /api/workspaces/e2e/sources
 ]
 ```
 
+They come in the order set by hand ([Reorder sources](#reorder-sources)), a new one last.
 `last_check` is the last [test of the saved source](#test-a-saved-source), `null` until the first
 one. `dump_format` is `custom` (`pg_dump -Fc`, for `pg_restore`) or `plain` (SQL); `ssl_mode` is
 `require` (the default: TLS without checking the certificate) or `disable`.
@@ -431,6 +432,24 @@ DELETE /api/workspaces/docs-tour/sources/src_qnr4bf2dwuxtg3uz
 ```json
 {"type": "about:blank", "title": "Conflict", "status": 409, "detail": "Configs back up this source (1): delete them or connect them to another source first.", "instance": "/api/workspaces/docs-tour/sources/src_qnr4bf2dwuxtg3uz"}
 ```
+
+### Reorder sources
+
+```http
+PUT /api/workspaces/docs-tour/sources/order
+Content-Type: application/json
+
+{"ids": ["src_edygitml5at7vlev", "src_qnr4bf2dwuxtg3uz"]}
+```
+
+Answers the sources in their new order. `ids` is every source of the workspace, each once: one
+missing, repeated or of another workspace is a `422` on `ids` (`"List every id of the workspace,
+each once and nothing else"`), so no source is left without a place. It takes the permission
+`source.update`.
+
+`PUT /api/workspaces/{slug}/destinations/order` and `PUT /api/workspaces/{slug}/configs/order` do
+the same with the destinations and the configs. The folders of a destination are kept in the order
+its `folders` come in a create, an edit or a canvas save.
 
 ## Destinations
 
@@ -550,7 +569,7 @@ Content-Type: application/json
 {"name": "backups", "type": "s3", "settings": {"endpoint": "http://e2e-s3:9000", "bucket": "e2e-backups", "access_key_id": "e2e-access", "path_style": true}, "folders": ["daily", "weekly", "monthly"]}
 ```
 
-Answers the destination (here with `"folders": ["daily", "monthly", "weekly"]`). The body replaces
+Answers the destination (here with `"folders": ["daily", "weekly", "monthly"]`, in the order sent). The body replaces
 it, `folders` included, except the secret key: without one, the saved one stays. Removing a folder a config writes to is refused:
 
 ```json
@@ -663,7 +682,9 @@ Answers the saved canvas, as [Get the canvas](#get-the-canvas), with the id each
 }
 ```
 
-The body is the whole workspace, saved in one transaction (a save that fails changes nothing):
+The body is the whole workspace, saved in one transaction (a save that fails changes nothing).
+The order of each list is the order the workspace keeps ([Reorder sources](#reorder-sources)):
+the console sends them back in the order it got them.
 
 - A node with a saved id replaces it, with the same body as its own `PUT` (a missing secret keeps
   the stored one).

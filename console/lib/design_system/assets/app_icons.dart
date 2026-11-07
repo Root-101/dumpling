@@ -111,6 +111,9 @@ class ActionsIcons {
 
   SvgAsset get filter => const SvgAsset('$_actions/filter.svg');
 
+  /// Six dots: the handle that drags a row
+  SvgAsset get drag => const SvgAsset('$_actions/drag.svg');
+
   /// Two arrows: the sort
   SvgAsset get sort => const SvgAsset('$_actions/sort.svg');
 

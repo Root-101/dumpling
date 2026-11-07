@@ -42,5 +42,6 @@ errors:
     folderOnRoot: 'Este destino no tiene carpetas: deja la carpeta vacía para escribir en la raíz'
     unknownNode: 'No es un nodo de este workspace: uno nuevo lleva un id que empieza por new_'
     repeatedNode: 'Cada nodo necesita su propio id'
+    order: 'Lista cada id del workspace, una sola vez y nada más'
     canvasPosition: 'x e y deben estar entre -{max} y {max}'
     postgresUrl: 'No es una URL de conexión de PostgreSQL (postgresql://usuario:contraseña@host:5432/base)'

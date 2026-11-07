@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.3
+
+- Sources, destinations and the folders of a destination (under its row and in its form) drag by a
+  handle (⠿) at the start of the row; the order is saved as it drops, and goes back if the service
+  refuses it. Backups has a *Manual* sort that drags the same way. With a search or a filter on,
+  the handles are dimmed and say why.
+- Saving the canvas keeps the order of the sources and destinations, on it or off it.
+
 ## 0.1.2
 
 - Workspaces: **Export all** downloads every workspace as a JSON file, and each card exports its

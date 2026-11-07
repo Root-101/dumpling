@@ -209,6 +209,25 @@ void main() {
     expect(CanvasGeometry.hitWire(s, const Offset(300, 700), 6), isNull);
   });
 
+  test('the save keeps the order of the service, on the canvas or off it', () {
+    final demo = demoCanvas();
+    final data = const CanvasData.empty('production').withCanvas(
+      CanvasModel(
+        sources: demo.sources,
+        sourcePool: demo.sourcePool,
+        destinations: demo.destinations,
+        destinationPool: demo.destinationPool,
+        configs: demo.configs,
+        order: const {'users': 0, 'billing': 1, 'orders': 2, 'media': 3},
+      ),
+    );
+    final sources = data.toRequest().toJson()['sources'] as List;
+    expect(
+      [for (final s in sources) s['id']],
+      ['users', 'billing', 'orders', 'media'],
+    );
+  });
+
   test(
     'the save sends every source and destination, but only complete configs',
     () async {
@@ -475,40 +494,44 @@ void main() {
     },
   );
 
-  test('a run that moves during a save waits for it: the overlay stays', () async {
-    final cubit = CanvasCubit(
-      repo,
-      sources,
-      destinations,
-      auth,
-      pollEvery: Duration.zero,
-    );
-    await cubit.load('production');
-    final saving = Completer<CanvasModel>();
-    when(
-      () => repo.save(
-        workspace: 'production',
-        data: any(named: 'data'),
-        token: 'jwt',
-      ),
-    ).thenAnswer((_) => saving.future);
-    when(
-      () => repo.runNow(workspace: 'production', configId: 'j1', token: 'jwt'),
-    ).thenAnswer((_) async => run(RunStatus.running));
-    when(() => repo.run(workspace: 'production', id: 'run_1', token: 'jwt'))
-        .thenAnswer((_) async => run(RunStatus.success, size: 2048));
+  test(
+    'a run that moves during a save waits for it: the overlay stays',
+    () async {
+      final cubit = CanvasCubit(
+        repo,
+        sources,
+        destinations,
+        auth,
+        pollEvery: Duration.zero,
+      );
+      await cubit.load('production');
+      final saving = Completer<CanvasModel>();
+      when(
+        () => repo.save(
+          workspace: 'production',
+          data: any(named: 'data'),
+          token: 'jwt',
+        ),
+      ).thenAnswer((_) => saving.future);
+      when(
+        () =>
+            repo.runNow(workspace: 'production', configId: 'j1', token: 'jwt'),
+      ).thenAnswer((_) async => run(RunStatus.running));
+      when(() => repo.run(workspace: 'production', id: 'run_1', token: 'jwt'))
+          .thenAnswer((_) async => run(RunStatus.success, size: 2048));
 
-    final save = cubit.save();
-    final running = cubit.runNow('j1');
-    await pumpEventQueue();
-    expect(cubit.state, isA<CanvasProcessInProgressState>());
+      final save = cubit.save();
+      final running = cubit.runNow('j1');
+      await pumpEventQueue();
+      expect(cubit.state, isA<CanvasProcessInProgressState>());
 
-    saving.complete(demoCanvas());
-    await Future.wait([save, running]);
-    expect(cubit.state, isA<CanvasRunFinishedState>());
-    // the saved canvas did not drop it
-    expect(cubit.state.data.config('j1')!.lastRun!.status, RunStatus.success);
-  });
+      saving.complete(demoCanvas());
+      await Future.wait([save, running]);
+      expect(cubit.state, isA<CanvasRunFinishedState>());
+      // the saved canvas did not drop it
+      expect(cubit.state.data.config('j1')!.lastRun!.status, RunStatus.success);
+    },
+  );
 
   test('run now while one is running says why', () async {
     final cubit = await loaded();
@@ -523,13 +546,15 @@ void main() {
   test('the dialog edits name, schedule, compression and enabled; the save sends them', () async {
     final cubit = await loaded();
     cubit.applyConfig(
-      cubit.state.data.config('j1')!.copyWith(
-        name: 'Hourly orders',
-        schedule: () => '15 * * * *',
-        compression: 'none',
-        enabled: false,
-        objectKey: () => '{db}/{yyyy}',
-      ),
+      cubit.state.data
+          .config('j1')!
+          .copyWith(
+            name: 'Hourly orders',
+            schedule: () => '15 * * * *',
+            compression: 'none',
+            enabled: false,
+            objectKey: () => '{db}/{yyyy}',
+          ),
     );
     final j1 = cubit.state.data.config('j1')!;
     expect(j1.name, 'Hourly orders');

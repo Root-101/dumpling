@@ -194,4 +194,44 @@ void main() {
       );
     });
   });
+
+  group('SourceCubit.reorder', () {
+    List<String> ids(SourceCubit cubit) => [
+      for (final s in cubit.state.data.sources) s.id,
+    ];
+
+    test('Moves a source at once and saves the whole order', () async {
+      when(
+        () => repo.reorder(
+          workspace: 'production',
+          ids: ['users', 'orders'],
+          token: 'jwt',
+        ),
+      ).thenAnswer((_) async {});
+      final cubit = SourceCubit(repo, configs, auth);
+      await cubit.load('production');
+      expect(cubit.state.data.filtered, isFalse);
+      await cubit.reorder(1, 0);
+      expect(ids(cubit), ['users', 'orders']);
+      cubit.search('orders');
+      expect(cubit.state.data.filtered, isTrue);
+    });
+
+    test('Puts it back when the service refuses it', () async {
+      // the message of an unknown error comes from app.intl
+      TestWidgetsFlutterBinding.ensureInitialized();
+      when(
+        () => repo.reorder(
+          workspace: 'production',
+          ids: ['users', 'orders'],
+          token: 'jwt',
+        ),
+      ).thenThrow(Exception('down'));
+      final cubit = SourceCubit(repo, configs, auth);
+      await cubit.load('production');
+      await cubit.reorder(1, 0);
+      expect(cubit.state, isA<SourceProcessingErrorState>());
+      expect(ids(cubit), ['orders', 'users']);
+    });
+  });
 }

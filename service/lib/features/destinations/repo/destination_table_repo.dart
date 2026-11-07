@@ -12,13 +12,16 @@ class DestinationTableRepo {
 
   DestinationTableRepo(this._db);
 
-  /// The destinations of [workspace], oldest first, each with its folders in
-  /// alphabetical order.
+  /// The destinations of [workspace], in their order, each with its folders in
+  /// theirs.
   Future<List<DestinationRow>> getAll(String workspace) async {
     final destinations =
         await (_db.select(_db.destinationTable)
               ..where((tbl) => tbl.workspaceSlug.equals(workspace))
-              ..orderBy([(tbl) => OrderingTerm.asc(tbl.createdAt)]))
+              ..orderBy([
+                (tbl) => OrderingTerm.asc(tbl.position),
+                (tbl) => OrderingTerm.asc(tbl.createdAt),
+              ]))
             .get();
     final ids = [for (final d in destinations) d.id];
     final folders = await _folders(ids);
@@ -66,6 +69,7 @@ class DestinationTableRepo {
               type: type,
               settings: settings,
               secretsEncrypted: secretsEncrypted,
+              position: Value(await _next(workspace)),
             ),
           );
       await _insertFolders(id, folders);
@@ -137,17 +141,47 @@ class DestinationTableRepo {
     )..where((tbl) => tbl.id.equals(id))).go();
   }
 
+  /// Saves the order of [ids], the first at 0: the ones of a workspace, all of
+  /// them, checked by the caller.
+  Future<void> reorder(List<String> ids) async {
+    await _db.batch((batch) {
+      for (final (i, id) in ids.indexed) {
+        batch.update(
+          _db.destinationTable,
+          DestinationTableCompanion(position: Value(i)),
+          where: (tbl) => tbl.id.equals(id),
+        );
+      }
+    });
+  }
+
+  /// The position after the last one of [workspace]: where a new one goes.
+  Future<int> _next(String workspace) async {
+    final last = _db.destinationTable.position.max();
+    final row =
+        await (_db.selectOnly(_db.destinationTable)
+              ..addColumns([last])
+              ..where(_db.destinationTable.workspaceSlug.equals(workspace)))
+            .getSingle();
+    final value = row.read(last);
+    return value == null ? 0 : value + 1;
+  }
+
   Future<List<DestinationFolderTableData>> _folders(List<String> ids) =>
       (_db.select(_db.destinationFolderTable)
             ..where((tbl) => tbl.destinationId.isIn(ids))
-            ..orderBy([(tbl) => OrderingTerm.asc(tbl.path)]))
+            ..orderBy([(tbl) => OrderingTerm.asc(tbl.position)]))
           .get();
 
   Future<void> _insertFolders(String id, List<String> folders) async {
     await _db.batch((batch) {
       batch.insertAll(_db.destinationFolderTable, [
-        for (final path in folders)
-          DestinationFolderTableCompanion.insert(destinationId: id, path: path),
+        for (final (i, path) in folders.indexed)
+          DestinationFolderTableCompanion.insert(
+            destinationId: id,
+            path: path,
+            position: Value(i),
+          ),
       ]);
     });
   }

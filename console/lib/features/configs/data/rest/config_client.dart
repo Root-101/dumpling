@@ -34,6 +34,19 @@ class ConfigClient extends BaseClient {
     );
   }
 
+  /// Saves the order of every config of [workspace], as [ids] list them
+  Future<void> reorder({
+    required String workspace,
+    required List<String> ids,
+    String? token,
+  }) async {
+    await dio.put(
+      '${_configsUrl(workspace)}/order',
+      data: {'ids': ids},
+      options: options(token: token),
+    );
+  }
+
   Future<void> delete({
     required String workspace,
     required String id,
