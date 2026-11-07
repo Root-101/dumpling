@@ -21,6 +21,19 @@ class SourceService {
     return (await repo.getAll(workspace)).map(SourceModel.fromRow).toList();
   }
 
+  /// Saves the order of every source of the workspace, as [request] lists
+  /// them; returns them in it.
+  Future<List<SourceModel>> reorder(
+    String workspace,
+    OrderRequest request,
+  ) async {
+    await workspaces.get(workspace);
+    final saved = [for (final row in await repo.getAll(workspace)) row.id];
+    await repo.reorder(request.idsOf(saved));
+    logger.info('Sources reordered', fields: {'workspace': workspace});
+    return list(workspace);
+  }
+
   Future<SourceModel> get(String workspace, String id) async =>
       SourceModel.fromRow(await _row(workspace, id));
 

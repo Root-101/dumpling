@@ -256,6 +256,65 @@ void main() {
       expect(response.statusCode, 404);
     });
 
+    test('Should keep the order given by hand, new ones last', () async {
+      await server.createWorkspace('Ordering');
+      Future<String> make(String name) async {
+        final response = await create(
+          postgres(name: name),
+          workspace: 'ordering',
+        );
+        expect(response.statusCode, 201, reason: response.body);
+        return jsonDecode(response.body)['id'] as String;
+      }
+
+      Future<http.Response> reorder(List<Object?> ids) => http.put(
+        server.url(path('ordering', '/order')),
+        headers: jsonHeaders(),
+        body: jsonEncode({'ids': ids}),
+      );
+
+      Future<List<Object?>> names() async {
+        final response = await http.get(
+          server.url(path('ordering')),
+          headers: server.auth(),
+        );
+        return [for (final s in jsonDecode(response.body) as List) s['name']];
+      }
+
+      final a = await make('a-db');
+      final b = await make('b-db');
+      final c = await make('c-db');
+      expect(await names(), ['a-db', 'b-db', 'c-db']);
+
+      final response = await reorder([c, a, b]);
+      expect(response.statusCode, 200, reason: response.body);
+      expect(
+        [for (final s in jsonDecode(response.body) as List) s['name']],
+        ['c-db', 'a-db', 'b-db'],
+      );
+      await make('d-db');
+      expect(await names(), ['c-db', 'a-db', 'b-db', 'd-db']);
+
+      // Every id of the workspace, each once and nothing else
+      final other = await created(postgres(name: 'other-db'));
+      final all = (await http.get(
+        server.url(path('ordering')),
+        headers: server.auth(),
+      )).body;
+      final ids = [for (final s in jsonDecode(all) as List) s['id']];
+      for (final wrong in [
+        ids.sublist(1),
+        [...ids, ids.first],
+        [...ids.sublist(1), ids.first, other['id']],
+        [...ids.sublist(1), 3],
+      ]) {
+        final rejected = await reorder(wrong);
+        expect(rejected.statusCode, 422, reason: '$wrong');
+        expect(rejected.body, contains('"ids"'));
+      }
+      expect(await names(), ['c-db', 'a-db', 'b-db', 'd-db']);
+    });
+
     test('Should delete a source', () async {
       final source = await created(postgres(name: 'tmp-db'));
       final deleted = await http.delete(

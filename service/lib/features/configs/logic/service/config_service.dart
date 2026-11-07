@@ -28,6 +28,19 @@ class ConfigService {
     ];
   }
 
+  /// Saves the order of every config of the workspace, as [request] lists
+  /// them; returns them in it.
+  Future<List<ConfigModel>> reorder(
+    String workspace,
+    OrderRequest request,
+  ) async {
+    await workspaces.get(workspace);
+    final saved = [for (final row in await repo.getAll(workspace)) row.id];
+    await repo.reorder(request.idsOf(saved));
+    logger.info('Configs reordered', fields: {'workspace': workspace});
+    return list(workspace);
+  }
+
   Future<ConfigModel> get(String workspace, String id) async {
     final row = await _row(workspace, id);
     final last = await runs.getAll(workspace, configId: id, limit: 1);

@@ -226,5 +226,42 @@ void main() {
         {'configs[0].folder'},
       );
     });
+
+    test('Should keep the order of each list as it comes', () async {
+      List<Object?> names(Map<String, dynamic> body) => [
+        for (final s in body['sources'] as List) s['name'],
+      ];
+      List<Object?> folders(Map<String, dynamic> body) =>
+          (body['destinations'] as List).single['folders'] as List;
+
+      final first = await saved({
+        'sources': [
+          source('new_1', name: 'b-db'),
+          source('new_2', name: 'a-db'),
+        ],
+        'destinations': [
+          destination('new_3', folders: ['users', 'orders']),
+        ],
+        'configs': [],
+      });
+      expect(names(first), ['b-db', 'a-db']);
+      expect(folders(first), ['users', 'orders']);
+
+      final ids = first['ids'] as Map<String, dynamic>;
+      await saved({
+        'sources': [
+          source(ids['new_2'], name: 'a-db'),
+          source(ids['new_1'], name: 'b-db'),
+          source('new_4', name: 'c-db'),
+        ],
+        'destinations': [
+          destination(ids['new_3'], folders: ['orders', 'users']),
+        ],
+        'configs': [],
+      });
+      final read = await current();
+      expect(names(read), ['a-db', 'b-db', 'c-db']);
+      expect(folders(read), ['orders', 'users']);
+    });
   });
 }

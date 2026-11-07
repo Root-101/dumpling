@@ -74,6 +74,9 @@ class SourceTable extends Table {
 
   RealColumn get canvasY => real().nullable()();
 
+  /// Its place in the lists, set by hand (dragging); new ones go last.
+  IntColumn get position => integer().withDefault(const Constant(0))();
+
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
@@ -114,6 +117,9 @@ class DestinationTable extends Table {
 
   RealColumn get canvasY => real().nullable()();
 
+  /// Its place in the lists, set by hand (dragging); new ones go last.
+  IntColumn get position => integer().withDefault(const Constant(0))();
+
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
@@ -134,6 +140,9 @@ class DestinationFolderTable extends Table {
 
   /// Without slashes around it.
   TextColumn get path => text()();
+
+  /// Its place among the folders of the destination, in the order they come.
+  IntColumn get position => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column> get primaryKey => {destinationId, path};
@@ -180,6 +189,9 @@ class ConfigTable extends Table {
   RealColumn get canvasX => real().nullable()();
 
   RealColumn get canvasY => real().nullable()();
+
+  /// Its place in the lists, set by hand (dragging); new ones go last.
+  IntColumn get position => integer().withDefault(const Constant(0))();
 
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 

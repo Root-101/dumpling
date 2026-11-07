@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- The schema changes: `source`, `destination`, `destination_folder` and `config` get a `position`;
+  the SQLite file is created again (export before upgrading, import after).
+- Order by hand: the lists answer in `position`, a new one last. `PUT
+  /api/workspaces/{slug}/{sources,destinations,configs}/order` takes `{"ids": [...]}`, every id of
+  the workspace each once (a 422 on `ids` otherwise), with the permission `*.update` of each. The
+  canvas save and the import keep the order of their lists, and the folders of a destination keep
+  the order they come in (they were alphabetical).
+
 ## 0.1.2
 
 - Export and import of workspaces: `GET /api/export` (`?workspace=<slug>` for one) answers a JSON

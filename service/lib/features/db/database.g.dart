@@ -702,6 +702,18 @@ class $SourceTableTable extends SourceTable
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -737,6 +749,7 @@ class $SourceTableTable extends SourceTable
     lastCheck,
     canvasX,
     canvasY,
+    position,
     createdAt,
     updatedAt,
   ];
@@ -813,6 +826,12 @@ class $SourceTableTable extends SourceTable
         canvasY.isAcceptableOrUnknown(data['canvas_y']!, _canvasYMeta),
       );
     }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -872,6 +891,10 @@ class $SourceTableTable extends SourceTable
         DriftSqlType.double,
         data['${effectivePrefix}canvas_y'],
       ),
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -914,6 +937,9 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
   /// Where it sits on the canvas; null while it is off it.
   final double? canvasX;
   final double? canvasY;
+
+  /// Its place in the lists, set by hand (dragging); new ones go last.
+  final int position;
   final DateTime createdAt;
   final DateTime updatedAt;
   const SourceTableData({
@@ -926,6 +952,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
     this.lastCheck,
     this.canvasX,
     this.canvasY,
+    required this.position,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -951,6 +978,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
     if (!nullToAbsent || canvasY != null) {
       map['canvas_y'] = Variable<double>(canvasY);
     }
+    map['position'] = Variable<int>(position);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -973,6 +1001,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
       canvasY: canvasY == null && nullToAbsent
           ? const Value.absent()
           : Value(canvasY),
+      position: Value(position),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -995,6 +1024,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
       lastCheck: serializer.fromJson<String?>(json['lastCheck']),
       canvasX: serializer.fromJson<double?>(json['canvasX']),
       canvasY: serializer.fromJson<double?>(json['canvasY']),
+      position: serializer.fromJson<int>(json['position']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -1014,6 +1044,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
       'lastCheck': serializer.toJson<String?>(lastCheck),
       'canvasX': serializer.toJson<double?>(canvasX),
       'canvasY': serializer.toJson<double?>(canvasY),
+      'position': serializer.toJson<int>(position),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -1029,6 +1060,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
     Value<String?> lastCheck = const Value.absent(),
     Value<double?> canvasX = const Value.absent(),
     Value<double?> canvasY = const Value.absent(),
+    int? position,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => SourceTableData(
@@ -1041,6 +1073,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
     lastCheck: lastCheck.present ? lastCheck.value : this.lastCheck,
     canvasX: canvasX.present ? canvasX.value : this.canvasX,
     canvasY: canvasY.present ? canvasY.value : this.canvasY,
+    position: position ?? this.position,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -1059,6 +1092,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
       lastCheck: data.lastCheck.present ? data.lastCheck.value : this.lastCheck,
       canvasX: data.canvasX.present ? data.canvasX.value : this.canvasX,
       canvasY: data.canvasY.present ? data.canvasY.value : this.canvasY,
+      position: data.position.present ? data.position.value : this.position,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -1076,6 +1110,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
           ..write('lastCheck: $lastCheck, ')
           ..write('canvasX: $canvasX, ')
           ..write('canvasY: $canvasY, ')
+          ..write('position: $position, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -1093,6 +1128,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
     lastCheck,
     canvasX,
     canvasY,
+    position,
     createdAt,
     updatedAt,
   );
@@ -1109,6 +1145,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
           other.lastCheck == this.lastCheck &&
           other.canvasX == this.canvasX &&
           other.canvasY == this.canvasY &&
+          other.position == this.position &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -1123,6 +1160,7 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
   final Value<String?> lastCheck;
   final Value<double?> canvasX;
   final Value<double?> canvasY;
+  final Value<int> position;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -1136,6 +1174,7 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
     this.lastCheck = const Value.absent(),
     this.canvasX = const Value.absent(),
     this.canvasY = const Value.absent(),
+    this.position = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1150,6 +1189,7 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
     this.lastCheck = const Value.absent(),
     this.canvasX = const Value.absent(),
     this.canvasY = const Value.absent(),
+    this.position = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1169,6 +1209,7 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
     Expression<String>? lastCheck,
     Expression<double>? canvasX,
     Expression<double>? canvasY,
+    Expression<int>? position,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -1183,6 +1224,7 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
       if (lastCheck != null) 'last_check': lastCheck,
       if (canvasX != null) 'canvas_x': canvasX,
       if (canvasY != null) 'canvas_y': canvasY,
+      if (position != null) 'position': position,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -1199,6 +1241,7 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
     Value<String?>? lastCheck,
     Value<double?>? canvasX,
     Value<double?>? canvasY,
+    Value<int>? position,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -1213,6 +1256,7 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
       lastCheck: lastCheck ?? this.lastCheck,
       canvasX: canvasX ?? this.canvasX,
       canvasY: canvasY ?? this.canvasY,
+      position: position ?? this.position,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -1251,6 +1295,9 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
     if (canvasY.present) {
       map['canvas_y'] = Variable<double>(canvasY.value);
     }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1275,6 +1322,7 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
           ..write('lastCheck: $lastCheck, ')
           ..write('canvasX: $canvasX, ')
           ..write('canvasY: $canvasY, ')
+          ..write('position: $position, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -1385,6 +1433,18 @@ class $DestinationTableTable extends DestinationTable
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -1420,6 +1480,7 @@ class $DestinationTableTable extends DestinationTable
     lastCheck,
     canvasX,
     canvasY,
+    position,
     createdAt,
     updatedAt,
   ];
@@ -1496,6 +1557,12 @@ class $DestinationTableTable extends DestinationTable
         canvasY.isAcceptableOrUnknown(data['canvas_y']!, _canvasYMeta),
       );
     }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -1555,6 +1622,10 @@ class $DestinationTableTable extends DestinationTable
         DriftSqlType.double,
         data['${effectivePrefix}canvas_y'],
       ),
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -1598,6 +1669,9 @@ class DestinationTableData extends DataClass
   /// Where it sits on the canvas; null while it is off it.
   final double? canvasX;
   final double? canvasY;
+
+  /// Its place in the lists, set by hand (dragging); new ones go last.
+  final int position;
   final DateTime createdAt;
   final DateTime updatedAt;
   const DestinationTableData({
@@ -1610,6 +1684,7 @@ class DestinationTableData extends DataClass
     this.lastCheck,
     this.canvasX,
     this.canvasY,
+    required this.position,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -1635,6 +1710,7 @@ class DestinationTableData extends DataClass
     if (!nullToAbsent || canvasY != null) {
       map['canvas_y'] = Variable<double>(canvasY);
     }
+    map['position'] = Variable<int>(position);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -1657,6 +1733,7 @@ class DestinationTableData extends DataClass
       canvasY: canvasY == null && nullToAbsent
           ? const Value.absent()
           : Value(canvasY),
+      position: Value(position),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -1679,6 +1756,7 @@ class DestinationTableData extends DataClass
       lastCheck: serializer.fromJson<String?>(json['lastCheck']),
       canvasX: serializer.fromJson<double?>(json['canvasX']),
       canvasY: serializer.fromJson<double?>(json['canvasY']),
+      position: serializer.fromJson<int>(json['position']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -1698,6 +1776,7 @@ class DestinationTableData extends DataClass
       'lastCheck': serializer.toJson<String?>(lastCheck),
       'canvasX': serializer.toJson<double?>(canvasX),
       'canvasY': serializer.toJson<double?>(canvasY),
+      'position': serializer.toJson<int>(position),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -1713,6 +1792,7 @@ class DestinationTableData extends DataClass
     Value<String?> lastCheck = const Value.absent(),
     Value<double?> canvasX = const Value.absent(),
     Value<double?> canvasY = const Value.absent(),
+    int? position,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => DestinationTableData(
@@ -1725,6 +1805,7 @@ class DestinationTableData extends DataClass
     lastCheck: lastCheck.present ? lastCheck.value : this.lastCheck,
     canvasX: canvasX.present ? canvasX.value : this.canvasX,
     canvasY: canvasY.present ? canvasY.value : this.canvasY,
+    position: position ?? this.position,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -1743,6 +1824,7 @@ class DestinationTableData extends DataClass
       lastCheck: data.lastCheck.present ? data.lastCheck.value : this.lastCheck,
       canvasX: data.canvasX.present ? data.canvasX.value : this.canvasX,
       canvasY: data.canvasY.present ? data.canvasY.value : this.canvasY,
+      position: data.position.present ? data.position.value : this.position,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -1760,6 +1842,7 @@ class DestinationTableData extends DataClass
           ..write('lastCheck: $lastCheck, ')
           ..write('canvasX: $canvasX, ')
           ..write('canvasY: $canvasY, ')
+          ..write('position: $position, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -1777,6 +1860,7 @@ class DestinationTableData extends DataClass
     lastCheck,
     canvasX,
     canvasY,
+    position,
     createdAt,
     updatedAt,
   );
@@ -1793,6 +1877,7 @@ class DestinationTableData extends DataClass
           other.lastCheck == this.lastCheck &&
           other.canvasX == this.canvasX &&
           other.canvasY == this.canvasY &&
+          other.position == this.position &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -1807,6 +1892,7 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
   final Value<String?> lastCheck;
   final Value<double?> canvasX;
   final Value<double?> canvasY;
+  final Value<int> position;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -1820,6 +1906,7 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
     this.lastCheck = const Value.absent(),
     this.canvasX = const Value.absent(),
     this.canvasY = const Value.absent(),
+    this.position = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1834,6 +1921,7 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
     this.lastCheck = const Value.absent(),
     this.canvasX = const Value.absent(),
     this.canvasY = const Value.absent(),
+    this.position = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1853,6 +1941,7 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
     Expression<String>? lastCheck,
     Expression<double>? canvasX,
     Expression<double>? canvasY,
+    Expression<int>? position,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -1867,6 +1956,7 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
       if (lastCheck != null) 'last_check': lastCheck,
       if (canvasX != null) 'canvas_x': canvasX,
       if (canvasY != null) 'canvas_y': canvasY,
+      if (position != null) 'position': position,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -1883,6 +1973,7 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
     Value<String?>? lastCheck,
     Value<double?>? canvasX,
     Value<double?>? canvasY,
+    Value<int>? position,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -1897,6 +1988,7 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
       lastCheck: lastCheck ?? this.lastCheck,
       canvasX: canvasX ?? this.canvasX,
       canvasY: canvasY ?? this.canvasY,
+      position: position ?? this.position,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -1935,6 +2027,9 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
     if (canvasY.present) {
       map['canvas_y'] = Variable<double>(canvasY.value);
     }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1959,6 +2054,7 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
           ..write('lastCheck: $lastCheck, ')
           ..write('canvasX: $canvasX, ')
           ..write('canvasY: $canvasY, ')
+          ..write('position: $position, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -2110,6 +2206,18 @@ class $ConfigTableTable extends ConfigTable
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -2148,6 +2256,7 @@ class $ConfigTableTable extends ConfigTable
     enabled,
     canvasX,
     canvasY,
+    position,
     createdAt,
     updatedAt,
   ];
@@ -2246,6 +2355,12 @@ class $ConfigTableTable extends ConfigTable
         canvasY.isAcceptableOrUnknown(data['canvas_y']!, _canvasYMeta),
       );
     }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -2317,6 +2432,10 @@ class $ConfigTableTable extends ConfigTable
         DriftSqlType.double,
         data['${effectivePrefix}canvas_y'],
       ),
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -2367,6 +2486,9 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
   /// Where it sits on the canvas; null while it is off it.
   final double? canvasX;
   final double? canvasY;
+
+  /// Its place in the lists, set by hand (dragging); new ones go last.
+  final int position;
   final DateTime createdAt;
   final DateTime updatedAt;
   const ConfigTableData({
@@ -2382,6 +2504,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
     required this.enabled,
     this.canvasX,
     this.canvasY,
+    required this.position,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -2410,6 +2533,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
     if (!nullToAbsent || canvasY != null) {
       map['canvas_y'] = Variable<double>(canvasY);
     }
+    map['position'] = Variable<int>(position);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -2435,6 +2559,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
       canvasY: canvasY == null && nullToAbsent
           ? const Value.absent()
           : Value(canvasY),
+      position: Value(position),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -2460,6 +2585,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
       enabled: serializer.fromJson<bool>(json['enabled']),
       canvasX: serializer.fromJson<double?>(json['canvasX']),
       canvasY: serializer.fromJson<double?>(json['canvasY']),
+      position: serializer.fromJson<int>(json['position']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -2482,6 +2608,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
       'enabled': serializer.toJson<bool>(enabled),
       'canvasX': serializer.toJson<double?>(canvasX),
       'canvasY': serializer.toJson<double?>(canvasY),
+      'position': serializer.toJson<int>(position),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -2500,6 +2627,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
     bool? enabled,
     Value<double?> canvasX = const Value.absent(),
     Value<double?> canvasY = const Value.absent(),
+    int? position,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => ConfigTableData(
@@ -2515,6 +2643,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
     enabled: enabled ?? this.enabled,
     canvasX: canvasX.present ? canvasX.value : this.canvasX,
     canvasY: canvasY.present ? canvasY.value : this.canvasY,
+    position: position ?? this.position,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -2538,6 +2667,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
       enabled: data.enabled.present ? data.enabled.value : this.enabled,
       canvasX: data.canvasX.present ? data.canvasX.value : this.canvasX,
       canvasY: data.canvasY.present ? data.canvasY.value : this.canvasY,
+      position: data.position.present ? data.position.value : this.position,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -2558,6 +2688,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
           ..write('enabled: $enabled, ')
           ..write('canvasX: $canvasX, ')
           ..write('canvasY: $canvasY, ')
+          ..write('position: $position, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -2578,6 +2709,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
     enabled,
     canvasX,
     canvasY,
+    position,
     createdAt,
     updatedAt,
   );
@@ -2597,6 +2729,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
           other.enabled == this.enabled &&
           other.canvasX == this.canvasX &&
           other.canvasY == this.canvasY &&
+          other.position == this.position &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -2614,6 +2747,7 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
   final Value<bool> enabled;
   final Value<double?> canvasX;
   final Value<double?> canvasY;
+  final Value<int> position;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -2630,6 +2764,7 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
     this.enabled = const Value.absent(),
     this.canvasX = const Value.absent(),
     this.canvasY = const Value.absent(),
+    this.position = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2647,6 +2782,7 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
     this.enabled = const Value.absent(),
     this.canvasX = const Value.absent(),
     this.canvasY = const Value.absent(),
+    this.position = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2671,6 +2807,7 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
     Expression<bool>? enabled,
     Expression<double>? canvasX,
     Expression<double>? canvasY,
+    Expression<int>? position,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -2688,6 +2825,7 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
       if (enabled != null) 'enabled': enabled,
       if (canvasX != null) 'canvas_x': canvasX,
       if (canvasY != null) 'canvas_y': canvasY,
+      if (position != null) 'position': position,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -2707,6 +2845,7 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
     Value<bool>? enabled,
     Value<double?>? canvasX,
     Value<double?>? canvasY,
+    Value<int>? position,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -2724,6 +2863,7 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
       enabled: enabled ?? this.enabled,
       canvasX: canvasX ?? this.canvasX,
       canvasY: canvasY ?? this.canvasY,
+      position: position ?? this.position,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -2771,6 +2911,9 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
     if (canvasY.present) {
       map['canvas_y'] = Variable<double>(canvasY.value);
     }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -2798,6 +2941,7 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
           ..write('enabled: $enabled, ')
           ..write('canvasX: $canvasX, ')
           ..write('canvasY: $canvasY, ')
+          ..write('position: $position, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -3898,8 +4042,20 @@ class $DestinationFolderTableTable extends DestinationFolderTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
   @override
-  List<GeneratedColumn> get $columns => [destinationId, path];
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [destinationId, path, position];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -3931,6 +4087,12 @@ class $DestinationFolderTableTable extends DestinationFolderTable
     } else if (isInserting) {
       context.missing(_pathMeta);
     }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
     return context;
   }
 
@@ -3951,6 +4113,10 @@ class $DestinationFolderTableTable extends DestinationFolderTable
         DriftSqlType.string,
         data['${effectivePrefix}path'],
       )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
     );
   }
 
@@ -3967,15 +4133,20 @@ class DestinationFolderTableData extends DataClass
 
   /// Without slashes around it.
   final String path;
+
+  /// Its place among the folders of the destination, in the order they come.
+  final int position;
   const DestinationFolderTableData({
     required this.destinationId,
     required this.path,
+    required this.position,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['destination_id'] = Variable<String>(destinationId);
     map['path'] = Variable<String>(path);
+    map['position'] = Variable<int>(position);
     return map;
   }
 
@@ -3983,6 +4154,7 @@ class DestinationFolderTableData extends DataClass
     return DestinationFolderTableCompanion(
       destinationId: Value(destinationId),
       path: Value(path),
+      position: Value(position),
     );
   }
 
@@ -3994,6 +4166,7 @@ class DestinationFolderTableData extends DataClass
     return DestinationFolderTableData(
       destinationId: serializer.fromJson<String>(json['destinationId']),
       path: serializer.fromJson<String>(json['path']),
+      position: serializer.fromJson<int>(json['position']),
     );
   }
   @override
@@ -4002,14 +4175,19 @@ class DestinationFolderTableData extends DataClass
     return <String, dynamic>{
       'destinationId': serializer.toJson<String>(destinationId),
       'path': serializer.toJson<String>(path),
+      'position': serializer.toJson<int>(position),
     };
   }
 
-  DestinationFolderTableData copyWith({String? destinationId, String? path}) =>
-      DestinationFolderTableData(
-        destinationId: destinationId ?? this.destinationId,
-        path: path ?? this.path,
-      );
+  DestinationFolderTableData copyWith({
+    String? destinationId,
+    String? path,
+    int? position,
+  }) => DestinationFolderTableData(
+    destinationId: destinationId ?? this.destinationId,
+    path: path ?? this.path,
+    position: position ?? this.position,
+  );
   DestinationFolderTableData copyWithCompanion(
     DestinationFolderTableCompanion data,
   ) {
@@ -4018,6 +4196,7 @@ class DestinationFolderTableData extends DataClass
           ? data.destinationId.value
           : this.destinationId,
       path: data.path.present ? data.path.value : this.path,
+      position: data.position.present ? data.position.value : this.position,
     );
   }
 
@@ -4025,45 +4204,52 @@ class DestinationFolderTableData extends DataClass
   String toString() {
     return (StringBuffer('DestinationFolderTableData(')
           ..write('destinationId: $destinationId, ')
-          ..write('path: $path')
+          ..write('path: $path, ')
+          ..write('position: $position')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(destinationId, path);
+  int get hashCode => Object.hash(destinationId, path, position);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DestinationFolderTableData &&
           other.destinationId == this.destinationId &&
-          other.path == this.path);
+          other.path == this.path &&
+          other.position == this.position);
 }
 
 class DestinationFolderTableCompanion
     extends UpdateCompanion<DestinationFolderTableData> {
   final Value<String> destinationId;
   final Value<String> path;
+  final Value<int> position;
   final Value<int> rowid;
   const DestinationFolderTableCompanion({
     this.destinationId = const Value.absent(),
     this.path = const Value.absent(),
+    this.position = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DestinationFolderTableCompanion.insert({
     required String destinationId,
     required String path,
+    this.position = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : destinationId = Value(destinationId),
        path = Value(path);
   static Insertable<DestinationFolderTableData> custom({
     Expression<String>? destinationId,
     Expression<String>? path,
+    Expression<int>? position,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (destinationId != null) 'destination_id': destinationId,
       if (path != null) 'path': path,
+      if (position != null) 'position': position,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4071,11 +4257,13 @@ class DestinationFolderTableCompanion
   DestinationFolderTableCompanion copyWith({
     Value<String>? destinationId,
     Value<String>? path,
+    Value<int>? position,
     Value<int>? rowid,
   }) {
     return DestinationFolderTableCompanion(
       destinationId: destinationId ?? this.destinationId,
       path: path ?? this.path,
+      position: position ?? this.position,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4089,6 +4277,9 @@ class DestinationFolderTableCompanion
     if (path.present) {
       map['path'] = Variable<String>(path.value);
     }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -4100,6 +4291,7 @@ class DestinationFolderTableCompanion
     return (StringBuffer('DestinationFolderTableCompanion(')
           ..write('destinationId: $destinationId, ')
           ..write('path: $path, ')
+          ..write('position: $position, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4887,6 +5079,7 @@ typedef $$SourceTableTableCreateCompanionBuilder =
       Value<String?> lastCheck,
       Value<double?> canvasX,
       Value<double?> canvasY,
+      Value<int> position,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -4902,6 +5095,7 @@ typedef $$SourceTableTableUpdateCompanionBuilder =
       Value<String?> lastCheck,
       Value<double?> canvasX,
       Value<double?> canvasY,
+      Value<int> position,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -4994,6 +5188,11 @@ class $$SourceTableTableFilterComposer
 
   ColumnFilters<double> get canvasY => $composableBuilder(
     column: $table.canvasY,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5105,6 +5304,11 @@ class $$SourceTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -5173,6 +5377,9 @@ class $$SourceTableTableAnnotationComposer
 
   GeneratedColumn<double> get canvasY =>
       $composableBuilder(column: $table.canvasY, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -5266,6 +5473,7 @@ class $$SourceTableTableTableManager
                 Value<String?> lastCheck = const Value.absent(),
                 Value<double?> canvasX = const Value.absent(),
                 Value<double?> canvasY = const Value.absent(),
+                Value<int> position = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5279,6 +5487,7 @@ class $$SourceTableTableTableManager
                 lastCheck: lastCheck,
                 canvasX: canvasX,
                 canvasY: canvasY,
+                position: position,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5294,6 +5503,7 @@ class $$SourceTableTableTableManager
                 Value<String?> lastCheck = const Value.absent(),
                 Value<double?> canvasX = const Value.absent(),
                 Value<double?> canvasY = const Value.absent(),
+                Value<int> position = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5307,6 +5517,7 @@ class $$SourceTableTableTableManager
                 lastCheck: lastCheck,
                 canvasX: canvasX,
                 canvasY: canvasY,
+                position: position,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5412,6 +5623,7 @@ typedef $$DestinationTableTableCreateCompanionBuilder =
       Value<String?> lastCheck,
       Value<double?> canvasX,
       Value<double?> canvasY,
+      Value<int> position,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -5427,6 +5639,7 @@ typedef $$DestinationTableTableUpdateCompanionBuilder =
       Value<String?> lastCheck,
       Value<double?> canvasX,
       Value<double?> canvasY,
+      Value<int> position,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -5554,6 +5767,11 @@ class $$DestinationTableTableFilterComposer
 
   ColumnFilters<double> get canvasY => $composableBuilder(
     column: $table.canvasY,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5691,6 +5909,11 @@ class $$DestinationTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -5759,6 +5982,9 @@ class $$DestinationTableTableAnnotationComposer
 
   GeneratedColumn<double> get canvasY =>
       $composableBuilder(column: $table.canvasY, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -5884,6 +6110,7 @@ class $$DestinationTableTableTableManager
                 Value<String?> lastCheck = const Value.absent(),
                 Value<double?> canvasX = const Value.absent(),
                 Value<double?> canvasY = const Value.absent(),
+                Value<int> position = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5897,6 +6124,7 @@ class $$DestinationTableTableTableManager
                 lastCheck: lastCheck,
                 canvasX: canvasX,
                 canvasY: canvasY,
+                position: position,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5912,6 +6140,7 @@ class $$DestinationTableTableTableManager
                 Value<String?> lastCheck = const Value.absent(),
                 Value<double?> canvasX = const Value.absent(),
                 Value<double?> canvasY = const Value.absent(),
+                Value<int> position = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5925,6 +6154,7 @@ class $$DestinationTableTableTableManager
                 lastCheck: lastCheck,
                 canvasX: canvasX,
                 canvasY: canvasY,
+                position: position,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -6065,6 +6295,7 @@ typedef $$ConfigTableTableCreateCompanionBuilder =
       Value<bool> enabled,
       Value<double?> canvasX,
       Value<double?> canvasY,
+      Value<int> position,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -6083,6 +6314,7 @@ typedef $$ConfigTableTableUpdateCompanionBuilder =
       Value<bool> enabled,
       Value<double?> canvasX,
       Value<double?> canvasY,
+      Value<int> position,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -6215,6 +6447,11 @@ class $$ConfigTableTableFilterComposer
 
   ColumnFilters<double> get canvasY => $composableBuilder(
     column: $table.canvasY,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6377,6 +6614,11 @@ class $$ConfigTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -6495,6 +6737,9 @@ class $$ConfigTableTableAnnotationComposer
 
   GeneratedColumn<double> get canvasY =>
       $composableBuilder(column: $table.canvasY, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -6642,6 +6887,7 @@ class $$ConfigTableTableTableManager
                 Value<bool> enabled = const Value.absent(),
                 Value<double?> canvasX = const Value.absent(),
                 Value<double?> canvasY = const Value.absent(),
+                Value<int> position = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -6658,6 +6904,7 @@ class $$ConfigTableTableTableManager
                 enabled: enabled,
                 canvasX: canvasX,
                 canvasY: canvasY,
+                position: position,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -6676,6 +6923,7 @@ class $$ConfigTableTableTableManager
                 Value<bool> enabled = const Value.absent(),
                 Value<double?> canvasX = const Value.absent(),
                 Value<double?> canvasY = const Value.absent(),
+                Value<int> position = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -6692,6 +6940,7 @@ class $$ConfigTableTableTableManager
                 enabled: enabled,
                 canvasX: canvasX,
                 canvasY: canvasY,
+                position: position,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -7486,12 +7735,14 @@ typedef $$DestinationFolderTableTableCreateCompanionBuilder =
     DestinationFolderTableCompanion Function({
       required String destinationId,
       required String path,
+      Value<int> position,
       Value<int> rowid,
     });
 typedef $$DestinationFolderTableTableUpdateCompanionBuilder =
     DestinationFolderTableCompanion Function({
       Value<String> destinationId,
       Value<String> path,
+      Value<int> position,
       Value<int> rowid,
     });
 
@@ -7541,6 +7792,11 @@ class $$DestinationFolderTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$DestinationTableTableFilterComposer get destinationId {
     final $$DestinationTableTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -7579,6 +7835,11 @@ class $$DestinationFolderTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$DestinationTableTableOrderingComposer get destinationId {
     final $$DestinationTableTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -7614,6 +7875,9 @@ class $$DestinationFolderTableTableAnnotationComposer
   });
   GeneratedColumn<String> get path =>
       $composableBuilder(column: $table.path, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
 
   $$DestinationTableTableAnnotationComposer get destinationId {
     final $$DestinationTableTableAnnotationComposer composer = $composerBuilder(
@@ -7680,20 +7944,24 @@ class $$DestinationFolderTableTableTableManager
               ({
                 Value<String> destinationId = const Value.absent(),
                 Value<String> path = const Value.absent(),
+                Value<int> position = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DestinationFolderTableCompanion(
                 destinationId: destinationId,
                 path: path,
+                position: position,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String destinationId,
                 required String path,
+                Value<int> position = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DestinationFolderTableCompanion.insert(
                 destinationId: destinationId,
                 path: path,
+                position: position,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

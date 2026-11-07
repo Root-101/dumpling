@@ -270,6 +270,10 @@ class ServiceMessages$errors$validations$en {
   /// en: 'Each node needs its own id'
   String get repeatedNode => 'Each node needs its own id';
 
+  /// en: 'List every id of the workspace, each once and nothing else'
+  String get order =>
+      'List every id of the workspace, each once and nothing else';
+
   /// en: 'x and y must be between -{max: int} and {max}'
   String canvasPosition({required Object max}) =>
       'x and y must be between -${max} and ${max}';
@@ -353,6 +357,8 @@ extension on ServiceMessages {
       'errors.validations.folderOnRoot' => 'This destination has no folders: leave the folder empty to write to the root',
       'errors.validations.unknownNode' => 'Not a node of this workspace: a new one has an id that starts with new_',
       'errors.validations.repeatedNode' => 'Each node needs its own id',
+      'errors.validations.order' =>
+        'List every id of the workspace, each once and nothing else',
       'errors.validations.canvasPosition' => ({
         required Object max,
       }) => 'x and y must be between -${max} and ${max}',

@@ -23,6 +23,21 @@ class DestinationService {
         .toList();
   }
 
+  /// Saves the order of every destination of the workspace, as [request] lists
+  /// them; returns them in it.
+  Future<List<DestinationModel>> reorder(
+    String workspace,
+    OrderRequest request,
+  ) async {
+    await workspaces.get(workspace);
+    final saved = [
+      for (final row in await repo.getAll(workspace)) row.destination.id,
+    ];
+    await repo.reorder(request.idsOf(saved));
+    logger.info('Destinations reordered', fields: {'workspace': workspace});
+    return list(workspace);
+  }
+
   Future<DestinationModel> get(String workspace, String id) async =>
       DestinationModel.fromRow(await _row(workspace, id));
 
