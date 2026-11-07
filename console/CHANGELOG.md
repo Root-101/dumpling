@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- A dropped row no longer shows the old order for a frame before taking its place.
+
 ## 0.1.4
 
 - Nothing in the console; the version follows the service.
