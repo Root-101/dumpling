@@ -6,7 +6,10 @@ class ConfigController {
   ConfigController() : configService = ConfigService();
 
   Future<ResponseEntity> list(RequestEntity request) async {
-    final configs = await configService.list(request.pathParams['slug']!);
+    final configs = await configService.list(
+      request.pathParams['slug']!,
+      only: ApiKeyPrincipal.configsOf(request),
+    );
     return ResponseEntity.ok(body: configs);
   }
 
@@ -24,6 +27,7 @@ class ConfigController {
     final config = await configService.get(
       request.pathParams['slug']!,
       request.pathParams['id']!,
+      only: ApiKeyPrincipal.configsOf(request),
     );
     return ResponseEntity.ok(body: config);
   }
@@ -39,6 +43,7 @@ class ConfigController {
   }
 
   Future<ResponseEntity> update(RequestEntity request) async {
+    _reach(request);
     final body = await request.body<ConfigRequest>();
 
     final config = await configService.update(
@@ -50,10 +55,20 @@ class ConfigController {
   }
 
   Future<ResponseEntity> delete(RequestEntity request) async {
+    _reach(request);
     await configService.delete(
       request.pathParams['slug']!,
       request.pathParams['id']!,
     );
     return ResponseEntity.noContent();
+  }
+
+  /// A config an API key limited to others doesn't reach is not found.
+  static void _reach(RequestEntity request) {
+    final only = ApiKeyPrincipal.configsOf(request);
+    final id = request.pathParams['id']!;
+    if (only != null && !only.contains(id)) {
+      throw NotFoundException(detail: intl.errors.configs.notFound(id: id));
+    }
   }
 }

@@ -19,12 +19,14 @@ class ConfigService {
       runs = RunTableRepo(di.find()),
       engine = di.find();
 
-  Future<List<ConfigModel>> list(String workspace) async {
+  /// With [only], just those configs (an API key limited to them).
+  Future<List<ConfigModel>> list(String workspace, {Set<String>? only}) async {
     await workspaces.get(workspace);
     final last = await runs.lastByConfig(workspace);
     return [
       for (final row in await repo.getAll(workspace))
-        ConfigModel.fromRow(row, lastRun: last[row.id]),
+        if (only == null || only.contains(row.id))
+          ConfigModel.fromRow(row, lastRun: last[row.id]),
     ];
   }
 
@@ -41,7 +43,15 @@ class ConfigService {
     return list(workspace);
   }
 
-  Future<ConfigModel> get(String workspace, String id) async {
+  /// A config [only] doesn't reach is not found, as one that doesn't exist.
+  Future<ConfigModel> get(
+    String workspace,
+    String id, {
+    Set<String>? only,
+  }) async {
+    if (only != null && !only.contains(id)) {
+      throw NotFoundException(detail: intl.errors.configs.notFound(id: id));
+    }
     final row = await _row(workspace, id);
     final last = await runs.getAll(workspace, configId: id, limit: 1);
     return ConfigModel.fromRow(row, lastRun: last.firstOrNull);

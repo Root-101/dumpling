@@ -18,9 +18,10 @@ errors:
     folderInUse: 'The config "{config: String}" writes to "{folder: String}": move it before removing that folder.'
   configs:
     notFound: 'The config "{id: String}" does not exist in this workspace.'
+  apiKeys:
+    notFound: 'The API key "{id: String}" does not exist in this workspace.'
   runs:
     notFound: 'The run "{id: String}" does not exist in this workspace.'
-    alreadyRunning: 'This config is already running: wait for it to end.'
     invalidFilter: '{name: String} must be one of: {values: String}'
     invalidLimit: 'limit must be from 1 to {max: int}'
   transfer:
@@ -46,5 +47,8 @@ errors:
     unknownNode: 'Not a node of this workspace: a new one has an id that starts with new_'
     repeatedNode: 'Each node needs its own id'
     order: 'List every id of the workspace, each once and nothing else'
+    permission: 'Use only permissions of a workspace: an API key cannot have the others'
+    unknownConfig: 'There is no such config in this workspace'
+    label: 'Up to {max: int} letters, digits, . _ or -'
     canvasPosition: 'x and y must be between -{max: int} and {max}'
     postgresUrl: 'Not a PostgreSQL connection URL (postgresql://user:password@host:5432/database)'

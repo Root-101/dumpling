@@ -38,6 +38,11 @@ abstract final class Permissions {
   static const String canvasGet = 'canvas.get';
   static const String canvasSave = 'canvas.save';
 
+  static const String apiKeyList = 'apikey.list';
+  static const String apiKeyCreate = 'apikey.create';
+  static const String apiKeyUpdate = 'apikey.update';
+  static const String apiKeyDelete = 'apikey.delete';
+
   /// Every permission: add each new one here too.
   static const List<String> all = [
     authSession,
@@ -48,6 +53,40 @@ abstract final class Permissions {
     workspaceDelete,
     workspaceExport,
     workspaceImport,
+    sourceList,
+    sourceGet,
+    sourceCreate,
+    sourceUpdate,
+    sourceDelete,
+    sourceTest,
+    destinationList,
+    destinationGet,
+    destinationCreate,
+    destinationUpdate,
+    destinationDelete,
+    destinationTest,
+    configList,
+    configGet,
+    configCreate,
+    configUpdate,
+    configDelete,
+    configRun,
+    runList,
+    runGet,
+    canvasGet,
+    canvasSave,
+    apiKeyList,
+    apiKeyCreate,
+    apiKeyUpdate,
+    apiKeyDelete,
+  ];
+
+  /// What an API key may be given: the routes of one workspace. Never the
+  /// session, the other workspaces (list, create, delete, export, import) nor
+  /// the keys themselves, so a key can't make another.
+  static const List<String> grantable = [
+    workspaceGet,
+    workspaceUpdate,
     sourceList,
     sourceGet,
     sourceCreate,

@@ -82,6 +82,9 @@ class ServiceMessages$errors$es implements ServiceMessages$errors$en {
   late final ServiceMessages$errors$configs$es configs =
       ServiceMessages$errors$configs$es._(_root);
   @override
+  late final ServiceMessages$errors$apiKeys$es apiKeys =
+      ServiceMessages$errors$apiKeys$es._(_root);
+  @override
   late final ServiceMessages$errors$runs$es runs =
       ServiceMessages$errors$runs$es._(_root);
   @override
@@ -169,6 +172,19 @@ class ServiceMessages$errors$configs$es
       'La config "${id}" no existe en este workspace.';
 }
 
+// Path: errors.apiKeys
+class ServiceMessages$errors$apiKeys$es
+    implements ServiceMessages$errors$apiKeys$en {
+  ServiceMessages$errors$apiKeys$es._(this._root);
+
+  final ServiceMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String notFound({required Object id}) =>
+      'La API key "${id}" no existe en este workspace.';
+}
+
 // Path: errors.runs
 class ServiceMessages$errors$runs$es implements ServiceMessages$errors$runs$en {
   ServiceMessages$errors$runs$es._(this._root);
@@ -179,9 +195,6 @@ class ServiceMessages$errors$runs$es implements ServiceMessages$errors$runs$en {
   @override
   String notFound({required Object id}) =>
       'La ejecución "${id}" no existe en este workspace.';
-  @override
-  String get alreadyRunning =>
-      'Esta config ya se está ejecutando: espera a que termine.';
   @override
   String invalidFilter({required Object name, required Object values}) =>
       '${name} debe ser uno de: ${values}';
@@ -259,6 +272,14 @@ class ServiceMessages$errors$validations$es
   @override
   String get order => 'Lista cada id del workspace, una sola vez y nada más';
   @override
+  String get permission =>
+      'Usa solo permisos de un workspace: una API key no puede tener los demás';
+  @override
+  String get unknownConfig => 'No existe esa config en este workspace';
+  @override
+  String label({required Object max}) =>
+      'Hasta ${max} letras, dígitos, . _ o -';
+  @override
   String canvasPosition({required Object max}) =>
       'x e y deben estar entre -${max} y ${max}';
   @override
@@ -301,11 +322,12 @@ extension on ServiceMessagesEs {
       'errors.configs.notFound' => ({
         required Object id,
       }) => 'La config "${id}" no existe en este workspace.',
+      'errors.apiKeys.notFound' => ({
+        required Object id,
+      }) => 'La API key "${id}" no existe en este workspace.',
       'errors.runs.notFound' => ({
         required Object id,
       }) => 'La ejecución "${id}" no existe en este workspace.',
-      'errors.runs.alreadyRunning' =>
-        'Esta config ya se está ejecutando: espera a que termine.',
       'errors.runs.invalidFilter' => ({
         required Object name,
         required Object values,
@@ -346,6 +368,12 @@ extension on ServiceMessagesEs {
       'errors.validations.repeatedNode' => 'Cada nodo necesita su propio id',
       'errors.validations.order' =>
         'Lista cada id del workspace, una sola vez y nada más',
+      'errors.validations.permission' => 'Usa solo permisos de un workspace: una API key no puede tener los demás',
+      'errors.validations.unknownConfig' =>
+        'No existe esa config en este workspace',
+      'errors.validations.label' => ({
+        required Object max,
+      }) => 'Hasta ${max} letras, dígitos, . _ o -',
       'errors.validations.canvasPosition' => ({
         required Object max,
       }) => 'x e y deben estar entre -${max} y ${max}',
