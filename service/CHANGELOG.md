@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.3
 
 - The schema changes: `source`, `destination`, `destination_folder` and `config` get a `position`;
   the SQLite file is created again (export before upgrading, import after).

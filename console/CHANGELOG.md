@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.3
 
 - Sources, destinations and the folders of a destination (under its row and in its form) drag by a
   handle (⠿) at the start of the row; the order is saved as it drops, and goes back if the service

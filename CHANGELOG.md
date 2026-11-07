@@ -4,7 +4,7 @@ What changes in each version of Dumpling, from 0.1.0. The detail of each package
 changelogs of [`service/`](service/CHANGELOG.md) and [`console/`](console/CHANGELOG.md); the
 release candidates before 0.1.0 are summed up in the [roadmap](ROADMAP.md#010).
 
-## Unreleased
+## 0.1.3
 
 - 🔴 **The database changes** (a `position` column in four tables): export your workspaces
   before upgrading and import them after (see [Upgrading](README.md#upgrading)).
