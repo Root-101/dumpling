@@ -96,6 +96,8 @@ Prefix everything with `fvm` (versions pinned in `.fvmrc`; the `dart` on the PAT
 ## Git
 
 - Branches from `develop`; `main` only gets releases. Ask before pushing.
+- Once a branch is merged into `develop` and pushed, delete it, locally (`git branch -d`) and on
+  the remote (`git push github --delete <branch>`, if it was pushed).
 - Commit messages start with the part they touch, then what the change does: `Service: …`,
   `Console: …`, `Docs: …`, `Design: …`, `CI: …`, `Release: …`, `Roadmap: …`.
 - **Never** add `Co-Authored-By` or any other attribution to Claude in commits or pull requests.
