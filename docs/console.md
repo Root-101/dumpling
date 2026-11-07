@@ -36,18 +36,18 @@ hours. In a window narrower than 900 px the brand goes above the form.
 When the token expires, the screen you were on stays (an unsaved canvas too) under a dialog that
 signs in again, or goes to this page:
 
-![Session expired](design/screens/35-session-expired.png)
+![Session expired](design/screens/39-session-expired.png)
 
 **Behind it:** [`POST /api/auth/login`](api.md#log-in) with `{"username", "password"}`, which
 answers the token every other call sends as `Authorization: Bearer …`. Signing out only forgets it.
 
 ## Navigation
 
-![The rail, expanded](design/screens/36-rail-expanded.png)
+![The rail, expanded](design/screens/40-rail-expanded.png)
 
 The rail on the left: at the top the **current workspace**, which opens the list of workspaces;
-then **Backups** and the **Pipeline editor**, **Sources** and **Destinations**, and the **Run log**,
-with the number of failing backups. At its foot the **language** and **Sign out**. The notch in the
+then **Backups** and the **Pipeline editor**, **Sources** and **Destinations**, the **Run log**,
+with the number of failing backups, and the **API keys**. At its foot the **language** and **Sign out**. The notch in the
 middle of its edge expands it to show the names, and folds it again.
 
 **Behind it:** the failing count comes from the statistics of the workspace
@@ -324,18 +324,22 @@ The detail shows the backups that write to each folder, the last check and the c
 
 ![Run log](design/screens/28-run-log.png)
 
-**URL:** `/#/workspaces/{slug}/runs` (`?status=` `running`, `success` or `failed`, `?source=` and
-`?destination=` a type, like `postgres` or `s3`); a run: `/#/workspaces/{slug}/runs/{id}`
+**URL:** `/#/workspaces/{slug}/runs` (`?by=` `schedule`, `manual` or `api`, `?status=` `queued`,
+`running`, `success` or `failed`, `?source=` and `?destination=` a type, like `postgres` or `s3`); a
+run: `/#/workspaces/{slug}/runs/{id}`
 
 Every run of the workspace, newest first and grouped by day: the backup, its source and
-destination, how it was started (its schedule or Run now), when, how long it took, its size and
-its status. A search, and filters by status, source type and destination type, which go in the URL
-so a filtered log can be shared:
+destination, who started it (its schedule, Run now, or *API · the key's name*, with the label the
+request sent, `v1.4.2`, as a chip under it), when, how long it took, its size and its status. A run
+asked for while its config runs waits **Queued**, with an hourglass, and starts when that one ends.
+A search (also by label and key), and filters by who started it, status, source type and
+destination type, which go in the URL so a filtered log can be shared:
 
 ![Run log, filters](design/screens/29-run-log-filters.png)
 
-A run opens its details: its steps (connect, dump, upload), where the file went, its size and
-duration, the error of a failed one, and its log, which can be copied whole or in part: where the
+A run opens its details: its steps (connect, dump, upload), who started it (*API*, and the key
+and the label under it), where the file went, its size and duration, the error of a failed one, and
+its log, which can be copied whole or in part: where the
 file went, the error and the log are selectable, as are the connection values (host, endpoint,
 bucket) in the detail of a source or destination and the error of a failed connection check. The
 password of a source never appears in it.
@@ -353,18 +357,56 @@ To restore a backup, see [`restore.md`](restore.md).
 without their log lines) and [`GET /api/workspaces/{slug}/runs/{id}`](api.md#a-run-and-its-log) for a run, with
 its log.
 
+## API keys
+
+![API keys](design/screens/33-api-keys.png)
+
+**URL:** `/#/workspaces/{slug}/keys`
+
+Keys for other systems to use the workspace through the API: a deploy pipeline that backs up before
+a migration, a script, a dashboard. Each row has the key's name and id, its access (the template its
+permissions match, *Run backups*, *Read only*, *Full access*, or *Custom*) and how many
+permissions, its configs (*All configs*, or the ones it is limited to), when it was created and
+when it was last used, with the last run it started and its label. A search by name or id, and
+filters by access, by config (the keys that reach it) and by permission:
+
+![API keys, filters](design/screens/34-api-keys-filters.png)
+
+The rows drag by their handle (⠿) into the order you want, as sources and destinations; with a
+search or a filter on, the handles are dimmed. The menu of a row edits the key or deletes it, after
+a confirmation: whatever uses it gets a 401 from then on, and the runs it started stay in the run
+log.
+
+**New API key** opens its form: a name (the run log shows it), a template that marks its
+permissions, and the permissions themselves by resource, each with a tooltip of what it allows
+(changing one makes it *Custom*). **Only some configs** limits it to the ones chosen: it runs only
+those and sees only their runs. Editing a key changes all of that, never the key itself.
+
+![New API key](design/screens/35-new-api-key.png)
+
+Creating it shows the key once, with a button to copy it and a `curl` to run a backup with it; to
+renew a key, create another and delete the old one. [`integrations.md`](integrations.md) has the
+whole pipeline.
+
+![A new key](design/screens/36-api-key-created.png)
+
+**Behind it:** [`GET /api/workspaces/{slug}/keys`](api.md#list-api-keys), with the configs and the
+sources for the form; [`POST`](api.md#create-an-api-key) and
+[`PUT …/keys/{id}`](api.md#edit-an-api-key) to save one, [`PUT …/keys/order`](api.md#reorder-api-keys)
+when a row is dropped, and [`DELETE …/keys/{id}`](api.md#delete-an-api-key).
+
 ## Loading and errors
 
 While it starts, the console shows its mark, its name and a bar, in the language of the browser
 (Spanish or English):
 
-![Starting](design/screens/38-splash.png)
+![Starting](design/screens/42-splash.png)
 
 Each screen loads as a skeleton of itself:
 
-![Loading](design/screens/37-loading.png)
+![Loading](design/screens/41-loading.png)
 
 |                                                      |                                                          |
 |------------------------------------------------------|----------------------------------------------------------|
-| ![Not found](design/screens/33-not-found.png)        | ![Connection lost](design/screens/34-connection-lost.png) |
+| ![Not found](design/screens/37-not-found.png)        | ![Connection lost](design/screens/38-connection-lost.png) |
 | **Not found**: an unknown URL or workspace, with the way back to the workspaces; an unknown id shows a notice over its screen instead | **Connection lost**: the service doesn't answer; it names the service's address and tries again |

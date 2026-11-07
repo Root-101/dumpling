@@ -195,3 +195,25 @@ user dragged them to. The lists answer in it, a new one goes last.
 | Dragging only with no search or filter on                  | Dropping a row among some of them has several readings for the ones hidden (before it, in its place, first): each moves rows you can't see |
 | It reuses the permission `*.update`                        | Reordering edits the list; a key of its own would add nothing until there are users with fewer permissions                                 |
 | The canvas sends the nodes in the order it loaded them     | It splits them into placed and off the canvas; concatenating both would reorder them on every save                                         |
+
+## 18. API keys
+
+A pipeline that backs up its database before a migration, or any other system, uses the API with a
+key of the workspace instead of the admin's password. The run log says which key started a run and
+with which label.
+
+| Decision                                                         | Why                                                                                                                                                         |
+|------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| A key is a Bearer token with its id inside (`dmp_<id>_<secret>`) | One header for `curl`; the id finds the row and shows in the console and the logs without the secret. Signing each request (as S3) would ask every client to implement it, for nothing over HTTPS |
+| Basic auth too, with the id as the user                          | Some tools only know a user and a password                                                                                                                  |
+| Only the sha256 of the secret                                    | The secret is random and long: a slow hash adds nothing, and the key is shown once                                                                         |
+| A key is a set of the permissions of the routes, plus a workspace | Every route already has its permission: a key is no special case, so the same mechanism serves a deploy, a dashboard or an integration                     |
+| Templates over loose permissions                                 | *Run backups* covers the common case in one click; the permissions stay editable one by one                                                                |
+| Never the session, other workspaces, export, import nor the keys | A key can't escape its workspace nor make another key                                                                                                     |
+| Optionally only some configs (run, see, edit, delete them)       | A deploy key reaches only the backup of its database                                                                                                       |
+| Keys don't expire; renewing is creating another                  | An expiry nobody watches breaks a pipeline at night; deleting cuts a key at once                                                                           |
+| Keys are not exported                                            | A key is a credential for one Dumpling; moved with the data it would grant access on another one                                                           |
+| A wrong key counts as a failed login                             | Guessing keys can't be faster than guessing the password                                                                                                   |
+| A run asked for while its config runs waits, queued              | A pipeline wants a backup from right before its migration: a 409 would make it retry, and a run already going may have started before the last writes      |
+| The run follows as Server-Sent Events                            | One connection instead of polling; `curl -N` reads it, and a comment every 15 s keeps proxies from closing it. The run log of the console still polls (its live view is for 0.2.0) |
+| The admin's token gets every permission of the running version    | A token signed before an upgrade added a permission would get 403 on the new routes until signing in again                                                |

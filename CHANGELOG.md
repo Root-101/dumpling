@@ -6,6 +6,21 @@ release candidates before 0.1.0 are summed up in the [roadmap](ROADMAP.md#010).
 
 ## Unreleased
 
+- 🔴 **The database changes** (a table `api_key`, and the label and key of each run): export your
+  workspaces before upgrading and import them after (see [Upgrading](README.md#upgrading)).
+- **API keys.** Each workspace has keys for other systems: a deploy pipeline that backs up its
+  database before a migration, a script, a dashboard. A key has the permissions it was given (with
+  templates: *Run backups*, *Read only*, *Full access*) and optionally only some configs; it is sent
+  as a Bearer token or with Basic auth, shown once, and doesn't expire. The new **API keys** screen
+  lists, searches, filters, sorts, creates, edits and deletes them. Guide:
+  [`docs/integrations.md`](docs/integrations.md).
+- **A run asked for while its config runs waits its turn** (*Queued*) instead of a 409, and starts
+  when that one ends.
+- **A label on each run** (`{"label": "v1.4.2"}` on Run now), and who started it: the run log shows
+  *API · the key* with the label, filters by who started it and finds a run by its label.
+- **Follow a run as it goes:** `GET …/runs/{id}/events` streams it (Server-Sent Events) until it
+  ends.
+- A session open across an upgrade keeps reaching the routes the new version adds.
 - Console: the confirmations before deleting or discarding look as in the design.
 
 ## 0.1.5

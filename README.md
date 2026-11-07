@@ -61,6 +61,7 @@ both (see [Sources and destinations](#sources-and-destinations)).
 | **Backups**      | Cron schedules in UTC and Run now; gzip or none; object keys with placeholders (`{db}/{yyyy}-{MM}-{dd}`); streamed in 16 MiB parts |
 | **Monitoring**   | Health of every backup with its last and next run, and a run log with the log of each run                                          |
 | **Workspaces**   | Separate canvases for environments, clients or projects                                                                            |
+| **API keys**     | Per workspace, for pipelines and scripts: back up before a deploy and follow the run until it ends, with only the permissions given |
 | **Console**      | English and Spanish; times in UTC with the local time next to them                                                                 |
 
 |                                                                   |                                                                      |
@@ -219,6 +220,8 @@ against real backups.
 - [`docs/brand.md`](docs/brand.md): the logo, what it means, its versions, colors and type, and the
   presentation images (files in [`docs/design/brand/`](docs/design/brand)).
 - [`docs/restore.md`](docs/restore.md): restoring a backup, step by step.
+- [`docs/integrations.md`](docs/integrations.md): API keys, and a backup before each deploy from a
+  pipeline.
 - [`service/README.md`](service/README.md) and [`console/README.md`](console/README.md): running and
   testing each package, and the end-to-end test.
 - [`SECURITY.md`](SECURITY.md): the security model and how to deploy it safely (a read-only

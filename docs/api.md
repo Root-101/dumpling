@@ -9,21 +9,25 @@ the console; an unknown path under `/api` is a `404`. The API is always JSON: ke
 `snake_case`, times in ISO 8601 and UTC (`2026-10-30T05:16:13.000Z`), cron schedules in UTC too.
 
 Most things live in a workspace, so most paths start with `/api/workspaces/{slug}`. Ids carry
-their kind: `src_…` for sources, `dst_…` for destinations, `cfg_…` for configs, `run_…` for runs.
+their kind: `src_…` for sources, `dst_…` for destinations, `cfg_…` for configs, `run_…` for runs,
+`key_…` for API keys.
 
 ## Authentication
 
 | Who                                          | How                                                                                          |
 |----------------------------------------------|----------------------------------------------------------------------------------------------|
 | The console (and anything else that logs in) | `Authorization: Bearer <access_token>`, from [`POST /api/auth/login`](#log-in)              |
+| A pipeline, a script, an integration         | An [API key](#api-keys): `Authorization: Bearer dmp_…`, or Basic auth with its id and secret |
 | Nobody                                       | Only `POST /api/auth/login`, [`GET /api/health`](#health) and the console's own files       |
 
 There is one user, the admin of the environment (`DUMPLING_ADMIN_USER`, `DUMPLING_ADMIN_PASSWORD`).
 Its token lasts 12 hours, has every permission, and there is no refresh: then the console asks to
 sign in again. The token goes in a header, never in a cookie, so CORS accepts any origin.
 
-Each route needs a permission (`workspace.list`, `config.run`…), and the admin's token has all of
-them. Without a token, or with an expired one:
+Each route needs a permission (`workspace.list`, `config.run`…). The admin has all of them, also
+those a newer version adds after its token was signed. An API key has the ones it was given, and
+only in its own workspace: another workspace, or a route it has no permission for, is a `403`.
+Without a token, or with an expired one, or a wrong key:
 
 ```json
 {"type": "about:blank", "title": "Unauthorized", "status": 401, "instance": "/api/workspaces"}
@@ -74,7 +78,7 @@ Not every violation has a `code`: the rules of Dumpling itself (a cron expressio
 destination…) only bring the `message`.
 
 Other common answers: `404` for a workspace, source, destination, config or run that doesn't exist
-(in that workspace), `409` when something is in use or already running, and `429` above the rate
+(in that workspace), `409` when something is in use, and `429` above the rate
 limit, with `Retry-After`. Every response carries the rate limit headers of the IETF draft
 (`RateLimit-Policy: "default";q=600;w=60`, the limit and its window in seconds, and
 `RateLimit: "default";r=599;t=60`, the requests left and the seconds until the window frees one).
@@ -827,9 +831,14 @@ DELETE /api/workspaces/docs-tour/configs/cfg_2revrjwd2kgwtv2d
 
 ```http
 POST /api/workspaces/e2e/configs/cfg_b2n23owtlcev45ue/run
+Content-Type: application/json
+
+{"label": "v1.4.2"}
 ```
 
-`202` with the run just started; it goes on in the background:
+The body is optional. `label` names what asked for the run (a version, a commit): up to 64 letters,
+digits, `.`, `_` or `-`, a `422` otherwise; the run log shows it and
+[finds runs by it](#run-log). `202` with the run just started; it goes on in the background:
 
 ```json
 {
@@ -837,23 +846,24 @@ POST /api/workspaces/e2e/configs/cfg_b2n23owtlcev45ue/run
   "config_id": "cfg_b2n23owtlcev45ue", "config_name": "Nightly custom",
   "source_name": "shop-custom", "source_type": "postgres",
   "destination_name": "bucket", "destination_type": "s3",
-  "trigger": "manual", "status": "running",
+  "trigger": "manual", "status": "running", "label": "v1.4.2", "key_id": null, "key_name": null,
   "location": null, "size_bytes": 0, "error": null,
   "started_at": "2026-10-30T05:26:56.000Z", "finished_at": null, "duration_ms": null
 }
 ```
 
-It runs the config as it is saved, enabled or not. The console follows it with
-[its detail](#a-run-and-its-log) every 2 seconds until `status` is no longer `running`. A config
-runs once at a time:
-
-```json
-{"type": "about:blank", "title": "Conflict", "status": 409, "detail": "This config is already running: wait for it to end.", "instance": "/api/workspaces/e2e/configs/cfg_b2n23owtlcev45ue/run"}
-```
+It runs the config as it is saved, enabled or not. A config runs once at a time: asked for while
+one of it runs, the run comes back `queued` and starts on its own when that one (and those queued
+before it) end; its `started_at` is then when it really started. A scheduled run that finds its
+config running is skipped, as before. With an API key, `trigger` is `api` and `key_id` and
+`key_name` say which key; the key needs `config.run`, and one limited to some configs gets a `404`
+for the others. The console follows a run with [its detail](#a-run-and-its-log) every 2 seconds; a
+pipeline can follow [its events](#follow-a-run) instead.
 
 ## Runs
 
-Every run of the workspace, scheduled (`"trigger": "schedule"`) or Run now (`"manual"`). A run
+Every run of the workspace, scheduled (`"trigger": "schedule"`), Run now of the console
+(`"manual"`) or asked for with an API key (`"api"`, with `key_id` and `key_name`). A run
 keeps the names of its config, source and destination as they were, so it reads the same after
 they change; deleting its config keeps the run, with `config_id` set to `null`. There is no list of
 backups apart: the successful runs are it, and their `location` (bucket and key) is where each
@@ -881,12 +891,14 @@ GET /api/workspaces/e2e/runs?status=failed&config=cfg_hleo4cvfwnc6tmtp&limit=1
 ```
 
 `started_at` and `finished_at` are stored to the second; `duration_ms` is measured by the run itself
-(a run cut by a stop of the service gets it from those times). Newest first. Every filter is optional: `status` (`running`, `success`, `failed`), `source_type`,
-`destination_type`, `config` (an id) and `limit` (1 to 200, 200 by default). A value out of them is
-a `400` (`"limit must be from 1 to 200"`):
+(a run cut by a stop of the service gets it from those times). Newest first. Every filter is
+optional: `status` (`queued`, `running`, `success`, `failed`), `trigger` (`schedule`, `manual`,
+`api`), `label` (exact), `source_type`, `destination_type`, `config` (an id) and `limit` (1 to 200,
+200 by default). An API key limited to some configs only sees their runs. A value out of them is a
+`400` (`"limit must be from 1 to 200"`):
 
 ```json
-{"type": "about:blank", "title": "Bad Request", "status": 400, "detail": "status must be one of: running, success, failed", "instance": "/api/workspaces/e2e/runs"}
+{"type": "about:blank", "title": "Bad Request", "status": 400, "detail": "status must be one of: queued, running, success, failed", "instance": "/api/workspaces/e2e/runs"}
 ```
 
 ### A run and its log
@@ -921,3 +933,114 @@ names hosts and databases but never passwords:
   {"at": "2026-10-30T05:16:17.086963Z", "message": "Failed: Could not connect: password authentication failed for user \"dumpling_backup\""}
 ]
 ```
+
+### Follow a run
+
+```http
+GET /api/workspaces/e2e/runs/run_nxp6zspfy62edr5k/events
+Authorization: Bearer dmp_…
+```
+
+The run as [Server-Sent Events](https://html.spec.whatwg.org/multipage/server-sent-events.html)
+(`text/event-stream`, permission `run.get`), until it ends: an event `run` with it at once and on
+each change (queued → running, the bytes uploaded), a comment `: …` every 15 s so no proxy closes
+the connection, and an event `end` with the run as [its detail](#a-run-and-its-log) once it is no
+longer queued or running. Then the service closes the stream. A run that already ended answers
+`end` at once, so a dropped connection just asks again.
+
+```text
+event: run
+data: {"id":"run_nxp6zspfy62edr5k","status":"queued",…}
+
+event: run
+data: {"id":"run_nxp6zspfy62edr5k","status":"running","size_bytes":0,…}
+
+event: end
+data: {"id":"run_nxp6zspfy62edr5k","status":"success","location":"e2e-backups/…","log":[…],…}
+```
+
+[`integrations.md`](integrations.md) has a pipeline that starts a backup and waits for it with
+`curl`.
+
+## API keys
+
+Keys another system uses the API of one workspace with: a deploy pipeline that backs up before a
+migration, a script, a dashboard. Each key has a name, the permissions it was given (from those of
+the routes of a workspace: never the session, the other workspaces, export, import nor the keys
+themselves, so a key can't make another) and, optionally, the only configs it reaches: then it only
+runs those, and only sees them and their runs. Only the admin manages them (`apikey.list`,
+`apikey.create`, `apikey.update`, `apikey.delete`). They are not part of an
+[export](#export-workspaces), and deleting the workspace deletes them.
+
+A key is `dmp_<16 characters>_<secret>`. Send it as `Authorization: Bearer dmp_…`, or with Basic
+auth: the user is the key's id (`key_<the same 16 characters>`) and the password its secret. A
+wrong key is a `401` and counts as a failed login of its IP: the same wait, and the same lock after
+10 in a row.
+
+### List API keys
+
+```http
+GET /api/workspaces/e2e/keys
+```
+
+```json
+[
+  {
+    "id": "key_7h2k9q4mxcd5fe3a", "workspace": "e2e", "name": "deploy-key",
+    "permissions": ["config.list", "config.run", "run.list", "run.get"],
+    "config_ids": ["cfg_b2n23owtlcev45ue"],
+    "created_at": "2026-11-06T18:02:11.000Z", "updated_at": "2026-11-06T18:02:11.000Z",
+    "last_used_at": "2026-11-07T02:06:40.000Z",
+    "last_run": {"id": "run_nxp6zspfy62edr5k", "config_name": "Nightly custom", "label": "v1.4.2", "status": "success", "started_at": "2026-11-07T02:06:40.000Z"}
+  }
+]
+```
+
+In their order. `config_ids` empty: every config of the workspace, new ones too. `last_used_at` is
+the last request it made (written at most once a minute), and `last_run` the last run it started.
+
+### Create an API key
+
+```http
+POST /api/workspaces/e2e/keys
+Content-Type: application/json
+
+{"name": "deploy-key", "permissions": ["config.run", "run.get"], "config_ids": ["cfg_b2n23owtlcev45ue"]}
+```
+
+`201` with the key as in the list, plus the key itself in `key`, the only time it comes: the
+service keeps only its hash.
+
+```json
+{"id": "key_7h2k9q4mxcd5fe3a", "name": "deploy-key", …, "key": "dmp_7h2k9q4mxcd5fe3a_4fKq9ZtR2wLx8NvB1cHs6YpJ0eMa3UdG"}
+```
+
+A permission a key can't have, none, or a config of another workspace is a `422` on `permissions`
+or `config_ids`. Keys don't expire: to renew one, create another and delete the old one.
+
+### Edit an API key
+
+```http
+PUT /api/workspaces/e2e/keys/key_7h2k9q4mxcd5fe3a
+```
+
+The same body as to create it: the name, the permissions and the configs change, the secret never.
+
+### Reorder API keys
+
+```http
+PUT /api/workspaces/e2e/keys/order
+Content-Type: application/json
+
+{"ids": ["key_7h2k9q4mxcd5fe3a", "key_m3x8p1raw2c4vd6q"]}
+```
+
+As [the sources](#reorder-sources): every key of the workspace, each once, in the new order.
+
+### Delete an API key
+
+```http
+DELETE /api/workspaces/e2e/keys/key_7h2k9q4mxcd5fe3a
+```
+
+`204`. Whatever uses it gets a `401` from its next request; the runs it started stay, with its name.
