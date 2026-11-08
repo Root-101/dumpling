@@ -74,7 +74,8 @@ name (`Test workspace` → `test-workspace`), is unique and doesn't change on a 
 
 ![Workspace settings](design/screens/05-workspace-settings.png)
 
-A dialog over the list, in tabs: **General** (name, description, color), **Defaults** (the
+A dialog over the list, in tabs: **General** (the workspace ID, name, description and color, with
+**Edit** under them), **Defaults** (the
 schedule, compression and object key a new config starts with) and **Delete**. Deleting asks you to
 type the name of the workspace (highlighted; Enter deletes once it matches) and says what goes with it: its sources, destinations, configs and
 runs. The files already in the buckets stay.
@@ -135,7 +136,7 @@ up: each source connects and `pg_dump` can dump it, each destination takes a wri
 
 ![A config in its dialog](design/screens/10-config.png)
 
-Opened from its node (its pencil, or double click), with its id under its route once it is saved
+Opened from its node (its pencil, or double click), with its id in a tag beside its name once it is saved
 (selectable, with a button to copy it), in three steps:
 
 1. **Name & schedule:** the name, the frequency (hourly, daily, weekly or a cron, in UTC) and

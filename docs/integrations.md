@@ -30,7 +30,7 @@ needs two more values, both shown in the console with a button to copy them (⧉
 
 - **`DUMPLING_CONFIG`**, the id of the config (`cfg_…`): in **Backups**, under the name of the
   config in its row; *Copy config id* in the row's menu (⋮) copies it too, and the dialog of the
-  config shows it under its route.
+  config shows it in a tag beside its name.
 
   ![The id of the config under its name in Backups](images/integrations-config-id.png)
 
