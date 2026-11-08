@@ -215,7 +215,10 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
                           children: [
                             for (final config in data.configs)
                               SizedBox(
-                                width: (constraints.maxWidth - 8) / 2,
+                                // the id doesn't shrink: on a phone, one per row
+                                width: constraints.maxWidth < 520
+                                    ? constraints.maxWidth
+                                    : (constraints.maxWidth - 8) / 2,
                                 child: _ConfigChip(
                                   name: config.name,
                                   id: config.id,
@@ -556,15 +559,19 @@ class _ConfigChip extends StatelessWidget {
                     Row(
                       spacing: 8,
                       children: [
+                        // cut to fit the id: the tooltip has it whole
                         Expanded(
-                          child: Text(
-                            name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: colors.text.secondary,
+                          child: Tooltip(
+                            message: name,
+                            child: Text(
+                              name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: colors.text.secondary,
+                              ),
                             ),
                           ),
                         ),
@@ -576,14 +583,17 @@ class _ConfigChip extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Text(
-                      route,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppText.mono.copyWith(
-                        fontSize: 11,
-                        height: 16 / 11,
-                        color: colors.neutral.grey3,
+                    Tooltip(
+                      message: route,
+                      child: Text(
+                        route,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppText.mono.copyWith(
+                          fontSize: 11,
+                          height: 16 / 11,
+                          color: colors.neutral.grey3,
+                        ),
                       ),
                     ),
                   ],
