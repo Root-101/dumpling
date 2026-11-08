@@ -280,7 +280,7 @@ class _Result extends StatelessWidget {
       // shortcut: no live progress (the service only stores the bytes so far),
       // a generic bar until the run updates come over a websocket (ROADMAP)
       RunStatus.queued => (
-        t.queued,
+        RunStatusLabel.labelOf(run.status),
         Text(
           t.resultQueued,
           style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
