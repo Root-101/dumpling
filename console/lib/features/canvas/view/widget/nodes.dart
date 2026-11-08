@@ -460,6 +460,7 @@ class ConfigNodeView extends StatelessWidget {
                               ),
                             ),
                           ),
+                          const SizedBox(width: 6),
                           Text(
                             lastLabel,
                             style: rowStyle.copyWith(
