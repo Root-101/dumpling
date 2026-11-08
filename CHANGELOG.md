@@ -29,7 +29,12 @@ have the release candidates before 0.1.0 one by one.
 - A session open across an upgrade keeps reaching the routes the new version adds.
 - Console: the confirmations before deleting or discarding look as in the design, and so do the
   check boxes and the configs of the form of a key, each now with its id to copy and its source →
-  destination.
+  destination; its three templates are the same height.
+- Console: Backups keeps what it showed when the service stops answering, under a banner that tries
+  again; what is made through the API lands on the canvas, each config between its ends; a dialog
+  opened by its URL closes when another screen takes the URL; *Not found* and the detail of a run
+  as in the design.
+- The error of an S3 server is read as text, without XML entities.
 
 ## 0.1.5
 
