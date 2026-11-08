@@ -1405,8 +1405,12 @@ class AppMessages$apiKeys$es implements AppMessages$apiKeys$en {
   @override
   String summaryAll({required Object n}) => 'Todas las configs · ${n} permisos';
   @override
-  String summarySome({required Object configs, required Object n}) =>
-      '${configs} configs · ${n} permisos';
+  String summarySome({required num configs, required Object n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        configs,
+        one: '${configs} config · ${n} permisos',
+        other: '${configs} configs · ${n} permisos',
+      );
   @override
   String get save => 'Guardar';
   @override
@@ -3146,10 +3150,14 @@ extension on AppMessagesEs {
           'apiKeys.summaryAll' => ({
             required Object n,
           }) => 'Todas las configs · ${n} permisos',
-          'apiKeys.summarySome' => ({
-            required Object configs,
-            required Object n,
-          }) => '${configs} configs · ${n} permisos',
+          'apiKeys.summarySome' =>
+            ({required num configs, required Object n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  configs,
+                  one: '${configs} config · ${n} permisos',
+                  other: '${configs} configs · ${n} permisos',
+                ),
           'apiKeys.save' => 'Guardar',
           'apiKeys.createButton' => 'Crear key',
           'apiKeys.readyTitle' => ({

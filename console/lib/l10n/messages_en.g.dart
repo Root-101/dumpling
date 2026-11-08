@@ -1874,9 +1874,13 @@ class AppMessages$apiKeys$en {
   /// en: 'All configs · {n: int} permissions'
   String summaryAll({required int n}) => 'All configs · ${n} permissions';
 
-  /// en: '{configs: int} configs · {n: int} permissions'
-  String summarySome({required int configs, required int n}) =>
-      '${configs} configs · ${n} permissions';
+  /// en: '(one) {{configs} config · {n: int} permissions} (other) {{configs} configs · {n: int} permissions}'
+  String summarySome({required num configs, required int n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        configs,
+        one: '${configs} config · ${n} permissions',
+        other: '${configs} configs · ${n} permissions',
+      );
 
   /// en: 'Save'
   String get save => 'Save';
@@ -3800,10 +3804,14 @@ extension on AppMessages {
           'apiKeys.summaryAll' => ({
             required int n,
           }) => 'All configs · ${n} permissions',
-          'apiKeys.summarySome' => ({
-            required int configs,
-            required int n,
-          }) => '${configs} configs · ${n} permissions',
+          'apiKeys.summarySome' =>
+            ({required num configs, required int n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  configs,
+                  one: '${configs} config · ${n} permissions',
+                  other: '${configs} configs · ${n} permissions',
+                ),
           'apiKeys.save' => 'Save',
           'apiKeys.createButton' => 'Create key',
           'apiKeys.readyTitle' => ({

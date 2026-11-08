@@ -756,7 +756,9 @@ apiKeys:
   noConfigs: 'This workspace has no configs yet.'
   renewNote: "The key itself doesn't change. To renew it, create another and delete this one."
   summaryAll: 'All configs · {n: int} permissions'
-  summarySome: '{configs: int} configs · {n: int} permissions'
+  summarySome(plural, param=configs):
+    one: '{configs} config · {n: int} permissions'
+    other: '{configs} configs · {n: int} permissions'
   save: 'Save'
   createButton: 'Create key'
   readyTitle: '{name: String} is ready'
