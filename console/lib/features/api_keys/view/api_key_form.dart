@@ -486,7 +486,7 @@ class _CheckBox extends StatelessWidget {
         color: selected ? colors.primary.primaryAction : Colors.transparent,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
-          color: selected ? colors.primary.primaryFaded : colors.neutral.grey4,
+          color: selected ? colors.primary.checkBorder : colors.surface.wire,
         ),
       ),
       child: selected
@@ -541,7 +541,10 @@ class _CheckChip extends StatelessWidget {
             spacing: 8,
             children: [
               _CheckBox(selected: selected),
-              Text(label, style: const TextStyle(fontSize: 13)),
+              Text(
+                label,
+                style: TextStyle(fontSize: 13, color: colors.text.secondary),
+              ),
               if (trailing != null)
                 Text(
                   trailing!,

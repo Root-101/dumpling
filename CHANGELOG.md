@@ -27,7 +27,8 @@ have the release candidates before 0.1.0 one by one.
 - **Follow a run as it goes:** `GET …/runs/{id}/events` streams it (Server-Sent Events) until it
   ends.
 - A session open across an upgrade keeps reaching the routes the new version adds.
-- Console: the confirmations before deleting or discarding look as in the design.
+- Console: the confirmations before deleting or discarding look as in the design, and so do the
+  check boxes and the config chips of the form of a key.
 
 ## 0.1.5
 
