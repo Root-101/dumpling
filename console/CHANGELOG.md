@@ -37,6 +37,8 @@
   borders; the configs in two columns (one in a narrow window), each with its name, its id with a
   button to copy it, and its source → destination under them, with a tooltip when they are cut;
   the three templates the same height, and the summary says *1 config* in singular.
+- The dialog of a disabled config says *Disabled* in *Output* and *Review*, not its frequency and
+  cron.
 - Run log filters in the order of the design (source type, destination type, started by, status),
   each status with its colored dot.
 - *Your session expired* over the screen blurred, with the user already in (after a reload too,
