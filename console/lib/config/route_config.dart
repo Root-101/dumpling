@@ -101,7 +101,28 @@ class RouteConfig {
         ],
       ),
     ],
-  );
+  )..routerDelegate.addListener(_closeDialogsOfOtherScreen);
+
+  /// The screen of the last URL (`/workspaces/production/sources`)
+  static String? _screen;
+
+  /// Another screen took the URL (the address bar, the browser's back): what
+  /// was open over the last one closes with it. Not *Your session expired*,
+  /// which only a new login closes
+  static void _closeDialogsOfOtherScreen() {
+    final uri = router.routerDelegate.currentConfiguration.uri;
+    final screen = uri.pathSegments.take(3).join('/');
+    final changed = _screen != null && _screen != screen;
+    _screen = screen;
+    if (!changed) return;
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => navigatorKey.currentState?.popUntil(
+        (route) =>
+            route is! PopupRoute ||
+            route.settings.name == SessionExpiredDialog.routeName,
+      ),
+    );
+  }
 
   /// [name] at [path] and [itemName] at `[path]/[itemPath]/:id` share one
   /// page: an id keeps the screen as it is and opens its dialog over it

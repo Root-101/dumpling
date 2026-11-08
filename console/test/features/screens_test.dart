@@ -640,6 +640,18 @@ void main() {
     await settle(tester);
     expect(find.text(about), findsNothing);
 
+    // a dialog without a URL of its own closes with its screen too
+    RouteConfig.router.go('/workspaces');
+    await settle(tester);
+    await tester.tap(
+      find.text('A fresh canvas for another environment, client or project.'),
+    );
+    await settle(tester);
+    expect(find.text('Create workspace'), findsOneWidget);
+    RouteConfig.router.go('/workspaces/production/sources');
+    await settle(tester);
+    expect(find.text('Create workspace'), findsNothing);
+
     // an id that is not there: a notice, and the list
     RouteConfig.router.go('/workspaces/production/sources/gone');
     await settle(tester);

@@ -41,6 +41,7 @@
   counted (*5 sources, 5 destinations, 7 configs*).
 - Backups: *Failing* tinted red when something fails and *last run succeeded* in green; the
   schedule in words (*Every hour*, *Daily at 02:30*, *Every 6 hours*).
+- Any dialog closes when another screen takes the URL (the address bar, the browser's back).
 - The detail of a source or destination as wide as in the design.
 - Backups keeps what it showed when the service stops answering, under a banner that tries again
   every 10 s or with *Retry now*.
