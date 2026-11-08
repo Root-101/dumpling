@@ -26,7 +26,9 @@ class DetailDialogTemplate extends StatelessWidget {
       child: AppDialogFrame(
         color: app.colors.primary.background1,
         child: SizedBox(
-          width: 1100,
+          // as wide as the design: nearly the whole screen, 32 on each side
+          // of 1440; the dialog's inset narrows it on smaller screens
+          width: 1360,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
