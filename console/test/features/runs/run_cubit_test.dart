@@ -53,6 +53,36 @@ void main() {
     expect((visible().length, cubit.state.data.activeFilters), (3, 0));
   });
 
+  test('filters by who started a run and finds it by its label', () async {
+    // startedBy reads the translations
+    TestWidgetsFlutterBinding.ensureInitialized();
+    when(() => repo.list(workspace: 'production', token: 'jwt')).thenAnswer(
+      (_) async => [
+        run('r4', status: RunStatus.queued, trigger: 'api', keyName: 'bot'),
+        run('r3', trigger: 'api', label: 'v1.4.2', keyName: 'deploy-key'),
+        run('r2', trigger: 'manual'),
+        run('r1'),
+      ],
+    );
+    final cubit = await loaded();
+    List<String> visible() =>
+        cubit.state.data.visibleRuns.map((r) => r.id).toList();
+
+    cubit.filterTrigger('api');
+    expect(visible(), ['r4', 'r3']);
+    expect(cubit.state.data.activeFilters, 1);
+    cubit
+      ..clearFilters()
+      ..search('v1.4');
+    expect(visible(), ['r3']);
+    cubit.search('deploy-key');
+    expect(visible(), ['r3']);
+    expect(
+      cubit.state.data.visibleRuns.single.startedBy,
+      contains('deploy-key'),
+    );
+  });
+
   test('a detail is kept until its run changes', () async {
     when(
       () => repo.get(

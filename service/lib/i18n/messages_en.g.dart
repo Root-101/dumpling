@@ -71,6 +71,8 @@ class ServiceMessages$errors$en {
       ServiceMessages$errors$destinations$en._(_root);
   late final ServiceMessages$errors$configs$en configs =
       ServiceMessages$errors$configs$en._(_root);
+  late final ServiceMessages$errors$apiKeys$en apiKeys =
+      ServiceMessages$errors$apiKeys$en._(_root);
   late final ServiceMessages$errors$runs$en runs =
       ServiceMessages$errors$runs$en._(_root);
   late final ServiceMessages$errors$transfer$en transfer =
@@ -161,6 +163,19 @@ class ServiceMessages$errors$configs$en {
       'The config "${id}" does not exist in this workspace.';
 }
 
+// Path: errors.apiKeys
+class ServiceMessages$errors$apiKeys$en {
+  ServiceMessages$errors$apiKeys$en._(this._root);
+
+  final ServiceMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'The API key "{id: String}" does not exist in this workspace.'
+  String notFound({required String id}) =>
+      'The API key "${id}" does not exist in this workspace.';
+}
+
 // Path: errors.runs
 class ServiceMessages$errors$runs$en {
   ServiceMessages$errors$runs$en._(this._root);
@@ -172,10 +187,6 @@ class ServiceMessages$errors$runs$en {
   /// en: 'The run "{id: String}" does not exist in this workspace.'
   String notFound({required String id}) =>
       'The run "${id}" does not exist in this workspace.';
-
-  /// en: 'This config is already running: wait for it to end.'
-  String get alreadyRunning =>
-      'This config is already running: wait for it to end.';
 
   /// en: '{name: String} must be one of: {values: String}'
   String invalidFilter({required String name, required String values}) =>
@@ -274,6 +285,24 @@ class ServiceMessages$errors$validations$en {
   String get order =>
       'List every id of the workspace, each once and nothing else';
 
+  /// en: 'Use only permissions of a workspace: an API key cannot have the others'
+  String get permission =>
+      'Use only permissions of a workspace: an API key cannot have the others';
+
+  /// en: 'There is no such config in this workspace'
+  String get unknownConfig => 'There is no such config in this workspace';
+
+  /// en: 'Limiting to some configs needs a permission on configs or runs'
+  String get limitWithout =>
+      'Limiting to some configs needs a permission on configs or runs';
+
+  /// en: 'A key limited to some configs cannot create configs nor use the canvas'
+  String get notLimitable =>
+      'A key limited to some configs cannot create configs nor use the canvas';
+
+  /// en: 'Up to {max: int} letters, digits, . _ or -'
+  String label({required int max}) => 'Up to ${max} letters, digits, . _ or -';
+
   /// en: 'x and y must be between -{max: int} and {max}'
   String canvasPosition({required Object max}) =>
       'x and y must be between -${max} and ${max}';
@@ -316,11 +345,12 @@ extension on ServiceMessages {
       'errors.configs.notFound' => ({
         required String id,
       }) => 'The config "${id}" does not exist in this workspace.',
+      'errors.apiKeys.notFound' => ({
+        required String id,
+      }) => 'The API key "${id}" does not exist in this workspace.',
       'errors.runs.notFound' => ({
         required String id,
       }) => 'The run "${id}" does not exist in this workspace.',
-      'errors.runs.alreadyRunning' =>
-        'This config is already running: wait for it to end.',
       'errors.runs.invalidFilter' => ({
         required String name,
         required String values,
@@ -359,6 +389,15 @@ extension on ServiceMessages {
       'errors.validations.repeatedNode' => 'Each node needs its own id',
       'errors.validations.order' =>
         'List every id of the workspace, each once and nothing else',
+      'errors.validations.permission' => 'Use only permissions of a workspace: an API key cannot have the others',
+      'errors.validations.unknownConfig' =>
+        'There is no such config in this workspace',
+      'errors.validations.limitWithout' =>
+        'Limiting to some configs needs a permission on configs or runs',
+      'errors.validations.notLimitable' => 'A key limited to some configs cannot create configs nor use the canvas',
+      'errors.validations.label' => ({
+        required int max,
+      }) => 'Up to ${max} letters, digits, . _ or -',
       'errors.validations.canvasPosition' => ({
         required Object max,
       }) => 'x and y must be between -${max} and ${max}',

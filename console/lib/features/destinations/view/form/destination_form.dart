@@ -549,8 +549,8 @@ class _DestinationFormState extends State<DestinationForm> {
           Expanded(
             child: AppFormInput(
               controller: _regionController,
-              label:
-                  '${app.intl.destinations.region} ${app.intl.common.optional}',
+              label: app.intl.destinations.region,
+              optional: true,
               hint: 'us-east-1',
               errorText: _serverErrors[DestinationFormField.region],
               onChange: (_) => _changed(DestinationFormField.region),

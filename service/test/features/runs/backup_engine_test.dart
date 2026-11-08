@@ -205,17 +205,133 @@ void main() {
       },
     );
 
-    test('Should run one at a time per config (409)', () async {
-      final id = await config(name: 'Slow');
+    test(
+      'Should queue a run asked for while its config runs, then start it',
+      () async {
+        final id = await config(name: 'Slow');
+        fake.hold = Completer<void>();
+        final first = await post('$base/configs/$id/run', {});
+        final second = await post('$base/configs/$id/run', {'label': 'v1.4.2'});
+        final third = await post('$base/configs/$id/run', {});
+        expect(first['status'], 'running');
+        expect(second['status'], 'queued');
+        expect(second['label'], 'v1.4.2');
+        expect(third['status'], 'queued');
+
+        fake.hold!.complete();
+        await di.find<BackupEngine>().idle();
+        final runs = [
+          for (final r in [first, second, third])
+            await getJson('$base/runs/${r['id']}'),
+        ];
+        expect(runs.map((r) => r['status']), everyElement('success'));
+        // One after the other, in the order they were asked for
+        for (final (before, after) in [
+          (runs[0], runs[1]),
+          (runs[1], runs[2]),
+        ]) {
+          expect(
+            DateTime.parse(after['started_at'])
+                .isBefore(DateTime.parse(before['finished_at'])),
+            isFalse,
+          );
+        }
+      },
+    );
+
+    test('Should refuse a label that is not a short name (422)', () async {
+      final id = await config(name: 'Labels');
+      for (final label in ['has space', 'a/b', 'x' * 65]) {
+        final response = await http.post(
+          server.url('$base/configs/$id/run'),
+          headers: jsonHeaders(),
+          body: jsonEncode({'label': label}),
+        );
+        expect(response.statusCode, 422, reason: label);
+        expect(response.body, contains('label'));
+      }
+    });
+
+    test(
+      'Should mark a run started with an API key, and find it by label',
+      () async {
+        final id = await config(name: 'Deploy');
+        final key = await post('$base/keys', {
+          'name': 'deploy-key',
+          'permissions': ['config.run', 'run.get', 'run.list'],
+          'config_ids': [id],
+        });
+        final started = jsonDecode(
+          (await http.post(
+            server.url('$base/configs/$id/run'),
+            headers: {
+              'authorization': 'Bearer ${key['key']}',
+              'content-type': 'application/json',
+            },
+            body: jsonEncode({'label': 'release-42'}),
+          )).body,
+        );
+        expect(started['trigger'], 'api');
+        expect(started['key_id'], key['id']);
+        expect(started['key_name'], 'deploy-key');
+        expect(started['label'], 'release-42');
+        await di.find<BackupEngine>().idle();
+
+        final found = jsonDecode(
+          (await http.get(
+            server.url('$base/runs?label=release-42&trigger=api'),
+            headers: server.auth(),
+          )).body,
+        ) as List;
+        expect(found.single['id'], started['id']);
+
+        // The key shows the last run it started
+        final keys = jsonDecode(
+          (await http.get(
+            server.url('$base/keys'),
+            headers: server.auth(),
+          )).body,
+        ) as List;
+        final listed = keys.firstWhere((k) => k['id'] == key['id']);
+        expect(listed['last_run']['label'], 'release-42');
+        expect(listed['last_run']['config_name'], 'Deploy');
+        expect(listed['last_used_at'], isNotNull);
+      },
+    );
+
+    test('Should stream a run until it ends (SSE)', () async {
+      RunService.eventsEvery = const Duration(milliseconds: 50);
+      final id = await config(name: 'Followed');
       fake.hold = Completer<void>();
-      await post('$base/configs/$id/run', {});
-      final second = await http.post(
-        server.url('$base/configs/$id/run'),
-        headers: jsonHeaders(),
-      );
-      expect(second.statusCode, 409);
+      final started = await post('$base/configs/$id/run', {});
+      final request = http.Request(
+        'GET',
+        server.url('$base/runs/${started['id']}/events'),
+      )..headers.addAll(server.auth());
+      final response = await http.Client().send(request);
+      expect(response.statusCode, 200);
+      expect(response.headers['content-type'], startsWith('text/event-stream'));
+      final text = StringBuffer();
+      final done = response.stream.transform(utf8.decoder).forEach(text.write);
+      await Future<void>.delayed(const Duration(milliseconds: 200));
       fake.hold!.complete();
+      await done.timeout(const Duration(seconds: 10));
+
+      final body = text.toString();
+      expect(body, contains('event: run'));
+      expect(body, contains('"status":"running"'));
+      expect(body, contains('event: end'));
+      final end = body.split('event: end').last;
+      expect(end, contains('"status":"success"'));
       await di.find<BackupEngine>().idle();
+
+      // A run that ended answers end at once
+      final again = await http.get(
+        server.url('$base/runs/${started['id']}/events'),
+        headers: server.auth(),
+      );
+      expect(again.body, contains('event: end'));
+      expect(again.body, isNot(contains('event: run')));
     });
 
     test('Should list the runs newest first, filtered', () async {
@@ -343,6 +459,25 @@ void main() {
       final run = await getJson('$base/runs/run_interrupted');
       expect(run['status'], 'failed');
       expect(run['error'], contains('Interrupted'));
+      // A queued one too: nothing would start it any more
+      await db
+          .into(db.runTable)
+          .insert(
+            RunTableCompanion.insert(
+              id: 'run_queued',
+              workspaceSlug: 'production',
+              configName: 'c',
+              sourceName: 's',
+              sourceType: SourceType.postgres,
+              destinationName: 'd',
+              destinationType: DestinationType.s3,
+              trigger: RunTrigger.api,
+              status: RunStatus.queued,
+              startedAt: DateTime.now().toUtc(),
+            ),
+          );
+      await BackupEngine().start();
+      expect((await getJson('$base/runs/run_queued'))['status'], 'failed');
       // its parts are no longer billed
       expect(s3.openUploads, isEmpty);
       expect(s3.requests.last, startsWith('DELETE /backups/orders/half.dump'));

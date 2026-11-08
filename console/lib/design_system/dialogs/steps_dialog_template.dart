@@ -30,6 +30,9 @@ class StepsDialogTemplate extends StatelessWidget {
   final Widget child;
   final List<Widget> actions;
 
+  /// To the right of [title], e.g. the id of what it edits
+  final Widget? titleTrailing;
+
   /// Set apart on the left of the footer, e.g. *Delete config*
   final Widget? footerLeading;
 
@@ -53,6 +56,7 @@ class StepsDialogTemplate extends StatelessWidget {
     required this.current,
     required this.child,
     required this.actions,
+    this.titleTrailing,
     this.footerLeading,
     this.blockedNote,
     this.loadingId,
@@ -96,13 +100,24 @@ class StepsDialogTemplate extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        height: 28 / 20,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    Row(
+                      spacing: 10,
+                      children: [
+                        // a long title is cut, the tag stays whole
+                        Flexible(
+                          child: Text(
+                            title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              height: 28 / 20,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        ?titleTrailing,
+                      ],
                     ),
                     Text(
                       description,

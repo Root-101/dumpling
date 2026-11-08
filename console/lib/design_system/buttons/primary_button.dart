@@ -22,8 +22,11 @@ class PrimaryButton extends StatelessWidget {
       disabledColor: background.withValues(alpha: 0.55),
       title: title,
       icon: icon?.build(size: 16, color: iconColor ?? app.colors.neutral.white),
+      // disabled, its text dims with it (Save canvas without changes)
       titleStyle: app.textTheme.titleMedium?.copyWith(
-        color: app.colors.neutral.white,
+        color: onPressed == null && !isLoading
+            ? app.colors.neutral.grey3
+            : app.colors.neutral.white,
       ),
       h: h ?? 50,
       // with a margin and no width, as wide as its content

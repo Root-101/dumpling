@@ -12,12 +12,18 @@ class RunTableRepo {
     SourceType? sourceType,
     DestinationType? destinationType,
     RunStatus? status,
+    RunTrigger? trigger,
+    String? label,
     String? configId,
+    Set<String>? configIds,
     int limit = 200,
   }) =>
       (_db.select(_db.runTable)
             ..where((tbl) {
               Expression<bool> where = tbl.workspaceSlug.equals(workspace);
+              if (trigger != null) where &= tbl.trigger.equalsValue(trigger);
+              if (label != null) where &= tbl.label.equals(label);
+              if (configIds != null) where &= tbl.configId.isIn(configIds);
               if (sourceType != null) {
                 where &= tbl.sourceType.equalsValue(sourceType);
               }
@@ -57,7 +63,10 @@ class RunTableRepo {
               (tbl) =>
                   tbl.workspaceSlug.equals(workspace) &
                   tbl.startedAt.isBiggerOrEqualValue(since) &
-                  tbl.status.equalsValue(RunStatus.running).not(),
+                  tbl.status.isInValues([
+                    RunStatus.queued,
+                    RunStatus.running,
+                  ]).not(),
             )
             ..orderBy([(tbl) => OrderingTerm.asc(tbl.startedAt)]))
           .get();
@@ -83,15 +92,18 @@ class RunTableRepo {
     _db.runTable,
   )..where((tbl) => tbl.status.equalsValue(RunStatus.running))).get();
 
-  /// The runs a stop of the service left half done: failed, with [error].
-  Future<int> failRunning(String error) =>
-      (_db.update(
-        _db.runTable,
-      )..where((tbl) => tbl.status.equalsValue(RunStatus.running))).write(
-        RunTableCompanion(
-          status: const Value(RunStatus.failed),
-          error: Value(error),
-          finishedAt: Value(DateTime.now()),
-        ),
-      );
+  /// The runs a stop of the service left running or queued: failed, with
+  /// [error].
+  Future<int> failUnfinished(String error) =>
+      (_db.update(_db.runTable)..where(
+            (tbl) =>
+                tbl.status.isInValues([RunStatus.queued, RunStatus.running]),
+          ))
+          .write(
+            RunTableCompanion(
+              status: const Value(RunStatus.failed),
+              error: Value(error),
+              finishedAt: Value(DateTime.now()),
+            ),
+          );
 }

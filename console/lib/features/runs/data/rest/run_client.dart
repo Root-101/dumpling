@@ -22,6 +22,20 @@ class RunClient extends BaseClient {
     return (rawResponse.data as List).cast<Map<String, dynamic>>();
   }
 
+  /// Starts [configId] again: the run, running or queued behind the one in
+  /// progress
+  Future<Map<String, dynamic>> runAgain({
+    required String workspace,
+    required String configId,
+    String? token,
+  }) async {
+    Response rawResponse = await dio.post(
+      '$baseUrl/workspaces/$workspace/configs/$configId/run',
+      options: options(token: token),
+    );
+    return rawResponse.data;
+  }
+
   /// One run with its log
   Future<Map<String, dynamic>> get({
     required String workspace,

@@ -4,7 +4,8 @@ import 'package:material_ui/material_ui.dart';
 enum NodeKind { source, config, destination }
 
 /// How the last run of a config went, as the service says it
-enum RunStatus { running, success, failed }
+/// [queued]: waiting for the run of its config in progress to end
+enum RunStatus { queued, running, success, failed }
 
 enum Frequency {
   hourly,
@@ -161,7 +162,8 @@ class LastRun {
     error: json['error'],
   );
 
-  bool get running => status == RunStatus.running;
+  /// Queued or running: not ended yet
+  bool get running => status == RunStatus.running || status == RunStatus.queued;
 }
 
 /// One connection source → destination (folder), with its schedule. Either

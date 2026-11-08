@@ -3,7 +3,8 @@ import 'dart:math' as math;
 import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Dot and word of the status of a run: *Success*, *Failed*, *Running*
+/// Dot and word of the status of a run: *Success*, *Failed*, *Running*,
+/// *Queued*
 class RunStatusLabel extends StatelessWidget {
   final RunStatus status;
 
@@ -13,15 +14,18 @@ class RunStatusLabel extends StatelessWidget {
     RunStatus.success => app.colors.status.success,
     RunStatus.failed => app.colors.status.error,
     RunStatus.running => app.colors.status.running,
+    RunStatus.queued => app.colors.neutral.grey3,
   };
 
   static String labelOf(RunStatus status) => switch (status) {
     RunStatus.success => app.intl.canvas.runStatus.success,
     RunStatus.failed => app.intl.canvas.runStatus.failed,
     RunStatus.running => app.intl.canvas.runStatus.running,
+    RunStatus.queued => app.intl.canvas.runStatus.queued,
   };
 
-  /// Check, cross, or the [RunProgressRing] while it runs, in [color]; [size]
+  /// Check, cross, an hourglass while queued, or the [RunProgressRing] while
+  /// it runs, in [color]; [size]
   /// is the icon's, the ring is a bit bigger (22 for 17, as in the design)
   static Widget glyphOf(RunStatus status, {required double size}) {
     final color = colorOf(status);
@@ -35,6 +39,10 @@ class RunStatusLabel extends StatelessWidget {
         color: color,
       ),
       RunStatus.running => RunProgressRing(size: size * 22 / 17, color: color),
+      RunStatus.queued => app.assets.icons.actions.queued.build(
+        size: size,
+        color: color,
+      ),
     };
   }
 
@@ -200,4 +208,36 @@ class _RingPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _RingPainter old) =>
       old.color != color || old.still != still;
+}
+
+/// The label a run was started with (`v1.4.2`), as a small chip
+class RunLabelChip extends StatelessWidget {
+  final String label;
+
+  const RunLabelChip(this.label, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = app.colors;
+    return Tooltip(
+      message: app.intl.runs.labelTooltip,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+        decoration: BoxDecoration(
+          color: colors.primary.primaryFaded.withValues(alpha: 0.14),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppText.mono.copyWith(
+            fontSize: 11,
+            height: 16 / 11,
+            color: colors.primary.primaryLight,
+          ),
+        ),
+      ),
+    );
+  }
 }

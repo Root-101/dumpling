@@ -192,6 +192,9 @@ RunModel run(
   RunStatus status = RunStatus.success,
   String sourceType = 'postgres',
   String destinationType = 's3',
+  String trigger = 'schedule',
+  String? label,
+  String? keyName,
   List<String>? log,
 }) {
   final started = DateTime.utc(2026, 10, 20, 2, 14);
@@ -203,10 +206,12 @@ RunModel run(
     sourceType: sourceType,
     destinationName: 'bucket',
     destinationType: destinationType,
-    trigger: 'schedule',
+    trigger: trigger,
+    label: label,
+    keyName: keyName,
     status: status,
     startedAt: started,
-    finishedAt: status == RunStatus.running
+    finishedAt: status == RunStatus.running || status == RunStatus.queued
         ? null
         : started.add(const Duration(minutes: 3, seconds: 5)),
     sizeBytes: status == RunStatus.success ? 5 * 1024 * 1024 : null,

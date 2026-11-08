@@ -240,7 +240,7 @@ enum BackupHealth {
   paused;
 
   static BackupHealth of(BackupConfig c) => switch (c.lastRun?.status) {
-    RunStatus.running => running,
+    RunStatus.running || RunStatus.queued => running,
     _ when !c.enabled => paused,
     null => neverRan,
     RunStatus.failed => failing,

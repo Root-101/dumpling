@@ -25,17 +25,36 @@ class AppRowMenuItem {
   });
 }
 
-/// The ⋮ button at the end of a table row and its menu
-class AppRowMenu extends StatelessWidget {
+/// The ⋮ button at the end of a table row and its menu; the button stays lit
+/// while its menu is open
+class AppRowMenu extends StatefulWidget {
   final String tooltip;
   final List<AppRowMenuItem> items;
 
   const AppRowMenu({required this.tooltip, required this.items, super.key});
 
   @override
+  State<AppRowMenu> createState() => _AppRowMenuState();
+}
+
+class _AppRowMenuState extends State<AppRowMenu> {
+  bool _open = false;
+
+  void _set(bool open) {
+    if (mounted && open != _open) setState(() => _open = open);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final items = widget.items;
     return PopupMenuButton<AppRowMenuItem>(
-      tooltip: tooltip,
+      tooltip: widget.tooltip,
+      onOpened: () => _set(true),
+      onCanceled: () => _set(false),
+      style: IconButton.styleFrom(
+        backgroundColor: _open ? app.colors.brand.primarySelected : null,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
       color: app.colors.primary.backgroundForm,
       elevation: 8,
       constraints: const BoxConstraints(minWidth: 232, maxWidth: 260),
@@ -48,7 +67,10 @@ class AppRowMenu extends StatelessWidget {
         size: 18,
         color: app.colors.neutral.grey2,
       ),
-      onSelected: (item) => item.onTap(),
+      onSelected: (item) {
+        _set(false);
+        item.onTap();
+      },
       itemBuilder: (context) => [
         for (final item in items) ...[
           if (item.divided) const PopupMenuDivider(),

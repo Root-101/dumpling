@@ -373,6 +373,10 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
         child: Column(
           children: [
             _InfoRow(
+              label: t.id,
+              child: _SlugChip(slug: _saved.slug),
+            ),
+            _InfoRow(
               label: app.intl.workspaces.name,
               child: Text(
                 _saved.name,
@@ -381,10 +385,6 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-            ),
-            _InfoRow(
-              label: t.id,
-              child: _SlugChip(slug: _saved.slug),
             ),
             _InfoRow(
               label: app.intl.workspaces.descriptionLabel,
@@ -424,6 +424,18 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
           ],
         ),
       ),
+      if (!_dirty)
+        Align(
+          alignment: Alignment.centerRight,
+          child: PrimaryButton.primary(
+            onPressed: () => setState(() => _editing = true),
+            title: app.intl.common.edit,
+            icon: app.assets.icons.actions.edit,
+            color: app.colors.primary.primaryAction,
+            h: 40,
+            horizontalPadding: 16,
+          ),
+        ),
     ];
   }
 
@@ -441,8 +453,8 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
       ),
       AppFormInput(
         controller: _description,
-        label:
-            '${app.intl.workspaces.descriptionLabel} ${app.intl.common.optional}',
+        label: app.intl.workspaces.descriptionLabel,
+        optional: true,
         hint: app.intl.workspaces.descriptionHint,
         maxLength: _descriptionMaxLength,
         errorText: _serverErrors[WorkspaceFormField.description],
@@ -653,15 +665,6 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                       ),
                     ],
                   ),
-                if (_tab == _Tab.general)
-                  PrimaryButton.primary(
-                    onPressed: () => setState(() => _editing = true),
-                    title: app.intl.common.edit,
-                    icon: app.assets.icons.actions.edit,
-                    color: colors.primary.primaryAction,
-                    h: 40,
-                    horizontalPadding: 16,
-                  ),
               ],
       ),
     );
@@ -866,6 +869,7 @@ class _DeleteDialogState extends State<_DeleteDialog> {
       elevation: 0,
       child: AppDialogFrame(
         color: colors.primary.backgroundForm,
+        closable: false,
         child: SizedBox(
           width: 480,
           child: Padding(
@@ -887,7 +891,7 @@ class _DeleteDialogState extends State<_DeleteDialog> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Center(
-                        child: app.assets.icons.actions.warning.build(
+                        child: app.assets.icons.actions.warningFilled.build(
                           size: 20,
                           color: colors.primary.error,
                         ),
@@ -908,9 +912,11 @@ class _DeleteDialogState extends State<_DeleteDialog> {
                           ),
                           Text(
                             t.deleteConfirm(
-                              sources: stats?.sources ?? 0,
-                              destinations: stats?.destinations ?? 0,
-                              configs: stats?.configs ?? 0,
+                              what: [
+                                t.nSources(n: stats?.sources ?? 0),
+                                t.nDestinations(n: stats?.destinations ?? 0),
+                                t.nConfigs(n: stats?.configs ?? 0),
+                              ].join(', '),
                             ),
                             style: TextStyle(
                               fontSize: 13,

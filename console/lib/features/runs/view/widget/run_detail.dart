@@ -43,7 +43,7 @@ class _RunDialogState extends State<RunDialog> {
       child: AppDialogFrame(
         color: colors.primary.backgroundForm,
         child: SizedBox(
-          width: 920,
+          width: 760,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -73,7 +73,7 @@ class _RunDialogState extends State<RunDialog> {
                           return Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(width: 280, child: steps),
+                              SizedBox(width: 240, child: steps),
                               24.gap(),
                               Expanded(child: log),
                             ],
@@ -84,9 +84,79 @@ class _RunDialogState extends State<RunDialog> {
                   ),
                 ),
               ),
+              _Footer(run: run, workspace: widget.workspace),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// *Edit config* (the canvas), *Close*, and the run again once it ended:
+/// *Retry now* after a failure, *Run again* after a success
+class _Footer extends StatelessWidget {
+  final RunModel run;
+  final String? workspace;
+
+  const _Footer({required this.run, this.workspace});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = app.colors;
+    final t = app.intl.runs;
+    final slug = workspace ?? context.read<RunCubit>().state.data.workspace;
+    final ended =
+        run.status == RunStatus.success || run.status == RunStatus.failed;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: colors.neutral.grey5.withValues(alpha: 0.4)),
+        ),
+      ),
+      child: Row(
+        spacing: 10,
+        children: [
+          if (run.configId != null && slug != null)
+            InkWell(
+              onTap: () {
+                Navigator.of(context).pop();
+                RouteNames.openWorkspace(slug, section: RouteNames.canvas);
+              },
+              child: Text(
+                app.intl.backups.editConfig,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: colors.primary.primaryFaded,
+                  decoration: TextDecoration.underline,
+                  decorationColor: colors.primary.primaryFaded,
+                ),
+              ),
+            ),
+          const Spacer(),
+          AppButton(
+            label: app.intl.common.close,
+            type: AppButtonType.secondary,
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          if (ended && run.configId != null)
+            AppButton(
+              label: run.status == RunStatus.failed ? t.retryNow : t.runAgain,
+              onPressed: () async {
+                final cubit = context.read<RunCubit>();
+                final root = app.context;
+                Navigator.of(context).pop();
+                final started = await cubit.runAgain(run, workspace: workspace);
+                if (started && root.mounted) {
+                  app.snack.showSuccess(
+                    message: t.runStarted(name: run.configName),
+                    context: root,
+                  );
+                }
+              },
+            ),
+        ],
       ),
     );
   }
@@ -113,24 +183,28 @@ class _Header extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          RunStatusIcon(run.status, size: 40),
-          14.gap(),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    RunStatusLabel(run.status),
+                    Container(
+                      height: 26,
+                      padding: const EdgeInsets.symmetric(horizontal: 9),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: RunStatusLabel.colorOf(run.status)
+                            .withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: RunStatusLabel(run.status),
+                    ),
                     10.gap(),
                     Flexible(
-                      child: Text(
-                        run.id,
-                        maxLines: 1,
-                        style: AppText.mono.copyWith(
-                          fontSize: 12,
-                          color: colors.neutral.grey4,
-                        ),
+                      child: AppCopyId(
+                        id: run.id,
+                        tooltip: app.intl.runs.copyRunId,
                       ),
                     ),
                   ],
@@ -205,6 +279,13 @@ class _Result extends StatelessWidget {
       ),
       // shortcut: no live progress (the service only stores the bytes so far),
       // a generic bar until the run updates come over a websocket (ROADMAP)
+      RunStatus.queued => (
+        RunStatusLabel.labelOf(run.status),
+        Text(
+          t.resultQueued,
+          style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+        ),
+      ),
       RunStatus.running => (
         size != null && size > 0
             ? t.soFar(size: app.storageFormatter.formatSize(size))
@@ -313,8 +394,18 @@ class _Meta extends StatelessWidget {
           Text(RunsScreen.durationOf(run.duration), style: value),
         ),
         item(
-          t.columnTrigger,
-          Text(run.manual ? t.manual : t.scheduled, style: value),
+          t.columnStartedBy,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(run.byApi ? t.api : run.startedBy, style: value),
+              if (run.byApi)
+                Text(
+                  [?run.keyName, ?run.label].join(' · '),
+                  style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+                ),
+            ],
+          ),
         ),
         item(
           t.columnSize,
@@ -522,7 +613,10 @@ class _Log extends StatelessWidget {
               : log.isEmpty
               // the service writes the log when the run ends
               ? Text(
-                  run.status == RunStatus.running ? t.logWhenDone : t.noLog,
+                  run.status == RunStatus.running ||
+                          run.status == RunStatus.queued
+                      ? t.logWhenDone
+                      : t.noLog,
                   style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
                 )
               // selectable, to copy a few lines (the button copies it all)

@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:service/dumpling.dart';
 
-enum RunTrigger { schedule, manual }
+/// Its schedule, Run now of the console, or a request with an API key.
+enum RunTrigger { schedule, manual, api }
 
-enum RunStatus { running, success, failed }
+/// [queued]: waiting for the run of its config in progress to end.
+enum RunStatus { queued, running, success, failed }
 
 /// A line of the log of a run: technical, in English, like the tools it runs.
 class RunLogLine {
@@ -43,6 +45,9 @@ class RunModel {
     'destination_type': row.destinationType.name,
     'trigger': row.trigger.name,
     'status': row.status.name,
+    'label': row.label,
+    'key_id': row.keyId,
+    'key_name': row.keyName,
     'location': row.location,
     'size_bytes': row.sizeBytes,
     'error': row.error,

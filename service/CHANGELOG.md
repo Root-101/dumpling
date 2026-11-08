@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.1.6
+
+- The schema changes: a table `api_key`, and `label`, `key_id` and `key_name` in `run`; the SQLite
+  file is created again (export before upgrading, import after).
+- API keys: `GET`, `POST /api/workspaces/{slug}/keys`, `PUT …/keys/{id}`, `PUT …/keys/order` and
+  `DELETE …/keys/{id}` (permissions `apikey.*`, the admin's only). A key is
+  `dmp_<id>_<secret>`, sent as Bearer or with Basic auth (`key_<id>` and the secret); only the
+  sha256 of the secret is kept. It reaches its workspace with the permissions it was given (never
+  the session, other workspaces, export, import nor the keys), optionally only some configs and
+  their runs (404 for the others); a limited key needs a permission on configs or runs and can't have
+  `config.create` nor `canvas.*` (422). A wrong key counts as a failed login of its IP.
+- Run now takes an optional `{"label": "…"}` (up to 64 of `A-Z a-z 0-9 . _ -`). A run asked for
+  while its config runs is `queued` and starts when that one ends (the 409 is gone); a stop fails
+  the queued ones too. A run started with a key has `trigger` `api`, `key_id` and `key_name`.
+- `GET …/runs` filters by `trigger` and `label`; `GET …/runs/{id}/events` streams the run as
+  Server-Sent Events until it ends.
+- The admin's token gets every permission of the running version, whatever list it was signed with.
+- The error of an S3 server is read as text: `"` instead of `&quot;`.
+
 ## 0.1.5
 
 - Nothing in the service; the version follows the console.

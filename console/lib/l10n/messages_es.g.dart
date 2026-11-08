@@ -84,6 +84,8 @@ class AppMessagesEs
   late final AppMessages$runs$es runs = AppMessages$runs$es._(_root);
   @override
   late final AppMessages$backups$es backups = AppMessages$backups$es._(_root);
+  @override
+  late final AppMessages$apiKeys$es apiKeys = AppMessages$apiKeys$es._(_root);
 }
 
 // Path: app
@@ -135,6 +137,8 @@ class AppMessages$common$es implements AppMessages$common$en {
   String get clearAll => 'Limpiar todo';
   @override
   String get done => 'Listo';
+  @override
+  String get copied => 'Copiado';
   @override
   String get all => 'Todos';
   @override
@@ -239,7 +243,25 @@ class AppMessages$errors$es implements AppMessages$errors$en {
   @override
   String get pageNotFound => 'Esta página no existe.';
   @override
+  String get pageMissing => 'Esta página no existe';
+  @override
+  String get pageMissingHint =>
+      'El backup, el origen o el workspace pueden haberse borrado, o el enlace está mal.';
+  @override
+  String get goToBackups => 'Ir a Backups';
+  @override
+  String get switchWorkspace => 'Cambiar de workspace';
+  @override
   String get offlineTitle => 'Conexión perdida';
+  @override
+  String get offlineBanner => 'No hay conexión con el servidor de Dumpling.';
+  @override
+  String get offlineKept =>
+      'Se muestra lo que se cargó antes; los backups siguen corriendo en el servidor.';
+  @override
+  String retryingIn({required int seconds}) => 'Reintentando en ${seconds} s…';
+  @override
+  String get retryNow => 'Reintentar ahora';
   @override
   String offline({required String url}) =>
       'No se puede conectar con el servicio de Dumpling en ${url}. Revisa que esté corriendo e inténtalo de nuevo.';
@@ -267,6 +289,8 @@ class AppMessages$nav$es implements AppMessages$nav$en {
   String get destinations => 'Destinos';
   @override
   String get runs => 'Registro de ejecuciones';
+  @override
+  String get apiKeys => 'API keys';
   @override
   String failedRuns({required Object count}) => '${count} con fallos';
   @override
@@ -395,6 +419,9 @@ class AppMessages$workspaces$es implements AppMessages$workspaces$en {
       'Un canvas nuevo para otro entorno, cliente o proyecto.';
   @override
   String get current => 'Actual';
+  @override
+  String copySlug({required String name}) =>
+      'Copiar el slug de ${name}: el workspace en las URLs de la API';
   @override
   String get sources => 'Orígenes';
   @override
@@ -1023,7 +1050,7 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   String get title => 'Registro de ejecuciones';
   @override
   String get description =>
-      'Cada ejecución de respaldo de este workspace, programada o manual. Horas en UTC, tu hora local debajo.';
+      'Cada ejecución de respaldo de este workspace: programada, manual o por la API. Horas en UTC, tu hora local debajo.';
   @override
   String get search => 'Buscar por respaldo, origen o destino';
   @override
@@ -1043,6 +1070,8 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   @override
   String get manual => 'Manual';
   @override
+  String get api => 'API';
+  @override
   String get emptyTitle => 'Aún no hay ejecuciones';
   @override
   String get emptyDescription =>
@@ -1056,6 +1085,15 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   String get copyLog => 'Copiar log';
   @override
   String get logCopied => 'Log copiado';
+  @override
+  String get copyRunId => 'Copiar el id de esta ejecución';
+  @override
+  String get retryNow => 'Reintentar ahora';
+  @override
+  String get runAgain => 'Ejecutar de nuevo';
+  @override
+  String runStarted({required String name}) =>
+      '${name} empezó: síguela en el registro de ejecuciones';
   @override
   String get logWhenDone =>
       'El log se escribe cuando termina la ejecución. Actualiza para verlo.';
@@ -1079,7 +1117,15 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   @override
   String soFar({required String size}) => 'En curso · ${size} hasta ahora';
   @override
-  String get columnTrigger => 'Tipo';
+  String get columnStartedBy => 'Iniciada por';
+  @override
+  String get sourceType => 'Tipo de origen';
+  @override
+  String get destinationType => 'Tipo de destino';
+  @override
+  String get queued => 'En cola: empieza cuando termine la ejecución en curso';
+  @override
+  String get labelTooltip => 'Etiqueta enviada con la ejecución';
   @override
   String get viewRun => 'Ver ejecución';
   @override
@@ -1098,6 +1144,9 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   String get resultFailed => 'El respaldo falló';
   @override
   String get resultRunning => 'En curso. Actualiza para ver cuánto avanzó.';
+  @override
+  String get resultQueued =>
+      'Empieza cuando termine la ejecución en curso de esta config.';
 }
 
 // Path: backups
@@ -1141,11 +1190,23 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   @override
   String get columnStatus => 'Estado';
   @override
+  String get columnConfig => 'Config';
+  @override
   String get columnSource => 'Origen';
   @override
   String get columnDestination => 'Destino';
   @override
   String get columnSchedule => 'Programación';
+  @override
+  String get everyHour => 'Cada hora';
+  @override
+  String everyHourAt({required String minute}) => 'Cada hora a los :${minute}';
+  @override
+  String dailyAt({required String time}) => 'Diario a las ${time}';
+  @override
+  String sundaysAt({required String time}) => 'Los domingos a las ${time}';
+  @override
+  String everyHours({required int n}) => 'Cada ${n} horas';
   @override
   String get columnLastRun => 'Último respaldo';
   @override
@@ -1172,7 +1233,7 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   @override
   String get sortLastSub => 'El más reciente primero';
   @override
-  String get sortLastOld => 'Último respaldo (antiguo)';
+  String get sortLastOld => 'Último respaldo';
   @override
   String get sortLastOldSub => 'El más antiguo primero';
   @override
@@ -1208,6 +1269,8 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   @override
   String get recentRuns => 'Ejecuciones recientes';
   @override
+  String get copyConfigId => 'Copiar id de la config';
+  @override
   String get noRuns => 'Aún no hay ejecuciones';
   @override
   String get viewLog => 'Ver log';
@@ -1234,6 +1297,159 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   @override
   String get emptyDescription =>
       'Conecta un origen con un destino en el editor para crear uno.';
+}
+
+// Path: apiKeys
+class AppMessages$apiKeys$es implements AppMessages$apiKeys$en {
+  AppMessages$apiKeys$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get title => 'API keys';
+  @override
+  String get description =>
+      'Keys para que otros sistemas usen este workspace por la API: un pipeline de despliegue, un script, una integración.';
+  @override
+  String get howTo => 'Cómo usar una key';
+  @override
+  String get create => 'Nueva API key';
+  @override
+  String get search => 'Buscar keys por nombre o id';
+  @override
+  String get columnName => 'Nombre';
+  @override
+  String get columnAccess => 'Acceso';
+  @override
+  String get columnConfigs => 'Configs';
+  @override
+  String get columnCreated => 'Creada';
+  @override
+  String get columnLastUsed => 'Último uso';
+  @override
+  String permissionCount({required Object n}) => '${n} permisos';
+  @override
+  String get allConfigs => 'Todas las configs';
+  @override
+  String configCount({required Object n}) => '${n} configs';
+  @override
+  String get everyConfig =>
+      'Todas las configs del workspace, también las nuevas';
+  @override
+  String get neverUsed => 'Sin usar';
+  @override
+  String ran({required Object config}) => 'ejecutó ${config}';
+  @override
+  String get footer =>
+      'Una key se muestra una sola vez, al crearla. No vencen: para renovar una, crea otra y borra la vieja. No forman parte de una exportación.';
+  @override
+  String get emptyTitle => 'Aún no hay API keys';
+  @override
+  String get emptyDescription =>
+      'Una key deja que un pipeline u otro sistema use este workspace sin tu contraseña: ejecutar un respaldo antes de un despliegue y esperarlo, leer el registro de ejecuciones, agregar orígenes. Cada key hace solo lo que permitas.';
+  @override
+  String get run => 'Ejecutar respaldos';
+  @override
+  String get runSub => 'Lanza respaldos y sigue sus ejecuciones';
+  @override
+  String get read => 'Solo lectura';
+  @override
+  String get readSub => 'Ve todo, no cambia nada';
+  @override
+  String get full => 'Acceso completo';
+  @override
+  String get fullSub => 'Todo en este workspace';
+  @override
+  String get custom => 'Personalizada';
+  @override
+  String get filterAccess => 'Acceso';
+  @override
+  String get filterConfig => 'Config';
+  @override
+  String get filterPermission => 'Permiso';
+  @override
+  String get unlimited => 'Todas las configs';
+  @override
+  String get eyebrow => 'API KEY';
+  @override
+  String get newTitle => 'Nueva API key';
+  @override
+  String editTitle({required Object name}) => 'Editar ${name}';
+  @override
+  String get name => 'Nombre';
+  @override
+  String get nameHint =>
+      'Qué la usa. El registro de ejecuciones lo muestra en las ejecuciones que lanza.';
+  @override
+  String get access => 'Acceso';
+  @override
+  String permissions({required Object n, required Object total}) =>
+      'Permisos · ${n} de ${total}';
+  @override
+  String get limit => 'Solo algunas configs';
+  @override
+  String get limitHint =>
+      'Ejecuta solo estas y ve solo sus ejecuciones, y no puede crear configs ni usar el canvas. Apagado: todas las configs del workspace, también las nuevas.';
+  @override
+  String get limitOff =>
+      'Solo para configs y ejecuciones: dale a la key un permiso sobre ellas para limitarla.';
+  @override
+  String get notLimitable =>
+      'No con Solo algunas configs: alcanza todas las configs';
+  @override
+  String get noConfigs => 'Este workspace aún no tiene configs.';
+  @override
+  String get renewNote =>
+      'La key no cambia. Para renovarla, crea otra y borra esta.';
+  @override
+  String summaryAll({required Object n}) => 'Todas las configs · ${n} permisos';
+  @override
+  String summarySome({required num configs, required Object n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        configs,
+        one: '${configs} config · ${n} permisos',
+        other: '${configs} configs · ${n} permisos',
+      );
+  @override
+  String get save => 'Guardar';
+  @override
+  String get createButton => 'Crear key';
+  @override
+  String readyTitle({required Object name}) => '${name} está lista';
+  @override
+  String get readyWarning =>
+      'Cópiala ahora: no se vuelve a mostrar. Si la pierdes, bórrala y crea otra.';
+  @override
+  String get copy => 'Copiar';
+  @override
+  String get copied => 'Copiada';
+  @override
+  String get use => 'Úsala';
+  @override
+  String basicNote({required Object id}) =>
+      'O con Basic auth: el usuario es ${id} y la contraseña el resto de la key. …/runs/RUN_ID/events sigue una ejecución hasta que termina.';
+  @override
+  String get done => 'Listo';
+  @override
+  String deleteTitle({required Object name}) => '¿Borrar la key ${name}?';
+  @override
+  String get deleteConfirm =>
+      'Lo que la use recibe un 401 desde ahora. Las ejecuciones que lanzó se quedan en el registro. No se puede deshacer: para dar acceso de nuevo, crea otra key.';
+  @override
+  String deleted({required Object name}) => 'Key ${name} borrada';
+  @override
+  String saved({required Object name}) => 'Key ${name} guardada';
+  @override
+  late final AppMessages$apiKeys$group$es group =
+      AppMessages$apiKeys$group$es._(_root);
+  @override
+  late final AppMessages$apiKeys$action$es action =
+      AppMessages$apiKeys$action$es._(_root);
+  @override
+  late final AppMessages$apiKeys$perm$es perm = AppMessages$apiKeys$perm$es._(
+    _root,
+  );
 }
 
 // Path: workspaces.transfer
@@ -1370,12 +1586,29 @@ class AppMessages$workspaces$settings$es
   @override
   String deleteConfirmTitle({required Object name}) => '¿Eliminar «${name}»?';
   @override
-  String deleteConfirm({
-    required Object sources,
-    required Object destinations,
-    required Object configs,
-  }) =>
-      'Se eliminan sus orígenes (${sources}), destinos (${destinations}), configs (${configs}) y su historial de ejecuciones. Los backups programados se detienen al momento. No se puede deshacer.';
+  String deleteConfirm({required Object what}) =>
+      'Se eliminan ${what} y su historial de ejecuciones. Los backups programados se detienen al momento. No se puede deshacer.';
+  @override
+  String nSources({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: '${n} origen',
+        other: '${n} orígenes',
+      );
+  @override
+  String nDestinations({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: '${n} destino',
+        other: '${n} destinos',
+      );
+  @override
+  String nConfigs({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: '${n} config',
+        other: '${n} configs',
+      );
   @override
   String get typeBefore => 'Escribe';
   @override
@@ -1418,6 +1651,8 @@ class AppMessages$canvas$runStatus$es
   String get failed => 'Fallida';
   @override
   String get running => 'En curso';
+  @override
+  String get queued => 'En cola';
 }
 
 // Path: canvas.frequency
@@ -1727,6 +1962,121 @@ class AppMessages$canvas$guide$es implements AppMessages$canvas$guide$en {
   String place({required String name}) => 'Colocar ${name}';
 }
 
+// Path: apiKeys.group
+class AppMessages$apiKeys$group$es implements AppMessages$apiKeys$group$en {
+  AppMessages$apiKeys$group$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get workspace => 'WORKSPACE';
+  @override
+  String get sources => 'ORÍGENES';
+  @override
+  String get destinations => 'DESTINOS';
+  @override
+  String get configs => 'CONFIGS';
+  @override
+  String get runs => 'EJECUCIONES';
+  @override
+  String get canvas => 'LIENZO';
+}
+
+// Path: apiKeys.action
+class AppMessages$apiKeys$action$es implements AppMessages$apiKeys$action$en {
+  AppMessages$apiKeys$action$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get list => 'Listar';
+  @override
+  String get view => 'Ver';
+  @override
+  String get create => 'Crear';
+  @override
+  String get edit => 'Editar';
+  @override
+  String get delete => 'Borrar';
+  @override
+  String get test => 'Probar';
+  @override
+  String get run => 'Ejecutar';
+  @override
+  String get save => 'Guardar';
+}
+
+// Path: apiKeys.perm
+class AppMessages$apiKeys$perm$es implements AppMessages$apiKeys$perm$en {
+  AppMessages$apiKeys$perm$es._(this._root);
+
+  final AppMessagesEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get workspaceGet =>
+      'Ver el nombre, la descripción y los valores por defecto del workspace';
+  @override
+  String get workspaceUpdate =>
+      'Cambiar el nombre, la descripción, el color y los valores por defecto del workspace';
+  @override
+  String get sourceList => 'Listar los orígenes y su estado';
+  @override
+  String get sourceGet => 'Ver un origen: su conexión, sin la contraseña';
+  @override
+  String get sourceCreate => 'Agregar orígenes';
+  @override
+  String get sourceUpdate => 'Cambiar un origen: su conexión y su contraseña';
+  @override
+  String get sourceDelete => 'Borrar orígenes que ninguna config usa';
+  @override
+  String get sourceTest => 'Probar la conexión de un origen';
+  @override
+  String get destinationList => 'Listar los destinos y sus carpetas';
+  @override
+  String get destinationGet =>
+      'Ver un destino: su bucket, sin la clave secreta';
+  @override
+  String get destinationCreate => 'Agregar destinos';
+  @override
+  String get destinationUpdate =>
+      'Cambiar un destino: su bucket, credenciales y carpetas';
+  @override
+  String get destinationDelete => 'Borrar destinos que ninguna config usa';
+  @override
+  String get destinationTest => 'Probar la conexión de un destino';
+  @override
+  String get configList =>
+      'Listar las configs, con su última y próxima ejecución';
+  @override
+  String get configGet =>
+      'Ver una config: programación, carpeta, nombre del archivo, compresión';
+  @override
+  String get configCreate => 'Agregar configs entre un origen y un destino';
+  @override
+  String get configUpdate =>
+      'Cambiar una config: programación, carpeta, nombre del archivo, activa';
+  @override
+  String get configDelete =>
+      'Borrar configs (su historial de ejecuciones se queda)';
+  @override
+  String get configRun =>
+      'Lanzar un respaldo ahora, con una etiqueta opcional; espera su turno si la config ya se ejecuta';
+  @override
+  String get runList => 'Listar las ejecuciones del registro';
+  @override
+  String get runGet =>
+      'Ver una ejecución, su log, y seguirla hasta que termine';
+  @override
+  String get canvasGet =>
+      'Leer el lienzo completo: nodos, configs y dónde están';
+  @override
+  String get canvasSave =>
+      'Guardar el lienzo completo: puede agregar, cambiar y borrar orígenes, destinos y configs';
+}
+
 // Path: canvas.inspector.placeholderHelp
 class AppMessages$canvas$inspector$placeholderHelp$es
     implements AppMessages$canvas$inspector$placeholderHelp$en {
@@ -1818,6 +2168,7 @@ extension on AppMessagesEs {
           'common.filters' => 'Filtros',
           'common.clearAll' => 'Limpiar todo',
           'common.done' => 'Listo',
+          'common.copied' => 'Copiado',
           'common.all' => 'Todos',
           'common.selected' => 'Elegido',
           'common.soon' => 'Pronto',
@@ -1873,7 +2224,18 @@ extension on AppMessagesEs {
           'errors.unknown' => 'Error desconocido',
           'errors.notFoundTitle' => 'No encontrado',
           'errors.pageNotFound' => 'Esta página no existe.',
+          'errors.pageMissing' => 'Esta página no existe',
+          'errors.pageMissingHint' => 'El backup, el origen o el workspace pueden haberse borrado, o el enlace está mal.',
+          'errors.goToBackups' => 'Ir a Backups',
+          'errors.switchWorkspace' => 'Cambiar de workspace',
           'errors.offlineTitle' => 'Conexión perdida',
+          'errors.offlineBanner' =>
+            'No hay conexión con el servidor de Dumpling.',
+          'errors.offlineKept' => 'Se muestra lo que se cargó antes; los backups siguen corriendo en el servidor.',
+          'errors.retryingIn' => ({
+            required int seconds,
+          }) => 'Reintentando en ${seconds} s…',
+          'errors.retryNow' => 'Reintentar ahora',
           'errors.offline' => ({
             required String url,
           }) => 'No se puede conectar con el servicio de Dumpling en ${url}. Revisa que esté corriendo e inténtalo de nuevo.',
@@ -1886,6 +2248,7 @@ extension on AppMessagesEs {
           'nav.sources' => 'Orígenes',
           'nav.destinations' => 'Destinos',
           'nav.runs' => 'Registro de ejecuciones',
+          'nav.apiKeys' => 'API keys',
           'nav.failedRuns' => ({
             required Object count,
           }) => '${count} con fallos',
@@ -1942,6 +2305,9 @@ extension on AppMessagesEs {
           'workspaces.createHint' =>
             'Un canvas nuevo para otro entorno, cliente o proyecto.',
           'workspaces.current' => 'Actual',
+          'workspaces.copySlug' => ({
+            required String name,
+          }) => 'Copiar el slug de ${name}: el workspace en las URLs de la API',
           'workspaces.sources' => 'Orígenes',
           'workspaces.destinations' => 'Destinos',
           'workspaces.backups' => 'Backups',
@@ -2056,10 +2422,32 @@ extension on AppMessagesEs {
             required Object name,
           }) => '¿Eliminar «${name}»?',
           'workspaces.settings.deleteConfirm' => ({
-            required Object sources,
-            required Object destinations,
-            required Object configs,
-          }) => 'Se eliminan sus orígenes (${sources}), destinos (${destinations}), configs (${configs}) y su historial de ejecuciones. Los backups programados se detienen al momento. No se puede deshacer.',
+            required Object what,
+          }) => 'Se eliminan ${what} y su historial de ejecuciones. Los backups programados se detienen al momento. No se puede deshacer.',
+          'workspaces.settings.nSources' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: '${n} origen',
+                  other: '${n} orígenes',
+                ),
+          'workspaces.settings.nDestinations' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: '${n} destino',
+                  other: '${n} destinos',
+                ),
+          'workspaces.settings.nConfigs' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: '${n} config',
+                  other: '${n} configs',
+                ),
           'workspaces.settings.typeBefore' => 'Escribe',
           'workspaces.settings.typeAfter' => 'para confirmar',
           'workspaces.settings.deleted' => ({
@@ -2392,6 +2780,7 @@ extension on AppMessagesEs {
           'canvas.runStatus.success' => 'Correcta',
           'canvas.runStatus.failed' => 'Fallida',
           'canvas.runStatus.running' => 'En curso',
+          'canvas.runStatus.queued' => 'En cola',
           'canvas.frequency.hourly' => 'Cada hora',
           'canvas.frequency.daily' => 'Diaria',
           'canvas.frequency.weekly' => 'Semanal',
@@ -2527,6 +2916,9 @@ extension on AppMessagesEs {
             'Nada que probar: primero conecta un origen a un destino.',
           'canvas.run.button' => 'Ejecutar ahora',
           'canvas.run.help' => 'Ejecuta este backup ahora, de verdad, tal como está guardado: los cambios sin guardar no se usan.',
+          _ => null,
+        } ??
+        switch (path) {
           'canvas.run.needsSave' =>
             'Guarda el canvas primero: una ejecución usa la config guardada.',
           'canvas.run.done' => ({
@@ -2547,11 +2939,8 @@ extension on AppMessagesEs {
           'canvas.guide.create' => 'Crear uno',
           'canvas.guide.place' => ({required String name}) => 'Colocar ${name}',
           'runs.title' => 'Registro de ejecuciones',
-          'runs.description' => 'Cada ejecución de respaldo de este workspace, programada o manual. Horas en UTC, tu hora local debajo.',
+          'runs.description' => 'Cada ejecución de respaldo de este workspace: programada, manual o por la API. Horas en UTC, tu hora local debajo.',
           'runs.search' => 'Buscar por respaldo, origen o destino',
-          _ => null,
-        } ??
-        switch (path) {
           'runs.columnStatus' => 'Estado',
           'runs.columnSource' => 'Origen',
           'runs.columnDestination' => 'Destino',
@@ -2560,6 +2949,7 @@ extension on AppMessagesEs {
           'runs.columnSize' => 'Tamaño',
           'runs.scheduled' => 'Programada',
           'runs.manual' => 'Manual',
+          'runs.api' => 'API',
           'runs.emptyTitle' => 'Aún no hay ejecuciones',
           'runs.emptyDescription' => 'Los respaldos se ejecutan según su programación, o con Ejecutar ahora en el editor.',
           'runs.newestOnly' =>
@@ -2567,6 +2957,12 @@ extension on AppMessagesEs {
           'runs.log' => 'Log (UTC)',
           'runs.copyLog' => 'Copiar log',
           'runs.logCopied' => 'Log copiado',
+          'runs.copyRunId' => 'Copiar el id de esta ejecución',
+          'runs.retryNow' => 'Reintentar ahora',
+          'runs.runAgain' => 'Ejecutar de nuevo',
+          'runs.runStarted' => ({
+            required String name,
+          }) => '${name} empezó: síguela en el registro de ejecuciones',
           'runs.logWhenDone' => 'El log se escribe cuando termina la ejecución. Actualiza para verlo.',
           'runs.noLog' => 'Esta ejecución no tiene log.',
           'runs.today' => ({required String date}) => 'Hoy · ${date} (UTC)',
@@ -2584,7 +2980,12 @@ extension on AppMessagesEs {
           'runs.soFar' => ({
             required String size,
           }) => 'En curso · ${size} hasta ahora',
-          'runs.columnTrigger' => 'Tipo',
+          'runs.columnStartedBy' => 'Iniciada por',
+          'runs.sourceType' => 'Tipo de origen',
+          'runs.destinationType' => 'Tipo de destino',
+          'runs.queued' =>
+            'En cola: empieza cuando termine la ejecución en curso',
+          'runs.labelTooltip' => 'Etiqueta enviada con la ejecución',
           'runs.viewRun' => 'Ver ejecución',
           'runs.steps' => 'Pasos',
           'runs.stepConnect' => ({
@@ -2598,6 +2999,8 @@ extension on AppMessagesEs {
           'runs.resultSuccess' => 'Respaldo guardado',
           'runs.resultFailed' => 'El respaldo falló',
           'runs.resultRunning' => 'En curso. Actualiza para ver cuánto avanzó.',
+          'runs.resultQueued' =>
+            'Empieza cuando termine la ejecución en curso de esta config.',
           'backups.title' => 'Respaldos',
           'backups.description' => 'Cada respaldo de este workspace, su última ejecución y la siguiente.',
           'backups.openEditor' => 'Abrir editor',
@@ -2616,9 +3019,21 @@ extension on AppMessagesEs {
           'backups.updating' => 'Actualizando…',
           'backups.search' => 'Buscar respaldos',
           'backups.columnStatus' => 'Estado',
+          'backups.columnConfig' => 'Config',
           'backups.columnSource' => 'Origen',
           'backups.columnDestination' => 'Destino',
           'backups.columnSchedule' => 'Programación',
+          'backups.everyHour' => 'Cada hora',
+          'backups.everyHourAt' => ({
+            required String minute,
+          }) => 'Cada hora a los :${minute}',
+          'backups.dailyAt' => ({
+            required String time,
+          }) => 'Diario a las ${time}',
+          'backups.sundaysAt' => ({
+            required String time,
+          }) => 'Los domingos a las ${time}',
+          'backups.everyHours' => ({required int n}) => 'Cada ${n} horas',
           'backups.columnLastRun' => 'Último respaldo',
           'backups.columnNextRun' => 'Próximo respaldo',
           'backups.allSources' => 'Todos los orígenes',
@@ -2639,7 +3054,7 @@ extension on AppMessagesEs {
           'backups.sortBy' => 'Ordenar por',
           'backups.sortLast' => 'Último respaldo',
           'backups.sortLastSub' => 'El más reciente primero',
-          'backups.sortLastOld' => 'Último respaldo (antiguo)',
+          'backups.sortLastOld' => 'Último respaldo',
           'backups.sortLastOldSub' => 'El más antiguo primero',
           'backups.sortNext' => 'Próximo respaldo',
           'backups.sortNextSub' => 'El más cercano primero',
@@ -2663,6 +3078,7 @@ extension on AppMessagesEs {
           'backups.editConfig' => 'Editar config',
           'backups.deleteBackup' => 'Eliminar respaldo',
           'backups.recentRuns' => 'Ejecuciones recientes',
+          'backups.copyConfigId' => 'Copiar id de la config',
           'backups.noRuns' => 'Aún no hay ejecuciones',
           'backups.viewLog' => 'Ver log',
           'backups.viewDetails' => 'Ver detalle',
@@ -2682,6 +3098,137 @@ extension on AppMessagesEs {
           }) => 'Respaldo ${name} guardado',
           'backups.emptyDescription' =>
             'Conecta un origen con un destino en el editor para crear uno.',
+          'apiKeys.title' => 'API keys',
+          'apiKeys.description' => 'Keys para que otros sistemas usen este workspace por la API: un pipeline de despliegue, un script, una integración.',
+          'apiKeys.howTo' => 'Cómo usar una key',
+          'apiKeys.create' => 'Nueva API key',
+          'apiKeys.search' => 'Buscar keys por nombre o id',
+          'apiKeys.columnName' => 'Nombre',
+          'apiKeys.columnAccess' => 'Acceso',
+          'apiKeys.columnConfigs' => 'Configs',
+          'apiKeys.columnCreated' => 'Creada',
+          'apiKeys.columnLastUsed' => 'Último uso',
+          'apiKeys.permissionCount' => ({required Object n}) => '${n} permisos',
+          'apiKeys.allConfigs' => 'Todas las configs',
+          'apiKeys.configCount' => ({required Object n}) => '${n} configs',
+          'apiKeys.everyConfig' =>
+            'Todas las configs del workspace, también las nuevas',
+          'apiKeys.neverUsed' => 'Sin usar',
+          'apiKeys.ran' => ({required Object config}) => 'ejecutó ${config}',
+          'apiKeys.footer' => 'Una key se muestra una sola vez, al crearla. No vencen: para renovar una, crea otra y borra la vieja. No forman parte de una exportación.',
+          'apiKeys.emptyTitle' => 'Aún no hay API keys',
+          'apiKeys.emptyDescription' => 'Una key deja que un pipeline u otro sistema use este workspace sin tu contraseña: ejecutar un respaldo antes de un despliegue y esperarlo, leer el registro de ejecuciones, agregar orígenes. Cada key hace solo lo que permitas.',
+          'apiKeys.run' => 'Ejecutar respaldos',
+          'apiKeys.runSub' => 'Lanza respaldos y sigue sus ejecuciones',
+          'apiKeys.read' => 'Solo lectura',
+          'apiKeys.readSub' => 'Ve todo, no cambia nada',
+          'apiKeys.full' => 'Acceso completo',
+          'apiKeys.fullSub' => 'Todo en este workspace',
+          'apiKeys.custom' => 'Personalizada',
+          'apiKeys.filterAccess' => 'Acceso',
+          'apiKeys.filterConfig' => 'Config',
+          'apiKeys.filterPermission' => 'Permiso',
+          'apiKeys.unlimited' => 'Todas las configs',
+          'apiKeys.eyebrow' => 'API KEY',
+          'apiKeys.newTitle' => 'Nueva API key',
+          'apiKeys.editTitle' => ({required Object name}) => 'Editar ${name}',
+          'apiKeys.name' => 'Nombre',
+          'apiKeys.nameHint' => 'Qué la usa. El registro de ejecuciones lo muestra en las ejecuciones que lanza.',
+          'apiKeys.access' => 'Acceso',
+          'apiKeys.permissions' => ({
+            required Object n,
+            required Object total,
+          }) => 'Permisos · ${n} de ${total}',
+          'apiKeys.limit' => 'Solo algunas configs',
+          'apiKeys.limitHint' => 'Ejecuta solo estas y ve solo sus ejecuciones, y no puede crear configs ni usar el canvas. Apagado: todas las configs del workspace, también las nuevas.',
+          'apiKeys.limitOff' => 'Solo para configs y ejecuciones: dale a la key un permiso sobre ellas para limitarla.',
+          'apiKeys.notLimitable' =>
+            'No con Solo algunas configs: alcanza todas las configs',
+          'apiKeys.noConfigs' => 'Este workspace aún no tiene configs.',
+          'apiKeys.renewNote' =>
+            'La key no cambia. Para renovarla, crea otra y borra esta.',
+          'apiKeys.summaryAll' => ({
+            required Object n,
+          }) => 'Todas las configs · ${n} permisos',
+          'apiKeys.summarySome' =>
+            ({required num configs, required Object n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  configs,
+                  one: '${configs} config · ${n} permisos',
+                  other: '${configs} configs · ${n} permisos',
+                ),
+          'apiKeys.save' => 'Guardar',
+          'apiKeys.createButton' => 'Crear key',
+          'apiKeys.readyTitle' => ({
+            required Object name,
+          }) => '${name} está lista',
+          'apiKeys.readyWarning' => 'Cópiala ahora: no se vuelve a mostrar. Si la pierdes, bórrala y crea otra.',
+          'apiKeys.copy' => 'Copiar',
+          'apiKeys.copied' => 'Copiada',
+          'apiKeys.use' => 'Úsala',
+          'apiKeys.basicNote' => ({
+            required Object id,
+          }) => 'O con Basic auth: el usuario es ${id} y la contraseña el resto de la key. …/runs/RUN_ID/events sigue una ejecución hasta que termina.',
+          'apiKeys.done' => 'Listo',
+          'apiKeys.deleteTitle' => ({
+            required Object name,
+          }) => '¿Borrar la key ${name}?',
+          'apiKeys.deleteConfirm' => 'Lo que la use recibe un 401 desde ahora. Las ejecuciones que lanzó se quedan en el registro. No se puede deshacer: para dar acceso de nuevo, crea otra key.',
+          'apiKeys.deleted' => ({
+            required Object name,
+          }) => 'Key ${name} borrada',
+          'apiKeys.saved' => ({required Object name}) => 'Key ${name} guardada',
+          'apiKeys.group.workspace' => 'WORKSPACE',
+          'apiKeys.group.sources' => 'ORÍGENES',
+          'apiKeys.group.destinations' => 'DESTINOS',
+          'apiKeys.group.configs' => 'CONFIGS',
+          'apiKeys.group.runs' => 'EJECUCIONES',
+          'apiKeys.group.canvas' => 'LIENZO',
+          'apiKeys.action.list' => 'Listar',
+          'apiKeys.action.view' => 'Ver',
+          'apiKeys.action.create' => 'Crear',
+          'apiKeys.action.edit' => 'Editar',
+          'apiKeys.action.delete' => 'Borrar',
+          'apiKeys.action.test' => 'Probar',
+          'apiKeys.action.run' => 'Ejecutar',
+          'apiKeys.action.save' => 'Guardar',
+          'apiKeys.perm.workspaceGet' => 'Ver el nombre, la descripción y los valores por defecto del workspace',
+          'apiKeys.perm.workspaceUpdate' => 'Cambiar el nombre, la descripción, el color y los valores por defecto del workspace',
+          'apiKeys.perm.sourceList' => 'Listar los orígenes y su estado',
+          'apiKeys.perm.sourceGet' =>
+            'Ver un origen: su conexión, sin la contraseña',
+          'apiKeys.perm.sourceCreate' => 'Agregar orígenes',
+          'apiKeys.perm.sourceUpdate' =>
+            'Cambiar un origen: su conexión y su contraseña',
+          'apiKeys.perm.sourceDelete' =>
+            'Borrar orígenes que ninguna config usa',
+          'apiKeys.perm.sourceTest' => 'Probar la conexión de un origen',
+          'apiKeys.perm.destinationList' =>
+            'Listar los destinos y sus carpetas',
+          'apiKeys.perm.destinationGet' =>
+            'Ver un destino: su bucket, sin la clave secreta',
+          'apiKeys.perm.destinationCreate' => 'Agregar destinos',
+          'apiKeys.perm.destinationUpdate' =>
+            'Cambiar un destino: su bucket, credenciales y carpetas',
+          'apiKeys.perm.destinationDelete' =>
+            'Borrar destinos que ninguna config usa',
+          'apiKeys.perm.destinationTest' => 'Probar la conexión de un destino',
+          'apiKeys.perm.configList' =>
+            'Listar las configs, con su última y próxima ejecución',
+          'apiKeys.perm.configGet' => 'Ver una config: programación, carpeta, nombre del archivo, compresión',
+          'apiKeys.perm.configCreate' =>
+            'Agregar configs entre un origen y un destino',
+          'apiKeys.perm.configUpdate' => 'Cambiar una config: programación, carpeta, nombre del archivo, activa',
+          'apiKeys.perm.configDelete' =>
+            'Borrar configs (su historial de ejecuciones se queda)',
+          'apiKeys.perm.configRun' => 'Lanzar un respaldo ahora, con una etiqueta opcional; espera su turno si la config ya se ejecuta',
+          'apiKeys.perm.runList' => 'Listar las ejecuciones del registro',
+          'apiKeys.perm.runGet' =>
+            'Ver una ejecución, su log, y seguirla hasta que termine',
+          'apiKeys.perm.canvasGet' =>
+            'Leer el lienzo completo: nodos, configs y dónde están',
+          'apiKeys.perm.canvasSave' => 'Guardar el lienzo completo: puede agregar, cambiar y borrar orígenes, destinos y configs',
           _ => null,
         };
   }

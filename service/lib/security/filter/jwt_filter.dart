@@ -27,7 +27,11 @@ class JwtFilter extends Filter {
           Authentication(
             principal: payload['sub'],
             roles: Set.from(payload['roles'] ?? []),
-            permissions: Set.from(payload['permissions'] ?? []),
+            // The admin has every permission of this version: a token signed
+            // before an upgrade added one still reaches it
+            permissions: payload['sub'] == env.adminUser
+                ? Set.of(Permissions.all)
+                : Set.from(payload['permissions'] ?? []),
           ),
         );
       } else {

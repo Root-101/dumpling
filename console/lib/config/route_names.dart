@@ -10,6 +10,7 @@ abstract class RouteNames {
   static const String sources = 'sources';
   static const String destinations = 'destinations';
   static const String runs = 'runs';
+  static const String apiKeys = 'keys';
 
   /// The dialog of one item over its screen: `sources/{id}`,
   /// `destinations/{id}`, `runs/{id}`, `backups/runs/{id}`

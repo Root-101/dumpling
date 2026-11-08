@@ -1,7 +1,9 @@
 import 'package:service/dumpling.dart';
 
 /// The API of the console, under `/api`. Everything but the login and the
-/// health check needs a token with the permission of the endpoint (see [Permissions]).
+/// health check needs a token with the permission of the endpoint (see
+/// [Permissions]): the admin's, or an API key's, which only reaches the
+/// routes of its own workspace.
 class ApiController {
   final AuthController authController;
   final WorkspaceController workspaceController;
@@ -12,6 +14,7 @@ class ApiController {
   final CanvasController canvasController;
   final TransferController transferController;
   final HealthController healthController;
+  final ApiKeyController apiKeyController;
 
   ApiController()
     : authController = AuthController(),
@@ -22,11 +25,12 @@ class ApiController {
       runController = RunController(),
       canvasController = CanvasController(),
       transferController = TransferController(),
-      healthController = HealthController();
+      healthController = HealthController(),
+      apiKeyController = ApiKeyController();
 
   Route get routing => Route.parent(
     path: '/api',
-    filterConfig: [JwtFilter()].toFilterConfig(),
+    filterConfig: [JwtFilter(), ApiKeyFilter()].toFilterConfig(),
     routes: [
       Route.get(
         key: 'health',
@@ -249,6 +253,12 @@ class ApiController {
         filterConfig: _permission(Permissions.runGet),
       ),
       Route.get(
+        key: 'run.events',
+        path: '/workspaces/{slug}/runs/{id}/events',
+        handler: runController.events,
+        filterConfig: _permission(Permissions.runGet),
+      ),
+      Route.get(
         key: 'canvas.get',
         path: '/workspaces/{slug}/canvas',
         handler: canvasController.get,
@@ -260,9 +270,49 @@ class ApiController {
         handler: canvasController.save,
         filterConfig: _permission(Permissions.canvasSave),
       ),
+      Route.get(
+        key: 'apikey.list',
+        path: '/workspaces/{slug}/keys',
+        handler: apiKeyController.list,
+        filterConfig: _permission(Permissions.apiKeyList),
+      ),
+      Route.post(
+        key: 'apikey.create',
+        path: '/workspaces/{slug}/keys',
+        handler: apiKeyController.create,
+        filterConfig: _permission(Permissions.apiKeyCreate),
+      ),
+      Route.put(
+        key: 'apikey.reorder',
+        path: '/workspaces/{slug}/keys/order',
+        handler: apiKeyController.reorder,
+        filterConfig: _permission(Permissions.apiKeyUpdate),
+      ),
+      Route.put(
+        key: 'apikey.update',
+        path: '/workspaces/{slug}/keys/{id}',
+        handler: apiKeyController.update,
+        filterConfig: _permission(Permissions.apiKeyUpdate),
+      ),
+      Route.delete(
+        key: 'apikey.delete',
+        path: '/workspaces/{slug}/keys/{id}',
+        handler: apiKeyController.delete,
+        filterConfig: _permission(Permissions.apiKeyDelete),
+      ),
     ],
   );
 
-  static FilterConfig _permission(String permission) =>
-      FilterConfig([AuthFilter(rule: hasPermission(permission))]);
+  static FilterConfig _permission(String permission) => FilterConfig([
+    AuthFilter(rule: hasPermission(permission) & _ownWorkspace),
+  ]);
+
+  /// An API key only reaches its own workspace (the routes without one, the
+  /// types of sources and destinations, are the same for everybody).
+  static final AuthorizationRule _ownWorkspace = rule((auth, request) {
+    final principal = auth.principal;
+    if (principal is! ApiKeyPrincipal) return true;
+    final slug = request.pathParams['slug'];
+    return slug == null || slug == principal.workspace;
+  }, describe: 'ownWorkspace');
 }

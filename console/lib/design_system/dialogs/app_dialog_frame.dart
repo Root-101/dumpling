@@ -8,10 +8,14 @@ class AppDialogFrame extends StatelessWidget {
   final Color? color;
   final double radius;
 
+  /// False for a confirmation: Cancel closes it, as in the design
+  final bool closable;
+
   const AppDialogFrame({
     required this.child,
     this.color,
     this.radius = 16,
+    this.closable = true,
     super.key,
   });
 
@@ -34,7 +38,8 @@ class AppDialogFrame extends StatelessWidget {
             child: child,
           ),
         ),
-        const Positioned(top: 0, right: 0, child: DialogCloseButton()),
+        if (closable)
+          const Positioned(top: 0, right: 0, child: DialogCloseButton()),
       ],
     );
   }

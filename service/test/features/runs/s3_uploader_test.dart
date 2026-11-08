@@ -177,6 +177,24 @@ void main() {
       );
     });
 
+    test('Should read the error of a server as text, not XML', () async {
+      final client = await answering(
+        404,
+        '<Error><Code>NoSuchBucket</Code><Message>The bucket &quot;a&amp;b&quot; does not exist.</Message></Error>'
+            .codeUnits,
+      );
+      await expectLater(
+        client.createMultipartUpload('k'),
+        throwsA(
+          isA<S3ClientException>().having(
+            (e) => e.message,
+            'message',
+            'The bucket "a&b" does not exist.',
+          ),
+        ),
+      );
+    });
+
     test('Should cut the error text a server sends', () async {
       final client = await answering(
         403,
