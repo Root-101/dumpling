@@ -442,16 +442,22 @@ class ConfigNodeView extends StatelessWidget {
                             style: rowStyle.copyWith(color: colors.text.subtle),
                           ),
                           const SizedBox(width: 6),
+                          // a longer date (Spanish) shrinks instead of being cut
                           Expanded(
-                            child: Text(
-                              last == null
-                                  ? app.intl.canvas.neverRun
-                                  : app.intl.time.utc(
-                                      time: time.format(last.startedAt.toUtc()),
-                                    ),
-                              style: rowStyle,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                last == null
+                                    ? app.intl.canvas.neverRun
+                                    : app.intl.time.utc(
+                                        time: time.format(
+                                          last.startedAt.toUtc(),
+                                        ),
+                                      ),
+                                style: rowStyle,
+                                maxLines: 1,
+                              ),
                             ),
                           ),
                           Text(
