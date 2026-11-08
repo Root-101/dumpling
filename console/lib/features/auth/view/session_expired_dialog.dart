@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:console/app_exporter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,8 +16,18 @@ class SessionExpiredDialog extends StatefulWidget {
     barrierDismissible: false,
     barrierColor: app.colors.neutral.black.withValues(alpha: 0.72),
     transitionDuration: const Duration(milliseconds: 200),
-    pageBuilder: (context, animation, secondaryAnimation) =>
+    // the screen stays under it, blurred: it comes back as it was
+    pageBuilder: (context, animation, secondaryAnimation) => Stack(
+      children: [
+        Positioned.fill(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+            child: const SizedBox.shrink(),
+          ),
+        ),
         const SessionExpiredDialog(),
+      ],
+    ),
     transitionBuilder: (context, animation, secondaryAnimation, child) =>
         FadeTransition(opacity: animation, child: child),
   );
@@ -174,7 +186,11 @@ class _SessionExpiredDialogState extends State<SessionExpiredDialog> {
                       onPressed: loading ? null : _toSignInPage,
                       style: TextButton.styleFrom(
                         foregroundColor: app.colors.primary.primaryFaded,
-                        textStyle: const TextStyle(fontSize: 13),
+                        textStyle: TextStyle(
+                          fontSize: 13,
+                          decoration: TextDecoration.underline,
+                          decorationColor: app.colors.primary.primaryFaded,
+                        ),
                       ),
                       child: Text(t.toSignInPage),
                     ),

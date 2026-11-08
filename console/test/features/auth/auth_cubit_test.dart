@@ -67,4 +67,12 @@ void main() {
     final cubit = AuthCubit(repo)..expire();
     expect(cubit.expired, isFalse);
   });
+
+  test('After a reload the user comes from the token', () {
+    // {"sub":"admin"}, as the service signs it
+    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiJ9.sig';
+    expect(AuthCubit.subjectOf(token), 'admin');
+    expect(AuthCubit.subjectOf('not-a-jwt'), isNull);
+    expect(AuthCubit.subjectOf(null), isNull);
+  });
 }
