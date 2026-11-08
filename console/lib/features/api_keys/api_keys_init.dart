@@ -13,6 +13,7 @@ class ApiKeysInit {
       app.di.find(),
       app.di.find(),
       app.di.find(),
+      app.di.find(),
     );
     app.di.put(cubit);
   }

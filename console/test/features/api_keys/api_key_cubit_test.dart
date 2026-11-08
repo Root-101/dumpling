@@ -10,6 +10,8 @@ class _MockConfigs extends Mock implements ConfigRepo {}
 
 class _MockSources extends Mock implements SourceRepo {}
 
+class _MockDestinations extends Mock implements DestinationRepo {}
+
 class _MockAuth extends Mock implements AuthCubit {}
 
 ApiKeyModel apiKey(
@@ -30,6 +32,7 @@ void main() {
   late _MockRepo repo;
   late _MockConfigs configs;
   late _MockSources sources;
+  late _MockDestinations destinations;
   late _MockAuth auth;
 
   setUpAll(() {
@@ -43,6 +46,7 @@ void main() {
     repo = _MockRepo();
     configs = _MockConfigs();
     sources = _MockSources();
+    destinations = _MockDestinations();
     auth = _MockAuth();
     when(() => auth.auth).thenReturn(session());
     when(() => repo.list(workspace: 'production', token: 'jwt')).thenAnswer(
@@ -59,10 +63,12 @@ void main() {
         .thenAnswer((_) async => [config('orders', 'bucket')]);
     when(() => sources.list(workspace: 'production', token: 'jwt'))
         .thenAnswer((_) async => [source('orders')]);
+    when(() => destinations.list(workspace: 'production', token: 'jwt'))
+        .thenAnswer((_) async => [destination('bucket')]);
   });
 
   Future<ApiKeyCubit> loaded() async {
-    final cubit = ApiKeyCubit(repo, configs, sources, auth);
+    final cubit = ApiKeyCubit(repo, configs, sources, destinations, auth);
     await cubit.load('production');
     return cubit;
   }
@@ -105,6 +111,15 @@ void main() {
         ...ApiKeyPermissions.limitable,
         ...ApiKeyPermissions.notLimitable,
       ]),
+    );
+  });
+
+  test('the route of a config goes from its source to its bucket', () async {
+    final data = (await loaded()).state.data;
+    expect(data.routeOf(config('orders', 'bucket')), 'orders-db → bucket');
+    expect(
+      data.routeOf(config('orders', 'bucket', folder: 'daily')),
+      'orders-db → bucket/daily',
     );
   });
 

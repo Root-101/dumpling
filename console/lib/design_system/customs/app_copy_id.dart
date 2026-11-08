@@ -15,12 +15,17 @@ class AppCopyId extends StatelessWidget {
   /// On a small tag of its own, the button inside (beside a title)
   final bool tag;
 
+  /// A [tag] without its background, in the grey of what is secondary: for
+  /// a line of a row that is already tinted
+  final bool plain;
+
   const AppCopyId({
     required this.id,
     required this.tooltip,
     this.fontSize = 12,
     this.color,
     this.tag = false,
+    this.plain = false,
     super.key,
   });
 
@@ -33,15 +38,18 @@ class AppCopyId extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => tag ? _buildTag() : _buildLine();
+  Widget build(BuildContext context) =>
+      tag || plain ? _buildTag() : _buildLine();
 
   Widget _buildTag() => Container(
-    height: 26,
-    padding: const EdgeInsets.only(left: 8, right: 2),
-    decoration: BoxDecoration(
-      color: app.colors.surface.control,
-      borderRadius: BorderRadius.circular(6),
-    ),
+    height: plain ? 22 : 26,
+    padding: plain ? null : const EdgeInsets.only(left: 8, right: 2),
+    decoration: plain
+        ? null
+        : BoxDecoration(
+            color: app.colors.surface.control,
+            borderRadius: BorderRadius.circular(6),
+          ),
     child: Row(
       mainAxisSize: MainAxisSize.min,
       spacing: 2,
@@ -53,7 +61,9 @@ class AppCopyId extends StatelessWidget {
             maxLines: 1,
             style: AppText.mono.copyWith(
               fontSize: fontSize,
-              color: color ?? app.colors.text.brand,
+              color:
+                  color ??
+                  (plain ? app.colors.neutral.grey4 : app.colors.text.brand),
             ),
           ),
         ),
@@ -70,7 +80,9 @@ class AppCopyId extends StatelessWidget {
                 child: Center(
                   child: app.assets.icons.actions.duplicate.build(
                     size: 13,
-                    color: app.colors.neutral.grey3,
+                    color: plain
+                        ? app.colors.neutral.grey4
+                        : app.colors.neutral.grey3,
                   ),
                 ),
               ),

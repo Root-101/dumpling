@@ -28,7 +28,8 @@ have the release candidates before 0.1.0 one by one.
   ends.
 - A session open across an upgrade keeps reaching the routes the new version adds.
 - Console: the confirmations before deleting or discarding look as in the design, and so do the
-  check boxes and the config chips of the form of a key.
+  check boxes and the configs of the form of a key, each now with its id to copy and its source →
+  destination.
 
 ## 0.1.5
 

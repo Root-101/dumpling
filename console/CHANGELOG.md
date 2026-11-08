@@ -34,7 +34,8 @@
   destination in grey, *Last backup* / *Oldest first* in the sort, and the ⋮ lit while its menu is
   open.
 - The form of a key as in the design: the boxes of the permissions and of the configs with softer
-  borders, and the name of each config in light grey.
+  borders; the configs in two columns, each with its name, its id with a button to copy it, and
+  its source → destination under them.
 - Run log filters in the order of the design (source type, destination type, started by, status),
   each status with its colored dot.
 - *Your session expired* over the screen blurred, with the user already in (after a reload too,

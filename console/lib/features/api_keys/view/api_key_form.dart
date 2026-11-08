@@ -208,22 +208,28 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
                           color: colors.neutral.grey4,
                         ),
                       )
-                    : Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          for (final config in data.configs)
-                            _CheckChip(
-                              label: config.name,
-                              trailing: data.sourceNames[config.sourceId],
-                              selected: _configs.contains(config.id),
-                              onTap: () => setState(() {
-                                if (!_configs.remove(config.id)) {
-                                  _configs.add(config.id);
-                                }
-                              }),
-                            ),
-                        ],
+                    : LayoutBuilder(
+                        builder: (_, constraints) => Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final config in data.configs)
+                              SizedBox(
+                                width: (constraints.maxWidth - 8) / 2,
+                                child: _ConfigChip(
+                                  name: config.name,
+                                  id: config.id,
+                                  route: data.routeOf(config),
+                                  selected: _configs.contains(config.id),
+                                  onTap: () => setState(() {
+                                    if (!_configs.remove(config.id)) {
+                                      _configs.add(config.id);
+                                    }
+                                  }),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
             ],
           ),
@@ -499,18 +505,21 @@ class _CheckBox extends StatelessWidget {
   }
 }
 
-/// A config to limit the key to: its name, the source it dumps and a box
-class _CheckChip extends StatelessWidget {
-  final String label;
-  final String? trailing;
+/// A config to limit the key to: a box, its name and id, and under them
+/// where it goes from and to
+class _ConfigChip extends StatelessWidget {
+  final String name;
+  final String id;
+  final String route;
   final bool selected;
   final VoidCallback onTap;
 
-  const _CheckChip({
-    required this.label,
+  const _ConfigChip({
+    required this.name,
+    required this.id,
+    required this.route,
     required this.selected,
     required this.onTap,
-    this.trailing,
   });
 
   @override
@@ -523,8 +532,7 @@ class _CheckChip extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(8),
         child: Container(
-          height: 32,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.fromLTRB(10, 5, 8, 5),
           decoration: BoxDecoration(
             color: selected
                 ? colors.primary.primaryFaded.withValues(alpha: 0.14)
@@ -537,22 +545,50 @@ class _CheckChip extends StatelessWidget {
             ),
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 8,
+            spacing: 10,
             children: [
               _CheckBox(selected: selected),
-              Text(
-                label,
-                style: TextStyle(fontSize: 13, color: colors.text.secondary),
-              ),
-              if (trailing != null)
-                Text(
-                  trailing!,
-                  style: AppText.mono.copyWith(
-                    fontSize: 11,
-                    color: colors.neutral.grey4,
-                  ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 1,
+                  children: [
+                    Row(
+                      spacing: 8,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: colors.text.secondary,
+                            ),
+                          ),
+                        ),
+                        AppCopyId(
+                          id: id,
+                          tooltip: app.intl.backups.copyConfigId,
+                          fontSize: 11,
+                          plain: true,
+                        ),
+                      ],
+                    ),
+                    Text(
+                      route,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppText.mono.copyWith(
+                        fontSize: 11,
+                        height: 16 / 11,
+                        color: colors.neutral.grey3,
+                      ),
+                    ),
+                  ],
                 ),
+              ),
             ],
           ),
         ),

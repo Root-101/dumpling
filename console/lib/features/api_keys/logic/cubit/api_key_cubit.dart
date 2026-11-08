@@ -2,16 +2,22 @@ import 'package:console/app_exporter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// The API keys of the open workspace: list, search, the filters, the order
-/// and the form's save. The configs (and the names of their sources) are
+/// and the form's save. The configs (and the names of their ends) are
 /// loaded with them, for the form and the filter by config
 class ApiKeyCubit extends Cubit<ApiKeyState> {
   final ApiKeyRepo _repo;
   final ConfigRepo _configs;
   final SourceRepo _sources;
+  final DestinationRepo _destinations;
   final AuthCubit _auth;
 
-  ApiKeyCubit(this._repo, this._configs, this._sources, this._auth)
-    : super(const ApiKeyInitialState());
+  ApiKeyCubit(
+    this._repo,
+    this._configs,
+    this._sources,
+    this._destinations,
+    this._auth,
+  ) : super(const ApiKeyInitialState());
 
   String? get _token => _auth.auth?.accessToken;
 
@@ -26,11 +32,16 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
         _repo.list(workspace: workspace, token: _token),
         _configs.list(workspace: workspace, token: _token),
         _sources.list(workspace: workspace, token: _token),
+        _destinations.list(workspace: workspace, token: _token),
       ]);
       // the answer of a workspace already left behind is dropped
       if (state.data.workspace != workspace) return;
       final sources = {
         for (final s in results[2] as List<SourceModel>) s.id: s.name,
+      };
+      final destinations = {
+        for (final d in results[3] as List<DestinationModel>)
+          d.id: d.s3?.bucket ?? d.name,
       };
       emit(
         ApiKeyLoadingSuccessState(
@@ -39,6 +50,7 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
             keys: results[0] as List<ApiKeyModel>,
             configs: results[1] as List<ConfigModel>,
             sourceNames: sources,
+            destinationNames: destinations,
           ),
         ),
       );
@@ -189,6 +201,9 @@ class ApiKeyData {
 
   /// The name of each source by its id: the form shows what a config dumps
   final Map<String, String> sourceNames;
+
+  /// The bucket of each destination by its id, for the same
+  final Map<String, String> destinationNames;
   final String query;
   final ApiKeyAccess? access;
   final String? config;
@@ -201,6 +216,7 @@ class ApiKeyData {
     required this.keys,
     required this.configs,
     required this.sourceNames,
+    required this.destinationNames,
     required this.query,
     required this.access,
     required this.config,
@@ -215,6 +231,7 @@ class ApiKeyData {
         keys: const [],
         configs: const [],
         sourceNames: const {},
+        destinationNames: const {},
         query: '',
         access: null,
         config: null,
@@ -227,6 +244,7 @@ class ApiKeyData {
     List<ApiKeyModel>? keys,
     List<ConfigModel>? configs,
     Map<String, String>? sourceNames,
+    Map<String, String>? destinationNames,
     String? query,
     ApiKeyAccess? Function()? access,
     String? Function()? config,
@@ -238,6 +256,7 @@ class ApiKeyData {
       keys: keys ?? this.keys,
       configs: configs ?? this.configs,
       sourceNames: sourceNames ?? this.sourceNames,
+      destinationNames: destinationNames ?? this.destinationNames,
       query: query ?? this.query,
       access: access == null ? this.access : access(),
       config: config == null ? this.config : config(),
@@ -250,6 +269,7 @@ class ApiKeyData {
       keys: next.keys,
       configs: next.configs,
       sourceNames: next.sourceNames,
+      destinationNames: next.destinationNames,
       query: next.query,
       access: next.access,
       config: next.config,
@@ -271,6 +291,14 @@ class ApiKeyData {
         (skip == 'permission' ||
             permission == null ||
             key.permissions.contains(permission));
+  }
+
+  /// `orders-db → backups/orders`: what [config] dumps and where it writes it
+  String routeOf(ConfigModel config) {
+    final folder = config.folder;
+    return '${sourceNames[config.sourceId] ?? config.sourceId} → '
+        '${destinationNames[config.destinationId] ?? config.destinationId}'
+        '${folder == null ? '' : FolderPath.show(folder)}';
   }
 
   /// The configs of [key], by name
