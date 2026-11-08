@@ -573,6 +573,14 @@ void main() {
     expect(find.text(about), findsNothing);
     expect(find.text('orders-db'), findsOneWidget);
 
+    // another screen by its URL: the dialog doesn't stay over it
+    RouteConfig.router.go('/workspaces/production/sources/orders');
+    await settle(tester);
+    expect(find.text(about), findsOneWidget);
+    RouteConfig.router.go('/workspaces/production/runs');
+    await settle(tester);
+    expect(find.text(about), findsNothing);
+
     // an id that is not there: a notice, and the list
     RouteConfig.router.go('/workspaces/production/sources/gone');
     await settle(tester);

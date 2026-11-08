@@ -24,6 +24,8 @@
   the tooltip; the source shows its type under its name instead of the config.
 - Backups and the canvas show a queued run as running: Run now on a config that runs queues the
   new run instead of failing.
+- A dialog opened by its URL (a source, a destination, a run) closes when another screen takes the
+  URL, instead of staying over it.
 - The confirmations (delete a source, destination or backup, discard the canvas) look as in the
   design: the title and the text to the left, Cancel and the action to the right, without a ✕.
 
