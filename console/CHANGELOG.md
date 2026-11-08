@@ -46,7 +46,7 @@
   every 10 s or with *Retry now*.
 - *Not found* as in the design: *404*, the path asked for, *Go to Backups* and *Switch workspace*.
 - A dialog opened by its URL (a source, a destination, a run) closes when another screen takes the
-  URL, instead of staying over it.
+  URL, instead of staying over it, and another id in the URL replaces it instead of piling up.
 - The confirmations (delete a source, destination or backup, discard the canvas) look as in the
   design: the title and the text to the left, Cancel and the action to the right, without a ✕.
 

@@ -622,6 +622,16 @@ void main() {
     expect(find.text(about), findsNothing);
     expect(find.text('orders-db'), findsOneWidget);
 
+    // another id by its URL: its dialog replaces the one open
+    RouteConfig.router.go('/workspaces/production/sources/orders');
+    await settle(tester);
+    RouteConfig.router.go('/workspaces/production/sources/users');
+    await settle(tester);
+    expect(find.text(about), findsOneWidget);
+    RouteConfig.router.go('/workspaces/production/sources');
+    await settle(tester);
+    expect(find.text(about), findsNothing);
+
     // another screen by its URL: the dialog doesn't stay over it
     RouteConfig.router.go('/workspaces/production/sources/orders');
     await settle(tester);

@@ -48,6 +48,8 @@ mixin UrlDialog<T extends StatefulWidget> on State<T> {
     required VoidCallback leave,
   }) {
     if (id == _shown) return;
+    // another id by hand in the URL: its dialog replaces the one open
+    final replacing = _shown != null && id != null;
     _shown = id;
     final path = _path;
     _screen = id == null || !path.endsWith('/$id')
@@ -55,11 +57,10 @@ mixin UrlDialog<T extends StatefulWidget> on State<T> {
         : path.substring(0, path.length - id.length - 1);
     // it may come from a build (a new URL): the dialogs change after it
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (id == null) {
+      if (id == null || replacing) {
         Navigator.of(app.context).popUntil((route) => route is! PopupRoute);
-      } else {
-        _open(id, show, leave);
       }
+      if (id != null) _open(id, show, leave);
     });
   }
 
