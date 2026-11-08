@@ -27,12 +27,12 @@ both (see [Sources and destinations](#sources-and-destinations)).
 > ### Where it comes from
 >
 > - **None of the backup tools fit.** Some back up only one database or write to only one
-    > destination, some have no console, and the console of others is so complex it gets in the way.
+>     destination, some have no console, and the console of others is so complex it gets in the way.
 > - **Most of them are built to manage thousands of backups**, and that scale makes everything more
-    > complex than it needs to be. Dumpling goes the other way: it is made for small and medium
-    > projects. It doesn't break under load, but huge volumes are not who it is for.
+>     complex than it needs to be. Dumpling goes the other way: it is made for small and medium
+>     projects. It doesn't break under load, but huge volumes are not who it is for.
 > - **Hosting is paid by the megabyte.** Tools like Databasus are heavy services; on a small VPS or
-    > a platform that bills memory, every megabyte counts.
+>     a platform that bills memory, every megabyte counts.
 >
 > ### What it is today
 >
@@ -53,16 +53,16 @@ both (see [Sources and destinations](#sources-and-destinations)).
 
 ## What it does
 
-|                  |                                                                                                                                    |
-|------------------|------------------------------------------------------------------------------------------------------------------------------------|
-| **Sources**      | Databases, each dumped with its own tool; today PostgreSQL (up to the `pg_dump` of the image, 18 by default), over TLS by default  |
-| **Destinations** | Storages for the dumps, at their root or in folders; today any S3-compatible one (AWS S3, MinIO, feather-io…)                      |
-| **Canvas**       | Sources, destinations and the backups between them, connected by hand and saved in one go; a test run checks every flow first      |
-| **Backups**      | Cron schedules in UTC and Run now; gzip or none; object keys with placeholders (`{db}/{yyyy}-{MM}-{dd}`); streamed in 16 MiB parts |
-| **Monitoring**   | Health of every backup with its last and next run, and a run log with the log of each run                                          |
-| **Workspaces**   | Separate canvases for environments, clients or projects                                                                            |
+|                  |                                                                                                                                     |
+|------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| **Sources**      | Databases, each dumped with its own tool; today PostgreSQL (up to the `pg_dump` of the image, 18 by default), over TLS by default   |
+| **Destinations** | Storages for the dumps, at their root or in folders; today any S3-compatible one (AWS S3, MinIO, feather-io…)                       |
+| **Canvas**       | Sources, destinations and the backups between them, connected by hand and saved in one go; a test run checks every flow first       |
+| **Backups**      | Cron schedules in UTC and Run now; gzip or none; object keys with placeholders (`{db}/{yyyy}-{MM}-{dd}`); streamed in 16 MiB parts  |
+| **Monitoring**   | Health of every backup with its last and next run, and a run log with the log of each run                                           |
+| **Workspaces**   | Separate canvases for environments, clients or projects                                                                             |
 | **API keys**     | Per workspace, for pipelines and scripts: back up before a deploy and follow the run until it ends, with only the permissions given |
-| **Console**      | English and Spanish; times in UTC with the local time next to them                                                                 |
+| **Console**      | English and Spanish; times in UTC with the local time next to them                                                                  |
 
 |                                                                   |                                                                      |
 |-------------------------------------------------------------------|----------------------------------------------------------------------|
