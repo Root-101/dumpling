@@ -117,7 +117,9 @@ its folders, and a config is created between them. Each config node shows its na
 its last run (with its result) and its next one, in UTC with the local time under them; each
 source and destination shows the logo of its type.
 
-The toolbar at the top left places on the canvas a source or a destination that isn't on it yet
+Sources, destinations and configs made through the API come without a place: the ones a config
+uses land on the canvas (sources on the left, destinations on the right, each config between its
+ends), and saving keeps them there. The toolbar at the top left places on the canvas a source or a destination that isn't on it yet
 (or goes to create one). A folder can be added to a bucket from the canvas too. Right click opens
 the menu of the canvas; hold Space and drag to move it (or the arrow keys), Ctrl and scroll zooms,
 F centers; click a connection and press Delete to remove it; Escape closes a config. The buttons at the bottom left center it and zoom, and
