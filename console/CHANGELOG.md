@@ -26,6 +26,8 @@
   new run instead of failing.
 - The detail of a run as in the design: no big status icon, and *Edit config*, *Close* and *Retry
   now* (or *Run again*) under it.
+- Backups keeps what it showed when the service stops answering, under a banner that tries again
+  every 10 s or with *Retry now*.
 - *Not found* as in the design: *404*, the path asked for, *Go to Backups* and *Switch workspace*.
 - A dialog opened by its URL (a source, a destination, a run) closes when another screen takes the
   URL, instead of staying over it.

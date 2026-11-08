@@ -209,6 +209,13 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        // loaded, then the service stopped answering
+                        if (state is BackupLoadingErrorState &&
+                            state.exception.type ==
+                                GlobalExceptionType.offline) ...[
+                          OfflineBanner(onRetry: cubit.reload),
+                          SizedBox(height: app.dimensions.padding.l),
+                        ],
                         _buildSummary(state.data),
                         SizedBox(height: app.dimensions.padding.l),
                         _buildTable(state.data),

@@ -66,6 +66,10 @@ errors:
   goToBackups: 'Go to Backups'
   switchWorkspace: 'Switch workspace'
   offlineTitle: 'Connection lost'
+  offlineBanner: 'Can’t reach the Dumpling server.'
+  offlineKept: 'Showing what was loaded before; backups keep running on the server.'
+  retryingIn: 'Retrying in {seconds: int} s…'
+  retryNow: 'Retry now'
   offline: "Can't reach the Dumpling service at {url: String}. Check that it is running and try again."
 
 nav:

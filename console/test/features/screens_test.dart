@@ -430,6 +430,35 @@ void main() {
     expect(find.text('Config name'), findsOneWidget);
   });
 
+  testWidgets(
+    'Backups loaded, then the service went away: a banner over them',
+    (tester) async {
+      when(() => auth.auth).thenReturn(session());
+      whenListen(
+        backups,
+        const Stream<BackupState>.empty(),
+        initialState: BackupLoadingErrorState(
+          GlobalException(type: GlobalExceptionType.offline, message: ''),
+          data: const BackupData.empty('production').withCanvas(backupCanvas()),
+        ),
+      );
+      RouteConfig.router.go('/workspaces/production/backups');
+      await pumpApp(tester);
+      await settle(tester);
+
+      expect(
+        find.textContaining(
+          'Can’t reach the Dumpling server.',
+          findRichText: true,
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Retry now'), findsOneWidget);
+      // what was loaded stays under it
+      expect(find.text('Nightly full'), findsOneWidget);
+    },
+  );
+
   testWidgets('Backups whose next run is due show the reload', (tester) async {
     when(() => auth.auth).thenReturn(session());
     // the next runs of the fixture are past: reloading, their rows say so

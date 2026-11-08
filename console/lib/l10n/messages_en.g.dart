@@ -291,6 +291,19 @@ class AppMessages$errors$en {
   /// en: 'Connection lost'
   String get offlineTitle => 'Connection lost';
 
+  /// en: 'Can’t reach the Dumpling server.'
+  String get offlineBanner => 'Can’t reach the Dumpling server.';
+
+  /// en: 'Showing what was loaded before; backups keep running on the server.'
+  String get offlineKept =>
+      'Showing what was loaded before; backups keep running on the server.';
+
+  /// en: 'Retrying in {seconds: int} s…'
+  String retryingIn({required int seconds}) => 'Retrying in ${seconds} s…';
+
+  /// en: 'Retry now'
+  String get retryNow => 'Retry now';
+
   /// en: 'Can't reach the Dumpling service at {url: String}. Check that it is running and try again.'
   String offline({required String url}) =>
       'Can\'t reach the Dumpling service at ${url}. Check that it is running and try again.';
@@ -2846,6 +2859,12 @@ extension on AppMessages {
           'errors.goToBackups' => 'Go to Backups',
           'errors.switchWorkspace' => 'Switch workspace',
           'errors.offlineTitle' => 'Connection lost',
+          'errors.offlineBanner' => 'Can’t reach the Dumpling server.',
+          'errors.offlineKept' => 'Showing what was loaded before; backups keep running on the server.',
+          'errors.retryingIn' => ({
+            required int seconds,
+          }) => 'Retrying in ${seconds} s…',
+          'errors.retryNow' => 'Retry now',
           'errors.offline' => ({
             required String url,
           }) => 'Can\'t reach the Dumpling service at ${url}. Check that it is running and try again.',
@@ -3501,13 +3520,13 @@ extension on AppMessages {
             required String name,
             required String error,
           }) => 'Backup ${name} failed: ${error}',
+          _ => null,
+        } ??
+        switch (path) {
           'canvas.guide.title' => 'Your first backup',
           'canvas.guide.source' => 'Add a source',
           'canvas.guide.sourceHelp' => 'The database to back up.',
           'canvas.guide.destination' => 'Add a destination',
-          _ => null,
-        } ??
-        switch (path) {
           'canvas.guide.destinationHelp' => 'The bucket the backups go to.',
           'canvas.guide.connect' => 'Connect them',
           'canvas.guide.connectHelp' => 'Drag from the port of the source to a folder or the bucket: a config is created between them. Then save.',

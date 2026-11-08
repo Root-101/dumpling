@@ -66,6 +66,10 @@ errors:
   goToBackups: 'Ir a Backups'
   switchWorkspace: 'Cambiar de workspace'
   offlineTitle: 'Conexión perdida'
+  offlineBanner: 'No hay conexión con el servidor de Dumpling.'
+  offlineKept: 'Se muestra lo que se cargó antes; los backups siguen corriendo en el servidor.'
+  retryingIn: 'Reintentando en {seconds: int} s…'
+  retryNow: 'Reintentar ahora'
   offline: 'No se puede conectar con el servicio de Dumpling en {url: String}. Revisa que esté corriendo e inténtalo de nuevo.'
 
 nav:

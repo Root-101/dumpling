@@ -254,6 +254,15 @@ class AppMessages$errors$es implements AppMessages$errors$en {
   @override
   String get offlineTitle => 'Conexión perdida';
   @override
+  String get offlineBanner => 'No hay conexión con el servidor de Dumpling.';
+  @override
+  String get offlineKept =>
+      'Se muestra lo que se cargó antes; los backups siguen corriendo en el servidor.';
+  @override
+  String retryingIn({required int seconds}) => 'Reintentando en ${seconds} s…';
+  @override
+  String get retryNow => 'Reintentar ahora';
+  @override
   String offline({required String url}) =>
       'No se puede conectar con el servicio de Dumpling en ${url}. Revisa que esté corriendo e inténtalo de nuevo.';
 }
@@ -2185,6 +2194,13 @@ extension on AppMessagesEs {
           'errors.goToBackups' => 'Ir a Backups',
           'errors.switchWorkspace' => 'Cambiar de workspace',
           'errors.offlineTitle' => 'Conexión perdida',
+          'errors.offlineBanner' =>
+            'No hay conexión con el servidor de Dumpling.',
+          'errors.offlineKept' => 'Se muestra lo que se cargó antes; los backups siguen corriendo en el servidor.',
+          'errors.retryingIn' => ({
+            required int seconds,
+          }) => 'Reintentando en ${seconds} s…',
+          'errors.retryNow' => 'Reintentar ahora',
           'errors.offline' => ({
             required String url,
           }) => 'No se puede conectar con el servicio de Dumpling en ${url}. Revisa que esté corriendo e inténtalo de nuevo.',
@@ -2853,13 +2869,13 @@ extension on AppMessagesEs {
             required String name,
             required String error,
           }) => 'Backup ${name} falló: ${error}',
+          _ => null,
+        } ??
+        switch (path) {
           'canvas.guide.title' => 'Tu primer backup',
           'canvas.guide.source' => 'Agrega un origen',
           'canvas.guide.sourceHelp' => 'La base de datos a respaldar.',
           'canvas.guide.destination' => 'Agrega un destino',
-          _ => null,
-        } ??
-        switch (path) {
           'canvas.guide.destinationHelp' => 'El bucket donde van los backups.',
           'canvas.guide.connect' => 'Conéctalos',
           'canvas.guide.connectHelp' => 'Arrastra desde el puerto del origen hasta una carpeta o el bucket: se crea una config entre ellos. Luego guarda.',
