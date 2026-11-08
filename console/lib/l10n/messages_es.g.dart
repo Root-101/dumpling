@@ -1194,6 +1194,16 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   @override
   String get columnSchedule => 'Programación';
   @override
+  String get everyHour => 'Cada hora';
+  @override
+  String everyHourAt({required String minute}) => 'Cada hora a los :${minute}';
+  @override
+  String dailyAt({required String time}) => 'Diario a las ${time}';
+  @override
+  String sundaysAt({required String time}) => 'Los domingos a las ${time}';
+  @override
+  String everyHours({required int n}) => 'Cada ${n} horas';
+  @override
   String get columnLastRun => 'Último respaldo';
   @override
   String get columnNextRun => 'Próximo respaldo';
@@ -2964,6 +2974,17 @@ extension on AppMessagesEs {
           'backups.columnSource' => 'Origen',
           'backups.columnDestination' => 'Destino',
           'backups.columnSchedule' => 'Programación',
+          'backups.everyHour' => 'Cada hora',
+          'backups.everyHourAt' => ({
+            required String minute,
+          }) => 'Cada hora a los :${minute}',
+          'backups.dailyAt' => ({
+            required String time,
+          }) => 'Diario a las ${time}',
+          'backups.sundaysAt' => ({
+            required String time,
+          }) => 'Los domingos a las ${time}',
+          'backups.everyHours' => ({required int n}) => 'Cada ${n} horas',
           'backups.columnLastRun' => 'Último respaldo',
           'backups.columnNextRun' => 'Próximo respaldo',
           'backups.allSources' => 'Todos los orígenes',

@@ -280,18 +280,23 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
     final t = app.intl.backups;
     final next = data.next;
     final at = next?.config.nextRun;
+    final healthy = data.count(BackupHealth.healthy);
+    final failing = data.count(BackupHealth.failing);
     return Row(
       spacing: 12,
       children: [
         DetailStat(
           t.healthy,
-          '${data.count(BackupHealth.healthy)}',
+          '$healthy',
           t.healthySub,
+          tone: healthy > 0 ? app.colors.status.success : null,
         ),
         DetailStat(
           t.failing,
-          '${data.count(BackupHealth.failing)}',
+          '$failing',
           t.failingSub,
+          tone: failing > 0 ? app.colors.status.error : null,
+          alert: failing > 0,
         ),
         _EverySecond(
           onTick: () => _reloadOnceDue(at),
@@ -303,6 +308,27 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
         ),
       ],
     );
+  }
+
+  /// The schedule as the design says it: `Every hour`, `Daily at 02:30`,
+  /// `Sundays at 03:00`, `Every 6 hours`; any other cron, its kind
+  static String _scheduleText(String cron) {
+    final t = app.intl.backups;
+    final f = cron.trim().split(RegExp(r'\s+'));
+    String time() => '${f[1].padLeft(2, '0')}:${f[0].padLeft(2, '0')}';
+    final every = f.length == 5 && f[0] == '0' && f[2] == '*' && f[3] == '*'
+        ? RegExp(r'^\*/(\d+)$').firstMatch(f[1])
+        : null;
+    if (every != null && f[4] == '*') {
+      return t.everyHours(n: int.parse(every.group(1)!));
+    }
+    return switch (Frequency.of(cron)) {
+      Frequency.hourly =>
+        f[0] == '0' ? t.everyHour : t.everyHourAt(minute: f[0].padLeft(2, '0')),
+      Frequency.daily => t.dailyAt(time: time()),
+      Frequency.weekly => t.sundaysAt(time: time()),
+      Frequency.cron => Frequency.cron.label,
+    };
   }
 
   /// The next run the list was reloaded for, so a due one reloads it once
@@ -670,7 +696,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
                 ? app.intl.canvas.disabled
                 : schedule == null
                 ? app.intl.canvas.workspaceDefault
-                : Frequency.of(schedule).label,
+                : _scheduleText(schedule),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

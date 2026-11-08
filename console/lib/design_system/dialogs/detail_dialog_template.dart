@@ -241,7 +241,20 @@ class DetailStat extends StatelessWidget {
   final String value;
   final String sub;
 
-  const DetailStat(this.label, this.value, this.sub, {super.key});
+  /// The color of [sub] (*last run succeeded* in green)
+  final Color? tone;
+
+  /// Something needs a look: the panel takes [tone] too, and so does [value]
+  final bool alert;
+
+  const DetailStat(
+    this.label,
+    this.value,
+    this.sub, {
+    this.tone,
+    this.alert = false,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -249,6 +262,7 @@ class DetailStat extends StatelessWidget {
     return Expanded(
       child: DetailPanel(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        tint: alert ? tone : null,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 4,
@@ -262,11 +276,12 @@ class DetailStat extends StatelessWidget {
                 children: [
                   TextSpan(
                     text: value,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 22,
                       height: 30 / 22,
                       fontWeight: FontWeight.w700,
-                      fontFeatures: [FontFeature.tabularFigures()],
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                      color: alert ? tone : null,
                     ),
                   ),
                   if (sub.isNotEmpty)
@@ -274,7 +289,7 @@ class DetailStat extends StatelessWidget {
                       text: '  $sub',
                       style: TextStyle(
                         fontSize: 12,
-                        color: colors.neutral.grey4,
+                        color: tone ?? colors.neutral.grey4,
                       ),
                     ),
                 ],
@@ -294,9 +309,13 @@ class DetailPanel extends StatelessWidget {
   final Widget child;
   final EdgeInsets padding;
 
+  /// A color the ground and the border take, faintly (a failing count)
+  final Color? tint;
+
   const DetailPanel({
     required this.child,
     this.padding = EdgeInsets.zero,
+    this.tint,
     super.key,
   });
 
@@ -305,9 +324,11 @@ class DetailPanel extends StatelessWidget {
     return Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: app.colors.primary.background2,
+        color: tint?.withValues(alpha: 0.08) ?? app.colors.primary.background2,
         borderRadius: app.dimensions.border.borderRadius.m,
-        border: Border.all(color: app.colors.neutral.grey5),
+        border: Border.all(
+          color: tint?.withValues(alpha: 0.45) ?? app.colors.neutral.grey5,
+        ),
       ),
       child: child,
     );

@@ -1572,6 +1572,21 @@ class AppMessages$backups$en {
   /// en: 'Schedule'
   String get columnSchedule => 'Schedule';
 
+  /// en: 'Every hour'
+  String get everyHour => 'Every hour';
+
+  /// en: 'Every hour at :{minute: String}'
+  String everyHourAt({required String minute}) => 'Every hour at :${minute}';
+
+  /// en: 'Daily at {time: String}'
+  String dailyAt({required String time}) => 'Daily at ${time}';
+
+  /// en: 'Sundays at {time: String}'
+  String sundaysAt({required String time}) => 'Sundays at ${time}';
+
+  /// en: 'Every {n: int} hours'
+  String everyHours({required int n}) => 'Every ${n} hours';
+
   /// en: 'Last backup'
   String get columnLastRun => 'Last backup';
 
@@ -3615,6 +3630,15 @@ extension on AppMessages {
           'backups.columnSource' => 'Source',
           'backups.columnDestination' => 'Destination',
           'backups.columnSchedule' => 'Schedule',
+          'backups.everyHour' => 'Every hour',
+          'backups.everyHourAt' => ({
+            required String minute,
+          }) => 'Every hour at :${minute}',
+          'backups.dailyAt' => ({required String time}) => 'Daily at ${time}',
+          'backups.sundaysAt' => ({
+            required String time,
+          }) => 'Sundays at ${time}',
+          'backups.everyHours' => ({required int n}) => 'Every ${n} hours',
           'backups.columnLastRun' => 'Last backup',
           'backups.columnNextRun' => 'Next backup',
           'backups.allSources' => 'All sources',

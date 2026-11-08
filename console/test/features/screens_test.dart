@@ -401,6 +401,8 @@ void main() {
     expect(find.text('orders-db'), findsWidgets);
     expect(find.text('Nightly full'), findsOneWidget);
     expect(find.text('0 2 * * *'), findsOneWidget);
+    // the schedule in words over its cron
+    expect(find.text('Daily at 02:00'), findsOneWidget);
     // the status is a square: its label is the tooltip
     expect(find.byTooltip('Success'), findsOneWidget);
     expect(find.byTooltip('Failed'), findsOneWidget);

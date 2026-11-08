@@ -26,6 +26,8 @@
   new run instead of failing.
 - The detail of a run as in the design: no big status icon, and *Edit config*, *Close* and *Retry
   now* (or *Run again*) under it.
+- Backups: *Failing* tinted red when something fails and *last run succeeded* in green; the
+  schedule in words (*Every hour*, *Daily at 02:30*, *Every 6 hours*).
 - The detail of a source or destination as wide as in the design.
 - Backups keeps what it showed when the service stops answering, under a banner that tries again
   every 10 s or with *Retry now*.
