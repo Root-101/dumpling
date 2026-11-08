@@ -4,6 +4,11 @@ What changes in each version of Dumpling, from 0.1.0. The detail of each package
 changelogs of [`service/`](service/CHANGELOG.md) and [`console/`](console/CHANGELOG.md), which also
 have the release candidates before 0.1.0 one by one.
 
+## 0.1.7
+
+- Console: the dialog of a disabled config says *Disabled* in its *Output* and *Review* steps
+  instead of its frequency and cron.
+
 ## 0.1.6
 
 - 🔴 **The database changes** (a table `api_key`, and the label and key of each run): export your

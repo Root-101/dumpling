@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.7
+
+- The dialog of a disabled config says *Disabled* in *Output* and *Review*, not its frequency and
+  cron.
+
 ## 0.1.6
 
 - **API keys** in the rail: the keys of the workspace with their access (*Run backups*, *Read
