@@ -348,7 +348,8 @@ and the label under it), where the file went, its size and duration, the error o
 its log, which can be copied whole or in part: where the
 file went, the error and the log are selectable, as are the connection values (host, endpoint,
 bucket) in the detail of a source or destination and the error of a failed connection check. The
-password of a source never appears in it.
+password of a source never appears in it. Under it, *Edit config* opens the canvas, *Close*, and
+once the run ended *Retry now* (failed) or *Run again* (succeeded) starts its config again.
 
 ![A failed run](design/screens/30-run-failed.png)
 

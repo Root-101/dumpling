@@ -742,6 +742,12 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Copy log'), findsOneWidget);
+    // a failed run: Edit config, Close and Retry now under it
+    expect(find.text('Edit config'), findsOneWidget);
+    expect(find.text('Retry now'), findsOneWidget);
+    await tester.tap(find.text('Close'));
+    await settle(tester);
+    expect(find.text('The backup failed'), findsNothing);
   });
 
   // last: its loading states stay on the shared mocks

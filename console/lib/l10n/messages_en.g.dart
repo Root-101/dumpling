@@ -1394,6 +1394,16 @@ class AppMessages$runs$en {
   /// en: 'Copy the id of this run'
   String get copyRunId => 'Copy the id of this run';
 
+  /// en: 'Retry now'
+  String get retryNow => 'Retry now';
+
+  /// en: 'Run again'
+  String get runAgain => 'Run again';
+
+  /// en: '{name: String} started: it follows in the run log'
+  String runStarted({required String name}) =>
+      '${name} started: it follows in the run log';
+
   /// en: 'The log is written when the run ends. Refresh to see it.'
   String get logWhenDone =>
       'The log is written when the run ends. Refresh to see it.';
@@ -3505,6 +3515,11 @@ extension on AppMessages {
           'runs.copyLog' => 'Copy log',
           'runs.logCopied' => 'Log copied',
           'runs.copyRunId' => 'Copy the id of this run',
+          'runs.retryNow' => 'Retry now',
+          'runs.runAgain' => 'Run again',
+          'runs.runStarted' => ({
+            required String name,
+          }) => '${name} started: it follows in the run log',
           'runs.logWhenDone' =>
             'The log is written when the run ends. Refresh to see it.',
           'runs.noLog' => 'This run has no log.',

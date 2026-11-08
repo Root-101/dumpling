@@ -84,9 +84,79 @@ class _RunDialogState extends State<RunDialog> {
                   ),
                 ),
               ),
+              _Footer(run: run, workspace: widget.workspace),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// *Edit config* (the canvas), *Close*, and the run again once it ended:
+/// *Retry now* after a failure, *Run again* after a success
+class _Footer extends StatelessWidget {
+  final RunModel run;
+  final String? workspace;
+
+  const _Footer({required this.run, this.workspace});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = app.colors;
+    final t = app.intl.runs;
+    final slug = workspace ?? context.read<RunCubit>().state.data.workspace;
+    final ended =
+        run.status == RunStatus.success || run.status == RunStatus.failed;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: colors.neutral.grey5.withValues(alpha: 0.4)),
+        ),
+      ),
+      child: Row(
+        spacing: 10,
+        children: [
+          if (run.configId != null && slug != null)
+            InkWell(
+              onTap: () {
+                Navigator.of(context).pop();
+                RouteNames.openWorkspace(slug, section: RouteNames.canvas);
+              },
+              child: Text(
+                app.intl.backups.editConfig,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: colors.primary.primaryFaded,
+                  decoration: TextDecoration.underline,
+                  decorationColor: colors.primary.primaryFaded,
+                ),
+              ),
+            ),
+          const Spacer(),
+          AppButton(
+            label: app.intl.common.close,
+            type: AppButtonType.secondary,
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          if (ended && run.configId != null)
+            AppButton(
+              label: run.status == RunStatus.failed ? t.retryNow : t.runAgain,
+              onPressed: () async {
+                final cubit = context.read<RunCubit>();
+                final root = app.context;
+                Navigator.of(context).pop();
+                final started = await cubit.runAgain(run, workspace: workspace);
+                if (started && root.mounted) {
+                  app.snack.showSuccess(
+                    message: t.runStarted(name: run.configName),
+                    context: root,
+                  );
+                }
+              },
+            ),
+        ],
       ),
     );
   }
@@ -113,8 +183,6 @@ class _Header extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          RunStatusIcon(run.status, size: 40),
-          14.gap(),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

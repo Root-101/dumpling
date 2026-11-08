@@ -33,6 +33,31 @@ class RunCubit extends Cubit<RunState> {
     if (workspace != null) await load(workspace);
   }
 
+  /// Runs the config of [run] again (Retry now, Run again in its dialog) and
+  /// reloads the log with the new run; false when the service refused it
+  Future<bool> runAgain(RunModel run, {String? workspace}) async {
+    final configId = run.configId;
+    workspace ??= state.data.workspace;
+    if (configId == null || workspace == null) return false;
+    try {
+      await _repo.runAgain(
+        workspace: workspace,
+        configId: configId,
+        token: _token,
+      );
+      if (state.data.workspace == workspace) await load(workspace);
+      return true;
+    } catch (e) {
+      emit(
+        RunProcessingErrorState(
+          ExceptionConverter.parse(e).message,
+          data: state.data,
+        ),
+      );
+      return false;
+    }
+  }
+
   /// Loads the log of [run]; a run still running is asked again every time
   ///
   /// [workspace] when it is opened out of the run log (Backups), whose list

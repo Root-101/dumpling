@@ -1070,6 +1070,13 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   @override
   String get copyRunId => 'Copiar el id de esta ejecución';
   @override
+  String get retryNow => 'Reintentar ahora';
+  @override
+  String get runAgain => 'Ejecutar de nuevo';
+  @override
+  String runStarted({required String name}) =>
+      '${name} empezó: síguela en el registro de ejecuciones';
+  @override
   String get logWhenDone =>
       'El log se escribe cuando termina la ejecución. Actualiza para verlo.';
   @override
@@ -2865,6 +2872,11 @@ extension on AppMessagesEs {
           'runs.copyLog' => 'Copiar log',
           'runs.logCopied' => 'Log copiado',
           'runs.copyRunId' => 'Copiar el id de esta ejecución',
+          'runs.retryNow' => 'Reintentar ahora',
+          'runs.runAgain' => 'Ejecutar de nuevo',
+          'runs.runStarted' => ({
+            required String name,
+          }) => '${name} empezó: síguela en el registro de ejecuciones',
           'runs.logWhenDone' => 'El log se escribe cuando termina la ejecución. Actualiza para verlo.',
           'runs.noLog' => 'Esta ejecución no tiene log.',
           'runs.today' => ({required String date}) => 'Hoy · ${date} (UTC)',
