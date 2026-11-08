@@ -321,6 +321,18 @@ void main() {
     expect(find.text('Defaults for new configs'), findsOneWidget);
     expect(find.text('Danger zone'), findsOneWidget);
 
+    // the id leads the details, and Edit sits under them, not in the footer
+    expect(
+      tester.getCenter(find.text('Workspace ID')).dy,
+      lessThan(tester.getCenter(find.text('Name')).dy),
+    );
+    expect(
+      tester.getCenter(find.widgetWithText(PrimaryButton, 'Edit')).dy,
+      lessThan(
+        tester.getCenter(find.text('Applies only to this workspace')).dy,
+      ),
+    );
+
     // Edit, and a new name in the header as it is typed
     await tester.tap(find.widgetWithText(PrimaryButton, 'Edit'));
     await settle(tester);
@@ -430,6 +442,12 @@ void main() {
     await settle(tester);
     expect(find.text('Step 1 of 3'), findsOneWidget);
     expect(find.text('Config name'), findsOneWidget);
+    // its id in a tag beside the name, above the route
+    expect(find.text('j1'), findsNWidgets(2));
+    expect(
+      tester.getCenter(find.text('j1').last).dy,
+      lessThan(tester.getCenter(find.textContaining(' → ').last).dy),
+    );
   });
 
   testWidgets(

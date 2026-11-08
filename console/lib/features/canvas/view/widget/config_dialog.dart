@@ -153,12 +153,12 @@ class _ConfigDialogState extends State<ConfigDialog> {
       title: _c.name.trim().isEmpty ? widget.config.name : _c.name,
       description: _route,
       // a new config has no id until the canvas is saved
-      headerExtra: widget.config.id.startsWith(CanvasCubit.newPrefix)
+      titleTrailing: widget.config.id.startsWith(CanvasCubit.newPrefix)
           ? null
           : AppCopyId(
               id: widget.config.id,
               tooltip: app.intl.backups.copyConfigId,
-              color: app.colors.neutral.grey4,
+              tag: true,
             ),
       icon: app.assets.icons.nodes.clock,
       width: 640,

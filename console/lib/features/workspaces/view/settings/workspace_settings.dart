@@ -373,6 +373,10 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
         child: Column(
           children: [
             _InfoRow(
+              label: t.id,
+              child: _SlugChip(slug: _saved.slug),
+            ),
+            _InfoRow(
               label: app.intl.workspaces.name,
               child: Text(
                 _saved.name,
@@ -381,10 +385,6 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-            ),
-            _InfoRow(
-              label: t.id,
-              child: _SlugChip(slug: _saved.slug),
             ),
             _InfoRow(
               label: app.intl.workspaces.descriptionLabel,
@@ -424,6 +424,18 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
           ],
         ),
       ),
+      if (!_dirty)
+        Align(
+          alignment: Alignment.centerRight,
+          child: PrimaryButton.primary(
+            onPressed: () => setState(() => _editing = true),
+            title: app.intl.common.edit,
+            icon: app.assets.icons.actions.edit,
+            color: app.colors.primary.primaryAction,
+            h: 40,
+            horizontalPadding: 16,
+          ),
+        ),
     ];
   }
 
@@ -652,15 +664,6 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                         ),
                       ),
                     ],
-                  ),
-                if (_tab == _Tab.general)
-                  PrimaryButton.primary(
-                    onPressed: () => setState(() => _editing = true),
-                    title: app.intl.common.edit,
-                    icon: app.assets.icons.actions.edit,
-                    color: colors.primary.primaryAction,
-                    h: 40,
-                    horizontalPadding: 16,
                   ),
               ],
       ),
