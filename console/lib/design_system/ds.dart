@@ -10,6 +10,7 @@ export 'colors/app_colors.dart';
 export 'colors/color_hex_extension.dart';
 export 'colors/darken_extension.dart';
 export 'colors/theme_adapter.dart';
+export 'customs/app_copy_id.dart';
 export 'customs/app_drag_handle.dart';
 export 'customs/app_focus_ring.dart';
 export 'customs/app_row_menu.dart';

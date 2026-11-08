@@ -12,6 +12,16 @@
 - Run log: who started a run (*API · the key*) with the label it was sent as a chip, the status
   *Queued* with an hourglass, a filter *Started by*, and the search finds labels and keys. The
   detail of a run says *Started by: API* and the key and label under it.
+- **The ids the API asks for, at hand:** the slug under the name of each workspace, the id of a
+  config in Backups (and *Copy config id* in its menu) and in its dialog, and the id of a run in
+  its details; each selectable, with a button to copy it. The `curl` of a new key limited to one
+  config carries its id.
+- Workspaces: each card the same height, whatever it says (a last run in two lines, no
+  description), with the square of its color beside the name and the slug, and the description
+  under them.
+- Backups: a column *Config* with the name of each config and its id under it; the status is a
+  square with its icon (✓, ✕, the ring while it runs, an hourglass while queued) and its word as
+  the tooltip; the source shows its type under its name instead of the config.
 - Backups and the canvas show a queued run as running: Run now on a config that runs queues the
   new run instead of failing.
 - The confirmations (delete a source, destination or backup, discard the canvas) look as in the

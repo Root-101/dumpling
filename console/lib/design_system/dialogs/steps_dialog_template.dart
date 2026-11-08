@@ -30,6 +30,9 @@ class StepsDialogTemplate extends StatelessWidget {
   final Widget child;
   final List<Widget> actions;
 
+  /// Under the description, e.g. the id of what it edits
+  final Widget? headerExtra;
+
   /// Set apart on the left of the footer, e.g. *Delete config*
   final Widget? footerLeading;
 
@@ -53,6 +56,7 @@ class StepsDialogTemplate extends StatelessWidget {
     required this.current,
     required this.child,
     required this.actions,
+    this.headerExtra,
     this.footerLeading,
     this.blockedNote,
     this.loadingId,
@@ -111,6 +115,7 @@ class StepsDialogTemplate extends StatelessWidget {
                         color: colors.neutral.grey4,
                       ),
                     ),
+                    ?headerExtra,
                   ],
                 ),
               ),

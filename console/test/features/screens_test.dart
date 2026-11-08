@@ -258,6 +258,12 @@ void main() {
     expect(find.text('Switch & open canvas'), findsOneWidget);
     // the failing configs on the run log of the rail
     expect(find.widgetWithText(RailBadge, '2'), findsOneWidget);
+    // every card as tall, one with a last run and one without
+    final heights = {
+      for (final e in find.byType(WorkspaceCard).evaluate())
+        tester.getSize(find.byWidget(e.widget)).height,
+    };
+    expect(heights, hasLength(1));
 
     await tester.tap(
       find.text('A fresh canvas for another environment, client or project.'),
@@ -395,9 +401,13 @@ void main() {
     expect(find.text('orders-db'), findsWidgets);
     expect(find.text('Nightly full'), findsOneWidget);
     expect(find.text('0 2 * * *'), findsOneWidget);
-    expect(find.text('Success'), findsOneWidget);
-    expect(find.text('Failed'), findsOneWidget);
-    expect(find.text('Never run'), findsOneWidget);
+    // the status is a square: its label is the tooltip
+    expect(find.byTooltip('Success'), findsOneWidget);
+    expect(find.byTooltip('Failed'), findsOneWidget);
+    expect(find.byTooltip('Paused'), findsOneWidget);
+    // the config with its id, the source with its type
+    expect(find.text('j1'), findsOneWidget);
+    expect(find.text('PostgreSQL'), findsWidgets);
     expect(find.text('20/Oct 02:14 AM UTC'), findsOneWidget);
     expect(find.text('5.00 MB'), findsOneWidget);
     expect(find.text('pg_dump: connection refused'), findsOneWidget);
@@ -435,7 +445,7 @@ void main() {
     await settle(tester);
 
     // the status and next run of the two scheduled rows, and the summary
-    expect(find.text('Loading'), findsNWidgets(2));
+    expect(find.byTooltip('Loading'), findsNWidgets(2));
     expect(find.text('Updating…'), findsNWidgets(2));
     expect(
       find.textContaining('Updating…', findRichText: true),

@@ -4,6 +4,10 @@ import 'package:material_ui/material_ui.dart';
 /// A workspace in the list: a sketch of its canvas, what it has, whether its
 /// backups are healthy and when it last ran, with its canvas and its settings
 class WorkspaceCard extends StatefulWidget {
+  /// Every card as tall, whatever it says: a row of the grid lines up, and
+  /// the tile of a new workspace takes the same height
+  static const double height = 396;
+
   final WorkspaceModel workspace;
 
   /// The one open last: it gets a border and the main button
@@ -42,6 +46,7 @@ class _WorkspaceCardState extends State<WorkspaceCard> {
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: Container(
+        height: WorkspaceCard.height,
         decoration: BoxDecoration(
           color: colors.primary.background2,
           borderRadius: radius,
@@ -56,17 +61,24 @@ class _WorkspaceCardState extends State<WorkspaceCard> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildPreview(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildTitle(),
-                  app.dimensions.padding.sm.gap(),
-                  _buildCounts(),
-                  app.dimensions.padding.sm.gap(),
-                  _buildHealth(),
-                ],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildTitle(),
+                    const Spacer(),
+                    _buildCounts(),
+                    app.dimensions.padding.sm.gap(),
+                    // as tall with the last run (UTC over local) as without it:
+                    // the counts of a row of cards line up
+                    SizedBox(height: 34, child: _buildHealth()),
+                  ],
+                ),
               ),
             ),
             _buildActions(),
@@ -94,48 +106,63 @@ class _WorkspaceCardState extends State<WorkspaceCard> {
     );
   }
 
+  /// The square of its color, the name (and *Current*) over the slug, and
+  /// the description under all of it
   Widget _buildTitle() {
     final description = _workspace.description;
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 6,
       children: [
-        WorkspaceAvatar(initial: _workspace.initial, color: _workspace.color),
-        app.dimensions.padding.sm.gap(),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        Row(
+          children: [
+            WorkspaceAvatar(
+              initial: _workspace.initial,
+              color: _workspace.color,
+              size: 44,
+            ),
+            12.gap(),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Flexible(
-                    child: Text(
-                      _workspace.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          _workspace.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
+                      if (widget.current) ...[
+                        app.dimensions.padding.s.gap(),
+                        const _CurrentBadge(),
+                      ],
+                    ],
+                  ),
+                  AppCopyId(
+                    id: _workspace.slug,
+                    tooltip: app.intl.workspaces.copySlug(
+                      name: _workspace.name,
                     ),
                   ),
-                  if (widget.current) ...[
-                    app.dimensions.padding.s.gap(),
-                    const _CurrentBadge(),
-                  ],
                 ],
               ),
-              if (description != null && description.isNotEmpty)
-                Text(
-                  description,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: app.colors.neutral.grey4,
-                  ),
-                ),
-            ],
-          ),
+            ),
+          ],
         ),
+        if (description != null && description.isNotEmpty)
+          Text(
+            description,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 12, color: app.colors.neutral.grey4),
+          ),
       ],
     );
   }

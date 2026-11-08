@@ -138,6 +138,8 @@ class AppMessages$common$es implements AppMessages$common$en {
   @override
   String get done => 'Listo';
   @override
+  String get copied => 'Copiado';
+  @override
   String get all => 'Todos';
   @override
   String get selected => 'Elegido';
@@ -399,6 +401,9 @@ class AppMessages$workspaces$es implements AppMessages$workspaces$en {
       'Un canvas nuevo para otro entorno, cliente o proyecto.';
   @override
   String get current => 'Actual';
+  @override
+  String copySlug({required String name}) =>
+      'Copiar el slug de ${name}: el workspace en las URLs de la API';
   @override
   String get sources => 'Orígenes';
   @override
@@ -1063,6 +1068,8 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   @override
   String get logCopied => 'Log copiado';
   @override
+  String get copyRunId => 'Copiar el id de esta ejecución';
+  @override
   String get logWhenDone =>
       'El log se escribe cuando termina la ejecución. Actualiza para verlo.';
   @override
@@ -1154,6 +1161,8 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   @override
   String get columnStatus => 'Estado';
   @override
+  String get columnConfig => 'Config';
+  @override
   String get columnSource => 'Origen';
   @override
   String get columnDestination => 'Destino';
@@ -1220,6 +1229,8 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   String get deleteBackup => 'Eliminar respaldo';
   @override
   String get recentRuns => 'Ejecuciones recientes';
+  @override
+  String get copyConfigId => 'Copiar id de la config';
   @override
   String get noRuns => 'Aún no hay ejecuciones';
   @override
@@ -2097,6 +2108,7 @@ extension on AppMessagesEs {
           'common.filters' => 'Filtros',
           'common.clearAll' => 'Limpiar todo',
           'common.done' => 'Listo',
+          'common.copied' => 'Copiado',
           'common.all' => 'Todos',
           'common.selected' => 'Elegido',
           'common.soon' => 'Pronto',
@@ -2222,6 +2234,9 @@ extension on AppMessagesEs {
           'workspaces.createHint' =>
             'Un canvas nuevo para otro entorno, cliente o proyecto.',
           'workspaces.current' => 'Actual',
+          'workspaces.copySlug' => ({
+            required String name,
+          }) => 'Copiar el slug de ${name}: el workspace en las URLs de la API',
           'workspaces.sources' => 'Orígenes',
           'workspaces.destinations' => 'Destinos',
           'workspaces.backups' => 'Backups',
@@ -2826,11 +2841,11 @@ extension on AppMessagesEs {
           'canvas.guide.connect' => 'Conéctalos',
           'canvas.guide.connectHelp' => 'Arrastra desde el puerto del origen hasta una carpeta o el bucket: se crea una config entre ellos. Luego guarda.',
           'canvas.guide.create' => 'Crear uno',
-          'canvas.guide.place' => ({required String name}) => 'Colocar ${name}',
-          'runs.title' => 'Registro de ejecuciones',
           _ => null,
         } ??
         switch (path) {
+          'canvas.guide.place' => ({required String name}) => 'Colocar ${name}',
+          'runs.title' => 'Registro de ejecuciones',
           'runs.description' => 'Cada ejecución de respaldo de este workspace: programada, manual o por la API. Horas en UTC, tu hora local debajo.',
           'runs.search' => 'Buscar por respaldo, origen o destino',
           'runs.columnStatus' => 'Estado',
@@ -2849,6 +2864,7 @@ extension on AppMessagesEs {
           'runs.log' => 'Log (UTC)',
           'runs.copyLog' => 'Copiar log',
           'runs.logCopied' => 'Log copiado',
+          'runs.copyRunId' => 'Copiar el id de esta ejecución',
           'runs.logWhenDone' => 'El log se escribe cuando termina la ejecución. Actualiza para verlo.',
           'runs.noLog' => 'Esta ejecución no tiene log.',
           'runs.today' => ({required String date}) => 'Hoy · ${date} (UTC)',
@@ -2903,6 +2919,7 @@ extension on AppMessagesEs {
           'backups.updating' => 'Actualizando…',
           'backups.search' => 'Buscar respaldos',
           'backups.columnStatus' => 'Estado',
+          'backups.columnConfig' => 'Config',
           'backups.columnSource' => 'Origen',
           'backups.columnDestination' => 'Destino',
           'backups.columnSchedule' => 'Programación',
@@ -2950,6 +2967,7 @@ extension on AppMessagesEs {
           'backups.editConfig' => 'Editar config',
           'backups.deleteBackup' => 'Eliminar respaldo',
           'backups.recentRuns' => 'Ejecuciones recientes',
+          'backups.copyConfigId' => 'Copiar id de la config',
           'backups.noRuns' => 'Aún no hay ejecuciones',
           'backups.viewLog' => 'Ver log',
           'backups.viewDetails' => 'Ver detalle',

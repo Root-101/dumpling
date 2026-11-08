@@ -124,13 +124,9 @@ class _Header extends StatelessWidget {
                     RunStatusLabel(run.status),
                     10.gap(),
                     Flexible(
-                      child: Text(
-                        run.id,
-                        maxLines: 1,
-                        style: AppText.mono.copyWith(
-                          fontSize: 12,
-                          color: colors.neutral.grey4,
-                        ),
+                      child: AppCopyId(
+                        id: run.id,
+                        tooltip: app.intl.runs.copyRunId,
                       ),
                     ),
                   ],

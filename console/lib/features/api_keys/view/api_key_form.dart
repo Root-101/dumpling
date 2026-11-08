@@ -587,8 +587,12 @@ class _ApiKeyCreatedDialogState extends State<ApiKeyCreatedDialog> {
     final colors = app.colors;
     final key = widget.apiKey;
     final text = key.key!;
+    // a key limited to one config runs only that one: its id goes as is
+    final config = key.configIds.length == 1
+        ? key.configIds.single
+        : 'CONFIG_ID';
     final example =
-        'curl -X POST ${Environment.serviceUrl}/api/workspaces/${widget.workspace}/configs/CONFIG_ID/run \\\n'
+        'curl -X POST ${Environment.serviceUrl}/api/workspaces/${widget.workspace}/configs/$config/run \\\n'
         '  -H "Authorization: Bearer \$DUMPLING_KEY" -d \'{"label": "v1.4.2"}\'';
     return Dialog(
       backgroundColor: Colors.transparent,

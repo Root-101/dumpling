@@ -134,6 +134,9 @@ class AppMessages$common$en {
   /// en: 'Done'
   String get done => 'Done';
 
+  /// en: 'Copied'
+  String get copied => 'Copied';
+
   /// en: 'All'
   String get all => 'All';
 
@@ -485,6 +488,10 @@ class AppMessages$workspaces$en {
 
   /// en: 'Current'
   String get current => 'Current';
+
+  /// en: 'Copy the slug of {name: String}: the workspace in the URLs of the API'
+  String copySlug({required String name}) =>
+      'Copy the slug of ${name}: the workspace in the URLs of the API';
 
   /// en: 'Sources'
   String get sources => 'Sources';
@@ -1384,6 +1391,9 @@ class AppMessages$runs$en {
   /// en: 'Log copied'
   String get logCopied => 'Log copied';
 
+  /// en: 'Copy the id of this run'
+  String get copyRunId => 'Copy the id of this run';
+
   /// en: 'The log is written when the run ends. Refresh to see it.'
   String get logWhenDone =>
       'The log is written when the run ends. Refresh to see it.';
@@ -1514,6 +1524,9 @@ class AppMessages$backups$en {
   /// en: 'Status'
   String get columnStatus => 'Status';
 
+  /// en: 'Config'
+  String get columnConfig => 'Config';
+
   /// en: 'Source'
   String get columnSource => 'Source';
 
@@ -1612,6 +1625,9 @@ class AppMessages$backups$en {
 
   /// en: 'Recent runs'
   String get recentRuns => 'Recent runs';
+
+  /// en: 'Copy config id'
+  String get copyConfigId => 'Copy config id';
 
   /// en: 'No runs yet'
   String get noRuns => 'No runs yet';
@@ -2747,6 +2763,7 @@ extension on AppMessages {
           'common.filters' => 'Filters',
           'common.clearAll' => 'Clear all',
           'common.done' => 'Done',
+          'common.copied' => 'Copied',
           'common.all' => 'All',
           'common.selected' => 'Selected',
           'common.soon' => 'Soon',
@@ -2869,6 +2886,9 @@ extension on AppMessages {
           'workspaces.createHint' =>
             'A fresh canvas for another environment, client or project.',
           'workspaces.current' => 'Current',
+          'workspaces.copySlug' => ({
+            required String name,
+          }) => 'Copy the slug of ${name}: the workspace in the URLs of the API',
           'workspaces.sources' => 'Sources',
           'workspaces.destinations' => 'Destinations',
           'workspaces.backups' => 'Backups',
@@ -3462,11 +3482,11 @@ extension on AppMessages {
           'canvas.guide.connect' => 'Connect them',
           'canvas.guide.connectHelp' => 'Drag from the port of the source to a folder or the bucket: a config is created between them. Then save.',
           'canvas.guide.create' => 'Create one',
-          'canvas.guide.place' => ({required String name}) => 'Place ${name}',
-          'runs.title' => 'Run log',
           _ => null,
         } ??
         switch (path) {
+          'canvas.guide.place' => ({required String name}) => 'Place ${name}',
+          'runs.title' => 'Run log',
           'runs.description' => 'Every backup run in this workspace: scheduled, manual or through the API. Times in UTC, your local time below.',
           'runs.search' => 'Search by backup, source or destination',
           'runs.columnStatus' => 'Status',
@@ -3484,6 +3504,7 @@ extension on AppMessages {
           'runs.log' => 'Log (UTC)',
           'runs.copyLog' => 'Copy log',
           'runs.logCopied' => 'Log copied',
+          'runs.copyRunId' => 'Copy the id of this run',
           'runs.logWhenDone' =>
             'The log is written when the run ends. Refresh to see it.',
           'runs.noLog' => 'This run has no log.',
@@ -3539,6 +3560,7 @@ extension on AppMessages {
           'backups.updating' => 'Updating…',
           'backups.search' => 'Search backups',
           'backups.columnStatus' => 'Status',
+          'backups.columnConfig' => 'Config',
           'backups.columnSource' => 'Source',
           'backups.columnDestination' => 'Destination',
           'backups.columnSchedule' => 'Schedule',
@@ -3584,6 +3606,7 @@ extension on AppMessages {
           'backups.editConfig' => 'Edit config',
           'backups.deleteBackup' => 'Delete backup',
           'backups.recentRuns' => 'Recent runs',
+          'backups.copyConfigId' => 'Copy config id',
           'backups.noRuns' => 'No runs yet',
           'backups.viewLog' => 'View log',
           'backups.viewDetails' => 'View details',
