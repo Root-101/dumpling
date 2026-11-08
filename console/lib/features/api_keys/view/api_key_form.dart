@@ -147,27 +147,34 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
             spacing: 8,
             children: [
               Text(t.access, style: label),
-              Row(
-                spacing: 10,
-                children: [
-                  for (final (template, sub) in [
-                    (ApiKeyAccess.run, t.runSub),
-                    (ApiKeyAccess.read, t.readSub),
-                    (ApiKeyAccess.full, t.fullSub),
-                  ])
-                    Expanded(
-                      child: _TemplateCard(
-                        title: template.label,
-                        subtitle: sub,
-                        selected: access == template,
-                        onTap: () => setState(
-                          () => _permissions = {
-                            ...ApiKeyPermissions.of(template, limited: _limit),
-                          },
+              // as tall as the one whose text takes more lines
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 10,
+                  children: [
+                    for (final (template, sub) in [
+                      (ApiKeyAccess.run, t.runSub),
+                      (ApiKeyAccess.read, t.readSub),
+                      (ApiKeyAccess.full, t.fullSub),
+                    ])
+                      Expanded(
+                        child: _TemplateCard(
+                          title: template.label,
+                          subtitle: sub,
+                          selected: access == template,
+                          onTap: () => setState(
+                            () => _permissions = {
+                              ...ApiKeyPermissions.of(
+                                template,
+                                limited: _limit,
+                              ),
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
               _PermissionGrid(
                 selected: _permissions,

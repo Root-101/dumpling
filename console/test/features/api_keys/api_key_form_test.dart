@@ -87,6 +87,28 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('The templates are as tall as the one with more lines', (
+    tester,
+  ) async {
+    // at this width their subtitles take a different number of lines
+    await pumpForm(tester, 600);
+    final heights = {
+      for (final title in ['Run backups', 'Read only', 'Full access'])
+        tester
+            .getSize(
+              find
+                  .ancestor(
+                    of: find.text(title),
+                    matching: find.byType(InkWell),
+                  )
+                  .first,
+            )
+            .height,
+    };
+    expect(heights, hasLength(1));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('A name cut to fit has the whole of it in a tooltip', (
     tester,
   ) async {
