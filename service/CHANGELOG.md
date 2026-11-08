@@ -17,6 +17,7 @@
 - `GET …/runs` filters by `trigger` and `label`; `GET …/runs/{id}/events` streams the run as
   Server-Sent Events until it ends.
 - The admin's token gets every permission of the running version, whatever list it was signed with.
+- The error of an S3 server is read as text: `"` instead of `&quot;`.
 
 ## 0.1.5
 
