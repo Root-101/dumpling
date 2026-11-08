@@ -453,8 +453,8 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
       ),
       AppFormInput(
         controller: _description,
-        label:
-            '${app.intl.workspaces.descriptionLabel} ${app.intl.common.optional}',
+        label: app.intl.workspaces.descriptionLabel,
+        optional: true,
         hint: app.intl.workspaces.descriptionHint,
         maxLength: _descriptionMaxLength,
         errorText: _serverErrors[WorkspaceFormField.description],

@@ -41,6 +41,7 @@
   counted (*5 sources, 5 destinations, 7 configs*).
 - Backups: *Failing* tinted red when something fails and *last run succeeded* in green; the
   schedule in words (*Every hour*, *Daily at 02:30*, *Every 6 hours*).
+- *(optional)* in a field's label in regular weight, as in the design.
 - Destinations show their endpoint without the bucket, as in the design; the search still finds it.
 - The last run of a config on the canvas shows its whole date, also in Spanish.
 - Any dialog closes when another screen takes the URL (the address bar, the browser's back).

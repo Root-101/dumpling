@@ -186,8 +186,8 @@ class _WorkspaceFormState extends State<WorkspaceForm> {
             app.dimensions.padding.l.gap(),
             AppFormInput(
               controller: _descriptionController,
-              label:
-                  '${app.intl.workspaces.descriptionLabel} ${app.intl.common.optional}',
+              label: app.intl.workspaces.descriptionLabel,
+              optional: true,
               hint: app.intl.workspaces.descriptionHint,
               maxLength: _descriptionMaxLength,
               errorText: _serverErrors[WorkspaceFormField.description],

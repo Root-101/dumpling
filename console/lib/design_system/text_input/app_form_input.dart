@@ -8,6 +8,9 @@ import 'package:material_ui/material_ui.dart';
 class AppFormInput extends StatefulWidget {
   final TextEditingController controller;
   final String? label;
+
+  /// `(optional)` after [label], in regular weight
+  final bool optional;
   final String? hint;
 
   /// Help text under the field; the error replaces it when there is one
@@ -49,6 +52,7 @@ class AppFormInput extends StatefulWidget {
   const AppFormInput({
     required this.controller,
     this.label,
+    this.optional = false,
     this.hint,
     this.helperText,
     this.warningText,
@@ -187,8 +191,17 @@ class _AppFormInputState extends State<AppFormInput> {
       children: [
         if (widget.label != null)
           Flexible(
-            child: Text(
-              widget.label!,
+            child: Text.rich(
+              TextSpan(
+                text: widget.label,
+                children: [
+                  if (widget.optional)
+                    TextSpan(
+                      text: ' ${app.intl.common.optional}',
+                      style: const TextStyle(fontWeight: FontWeight.w400),
+                    ),
+                ],
+              ),
               style: app.textTheme.bodyMedium!.copyWith(
                 color: hasError
                     ? app.colors.primary.error
