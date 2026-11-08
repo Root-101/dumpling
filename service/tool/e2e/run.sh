@@ -8,7 +8,7 @@
 # Variables (with their defaults):
 #   DUMPLING_IMAGE=dumpling:e2e   built from the repo first unless SKIP_BUILD=1
 #   PG_IMAGE=postgres:18          the server to back up (the image's pg_dump must be this or newer)
-#   S3_IMAGE=feather-io:1.0.0-rc.7  the S3 server: feather-io (built from its repo) or, with
+#   S3_IMAGE=ghcr.io/root-101/feather-io:1.1.1  the S3 server: feather-io or, with
 #                                 S3_KIND=minio, a MinIO image (tested with elestio/minio)
 #   KEEP=1                        leaves the containers running to look at them
 set -u
@@ -17,7 +17,7 @@ DIR=$(cd "$(dirname "$0")" && pwd)
 ROOT=$(cd "$DIR/../../.." && pwd)
 DUMPLING_IMAGE=${DUMPLING_IMAGE:-dumpling:e2e}
 PG_IMAGE=${PG_IMAGE:-postgres:18}
-S3_IMAGE=${S3_IMAGE:-feather-io:1.0.0-rc.7}
+S3_IMAGE=${S3_IMAGE:-ghcr.io/root-101/feather-io:1.1.1}
 S3_KIND=${S3_KIND:-feather}
 NET=dumpling-e2e
 # Ports on the host, away from the usual ones
