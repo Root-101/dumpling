@@ -419,4 +419,4 @@ Each screen loads as a skeleton of itself:
 |                                                      |                                                          |
 |------------------------------------------------------|----------------------------------------------------------|
 | ![Not found](design/screens/37-not-found.png)        | ![Connection lost](design/screens/38-connection-lost.png) |
-| **Not found**: an unknown URL or workspace, with the way back to the workspaces; an unknown id shows a notice over its screen instead | **Connection lost**: the service doesn't answer; it names the service's address and tries again |
+| **Not found**: an unknown URL or workspace: *404*, the path asked for, and *Go to Backups* of the open workspace and *Switch workspace*; an unknown id shows a notice over its screen instead | **Connection lost**: the service doesn't answer; it names the service's address and tries again |

@@ -28,12 +28,7 @@ class RouteConfig {
 
       return null;
     },
-    errorBuilder: (context, state) => ErrorPage(
-      title: app.intl.errors.notFoundTitle,
-      message: app.intl.errors.pageNotFound,
-      buttonText: app.intl.nav.workspaces,
-      onRetry: () => app.navigator.go(RouteNames.workspaces),
-    ),
+    errorBuilder: (context, state) => NotFoundPage(path: state.uri.path),
     routes: [
       GoRoute(
         path: '/',

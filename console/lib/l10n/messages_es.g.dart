@@ -243,6 +243,15 @@ class AppMessages$errors$es implements AppMessages$errors$en {
   @override
   String get pageNotFound => 'Esta página no existe.';
   @override
+  String get pageMissing => 'Esta página no existe';
+  @override
+  String get pageMissingHint =>
+      'El backup, el origen o el workspace pueden haberse borrado, o el enlace está mal.';
+  @override
+  String get goToBackups => 'Ir a Backups';
+  @override
+  String get switchWorkspace => 'Cambiar de workspace';
+  @override
   String get offlineTitle => 'Conexión perdida';
   @override
   String offline({required String url}) =>
@@ -2171,6 +2180,10 @@ extension on AppMessagesEs {
           'errors.unknown' => 'Error desconocido',
           'errors.notFoundTitle' => 'No encontrado',
           'errors.pageNotFound' => 'Esta página no existe.',
+          'errors.pageMissing' => 'Esta página no existe',
+          'errors.pageMissingHint' => 'El backup, el origen o el workspace pueden haberse borrado, o el enlace está mal.',
+          'errors.goToBackups' => 'Ir a Backups',
+          'errors.switchWorkspace' => 'Cambiar de workspace',
           'errors.offlineTitle' => 'Conexión perdida',
           'errors.offline' => ({
             required String url,
@@ -2844,13 +2857,13 @@ extension on AppMessagesEs {
           'canvas.guide.source' => 'Agrega un origen',
           'canvas.guide.sourceHelp' => 'La base de datos a respaldar.',
           'canvas.guide.destination' => 'Agrega un destino',
+          _ => null,
+        } ??
+        switch (path) {
           'canvas.guide.destinationHelp' => 'El bucket donde van los backups.',
           'canvas.guide.connect' => 'Conéctalos',
           'canvas.guide.connectHelp' => 'Arrastra desde el puerto del origen hasta una carpeta o el bucket: se crea una config entre ellos. Luego guarda.',
           'canvas.guide.create' => 'Crear uno',
-          _ => null,
-        } ??
-        switch (path) {
           'canvas.guide.place' => ({required String name}) => 'Colocar ${name}',
           'runs.title' => 'Registro de ejecuciones',
           'runs.description' => 'Cada ejecución de respaldo de este workspace: programada, manual o por la API. Horas en UTC, tu hora local debajo.',

@@ -275,6 +275,19 @@ class AppMessages$errors$en {
   /// en: 'This page does not exist.'
   String get pageNotFound => 'This page does not exist.';
 
+  /// en: 'This page doesn’t exist'
+  String get pageMissing => 'This page doesn’t exist';
+
+  /// en: 'The backup, source or workspace may have been deleted, or the link is wrong.'
+  String get pageMissingHint =>
+      'The backup, source or workspace may have been deleted, or the link is wrong.';
+
+  /// en: 'Go to Backups'
+  String get goToBackups => 'Go to Backups';
+
+  /// en: 'Switch workspace'
+  String get switchWorkspace => 'Switch workspace';
+
   /// en: 'Connection lost'
   String get offlineTitle => 'Connection lost';
 
@@ -2828,6 +2841,10 @@ extension on AppMessages {
           'errors.unknown' => 'Unknown error',
           'errors.notFoundTitle' => 'Not found',
           'errors.pageNotFound' => 'This page does not exist.',
+          'errors.pageMissing' => 'This page doesn’t exist',
+          'errors.pageMissingHint' => 'The backup, source or workspace may have been deleted, or the link is wrong.',
+          'errors.goToBackups' => 'Go to Backups',
+          'errors.switchWorkspace' => 'Switch workspace',
           'errors.offlineTitle' => 'Connection lost',
           'errors.offline' => ({
             required String url,
@@ -3488,13 +3505,13 @@ extension on AppMessages {
           'canvas.guide.source' => 'Add a source',
           'canvas.guide.sourceHelp' => 'The database to back up.',
           'canvas.guide.destination' => 'Add a destination',
+          _ => null,
+        } ??
+        switch (path) {
           'canvas.guide.destinationHelp' => 'The bucket the backups go to.',
           'canvas.guide.connect' => 'Connect them',
           'canvas.guide.connectHelp' => 'Drag from the port of the source to a folder or the bucket: a config is created between them. Then save.',
           'canvas.guide.create' => 'Create one',
-          _ => null,
-        } ??
-        switch (path) {
           'canvas.guide.place' => ({required String name}) => 'Place ${name}',
           'runs.title' => 'Run log',
           'runs.description' => 'Every backup run in this workspace: scheduled, manual or through the API. Times in UTC, your local time below.',

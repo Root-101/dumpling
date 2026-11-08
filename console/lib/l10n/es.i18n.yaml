@@ -61,6 +61,10 @@ errors:
   unknown: 'Error desconocido'
   notFoundTitle: 'No encontrado'
   pageNotFound: 'Esta página no existe.'
+  pageMissing: 'Esta página no existe'
+  pageMissingHint: 'El backup, el origen o el workspace pueden haberse borrado, o el enlace está mal.'
+  goToBackups: 'Ir a Backups'
+  switchWorkspace: 'Cambiar de workspace'
   offlineTitle: 'Conexión perdida'
   offline: 'No se puede conectar con el servicio de Dumpling en {url: String}. Revisa que esté corriendo e inténtalo de nuevo.'
 
