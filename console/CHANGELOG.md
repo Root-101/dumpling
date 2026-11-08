@@ -26,6 +26,8 @@
   new run instead of failing.
 - The detail of a run as in the design: no big status icon, and *Edit config*, *Close* and *Retry
   now* (or *Run again*) under it.
+- Run log filters in the order of the design (source type, destination type, started by, status),
+  each status with its colored dot.
 - *Your session expired* over the screen blurred, with the user already in (after a reload too,
   from the token) and the link to the sign-in page underlined.
 - Deleting a workspace asks as in the design: without a ✕, the warning filled, and what it deletes

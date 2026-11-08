@@ -387,7 +387,44 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
         shown: data.visibleRuns.length,
         total: runs.length,
       ),
+      // as the design orders them: what was backed up, where, why, how it ended
       groups: [
+        AppFilterGroup(
+          title: t.sourceType,
+          options: [
+            AppFilterOption(
+              label: app.intl.backups.allSources,
+              selected: data.sourceType == null,
+              count: runs.length,
+              onTap: () => _filter(_source, null),
+            ),
+            for (final type in {for (final r in runs) r.sourceType})
+              AppFilterOption(
+                label: SourceTypeLook.labelOf(type),
+                selected: data.sourceType == type,
+                count: runs.where((r) => r.sourceType == type).length,
+                onTap: () => _filter(_source, type),
+              ),
+          ],
+        ),
+        AppFilterGroup(
+          title: t.destinationType,
+          options: [
+            AppFilterOption(
+              label: app.intl.backups.allDestinations,
+              selected: data.destinationType == null,
+              count: runs.length,
+              onTap: () => _filter(_destination, null),
+            ),
+            for (final type in {for (final r in runs) r.destinationType})
+              AppFilterOption(
+                label: DestinationTypeLook.labelOf(type),
+                selected: data.destinationType == type,
+                count: runs.where((r) => r.destinationType == type).length,
+                onTap: () => _filter(_destination, type),
+              ),
+          ],
+        ),
         AppFilterGroup(
           title: t.columnStartedBy,
           options: [
@@ -409,46 +446,25 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
           title: t.columnStatus,
           options: [
             all(data.status == null, () => _filter(_status, null)),
-            for (final status in RunStatus.values)
+            for (final status in const [
+              RunStatus.success,
+              RunStatus.failed,
+              RunStatus.running,
+              RunStatus.queued,
+            ])
               AppFilterOption(
                 label: RunStatusLabel.labelOf(status),
+                leading: Container(
+                  width: 7,
+                  height: 7,
+                  decoration: BoxDecoration(
+                    color: RunStatusLabel.colorOf(status),
+                    shape: BoxShape.circle,
+                  ),
+                ),
                 selected: data.status == status,
                 count: runs.where((r) => r.status == status).length,
                 onTap: () => _filter(_status, status.name),
-              ),
-          ],
-        ),
-        AppFilterGroup(
-          title: t.columnSource,
-          options: [
-            all(data.sourceType == null, () => _filter(_source, null)),
-            for (final type in {for (final r in runs) r.sourceType})
-              AppFilterOption(
-                label: SourceTypeLook.labelOf(type),
-                leading: TypeBadge(look: SourceTypeLook.lookOf(type), size: 24),
-                selected: data.sourceType == type,
-                count: runs.where((r) => r.sourceType == type).length,
-                onTap: () => _filter(_source, type),
-              ),
-          ],
-        ),
-        AppFilterGroup(
-          title: t.columnDestination,
-          options: [
-            all(
-              data.destinationType == null,
-              () => _filter(_destination, null),
-            ),
-            for (final type in {for (final r in runs) r.destinationType})
-              AppFilterOption(
-                label: DestinationTypeLook.labelOf(type),
-                leading: TypeBadge(
-                  look: DestinationTypeLook.lookOf(type),
-                  size: 24,
-                ),
-                selected: data.destinationType == type,
-                count: runs.where((r) => r.destinationType == type).length,
-                onTap: () => _filter(_destination, type),
               ),
           ],
         ),

@@ -1119,6 +1119,10 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   @override
   String get columnStartedBy => 'Iniciada por';
   @override
+  String get sourceType => 'Tipo de origen';
+  @override
+  String get destinationType => 'Tipo de destino';
+  @override
   String get queued => 'En cola: empieza cuando termine la ejecución en curso';
   @override
   String get labelTooltip => 'Etiqueta enviada con la ejecución';
@@ -2973,6 +2977,8 @@ extension on AppMessagesEs {
             required String size,
           }) => 'En curso · ${size} hasta ahora',
           'runs.columnStartedBy' => 'Iniciada por',
+          'runs.sourceType' => 'Tipo de origen',
+          'runs.destinationType' => 'Tipo de destino',
           'runs.queued' =>
             'En cola: empieza cuando termine la ejecución en curso',
           'runs.labelTooltip' => 'Etiqueta enviada con la ejecución',

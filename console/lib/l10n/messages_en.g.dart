@@ -1465,6 +1465,12 @@ class AppMessages$runs$en {
   /// en: 'Started by'
   String get columnStartedBy => 'Started by';
 
+  /// en: 'Source type'
+  String get sourceType => 'Source type';
+
+  /// en: 'Destination type'
+  String get destinationType => 'Destination type';
+
   /// en: 'Queued: starts when the run in progress ends'
   String get queued => 'Queued: starts when the run in progress ends';
 
@@ -3632,6 +3638,8 @@ extension on AppMessages {
             required String size,
           }) => 'In progress · ${size} so far',
           'runs.columnStartedBy' => 'Started by',
+          'runs.sourceType' => 'Source type',
+          'runs.destinationType' => 'Destination type',
           'runs.queued' => 'Queued: starts when the run in progress ends',
           'runs.labelTooltip' => 'Label sent with the run',
           'runs.viewRun' => 'View run',

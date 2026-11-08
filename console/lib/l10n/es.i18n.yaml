@@ -627,6 +627,8 @@ runs:
   inProgress: 'En curso'
   soFar: 'En curso · {size: String} hasta ahora'
   columnStartedBy: 'Iniciada por'
+  sourceType: 'Tipo de origen'
+  destinationType: 'Tipo de destino'
   queued: 'En cola: empieza cuando termine la ejecución en curso'
   labelTooltip: 'Etiqueta enviada con la ejecución'
   viewRun: 'Ver ejecución'

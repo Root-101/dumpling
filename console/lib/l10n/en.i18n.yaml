@@ -627,6 +627,8 @@ runs:
   inProgress: 'In progress'
   soFar: 'In progress · {size: String} so far'
   columnStartedBy: 'Started by'
+  sourceType: 'Source type'
+  destinationType: 'Destination type'
   queued: 'Queued: starts when the run in progress ends'
   labelTooltip: 'Label sent with the run'
   viewRun: 'View run'
