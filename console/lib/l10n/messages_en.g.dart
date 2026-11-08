@@ -2099,13 +2099,33 @@ class AppMessages$workspaces$settings$en {
   /// en: 'Delete “{name: String}”?'
   String deleteConfirmTitle({required String name}) => 'Delete “${name}”?';
 
-  /// en: 'This deletes its sources ({sources: int}), destinations ({destinations: int}), configs ({configs: int}) and their run history. Scheduled backups stop right away. It can't be undone.'
-  String deleteConfirm({
-    required int sources,
-    required int destinations,
-    required int configs,
-  }) =>
-      'This deletes its sources (${sources}), destinations (${destinations}), configs (${configs}) and their run history. Scheduled backups stop right away. It can\'t be undone.';
+  /// en: 'This deletes {what: String} and their run history. Scheduled backups stop right away. It can't be undone.'
+  String deleteConfirm({required String what}) =>
+      'This deletes ${what} and their run history. Scheduled backups stop right away. It can\'t be undone.';
+
+  /// en: '(one) {{n} source} (other) {{n} sources}'
+  String nSources({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} source',
+        other: '${n} sources',
+      );
+
+  /// en: '(one) {{n} destination} (other) {{n} destinations}'
+  String nDestinations({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} destination',
+        other: '${n} destinations',
+      );
+
+  /// en: '(one) {{n} config} (other) {{n} configs}'
+  String nConfigs({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} config',
+        other: '${n} configs',
+      );
 
   /// en: 'Type'
   String get typeBefore => 'Type';
@@ -3061,10 +3081,32 @@ extension on AppMessages {
             required String name,
           }) => 'Delete “${name}”?',
           'workspaces.settings.deleteConfirm' => ({
-            required int sources,
-            required int destinations,
-            required int configs,
-          }) => 'This deletes its sources (${sources}), destinations (${destinations}), configs (${configs}) and their run history. Scheduled backups stop right away. It can\'t be undone.',
+            required String what,
+          }) => 'This deletes ${what} and their run history. Scheduled backups stop right away. It can\'t be undone.',
+          'workspaces.settings.nSources' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} source',
+                  other: '${n} sources',
+                ),
+          'workspaces.settings.nDestinations' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} destination',
+                  other: '${n} destinations',
+                ),
+          'workspaces.settings.nConfigs' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} config',
+                  other: '${n} configs',
+                ),
           'workspaces.settings.typeBefore' => 'Type',
           'workspaces.settings.typeAfter' => 'to confirm',
           'workspaces.settings.deleted' => ({
@@ -3525,6 +3567,9 @@ extension on AppMessages {
             'Nothing to test: connect a source to a destination first.',
           'canvas.run.button' => 'Run now',
           'canvas.run.help' => 'Runs this backup now, for real, as it is saved: the edits not saved yet are not used.',
+          _ => null,
+        } ??
+        switch (path) {
           'canvas.run.needsSave' =>
             'Save the canvas first: a run uses the saved config.',
           'canvas.run.done' => ({
@@ -3535,9 +3580,6 @@ extension on AppMessages {
             required String name,
             required String error,
           }) => 'Backup ${name} failed: ${error}',
-          _ => null,
-        } ??
-        switch (path) {
           'canvas.guide.title' => 'Your first backup',
           'canvas.guide.source' => 'Add a source',
           'canvas.guide.sourceHelp' => 'The database to back up.',

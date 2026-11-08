@@ -1578,12 +1578,29 @@ class AppMessages$workspaces$settings$es
   @override
   String deleteConfirmTitle({required Object name}) => '¿Eliminar «${name}»?';
   @override
-  String deleteConfirm({
-    required Object sources,
-    required Object destinations,
-    required Object configs,
-  }) =>
-      'Se eliminan sus orígenes (${sources}), destinos (${destinations}), configs (${configs}) y su historial de ejecuciones. Los backups programados se detienen al momento. No se puede deshacer.';
+  String deleteConfirm({required Object what}) =>
+      'Se eliminan ${what} y su historial de ejecuciones. Los backups programados se detienen al momento. No se puede deshacer.';
+  @override
+  String nSources({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: '${n} origen',
+        other: '${n} orígenes',
+      );
+  @override
+  String nDestinations({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: '${n} destino',
+        other: '${n} destinos',
+      );
+  @override
+  String nConfigs({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: '${n} config',
+        other: '${n} configs',
+      );
   @override
   String get typeBefore => 'Escribe';
   @override
@@ -2397,10 +2414,32 @@ extension on AppMessagesEs {
             required Object name,
           }) => '¿Eliminar «${name}»?',
           'workspaces.settings.deleteConfirm' => ({
-            required Object sources,
-            required Object destinations,
-            required Object configs,
-          }) => 'Se eliminan sus orígenes (${sources}), destinos (${destinations}), configs (${configs}) y su historial de ejecuciones. Los backups programados se detienen al momento. No se puede deshacer.',
+            required Object what,
+          }) => 'Se eliminan ${what} y su historial de ejecuciones. Los backups programados se detienen al momento. No se puede deshacer.',
+          'workspaces.settings.nSources' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: '${n} origen',
+                  other: '${n} orígenes',
+                ),
+          'workspaces.settings.nDestinations' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: '${n} destino',
+                  other: '${n} destinos',
+                ),
+          'workspaces.settings.nConfigs' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: '${n} config',
+                  other: '${n} configs',
+                ),
           'workspaces.settings.typeBefore' => 'Escribe',
           'workspaces.settings.typeAfter' => 'para confirmar',
           'workspaces.settings.deleted' => ({
@@ -2869,6 +2908,9 @@ extension on AppMessagesEs {
             'Nada que probar: primero conecta un origen a un destino.',
           'canvas.run.button' => 'Ejecutar ahora',
           'canvas.run.help' => 'Ejecuta este backup ahora, de verdad, tal como está guardado: los cambios sin guardar no se usan.',
+          _ => null,
+        } ??
+        switch (path) {
           'canvas.run.needsSave' =>
             'Guarda el canvas primero: una ejecución usa la config guardada.',
           'canvas.run.done' => ({
@@ -2879,9 +2921,6 @@ extension on AppMessagesEs {
             required String name,
             required String error,
           }) => 'Backup ${name} falló: ${error}',
-          _ => null,
-        } ??
-        switch (path) {
           'canvas.guide.title' => 'Tu primer backup',
           'canvas.guide.source' => 'Agrega un origen',
           'canvas.guide.sourceHelp' => 'La base de datos a respaldar.',

@@ -210,7 +210,16 @@ workspaces:
     deleteDescription: 'Removes its canvas, sources, destinations, configs and run history. Backup files already in your buckets stay where they are.'
     deleteButton: 'Delete workspace'
     deleteConfirmTitle: 'Delete “{name: String}”?'
-    deleteConfirm: 'This deletes its sources ({sources: int}), destinations ({destinations: int}), configs ({configs: int}) and their run history. Scheduled backups stop right away. It can''t be undone.'
+    deleteConfirm: 'This deletes {what: String} and their run history. Scheduled backups stop right away. It can''t be undone.'
+    nSources(plural, param=n):
+      one: '{n} source'
+      other: '{n} sources'
+    nDestinations(plural, param=n):
+      one: '{n} destination'
+      other: '{n} destinations'
+    nConfigs(plural, param=n):
+      one: '{n} config'
+      other: '{n} configs'
     typeBefore: 'Type'
     typeAfter: 'to confirm'
     deleted: 'Workspace {name: String} deleted'

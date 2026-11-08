@@ -210,7 +210,16 @@ workspaces:
     deleteDescription: 'Elimina su canvas, orígenes, destinos, configs e historial de ejecuciones. Los archivos de backup que ya están en tus buckets se quedan donde están.'
     deleteButton: 'Eliminar workspace'
     deleteConfirmTitle: '¿Eliminar «{name}»?'
-    deleteConfirm: 'Se eliminan sus orígenes ({sources}), destinos ({destinations}), configs ({configs}) y su historial de ejecuciones. Los backups programados se detienen al momento. No se puede deshacer.'
+    deleteConfirm: 'Se eliminan {what} y su historial de ejecuciones. Los backups programados se detienen al momento. No se puede deshacer.'
+    nSources(plural, param=n):
+      one: '{n} origen'
+      other: '{n} orígenes'
+    nDestinations(plural, param=n):
+      one: '{n} destino'
+      other: '{n} destinos'
+    nConfigs(plural, param=n):
+      one: '{n} config'
+      other: '{n} configs'
     typeBefore: 'Escribe'
     typeAfter: 'para confirmar'
     deleted: 'Workspace {name} eliminado'

@@ -101,6 +101,10 @@ class ActionsIcons {
 
   SvgAsset get warning => const SvgAsset('$_actions/warning.svg');
 
+  /// Filled, the ! cut out of it: the confirmation of something that can't be
+  /// undone
+  SvgAsset get warningFilled => const SvgAsset('$_actions/warning_filled.svg');
+
   SvgAsset get edit => const SvgAsset('$_actions/edit.svg');
 
   SvgAsset get logout => const SvgAsset('$_actions/logout.svg');

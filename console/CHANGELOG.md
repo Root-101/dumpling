@@ -26,6 +26,8 @@
   new run instead of failing.
 - The detail of a run as in the design: no big status icon, and *Edit config*, *Close* and *Retry
   now* (or *Run again*) under it.
+- Deleting a workspace asks as in the design: without a ✕, the warning filled, and what it deletes
+  counted (*5 sources, 5 destinations, 7 configs*).
 - Backups: *Failing* tinted red when something fails and *last run succeeded* in green; the
   schedule in words (*Every hour*, *Daily at 02:30*, *Every 6 hours*).
 - The detail of a source or destination as wide as in the design.

@@ -866,6 +866,7 @@ class _DeleteDialogState extends State<_DeleteDialog> {
       elevation: 0,
       child: AppDialogFrame(
         color: colors.primary.backgroundForm,
+        closable: false,
         child: SizedBox(
           width: 480,
           child: Padding(
@@ -887,7 +888,7 @@ class _DeleteDialogState extends State<_DeleteDialog> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Center(
-                        child: app.assets.icons.actions.warning.build(
+                        child: app.assets.icons.actions.warningFilled.build(
                           size: 20,
                           color: colors.primary.error,
                         ),
@@ -908,9 +909,11 @@ class _DeleteDialogState extends State<_DeleteDialog> {
                           ),
                           Text(
                             t.deleteConfirm(
-                              sources: stats?.sources ?? 0,
-                              destinations: stats?.destinations ?? 0,
-                              configs: stats?.configs ?? 0,
+                              what: [
+                                t.nSources(n: stats?.sources ?? 0),
+                                t.nDestinations(n: stats?.destinations ?? 0),
+                                t.nConfigs(n: stats?.configs ?? 0),
+                              ].join(', '),
                             ),
                             style: TextStyle(
                               fontSize: 13,
