@@ -26,6 +26,8 @@
   new run instead of failing.
 - The detail of a run as in the design: no big status icon, and *Edit config*, *Close* and *Retry
   now* (or *Run again*) under it.
+- Sources, destinations and configs made through the API land on the canvas, each config between
+  its ends and none over another (they used to pile up at one spot).
 - Small things as in the design: a disabled primary button dims its text (*Save canvas* without
   changes), *View run* underlined, *How to use a key* in the header of API keys, the folders of a
   destination in grey, *Last backup* / *Oldest first* in the sort, and the ⋮ lit while its menu is
