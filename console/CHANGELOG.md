@@ -25,8 +25,8 @@
   the tooltip; the source shows its type under its name instead of the config.
 - Backups and the canvas show a queued run as running: Run now on a config that runs queues the
   new run instead of failing.
-- The detail of a run as in the design: no big status icon, and *Edit config*, *Close* and *Retry
-  now* (or *Run again*) under it.
+- The detail of a run as in the design: as wide, its status on a tinted pill, no big status icon,
+  and *Edit config*, *Close* and *Retry now* (or *Run again*) under it.
 - Sources, destinations and configs made through the API land on the canvas, each config between
   its ends and none over another (they used to pile up at one spot).
 - Small things as in the design: a disabled primary button dims its text (*Save canvas* without

@@ -43,7 +43,7 @@ class _RunDialogState extends State<RunDialog> {
       child: AppDialogFrame(
         color: colors.primary.backgroundForm,
         child: SizedBox(
-          width: 920,
+          width: 760,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -73,7 +73,7 @@ class _RunDialogState extends State<RunDialog> {
                           return Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(width: 280, child: steps),
+                              SizedBox(width: 240, child: steps),
                               24.gap(),
                               Expanded(child: log),
                             ],
@@ -189,7 +189,17 @@ class _Header extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    RunStatusLabel(run.status),
+                    Container(
+                      height: 26,
+                      padding: const EdgeInsets.symmetric(horizontal: 9),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: RunStatusLabel.colorOf(run.status)
+                            .withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: RunStatusLabel(run.status),
+                    ),
                     10.gap(),
                     Flexible(
                       child: AppCopyId(
