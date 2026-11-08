@@ -60,8 +60,8 @@ middle of its edge expands it to show the names, and folds it again.
 **URL:** `/#/workspaces`
 
 Separate canvases for environments, clients or projects. Each card shows a preview of its configs,
-its counts (sources, destinations, backups), its health (healthy, or how many fail) and its last
-run; **Switch & open canvas** enters it and the button next to it opens its settings. Inside a
+its slug under its name (selectable, with a button to copy it: the `{slug}` of the API), its
+counts (sources, destinations, backups), its health (healthy, or how many fail) and its last run; **Switch & open canvas** enters it and the button next to it opens its settings. Inside a
 workspace, its slug is in the URL (`/#/workspaces/production/…`), so a link opens it; the last one
 opened is remembered.
 
@@ -133,7 +133,8 @@ up: each source connects and `pg_dump` can dump it, each destination takes a wri
 
 ![A config in its dialog](design/screens/10-config.png)
 
-Opened from its node (its pencil, or double click), in three steps:
+Opened from its node (its pencil, or double click), with its id under its route once it is saved
+(selectable, with a button to copy it), in three steps:
 
 1. **Name & schedule:** the name, the frequency (hourly, daily, weekly or a cron, in UTC) and
    whether it is enabled, with the next run it gives. An empty cron takes the workspace's; the ⓘ
@@ -178,8 +179,11 @@ paused, and when the next one runs, counting down second by second (only the sec
 minute). Once it is due it says *Updating in 3…, 2…, 1…* and the list reloads with its run and the
 next one: meanwhile the due rows show *Loading* as their status and *Updating…* as their next run,
 the rest reload without a sign. The countdown is the browser's clock against the service's next run.
-Below, every config with its source and destination, schedule, last run (when, result, size, or the
-error under the date) and next run, with **Run now** on each row.
+Below, every config: its status as a square with its icon (✓ the last run succeeded, ✕ it failed,
+the ring while it runs, an hourglass while it waits its turn, a dot when it never ran or is paused;
+the word is its tooltip), its source with its type, the config with its id under it (selectable,
+with a button to copy it), its destination, schedule, last run (when, result, size, or the error under the
+date) and next run, with **Run now** on each row.
 
 |                                                     |                                                 |
 |-----------------------------------------------------|-------------------------------------------------|
@@ -191,7 +195,9 @@ drag it, and the order is saved as it drops. With a search or a filter on, the h
 (*Clear the search and filters to reorder*): a part of the list has no clear place in the whole.
 
 A row opens its recent runs, with where each file went (selectable, to copy it); each one opens
-its details, the same as in the run log.
+its details, the same as in the run log. *Copy config id* in the row's menu copies the id (`cfg_…`)
+a pipeline sends to the API, and *Edit config* opens the same dialog as the canvas, in its three
+steps.
 
 ![Recent runs](design/screens/15-backups-run.png)
 
@@ -337,7 +343,7 @@ destination type, which go in the URL so a filtered log can be shared:
 
 ![Run log, filters](design/screens/29-run-log-filters.png)
 
-A run opens its details: its steps (connect, dump, upload), who started it (*API*, and the key
+A run opens its details: its id (with a button to copy it), its steps (connect, dump, upload), who started it (*API*, and the key
 and the label under it), where the file went, its size and duration, the error of a failed one, and
 its log, which can be copied whole or in part: where the
 file went, the error and the log are selectable, as are the connection values (host, endpoint,
@@ -386,7 +392,8 @@ permission on configs or runs (the limit wouldn't change anything); on, *Create*
 
 ![New API key](design/screens/35-new-api-key.png)
 
-Creating it shows the key once, with a button to copy it and a `curl` to run a backup with it; to
+Creating it shows the key once, with a button to copy it and a `curl` to run a backup with it (with
+the id of the config when the key is limited to one, `CONFIG_ID` otherwise); to
 renew a key, create another and delete the old one. [`integrations.md`](integrations.md) has the
 whole pipeline.
 

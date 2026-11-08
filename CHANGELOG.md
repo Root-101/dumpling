@@ -15,6 +15,11 @@ have the release candidates before 0.1.0 one by one.
   once, and doesn't expire. The new **API keys** screen lists, searches, filters, sorts, creates,
   edits and deletes them. Guide, with a pipeline that backs up before each deploy:
   [`docs/integrations.md`](docs/integrations.md).
+- **The ids the API asks for are in the console**, each with a button to copy it: the slug of a
+  workspace under its name, the id of a config in its row in Backups and in its dialog, and the id
+  of a run in its details. The guide shows where.
+- Backups: a column with the config and its id, the status as an icon (an hourglass while queued),
+  and the type of each source under its name.
 - **A run asked for while its config runs waits its turn** (*Queued*) instead of a 409, and starts
   when that one ends.
 - **A label on each run** (`{"label": "v1.4.2"}` on Run now), and who started it: the run log shows

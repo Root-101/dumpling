@@ -20,9 +20,32 @@ In the console, **API keys** in the rail of the workspace, then **New API key**:
 The key (`dmp_…`) is shown once: copy it into a secret of your pipeline (`DUMPLING_KEY`). Keys
 don't expire; to renew one, create another and delete the old one.
 
-The id of the config is in its URL in the console (`…/configs/cfg_…`), or in
-[`GET /api/workspaces/{slug}/configs`](api.md#list-configs), and the slug of the workspace in any
-URL of it (`/#/workspaces/production/…`).
+The key, limited to a single config, already shows a `curl` with that config's id. The script
+needs two more values, both shown in the console with a button to copy them (⧉):
+
+- **`DUMPLING_WORKSPACE`**, the slug of the workspace: under its name in **Workspaces**, and in
+  the address bar on any screen of it (`/#/workspaces/production/backups` → `production`).
+
+  ![The slug under the name of the workspace](images/integrations-workspace-slug.png)
+
+- **`DUMPLING_CONFIG`**, the id of the config (`cfg_…`): in **Backups**, under the name of the
+  config in its row; *Copy config id* in the row's menu (⋮) copies it too, and the dialog of the
+  config shows it under its route.
+
+  ![The id of the config under its name in Backups](images/integrations-config-id.png)
+
+  Or ask the key itself, if it has `config.list` (*Run backups* has it): it lists the configs it
+  reaches, with their names.
+
+  ```sh
+  curl -s https://dumpling.example.com/api/workspaces/production/configs \
+    -H "Authorization: Bearer $DUMPLING_KEY" | jq -r '.[] | "\(.id)  \(.name)"'
+  ```
+
+The id of a run (`run_…`), what the script prints, is in its details, also with a button to copy
+it: to find it later in the run log or follow it with [`…/runs/{id}/events`](api.md#follow-a-run).
+
+![The id of a run in its details](images/integrations-run-id.png)
 
 ## 2. Start a backup and wait for it
 
