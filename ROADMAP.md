@@ -62,30 +62,30 @@ Already defined, what comes next. Not started.
 
 ## Later
 
-By impact, highest first. 🔴 changes the database schema (a version to export and import again).
+By priority, highest first. 🔴 changes the database schema (a version to export and import again).
 
-3. [ ] 🔴 **Events feed** (changes, connection checks) and alerts.
-4. [ ] 🔴 **Retention** (needs ListObjects and DeleteObject in the destination).
-5. [ ] 🔴 **A restore that loses nothing:** when restoring exists, back up the target database
+3. [ ] **Live runs in the console:** the run log and its dialog follow each run's step, bytes and
+   percentage as it goes, without Refresh. The service already streams one run as Server-Sent
+   Events (`GET …/runs/{id}/events`, made for pipelines); the console can follow a run with it, or
+   with a stream of the whole workspace. Until then a run in progress shows a generic bar and the
+   bytes uploaded so far, and its log appears only when it ends. The same stream tells Backups
+   when a scheduled run starts and ends and the next one is planned, so the countdown stays local
+   and the screen updates without the reload it does once due (which stays, for a stream that is
+   down). To design in detail when it starts.
+4. [ ] 🔴 **Events feed** (changes, connection checks) and alerts.
+5. [ ] 🔴 **Retention** (needs ListObjects and DeleteObject in the destination).
+6. [ ] 🔴 **A restore that loses nothing:** when restoring exists, back up the target database
    first, rename it, create a new database and restore into that one.
-6. [ ] **More sources** (MySQL, MariaDB, MongoDB) **and destinations** (Google Drive, SFTP, local
+7. [ ] **More sources** (MySQL, MariaDB, MongoDB) **and destinations** (Google Drive, SFTP, local
    download).
-7. [ ] 🔴 **Encrypt the dump** before uploading it to the bucket. `To talk through how before
+8. [ ] 🔴 **Encrypt the dump** before uploading it to the bucket. `To talk through how before
    implementing it.`
-8. [ ] 🔴 **Download a backup** from the console.
-9. [ ] **Hardening left by the security audit:** a new admin password ends the sessions already
-   open; refuse to start with short secrets (today only a warning); pin the JWT algorithm and an
-   audience; a retention for the run log; no redirects followed by the S3 client; the stored
-   password dropped when a source's host changes; a `Content-Security-Policy` for the console.
-10. [ ] **`verify-full` with a CA** for PostgreSQL sources (`require` and `disable` exist).
-11. [ ] **Live runs in the console:** the run log and its dialog follow each run's step, bytes and
-    percentage as it goes, without Refresh. The service already streams one run as Server-Sent
-    Events (`GET …/runs/{id}/events`, made for pipelines); the console can follow a run with it, or
-    with a stream of the whole workspace. Until then a run in progress shows a generic bar and the
-    bytes uploaded so far, and its log appears only when it ends. The same stream tells Backups
-    when a scheduled run starts and ends and the next one is planned, so the countdown stays local
-    and the screen updates without the reload it does once due (which stays, for a stream that is
-    down). To design in detail when it starts.
+9. [ ] 🔴 **Download a backup** from the console.
+10. [ ] **Hardening left by the security audit:** a new admin password ends the sessions already
+    open; refuse to start with short secrets (today only a warning); pin the JWT algorithm and an
+    audience; a retention for the run log; no redirects followed by the S3 client; the stored
+    password dropped when a source's host changes; a `Content-Security-Policy` for the console.
+11. [ ] **`verify-full` with a CA** for PostgreSQL sources (`require` and `disable` exist).
 12. [ ] **Destination detail** with what is in the bucket (ListObjects): used space, objects, and
     the files, size and last write of each folder; and the history of its connection checks, not
     only the last (🔴 only this history).
