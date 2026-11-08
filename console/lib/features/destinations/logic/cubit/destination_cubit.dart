@@ -307,6 +307,8 @@ class DestinationData {
         d.name,
         DestinationTypeLook.labelOf(d.type),
         d.s3?.address ?? '',
+        // the list shows only the endpoint: the bucket is still found
+        d.s3?.bucket ?? '',
         ...d.folders,
       ].join(' ').toLowerCase();
       return (type == null || d.type == type) &&

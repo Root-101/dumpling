@@ -680,7 +680,7 @@ void main() {
 
     expect(find.text('bucket'), findsOneWidget);
     expect(find.text('2 folders'), findsOneWidget);
-    expect(find.text('s3.us-east-1.amazonaws.com/bucket'), findsOneWidget);
+    expect(find.text('s3.us-east-1.amazonaws.com'), findsOneWidget);
     expect(find.text('Not tested'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Show the folders of bucket'));
