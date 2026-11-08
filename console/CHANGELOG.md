@@ -1,13 +1,14 @@
 # Changelog
 
-## Unreleased
+## 0.1.6
 
 - **API keys** in the rail: the keys of the workspace with their access (*Run backups*, *Read
   only*, *Full access* or *Custom*), configs, creation and last use (and the last run they
   started); a search, filters by access, config and permission, and rows that drag into order.
   The form has templates and every permission with a tooltip of what it allows, and can limit the
   key to some configs (dimmed while it has no permission on configs or runs; on, it takes away
-  creating configs and the canvas); a new key is shown once, with a button to copy it and a `curl` to use it.
+  creating configs and the canvas); a new key is shown once, with a button to copy it and a `curl`
+  to use it.
 - Run log: who started a run (*API · the key*) with the label it was sent as a chip, the status
   *Queued* with an hourglass, a filter *Started by*, and the search finds labels and keys. The
   detail of a run says *Started by: API* and the key and label under it.

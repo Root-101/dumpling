@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.6
 
 - The schema changes: a table `api_key`, and `label`, `key_id` and `key_name` in `run`; the SQLite
   file is created again (export before upgrading, import after).

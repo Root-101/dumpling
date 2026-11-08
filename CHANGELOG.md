@@ -4,7 +4,7 @@ What changes in each version of Dumpling, from 0.1.0. The detail of each package
 changelogs of [`service/`](service/CHANGELOG.md) and [`console/`](console/CHANGELOG.md), which also
 have the release candidates before 0.1.0 one by one.
 
-## Unreleased
+## 0.1.6
 
 - 🔴 **The database changes** (a table `api_key`, and the label and key of each run): export your
   workspaces before upgrading and import them after (see [Upgrading](README.md#upgrading)).
