@@ -38,6 +38,11 @@ abstract final class Permissions {
   static const String canvasGet = 'canvas.get';
   static const String canvasSave = 'canvas.save';
 
+  static const String apiKeyList = 'apikey.list';
+  static const String apiKeyCreate = 'apikey.create';
+  static const String apiKeyUpdate = 'apikey.update';
+  static const String apiKeyDelete = 'apikey.delete';
+
   /// Every permission: add each new one here too.
   static const List<String> all = [
     authSession,
@@ -68,6 +73,60 @@ abstract final class Permissions {
     configRun,
     runList,
     runGet,
+    canvasGet,
+    canvasSave,
+    apiKeyList,
+    apiKeyCreate,
+    apiKeyUpdate,
+    apiKeyDelete,
+  ];
+
+  /// What an API key may be given: the routes of one workspace. Never the
+  /// session, the other workspaces (list, create, delete, export, import) nor
+  /// the keys themselves, so a key can't make another.
+  static const List<String> grantable = [
+    workspaceGet,
+    workspaceUpdate,
+    sourceList,
+    sourceGet,
+    sourceCreate,
+    sourceUpdate,
+    sourceDelete,
+    sourceTest,
+    destinationList,
+    destinationGet,
+    destinationCreate,
+    destinationUpdate,
+    destinationDelete,
+    destinationTest,
+    configList,
+    configGet,
+    configCreate,
+    configUpdate,
+    configDelete,
+    configRun,
+    runList,
+    runGet,
+    canvasGet,
+    canvasSave,
+  ];
+
+  /// What a key limited to some configs sees only for them: without one of
+  /// these, the limit changes nothing.
+  static const List<String> limitable = [
+    configList,
+    configGet,
+    configUpdate,
+    configDelete,
+    configRun,
+    runList,
+    runGet,
+  ];
+
+  /// What a key limited to some configs can't have: the canvas reads and
+  /// saves every config, and a config it creates would be out of its reach.
+  static const List<String> notLimitable = [
+    configCreate,
     canvasGet,
     canvasSave,
   ];

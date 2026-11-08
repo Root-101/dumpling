@@ -1,5 +1,84 @@
 # Changelog
 
+## 0.1.7
+
+- The dialog of a disabled config says *Disabled* in *Output* and *Review*, not its frequency and
+  cron.
+
+## 0.1.6
+
+- **API keys** in the rail: the keys of the workspace with their access (*Run backups*, *Read
+  only*, *Full access* or *Custom*), configs, creation and last use (and the last run they
+  started); a search, filters by access, config and permission, and rows that drag into order.
+  The form has templates and every permission with a tooltip of what it allows, and can limit the
+  key to some configs (dimmed while it has no permission on configs or runs; on, it takes away
+  creating configs and the canvas); a new key is shown once, with a button to copy it and a `curl`
+  to use it.
+- Run log: who started a run (*API · the key*) with the label it was sent as a chip, the status
+  *Queued* with an hourglass, a filter *Started by*, and the search finds labels and keys. The
+  detail of a run says *Started by: API* and the key and label under it.
+- **The ids the API asks for, at hand:** the slug under the name of each workspace, the id of a
+  config in Backups (and *Copy config id* in its menu) and in a tag beside its name in its dialog,
+  and the id of a run in its details; each selectable, with a button to copy it. The `curl` of a
+  new key limited to one config carries its id.
+- Workspace settings: the workspace ID first, and *Edit* under the details instead of in the footer.
+- Workspaces: each card the same height, whatever it says (a last run in two lines, no
+  description), with the square of its color beside the name and the slug, and the description
+  under them.
+- Backups: a column *Config* with the name of each config and its id under it; the status is a
+  square with its icon (✓, ✕, the ring while it runs, an hourglass while queued) and its word as
+  the tooltip; the source shows its type under its name instead of the config.
+- Backups and the canvas show a queued run as running: Run now on a config that runs queues the
+  new run instead of failing.
+- The detail of a run as in the design: as wide, its status on a tinted pill, no big status icon,
+  and *Edit config*, *Close* and *Retry now* (or *Run again*) under it.
+- Sources, destinations and configs made through the API land on the canvas, each config between
+  its ends and none over another (they used to pile up at one spot).
+- Small things as in the design: a disabled primary button dims its text (*Save canvas* without
+  changes), *View run* underlined, *How to use a key* in the header of API keys, the folders of a
+  destination in grey, *Last backup* / *Oldest first* in the sort, and the ⋮ lit while its menu is
+  open.
+- The form of a key as in the design: the boxes of the permissions and of the configs with softer
+  borders; the configs in two columns (one in a narrow window), each with its name, its id with a
+  button to copy it, and its source → destination under them, with a tooltip when they are cut;
+  the three templates the same height, and the summary says *1 config* in singular.
+- Run log filters in the order of the design (source type, destination type, started by, status),
+  each status with its colored dot.
+- *Your session expired* over the screen blurred, with the user already in (after a reload too,
+  from the token) and the link to the sign-in page underlined.
+- Deleting a workspace asks as in the design: without a ✕, the warning filled, and what it deletes
+  counted (*5 sources, 5 destinations, 7 configs*).
+- Backups: *Failing* tinted red when something fails and *last run succeeded* in green; the
+  schedule in words (*Every hour*, *Daily at 02:30*, *Every 6 hours*).
+- *(optional)* in a field's label in regular weight, as in the design.
+- Destinations show their endpoint without the bucket, as in the design; the search still finds it.
+- The last run of a config on the canvas shows its whole date, also in Spanish.
+- Any dialog closes when another screen takes the URL (the address bar, the browser's back).
+- The detail of a source or destination as wide as in the design.
+- Backups keeps what it showed when the service stops answering, under a banner that tries again
+  every 10 s or with *Retry now*.
+- *Not found* as in the design: *404*, the path asked for, *Go to Backups* and *Switch workspace*.
+- A dialog opened by its URL (a source, a destination, a run) closes when another screen takes the
+  URL, instead of staying over it, and another id in the URL replaces it instead of piling up.
+- The confirmations (delete a source, destination or backup, discard the canvas) look as in the
+  design: the title and the text to the left, Cancel and the action to the right, without a ✕.
+
+## 0.1.5
+
+- A dropped row no longer shows the old order for a frame before taking its place.
+
+## 0.1.4
+
+- Nothing in the console; the version follows the service.
+
+## 0.1.3
+
+- Sources, destinations and the folders of a destination (under its row and in its form) drag by a
+  handle (⠿) at the start of the row; the order is saved as it drops, and goes back if the service
+  refuses it. Backups has a *Manual* sort that drags the same way. With a search or a filter on,
+  the handles are dimmed and say why.
+- Saving the canvas keeps the order of the sources and destinations, on it or off it.
+
 ## 0.1.2
 
 - Workspaces: **Export all** downloads every workspace as a JSON file, and each card exports its

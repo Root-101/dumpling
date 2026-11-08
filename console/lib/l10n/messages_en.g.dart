@@ -65,6 +65,7 @@ class AppMessages with BaseTranslations<AppMessagesLocale, AppMessages> {
   late final AppMessages$canvas$en canvas = AppMessages$canvas$en._(_root);
   late final AppMessages$runs$en runs = AppMessages$runs$en._(_root);
   late final AppMessages$backups$en backups = AppMessages$backups$en._(_root);
+  late final AppMessages$apiKeys$en apiKeys = AppMessages$apiKeys$en._(_root);
 }
 
 // Path: app
@@ -133,6 +134,9 @@ class AppMessages$common$en {
   /// en: 'Done'
   String get done => 'Done';
 
+  /// en: 'Copied'
+  String get copied => 'Copied';
+
   /// en: 'All'
   String get all => 'All';
 
@@ -165,6 +169,12 @@ class AppMessages$common$en {
 
   /// en: 'Clear search and filters'
   String get clearSearch => 'Clear search and filters';
+
+  /// en: 'Drag to reorder'
+  String get dragToReorder => 'Drag to reorder';
+
+  /// en: 'Clear the search and filters to reorder'
+  String get clearToReorder => 'Clear the search and filters to reorder';
 
   /// en: '{shown: int} of {total: int}'
   String shownOf({required int shown, required int total}) =>
@@ -265,8 +275,34 @@ class AppMessages$errors$en {
   /// en: 'This page does not exist.'
   String get pageNotFound => 'This page does not exist.';
 
+  /// en: 'This page doesn’t exist'
+  String get pageMissing => 'This page doesn’t exist';
+
+  /// en: 'The backup, source or workspace may have been deleted, or the link is wrong.'
+  String get pageMissingHint =>
+      'The backup, source or workspace may have been deleted, or the link is wrong.';
+
+  /// en: 'Go to Backups'
+  String get goToBackups => 'Go to Backups';
+
+  /// en: 'Switch workspace'
+  String get switchWorkspace => 'Switch workspace';
+
   /// en: 'Connection lost'
   String get offlineTitle => 'Connection lost';
+
+  /// en: 'Can’t reach the Dumpling server.'
+  String get offlineBanner => 'Can’t reach the Dumpling server.';
+
+  /// en: 'Showing what was loaded before; backups keep running on the server.'
+  String get offlineKept =>
+      'Showing what was loaded before; backups keep running on the server.';
+
+  /// en: 'Retrying in {seconds: int} s…'
+  String retryingIn({required int seconds}) => 'Retrying in ${seconds} s…';
+
+  /// en: 'Retry now'
+  String get retryNow => 'Retry now';
 
   /// en: 'Can't reach the Dumpling service at {url: String}. Check that it is running and try again.'
   String offline({required String url}) =>
@@ -302,6 +338,9 @@ class AppMessages$nav$en {
 
   /// en: 'Run log'
   String get runs => 'Run log';
+
+  /// en: 'API keys'
+  String get apiKeys => 'API keys';
 
   /// en: '{count: int} failing'
   String failedRuns({required int count}) => '${count} failing';
@@ -475,6 +514,10 @@ class AppMessages$workspaces$en {
 
   /// en: 'Current'
   String get current => 'Current';
+
+  /// en: 'Copy the slug of {name: String}: the workspace in the URLs of the API'
+  String copySlug({required String name}) =>
+      'Copy the slug of ${name}: the workspace in the URLs of the API';
 
   /// en: 'Sources'
   String get sources => 'Sources';
@@ -1321,9 +1364,9 @@ class AppMessages$runs$en {
   /// en: 'Run log'
   String get title => 'Run log';
 
-  /// en: 'Every backup run in this workspace, scheduled or manual. Times in UTC, your local time below.'
+  /// en: 'Every backup run in this workspace: scheduled, manual or through the API. Times in UTC, your local time below.'
   String get description =>
-      'Every backup run in this workspace, scheduled or manual. Times in UTC, your local time below.';
+      'Every backup run in this workspace: scheduled, manual or through the API. Times in UTC, your local time below.';
 
   /// en: 'Search by backup, source or destination'
   String get search => 'Search by backup, source or destination';
@@ -1352,6 +1395,9 @@ class AppMessages$runs$en {
   /// en: 'Manual'
   String get manual => 'Manual';
 
+  /// en: 'API'
+  String get api => 'API';
+
   /// en: 'No runs yet'
   String get emptyTitle => 'No runs yet';
 
@@ -1370,6 +1416,19 @@ class AppMessages$runs$en {
 
   /// en: 'Log copied'
   String get logCopied => 'Log copied';
+
+  /// en: 'Copy the id of this run'
+  String get copyRunId => 'Copy the id of this run';
+
+  /// en: 'Retry now'
+  String get retryNow => 'Retry now';
+
+  /// en: 'Run again'
+  String get runAgain => 'Run again';
+
+  /// en: '{name: String} started: it follows in the run log'
+  String runStarted({required String name}) =>
+      '${name} started: it follows in the run log';
 
   /// en: 'The log is written when the run ends. Refresh to see it.'
   String get logWhenDone =>
@@ -1403,8 +1462,20 @@ class AppMessages$runs$en {
   /// en: 'In progress · {size: String} so far'
   String soFar({required String size}) => 'In progress · ${size} so far';
 
-  /// en: 'Trigger'
-  String get columnTrigger => 'Trigger';
+  /// en: 'Started by'
+  String get columnStartedBy => 'Started by';
+
+  /// en: 'Source type'
+  String get sourceType => 'Source type';
+
+  /// en: 'Destination type'
+  String get destinationType => 'Destination type';
+
+  /// en: 'Queued: starts when the run in progress ends'
+  String get queued => 'Queued: starts when the run in progress ends';
+
+  /// en: 'Label sent with the run'
+  String get labelTooltip => 'Label sent with the run';
 
   /// en: 'View run'
   String get viewRun => 'View run';
@@ -1432,6 +1503,10 @@ class AppMessages$runs$en {
 
   /// en: 'Running. Refresh to see how far it got.'
   String get resultRunning => 'Running. Refresh to see how far it got.';
+
+  /// en: 'It starts when the run of this config in progress ends.'
+  String get resultQueued =>
+      'It starts when the run of this config in progress ends.';
 }
 
 // Path: backups
@@ -1491,6 +1566,9 @@ class AppMessages$backups$en {
   /// en: 'Status'
   String get columnStatus => 'Status';
 
+  /// en: 'Config'
+  String get columnConfig => 'Config';
+
   /// en: 'Source'
   String get columnSource => 'Source';
 
@@ -1499,6 +1577,21 @@ class AppMessages$backups$en {
 
   /// en: 'Schedule'
   String get columnSchedule => 'Schedule';
+
+  /// en: 'Every hour'
+  String get everyHour => 'Every hour';
+
+  /// en: 'Every hour at :{minute: String}'
+  String everyHourAt({required String minute}) => 'Every hour at :${minute}';
+
+  /// en: 'Daily at {time: String}'
+  String dailyAt({required String time}) => 'Daily at ${time}';
+
+  /// en: 'Sundays at {time: String}'
+  String sundaysAt({required String time}) => 'Sundays at ${time}';
+
+  /// en: 'Every {n: int} hours'
+  String everyHours({required int n}) => 'Every ${n} hours';
 
   /// en: 'Last backup'
   String get columnLastRun => 'Last backup';
@@ -1536,8 +1629,8 @@ class AppMessages$backups$en {
   /// en: 'Most recent first'
   String get sortLastSub => 'Most recent first';
 
-  /// en: 'Last backup (oldest)'
-  String get sortLastOld => 'Last backup (oldest)';
+  /// en: 'Last backup'
+  String get sortLastOld => 'Last backup';
 
   /// en: 'Oldest first'
   String get sortLastOldSub => 'Oldest first';
@@ -1553,6 +1646,12 @@ class AppMessages$backups$en {
 
   /// en: 'A to Z'
   String get sortNameSub => 'A to Z';
+
+  /// en: 'Manual'
+  String get sortManual => 'Manual';
+
+  /// en: 'Drag the rows to order them'
+  String get sortManualSub => 'Drag the rows to order them';
 
   /// en: 'in {time: String}'
   String inTime({required String time}) => 'in ${time}';
@@ -1583,6 +1682,9 @@ class AppMessages$backups$en {
 
   /// en: 'Recent runs'
   String get recentRuns => 'Recent runs';
+
+  /// en: 'Copy config id'
+  String get copyConfigId => 'Copy config id';
 
   /// en: 'No runs yet'
   String get noRuns => 'No runs yet';
@@ -1621,6 +1723,214 @@ class AppMessages$backups$en {
   /// en: 'Connect a source to a destination in the pipeline editor to create one.'
   String get emptyDescription =>
       'Connect a source to a destination in the pipeline editor to create one.';
+}
+
+// Path: apiKeys
+class AppMessages$apiKeys$en {
+  AppMessages$apiKeys$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'API keys'
+  String get title => 'API keys';
+
+  /// en: 'Keys for other systems to use this workspace through the API: a deploy pipeline, a script, an integration.'
+  String get description =>
+      'Keys for other systems to use this workspace through the API: a deploy pipeline, a script, an integration.';
+
+  /// en: 'How to use a key'
+  String get howTo => 'How to use a key';
+
+  /// en: 'New API key'
+  String get create => 'New API key';
+
+  /// en: 'Search keys by name or id'
+  String get search => 'Search keys by name or id';
+
+  /// en: 'Name'
+  String get columnName => 'Name';
+
+  /// en: 'Access'
+  String get columnAccess => 'Access';
+
+  /// en: 'Configs'
+  String get columnConfigs => 'Configs';
+
+  /// en: 'Created'
+  String get columnCreated => 'Created';
+
+  /// en: 'Last used'
+  String get columnLastUsed => 'Last used';
+
+  /// en: '{n: int} permissions'
+  String permissionCount({required int n}) => '${n} permissions';
+
+  /// en: 'All configs'
+  String get allConfigs => 'All configs';
+
+  /// en: '{n: int} configs'
+  String configCount({required int n}) => '${n} configs';
+
+  /// en: 'Every config of the workspace, new ones too'
+  String get everyConfig => 'Every config of the workspace, new ones too';
+
+  /// en: 'Never used'
+  String get neverUsed => 'Never used';
+
+  /// en: 'ran {config: String}'
+  String ran({required String config}) => 'ran ${config}';
+
+  /// en: 'A key is shown once, when it is created. Keys don't expire: to renew one, create another and delete the old one. They are not part of an export.'
+  String get footer =>
+      'A key is shown once, when it is created. Keys don\'t expire: to renew one, create another and delete the old one. They are not part of an export.';
+
+  /// en: 'No API keys yet'
+  String get emptyTitle => 'No API keys yet';
+
+  /// en: 'A key lets a pipeline or another system use this workspace without your password: run a backup before a deploy and wait for it, read the run log, add sources. Each key does only what you allow.'
+  String get emptyDescription =>
+      'A key lets a pipeline or another system use this workspace without your password: run a backup before a deploy and wait for it, read the run log, add sources. Each key does only what you allow.';
+
+  /// en: 'Run backups'
+  String get run => 'Run backups';
+
+  /// en: 'Start backups and follow their runs'
+  String get runSub => 'Start backups and follow their runs';
+
+  /// en: 'Read only'
+  String get read => 'Read only';
+
+  /// en: 'See everything, change nothing'
+  String get readSub => 'See everything, change nothing';
+
+  /// en: 'Full access'
+  String get full => 'Full access';
+
+  /// en: 'Everything in this workspace'
+  String get fullSub => 'Everything in this workspace';
+
+  /// en: 'Custom'
+  String get custom => 'Custom';
+
+  /// en: 'Access'
+  String get filterAccess => 'Access';
+
+  /// en: 'Config'
+  String get filterConfig => 'Config';
+
+  /// en: 'Permission'
+  String get filterPermission => 'Permission';
+
+  /// en: 'Every config'
+  String get unlimited => 'Every config';
+
+  /// en: 'API KEY'
+  String get eyebrow => 'API KEY';
+
+  /// en: 'New API key'
+  String get newTitle => 'New API key';
+
+  /// en: 'Edit {name: String}'
+  String editTitle({required String name}) => 'Edit ${name}';
+
+  /// en: 'Name'
+  String get name => 'Name';
+
+  /// en: 'What uses it. The run log shows it on the runs it starts.'
+  String get nameHint =>
+      'What uses it. The run log shows it on the runs it starts.';
+
+  /// en: 'Access'
+  String get access => 'Access';
+
+  /// en: 'Permissions · {n: int} of {total: int}'
+  String permissions({required int n, required int total}) =>
+      'Permissions · ${n} of ${total}';
+
+  /// en: 'Only some configs'
+  String get limit => 'Only some configs';
+
+  /// en: 'It runs only these and sees only their runs, and can't create configs nor use the canvas. Off: every config of the workspace, new ones too.'
+  String get limitHint =>
+      'It runs only these and sees only their runs, and can\'t create configs nor use the canvas. Off: every config of the workspace, new ones too.';
+
+  /// en: 'Only for configs and runs: give the key a permission on them to limit it.'
+  String get limitOff =>
+      'Only for configs and runs: give the key a permission on them to limit it.';
+
+  /// en: 'Not with Only some configs: it reaches every config'
+  String get notLimitable =>
+      'Not with Only some configs: it reaches every config';
+
+  /// en: 'This workspace has no configs yet.'
+  String get noConfigs => 'This workspace has no configs yet.';
+
+  /// en: 'The key itself doesn't change. To renew it, create another and delete this one.'
+  String get renewNote =>
+      'The key itself doesn\'t change. To renew it, create another and delete this one.';
+
+  /// en: 'All configs · {n: int} permissions'
+  String summaryAll({required int n}) => 'All configs · ${n} permissions';
+
+  /// en: '(one) {{configs} config · {n: int} permissions} (other) {{configs} configs · {n: int} permissions}'
+  String summarySome({required num configs, required int n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        configs,
+        one: '${configs} config · ${n} permissions',
+        other: '${configs} configs · ${n} permissions',
+      );
+
+  /// en: 'Save'
+  String get save => 'Save';
+
+  /// en: 'Create key'
+  String get createButton => 'Create key';
+
+  /// en: '{name: String} is ready'
+  String readyTitle({required String name}) => '${name} is ready';
+
+  /// en: 'Copy it now: it won't be shown again. If you lose it, delete it and create another.'
+  String get readyWarning =>
+      'Copy it now: it won\'t be shown again. If you lose it, delete it and create another.';
+
+  /// en: 'Copy'
+  String get copy => 'Copy';
+
+  /// en: 'Copied'
+  String get copied => 'Copied';
+
+  /// en: 'Use it'
+  String get use => 'Use it';
+
+  /// en: 'Or with Basic auth: the user is {id: String} and the password the rest of the key. …/runs/RUN_ID/events follows a run until it ends.'
+  String basicNote({required String id}) =>
+      'Or with Basic auth: the user is ${id} and the password the rest of the key. …/runs/RUN_ID/events follows a run until it ends.';
+
+  /// en: 'Done'
+  String get done => 'Done';
+
+  /// en: 'Delete the key {name: String}?'
+  String deleteTitle({required String name}) => 'Delete the key ${name}?';
+
+  /// en: 'Whatever uses it gets a 401 from now on. The runs it started stay in the run log. It can't be undone: to give access again, create another key.'
+  String get deleteConfirm =>
+      'Whatever uses it gets a 401 from now on. The runs it started stay in the run log. It can\'t be undone: to give access again, create another key.';
+
+  /// en: 'Key {name: String} deleted'
+  String deleted({required String name}) => 'Key ${name} deleted';
+
+  /// en: 'Key {name: String} saved'
+  String saved({required String name}) => 'Key ${name} saved';
+
+  late final AppMessages$apiKeys$group$en group =
+      AppMessages$apiKeys$group$en._(_root);
+  late final AppMessages$apiKeys$action$en action =
+      AppMessages$apiKeys$action$en._(_root);
+  late final AppMessages$apiKeys$perm$en perm = AppMessages$apiKeys$perm$en._(
+    _root,
+  );
 }
 
 // Path: workspaces.transfer
@@ -1799,13 +2109,33 @@ class AppMessages$workspaces$settings$en {
   /// en: 'Delete “{name: String}”?'
   String deleteConfirmTitle({required String name}) => 'Delete “${name}”?';
 
-  /// en: 'This deletes its sources ({sources: int}), destinations ({destinations: int}), configs ({configs: int}) and their run history. Scheduled backups stop right away. It can't be undone.'
-  String deleteConfirm({
-    required int sources,
-    required int destinations,
-    required int configs,
-  }) =>
-      'This deletes its sources (${sources}), destinations (${destinations}), configs (${configs}) and their run history. Scheduled backups stop right away. It can\'t be undone.';
+  /// en: 'This deletes {what: String} and their run history. Scheduled backups stop right away. It can't be undone.'
+  String deleteConfirm({required String what}) =>
+      'This deletes ${what} and their run history. Scheduled backups stop right away. It can\'t be undone.';
+
+  /// en: '(one) {{n} source} (other) {{n} sources}'
+  String nSources({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} source',
+        other: '${n} sources',
+      );
+
+  /// en: '(one) {{n} destination} (other) {{n} destinations}'
+  String nDestinations({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} destination',
+        other: '${n} destinations',
+      );
+
+  /// en: '(one) {{n} config} (other) {{n} configs}'
+  String nConfigs({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} config',
+        other: '${n} configs',
+      );
 
   /// en: 'Type'
   String get typeBefore => 'Type';
@@ -1857,6 +2187,9 @@ class AppMessages$canvas$runStatus$en {
 
   /// en: 'Running'
   String get running => 'Running';
+
+  /// en: 'Queued'
+  String get queued => 'Queued';
 }
 
 // Path: canvas.frequency
@@ -2255,6 +2588,156 @@ class AppMessages$canvas$guide$en {
   String place({required String name}) => 'Place ${name}';
 }
 
+// Path: apiKeys.group
+class AppMessages$apiKeys$group$en {
+  AppMessages$apiKeys$group$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'WORKSPACE'
+  String get workspace => 'WORKSPACE';
+
+  /// en: 'SOURCES'
+  String get sources => 'SOURCES';
+
+  /// en: 'DESTINATIONS'
+  String get destinations => 'DESTINATIONS';
+
+  /// en: 'CONFIGS'
+  String get configs => 'CONFIGS';
+
+  /// en: 'RUNS'
+  String get runs => 'RUNS';
+
+  /// en: 'CANVAS'
+  String get canvas => 'CANVAS';
+}
+
+// Path: apiKeys.action
+class AppMessages$apiKeys$action$en {
+  AppMessages$apiKeys$action$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'List'
+  String get list => 'List';
+
+  /// en: 'View'
+  String get view => 'View';
+
+  /// en: 'Create'
+  String get create => 'Create';
+
+  /// en: 'Edit'
+  String get edit => 'Edit';
+
+  /// en: 'Delete'
+  String get delete => 'Delete';
+
+  /// en: 'Test'
+  String get test => 'Test';
+
+  /// en: 'Run'
+  String get run => 'Run';
+
+  /// en: 'Save'
+  String get save => 'Save';
+}
+
+// Path: apiKeys.perm
+class AppMessages$apiKeys$perm$en {
+  AppMessages$apiKeys$perm$en._(this._root);
+
+  final AppMessages _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'See the name, description and defaults of the workspace'
+  String get workspaceGet =>
+      'See the name, description and defaults of the workspace';
+
+  /// en: 'Change the name, description, color and defaults of the workspace'
+  String get workspaceUpdate =>
+      'Change the name, description, color and defaults of the workspace';
+
+  /// en: 'List the sources and their status'
+  String get sourceList => 'List the sources and their status';
+
+  /// en: 'See a source: its connection, without the password'
+  String get sourceGet => 'See a source: its connection, without the password';
+
+  /// en: 'Add sources'
+  String get sourceCreate => 'Add sources';
+
+  /// en: 'Change a source: its connection and its password'
+  String get sourceUpdate => 'Change a source: its connection and its password';
+
+  /// en: 'Delete sources that no config uses'
+  String get sourceDelete => 'Delete sources that no config uses';
+
+  /// en: 'Test the connection of a source'
+  String get sourceTest => 'Test the connection of a source';
+
+  /// en: 'List the destinations and their folders'
+  String get destinationList => 'List the destinations and their folders';
+
+  /// en: 'See a destination: its bucket, without the secret key'
+  String get destinationGet =>
+      'See a destination: its bucket, without the secret key';
+
+  /// en: 'Add destinations'
+  String get destinationCreate => 'Add destinations';
+
+  /// en: 'Change a destination: its bucket, credentials and folders'
+  String get destinationUpdate =>
+      'Change a destination: its bucket, credentials and folders';
+
+  /// en: 'Delete destinations that no config uses'
+  String get destinationDelete => 'Delete destinations that no config uses';
+
+  /// en: 'Test the connection of a destination'
+  String get destinationTest => 'Test the connection of a destination';
+
+  /// en: 'List the configs, with their last and next run'
+  String get configList => 'List the configs, with their last and next run';
+
+  /// en: 'See a config: schedule, folder, object key, compression'
+  String get configGet =>
+      'See a config: schedule, folder, object key, compression';
+
+  /// en: 'Add configs between a source and a destination'
+  String get configCreate => 'Add configs between a source and a destination';
+
+  /// en: 'Change a config: schedule, folder, object key, enabled'
+  String get configUpdate =>
+      'Change a config: schedule, folder, object key, enabled';
+
+  /// en: 'Delete configs (their run history stays)'
+  String get configDelete => 'Delete configs (their run history stays)';
+
+  /// en: 'Start a backup now, with an optional label; it waits its turn if the config is running'
+  String get configRun =>
+      'Start a backup now, with an optional label; it waits its turn if the config is running';
+
+  /// en: 'List the runs of the run log'
+  String get runList => 'List the runs of the run log';
+
+  /// en: 'See a run, its log, and follow it until it ends'
+  String get runGet => 'See a run, its log, and follow it until it ends';
+
+  /// en: 'Read the whole canvas: nodes, configs and where they sit'
+  String get canvasGet =>
+      'Read the whole canvas: nodes, configs and where they sit';
+
+  /// en: 'Save the whole canvas: it can add, change and delete sources, destinations and configs'
+  String get canvasSave =>
+      'Save the whole canvas: it can add, change and delete sources, destinations and configs';
+}
+
 // Path: canvas.inspector.placeholderHelp
 class AppMessages$canvas$inspector$placeholderHelp$en {
   AppMessages$canvas$inspector$placeholderHelp$en._(this._root);
@@ -2361,6 +2844,7 @@ extension on AppMessages {
           'common.filters' => 'Filters',
           'common.clearAll' => 'Clear all',
           'common.done' => 'Done',
+          'common.copied' => 'Copied',
           'common.all' => 'All',
           'common.selected' => 'Selected',
           'common.soon' => 'Soon',
@@ -2372,6 +2856,8 @@ extension on AppMessages {
           'common.saveChanges' => 'Save changes',
           'common.noMatches' => 'Nothing matches your search',
           'common.clearSearch' => 'Clear search and filters',
+          'common.dragToReorder' => 'Drag to reorder',
+          'common.clearToReorder' => 'Clear the search and filters to reorder',
           'common.shownOf' => ({
             required int shown,
             required int total,
@@ -2413,7 +2899,17 @@ extension on AppMessages {
           'errors.unknown' => 'Unknown error',
           'errors.notFoundTitle' => 'Not found',
           'errors.pageNotFound' => 'This page does not exist.',
+          'errors.pageMissing' => 'This page doesn’t exist',
+          'errors.pageMissingHint' => 'The backup, source or workspace may have been deleted, or the link is wrong.',
+          'errors.goToBackups' => 'Go to Backups',
+          'errors.switchWorkspace' => 'Switch workspace',
           'errors.offlineTitle' => 'Connection lost',
+          'errors.offlineBanner' => 'Can’t reach the Dumpling server.',
+          'errors.offlineKept' => 'Showing what was loaded before; backups keep running on the server.',
+          'errors.retryingIn' => ({
+            required int seconds,
+          }) => 'Retrying in ${seconds} s…',
+          'errors.retryNow' => 'Retry now',
           'errors.offline' => ({
             required String url,
           }) => 'Can\'t reach the Dumpling service at ${url}. Check that it is running and try again.',
@@ -2426,6 +2922,7 @@ extension on AppMessages {
           'nav.sources' => 'Sources',
           'nav.destinations' => 'Destinations',
           'nav.runs' => 'Run log',
+          'nav.apiKeys' => 'API keys',
           'nav.failedRuns' => ({required int count}) => '${count} failing',
           'nav.language' => ({required String name}) => 'Language: ${name}',
           'nav.expand' => 'Expand menu',
@@ -2480,6 +2977,9 @@ extension on AppMessages {
           'workspaces.createHint' =>
             'A fresh canvas for another environment, client or project.',
           'workspaces.current' => 'Current',
+          'workspaces.copySlug' => ({
+            required String name,
+          }) => 'Copy the slug of ${name}: the workspace in the URLs of the API',
           'workspaces.sources' => 'Sources',
           'workspaces.destinations' => 'Destinations',
           'workspaces.backups' => 'Backups',
@@ -2591,10 +3091,32 @@ extension on AppMessages {
             required String name,
           }) => 'Delete “${name}”?',
           'workspaces.settings.deleteConfirm' => ({
-            required int sources,
-            required int destinations,
-            required int configs,
-          }) => 'This deletes its sources (${sources}), destinations (${destinations}), configs (${configs}) and their run history. Scheduled backups stop right away. It can\'t be undone.',
+            required String what,
+          }) => 'This deletes ${what} and their run history. Scheduled backups stop right away. It can\'t be undone.',
+          'workspaces.settings.nSources' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} source',
+                  other: '${n} sources',
+                ),
+          'workspaces.settings.nDestinations' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} destination',
+                  other: '${n} destinations',
+                ),
+          'workspaces.settings.nConfigs' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} config',
+                  other: '${n} configs',
+                ),
           'workspaces.settings.typeBefore' => 'Type',
           'workspaces.settings.typeAfter' => 'to confirm',
           'workspaces.settings.deleted' => ({
@@ -2919,6 +3441,7 @@ extension on AppMessages {
           'canvas.runStatus.success' => 'Success',
           'canvas.runStatus.failed' => 'Failed',
           'canvas.runStatus.running' => 'Running',
+          'canvas.runStatus.queued' => 'Queued',
           'canvas.frequency.hourly' => 'Hourly',
           'canvas.frequency.daily' => 'Daily',
           'canvas.frequency.weekly' => 'Weekly',
@@ -3054,6 +3577,9 @@ extension on AppMessages {
             'Nothing to test: connect a source to a destination first.',
           'canvas.run.button' => 'Run now',
           'canvas.run.help' => 'Runs this backup now, for real, as it is saved: the edits not saved yet are not used.',
+          _ => null,
+        } ??
+        switch (path) {
           'canvas.run.needsSave' =>
             'Save the canvas first: a run uses the saved config.',
           'canvas.run.done' => ({
@@ -3074,25 +3600,29 @@ extension on AppMessages {
           'canvas.guide.create' => 'Create one',
           'canvas.guide.place' => ({required String name}) => 'Place ${name}',
           'runs.title' => 'Run log',
-          'runs.description' => 'Every backup run in this workspace, scheduled or manual. Times in UTC, your local time below.',
+          'runs.description' => 'Every backup run in this workspace: scheduled, manual or through the API. Times in UTC, your local time below.',
           'runs.search' => 'Search by backup, source or destination',
           'runs.columnStatus' => 'Status',
           'runs.columnSource' => 'Source',
-          _ => null,
-        } ??
-        switch (path) {
           'runs.columnDestination' => 'Destination',
           'runs.columnStarted' => 'Started',
           'runs.columnDuration' => 'Duration',
           'runs.columnSize' => 'Size',
           'runs.scheduled' => 'By schedule',
           'runs.manual' => 'Manual',
+          'runs.api' => 'API',
           'runs.emptyTitle' => 'No runs yet',
           'runs.emptyDescription' => 'Backups run on their schedule, or with Run now in the pipeline editor.',
           'runs.newestOnly' => 'Only the 200 newest runs are shown.',
           'runs.log' => 'Log (UTC)',
           'runs.copyLog' => 'Copy log',
           'runs.logCopied' => 'Log copied',
+          'runs.copyRunId' => 'Copy the id of this run',
+          'runs.retryNow' => 'Retry now',
+          'runs.runAgain' => 'Run again',
+          'runs.runStarted' => ({
+            required String name,
+          }) => '${name} started: it follows in the run log',
           'runs.logWhenDone' =>
             'The log is written when the run ends. Refresh to see it.',
           'runs.noLog' => 'This run has no log.',
@@ -3111,7 +3641,11 @@ extension on AppMessages {
           'runs.soFar' => ({
             required String size,
           }) => 'In progress · ${size} so far',
-          'runs.columnTrigger' => 'Trigger',
+          'runs.columnStartedBy' => 'Started by',
+          'runs.sourceType' => 'Source type',
+          'runs.destinationType' => 'Destination type',
+          'runs.queued' => 'Queued: starts when the run in progress ends',
+          'runs.labelTooltip' => 'Label sent with the run',
           'runs.viewRun' => 'View run',
           'runs.steps' => 'Steps',
           'runs.stepConnect' => ({
@@ -3125,6 +3659,8 @@ extension on AppMessages {
           'runs.resultSuccess' => 'Backup saved',
           'runs.resultFailed' => 'The backup failed',
           'runs.resultRunning' => 'Running. Refresh to see how far it got.',
+          'runs.resultQueued' =>
+            'It starts when the run of this config in progress ends.',
           'backups.title' => 'Backups',
           'backups.description' =>
             'Every backup in this workspace, its last run and the next one.',
@@ -3144,9 +3680,19 @@ extension on AppMessages {
           'backups.updating' => 'Updating…',
           'backups.search' => 'Search backups',
           'backups.columnStatus' => 'Status',
+          'backups.columnConfig' => 'Config',
           'backups.columnSource' => 'Source',
           'backups.columnDestination' => 'Destination',
           'backups.columnSchedule' => 'Schedule',
+          'backups.everyHour' => 'Every hour',
+          'backups.everyHourAt' => ({
+            required String minute,
+          }) => 'Every hour at :${minute}',
+          'backups.dailyAt' => ({required String time}) => 'Daily at ${time}',
+          'backups.sundaysAt' => ({
+            required String time,
+          }) => 'Sundays at ${time}',
+          'backups.everyHours' => ({required int n}) => 'Every ${n} hours',
           'backups.columnLastRun' => 'Last backup',
           'backups.columnNextRun' => 'Next backup',
           'backups.allSources' => 'All sources',
@@ -3167,12 +3713,14 @@ extension on AppMessages {
           'backups.sortBy' => 'Sort by',
           'backups.sortLast' => 'Last backup',
           'backups.sortLastSub' => 'Most recent first',
-          'backups.sortLastOld' => 'Last backup (oldest)',
+          'backups.sortLastOld' => 'Last backup',
           'backups.sortLastOldSub' => 'Oldest first',
           'backups.sortNext' => 'Next backup',
           'backups.sortNextSub' => 'Soonest first',
           'backups.sortName' => 'Source name',
           'backups.sortNameSub' => 'A to Z',
+          'backups.sortManual' => 'Manual',
+          'backups.sortManualSub' => 'Drag the rows to order them',
           'backups.inTime' => ({required String time}) => 'in ${time}',
           'backups.startedAgo' => ({
             required String time,
@@ -3187,6 +3735,7 @@ extension on AppMessages {
           'backups.editConfig' => 'Edit config',
           'backups.deleteBackup' => 'Delete backup',
           'backups.recentRuns' => 'Recent runs',
+          'backups.copyConfigId' => 'Copy config id',
           'backups.noRuns' => 'No runs yet',
           'backups.viewLog' => 'View log',
           'backups.viewDetails' => 'View details',
@@ -3203,6 +3752,141 @@ extension on AppMessages {
           }) => 'Backup ${name} deleted',
           'backups.saved' => ({required String name}) => 'Backup ${name} saved',
           'backups.emptyDescription' => 'Connect a source to a destination in the pipeline editor to create one.',
+          'apiKeys.title' => 'API keys',
+          'apiKeys.description' => 'Keys for other systems to use this workspace through the API: a deploy pipeline, a script, an integration.',
+          'apiKeys.howTo' => 'How to use a key',
+          'apiKeys.create' => 'New API key',
+          'apiKeys.search' => 'Search keys by name or id',
+          'apiKeys.columnName' => 'Name',
+          'apiKeys.columnAccess' => 'Access',
+          'apiKeys.columnConfigs' => 'Configs',
+          'apiKeys.columnCreated' => 'Created',
+          'apiKeys.columnLastUsed' => 'Last used',
+          'apiKeys.permissionCount' => ({required int n}) => '${n} permissions',
+          'apiKeys.allConfigs' => 'All configs',
+          'apiKeys.configCount' => ({required int n}) => '${n} configs',
+          'apiKeys.everyConfig' =>
+            'Every config of the workspace, new ones too',
+          'apiKeys.neverUsed' => 'Never used',
+          'apiKeys.ran' => ({required String config}) => 'ran ${config}',
+          'apiKeys.footer' => 'A key is shown once, when it is created. Keys don\'t expire: to renew one, create another and delete the old one. They are not part of an export.',
+          'apiKeys.emptyTitle' => 'No API keys yet',
+          'apiKeys.emptyDescription' => 'A key lets a pipeline or another system use this workspace without your password: run a backup before a deploy and wait for it, read the run log, add sources. Each key does only what you allow.',
+          'apiKeys.run' => 'Run backups',
+          'apiKeys.runSub' => 'Start backups and follow their runs',
+          'apiKeys.read' => 'Read only',
+          'apiKeys.readSub' => 'See everything, change nothing',
+          'apiKeys.full' => 'Full access',
+          'apiKeys.fullSub' => 'Everything in this workspace',
+          'apiKeys.custom' => 'Custom',
+          'apiKeys.filterAccess' => 'Access',
+          'apiKeys.filterConfig' => 'Config',
+          'apiKeys.filterPermission' => 'Permission',
+          'apiKeys.unlimited' => 'Every config',
+          'apiKeys.eyebrow' => 'API KEY',
+          'apiKeys.newTitle' => 'New API key',
+          'apiKeys.editTitle' => ({required String name}) => 'Edit ${name}',
+          'apiKeys.name' => 'Name',
+          'apiKeys.nameHint' =>
+            'What uses it. The run log shows it on the runs it starts.',
+          'apiKeys.access' => 'Access',
+          'apiKeys.permissions' => ({
+            required int n,
+            required int total,
+          }) => 'Permissions · ${n} of ${total}',
+          'apiKeys.limit' => 'Only some configs',
+          'apiKeys.limitHint' => 'It runs only these and sees only their runs, and can\'t create configs nor use the canvas. Off: every config of the workspace, new ones too.',
+          'apiKeys.limitOff' => 'Only for configs and runs: give the key a permission on them to limit it.',
+          'apiKeys.notLimitable' =>
+            'Not with Only some configs: it reaches every config',
+          'apiKeys.noConfigs' => 'This workspace has no configs yet.',
+          'apiKeys.renewNote' => 'The key itself doesn\'t change. To renew it, create another and delete this one.',
+          'apiKeys.summaryAll' => ({
+            required int n,
+          }) => 'All configs · ${n} permissions',
+          'apiKeys.summarySome' =>
+            ({required num configs, required int n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  configs,
+                  one: '${configs} config · ${n} permissions',
+                  other: '${configs} configs · ${n} permissions',
+                ),
+          'apiKeys.save' => 'Save',
+          'apiKeys.createButton' => 'Create key',
+          'apiKeys.readyTitle' => ({
+            required String name,
+          }) => '${name} is ready',
+          'apiKeys.readyWarning' => 'Copy it now: it won\'t be shown again. If you lose it, delete it and create another.',
+          'apiKeys.copy' => 'Copy',
+          'apiKeys.copied' => 'Copied',
+          'apiKeys.use' => 'Use it',
+          'apiKeys.basicNote' => ({
+            required String id,
+          }) => 'Or with Basic auth: the user is ${id} and the password the rest of the key. …/runs/RUN_ID/events follows a run until it ends.',
+          'apiKeys.done' => 'Done',
+          'apiKeys.deleteTitle' => ({
+            required String name,
+          }) => 'Delete the key ${name}?',
+          'apiKeys.deleteConfirm' => 'Whatever uses it gets a 401 from now on. The runs it started stay in the run log. It can\'t be undone: to give access again, create another key.',
+          'apiKeys.deleted' => ({
+            required String name,
+          }) => 'Key ${name} deleted',
+          'apiKeys.saved' => ({required String name}) => 'Key ${name} saved',
+          'apiKeys.group.workspace' => 'WORKSPACE',
+          'apiKeys.group.sources' => 'SOURCES',
+          'apiKeys.group.destinations' => 'DESTINATIONS',
+          'apiKeys.group.configs' => 'CONFIGS',
+          'apiKeys.group.runs' => 'RUNS',
+          'apiKeys.group.canvas' => 'CANVAS',
+          'apiKeys.action.list' => 'List',
+          'apiKeys.action.view' => 'View',
+          'apiKeys.action.create' => 'Create',
+          'apiKeys.action.edit' => 'Edit',
+          'apiKeys.action.delete' => 'Delete',
+          'apiKeys.action.test' => 'Test',
+          'apiKeys.action.run' => 'Run',
+          'apiKeys.action.save' => 'Save',
+          'apiKeys.perm.workspaceGet' =>
+            'See the name, description and defaults of the workspace',
+          'apiKeys.perm.workspaceUpdate' =>
+            'Change the name, description, color and defaults of the workspace',
+          'apiKeys.perm.sourceList' => 'List the sources and their status',
+          'apiKeys.perm.sourceGet' =>
+            'See a source: its connection, without the password',
+          'apiKeys.perm.sourceCreate' => 'Add sources',
+          'apiKeys.perm.sourceUpdate' =>
+            'Change a source: its connection and its password',
+          'apiKeys.perm.sourceDelete' => 'Delete sources that no config uses',
+          'apiKeys.perm.sourceTest' => 'Test the connection of a source',
+          'apiKeys.perm.destinationList' =>
+            'List the destinations and their folders',
+          'apiKeys.perm.destinationGet' =>
+            'See a destination: its bucket, without the secret key',
+          'apiKeys.perm.destinationCreate' => 'Add destinations',
+          'apiKeys.perm.destinationUpdate' =>
+            'Change a destination: its bucket, credentials and folders',
+          'apiKeys.perm.destinationDelete' =>
+            'Delete destinations that no config uses',
+          'apiKeys.perm.destinationTest' =>
+            'Test the connection of a destination',
+          'apiKeys.perm.configList' =>
+            'List the configs, with their last and next run',
+          'apiKeys.perm.configGet' =>
+            'See a config: schedule, folder, object key, compression',
+          'apiKeys.perm.configCreate' =>
+            'Add configs between a source and a destination',
+          'apiKeys.perm.configUpdate' =>
+            'Change a config: schedule, folder, object key, enabled',
+          'apiKeys.perm.configDelete' =>
+            'Delete configs (their run history stays)',
+          'apiKeys.perm.configRun' => 'Start a backup now, with an optional label; it waits its turn if the config is running',
+          'apiKeys.perm.runList' => 'List the runs of the run log',
+          'apiKeys.perm.runGet' =>
+            'See a run, its log, and follow it until it ends',
+          'apiKeys.perm.canvasGet' =>
+            'Read the whole canvas: nodes, configs and where they sit',
+          'apiKeys.perm.canvasSave' => 'Save the whole canvas: it can add, change and delete sources, destinations and configs',
           _ => null,
         };
   }

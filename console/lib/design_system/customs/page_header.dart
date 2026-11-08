@@ -8,12 +8,16 @@ class PageHeader extends StatelessWidget {
   final String title;
   final String? workspace;
   final String? description;
+
+  /// A link after [description] (*How to use a key*)
+  final (String, VoidCallback)? link;
   final List<Widget> actions;
 
   const PageHeader({
     required this.title,
     this.workspace,
     this.description,
+    this.link,
     this.actions = const [],
     super.key,
   });
@@ -62,8 +66,32 @@ class PageHeader extends StatelessWidget {
                   ),
                 ),
                 if (description != null)
-                  Text(
-                    description!,
+                  Text.rich(
+                    TextSpan(
+                      text: description,
+                      children: [
+                        if (link case (final label, final onTap)) ...[
+                          const TextSpan(text: ' '),
+                          WidgetSpan(
+                            alignment: PlaceholderAlignment.baseline,
+                            baseline: TextBaseline.alphabetic,
+                            child: InkWell(
+                              onTap: onTap,
+                              child: Text(
+                                label,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: app.colors.primary.primaryFaded,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor:
+                                      app.colors.primary.primaryFaded,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                     style: TextStyle(
                       fontSize: 13,
                       color: app.colors.neutral.grey4,

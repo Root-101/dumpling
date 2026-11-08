@@ -29,6 +29,7 @@ class RunsScreen extends StatefulWidget {
   final String? openId;
 
   /// The filters of the URL: `?status=failed&source=postgres&destination=s3`
+  /// and `by=api`
   final Map<String, String> filters;
 
   const RunsScreen({
@@ -102,6 +103,7 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
   static const String _status = 'status';
   static const String _source = 'source';
   static const String _destination = 'destination';
+  static const String _by = 'by';
 
   /// The URL has the filters, so the log can be reloaded or shared filtered
   void _filter(String key, String? value) => _go(
@@ -122,7 +124,10 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
     cubit
       ..filterStatus(RunStatus.values.asNameMap()[f[_status]])
       ..filterSourceType(f[_source])
-      ..filterDestinationType(f[_destination]);
+      ..filterDestinationType(f[_destination])
+      ..filterTrigger(
+        const {'schedule', 'manual', 'api'}.contains(f[_by]) ? f[_by] : null,
+      );
   }
 
   /// The run of the URL over the log, once it is loaded
@@ -382,28 +387,20 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
         shown: data.visibleRuns.length,
         total: runs.length,
       ),
+      // as the design orders them: what was backed up, where, why, how it ended
       groups: [
         AppFilterGroup(
-          title: t.columnStatus,
+          title: t.sourceType,
           options: [
-            all(data.status == null, () => _filter(_status, null)),
-            for (final status in RunStatus.values)
-              AppFilterOption(
-                label: RunStatusLabel.labelOf(status),
-                selected: data.status == status,
-                count: runs.where((r) => r.status == status).length,
-                onTap: () => _filter(_status, status.name),
-              ),
-          ],
-        ),
-        AppFilterGroup(
-          title: t.columnSource,
-          options: [
-            all(data.sourceType == null, () => _filter(_source, null)),
+            AppFilterOption(
+              label: app.intl.backups.allSources,
+              selected: data.sourceType == null,
+              count: runs.length,
+              onTap: () => _filter(_source, null),
+            ),
             for (final type in {for (final r in runs) r.sourceType})
               AppFilterOption(
                 label: SourceTypeLook.labelOf(type),
-                leading: TypeBadge(look: SourceTypeLook.lookOf(type), size: 24),
                 selected: data.sourceType == type,
                 count: runs.where((r) => r.sourceType == type).length,
                 onTap: () => _filter(_source, type),
@@ -411,22 +408,63 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
           ],
         ),
         AppFilterGroup(
-          title: t.columnDestination,
+          title: t.destinationType,
           options: [
-            all(
-              data.destinationType == null,
-              () => _filter(_destination, null),
+            AppFilterOption(
+              label: app.intl.backups.allDestinations,
+              selected: data.destinationType == null,
+              count: runs.length,
+              onTap: () => _filter(_destination, null),
             ),
             for (final type in {for (final r in runs) r.destinationType})
               AppFilterOption(
                 label: DestinationTypeLook.labelOf(type),
-                leading: TypeBadge(
-                  look: DestinationTypeLook.lookOf(type),
-                  size: 24,
-                ),
                 selected: data.destinationType == type,
                 count: runs.where((r) => r.destinationType == type).length,
                 onTap: () => _filter(_destination, type),
+              ),
+          ],
+        ),
+        AppFilterGroup(
+          title: t.columnStartedBy,
+          options: [
+            all(data.trigger == null, () => _filter(_by, null)),
+            for (final (trigger, label) in [
+              ('schedule', t.scheduled),
+              ('manual', t.manual),
+              ('api', t.api),
+            ])
+              AppFilterOption(
+                label: label,
+                selected: data.trigger == trigger,
+                count: runs.where((r) => r.trigger == trigger).length,
+                onTap: () => _filter(_by, trigger),
+              ),
+          ],
+        ),
+        AppFilterGroup(
+          title: t.columnStatus,
+          options: [
+            all(data.status == null, () => _filter(_status, null)),
+            for (final status in const [
+              RunStatus.success,
+              RunStatus.failed,
+              RunStatus.running,
+              RunStatus.queued,
+            ])
+              AppFilterOption(
+                label: RunStatusLabel.labelOf(status),
+                leading: Container(
+                  width: 7,
+                  height: 7,
+                  decoration: BoxDecoration(
+                    color: RunStatusLabel.colorOf(status),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                selected: data.status == status,
+                count: runs.where((r) => r.status == status).length,
+                onTap: () => _filter(_status, status.name),
               ),
           ],
         ),
@@ -522,6 +560,7 @@ class _RunRow extends StatelessWidget {
         duration: RunsScreen.durationOf(run.duration),
       ),
       RunStatus.failed => run.error ?? '—',
+      RunStatus.queued => t.queued,
       RunStatus.running =>
         size != null && size > 0
             ? t.soFar(size: app.storageFormatter.formatSize(size))
@@ -581,10 +620,19 @@ class _RunRow extends StatelessWidget {
           ),
           14.gap(),
           SizedBox(
-            width: 90,
-            child: Text(
-              run.manual ? t.manual : t.scheduled,
-              style: TextStyle(fontSize: 11, color: colors.neutral.grey4),
+            width: 130,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 4,
+              children: [
+                Text(
+                  run.startedBy,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 11, color: colors.neutral.grey4),
+                ),
+                if (run.label case final label?) RunLabelChip(label),
+              ],
             ),
           ),
           SizedBox(
@@ -614,6 +662,8 @@ class _RunRow extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     color: colors.primary.primaryFaded,
+                    decoration: TextDecoration.underline,
+                    decorationColor: colors.primary.primaryFaded,
                   ),
                 ),
               ),

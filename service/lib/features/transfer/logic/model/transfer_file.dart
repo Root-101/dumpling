@@ -174,6 +174,9 @@ class ImportedWorkspace {
       destinationType: byName(DestinationType.values, 'destination_type'),
       trigger: byName(RunTrigger.values, 'trigger'),
       status: byName(RunStatus.values, 'status'),
+      label: Value(json.field<String?>('label')),
+      // The keys are not exported: the name stays, the id would point nowhere
+      keyName: Value(json.field<String?>('key_name')),
       location: Value(json.field<String?>('location')),
       sizeBytes: Value(json.field<int?>('size_bytes') ?? 0),
       error: Value(json.field<String?>('error')),

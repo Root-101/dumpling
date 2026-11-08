@@ -22,9 +22,8 @@ class S3SettingsModel {
     required this.pathStyle,
   });
 
-  /// `s3.us-east-1.amazonaws.com/bucket-backups`
-  String get address =>
-      '${endpoint.replaceFirst(RegExp(r'^https?://'), '')}/$bucket';
+  /// `s3.us-east-1.amazonaws.com`
+  String get address => endpoint.replaceFirst(RegExp(r'^https?://'), '');
 }
 
 /// A bucket backups are written to. Each of its [folders] is a connection
@@ -58,6 +57,15 @@ class DestinationModel {
     s3: s3,
     folders: folders,
     lastCheck: check,
+  );
+
+  DestinationModel withFolders(List<String> folders) => DestinationModel(
+    id: id,
+    name: name,
+    type: type,
+    s3: s3,
+    folders: folders,
+    lastCheck: lastCheck,
   );
 }
 

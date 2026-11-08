@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -101,9 +103,7 @@ extension CanvasResponseMapping on CanvasResponse {
         sourceId: json['source_id'],
         destinationId: json['destination_id'],
         folderId: json['folder'],
-        // shortcut: a config the service has without position (created
-        // through the API) lands at the origin; place it between its ends if
-        // that ever happens outside tests
+        // without position (made through the API): [_layOut] places it
         pos: position(json) ?? Offset.zero,
         name: json['name'],
         schedule: json['schedule'],
@@ -115,31 +115,136 @@ extension CanvasResponseMapping on CanvasResponse {
       );
     }
 
+    // a source or destination without position (made through the API) that a
+    // config uses goes on the canvas with it; the rest stay off it
+    final used = <String>{
+      for (final c in configs) ...[c['source_id'], c['destination_id']],
+    };
     final placed = <String>{
       for (final node in [...sources, ...destinations])
-        if (node['position'] != null) node['id'],
+        if (node['position'] != null || used.contains(node['id'])) node['id'],
     };
-    return CanvasModel(
+    final laid = _layOut(
       sources: [
         for (final s in sources)
-          if (placed.contains(s['id'])) source(s),
+          if (placed.contains(s['id'])) (source(s), s['position'] == null),
       ],
+      destinations: [
+        for (final d in destinations)
+          if (placed.contains(d['id'])) (destination(d), d['position'] == null),
+      ],
+      configs: [for (final c in configs) (config(c), c['position'] == null)],
+    );
+    return CanvasModel(
+      sources: laid.sources,
       sourcePool: [
         for (final s in sources)
           if (!placed.contains(s['id'])) source(s),
       ],
-      destinations: [
-        for (final d in destinations)
-          if (placed.contains(d['id'])) destination(d),
-      ],
+      destinations: laid.destinations,
       destinationPool: [
         for (final d in destinations)
           if (!placed.contains(d['id'])) destination(d),
       ],
-      configs: configs.map(config).toList(),
+      configs: laid.configs,
       ids: ids,
+      order: {
+        for (final (i, s) in sources.indexed) s['id'] as String: i,
+        for (final (i, d) in destinations.indexed) d['id'] as String: i,
+      },
     );
   }
+}
+
+/// Places the nodes the service has without position (`true` beside each):
+/// sources down the left, destinations down the right, under the ones placed,
+/// and each config between its ends, below any config already there
+({
+  List<SourceNode> sources,
+  List<DestinationNode> destinations,
+  List<BackupConfig> configs,
+})
+_layOut({
+  required List<(SourceNode, bool)> sources,
+  required List<(DestinationNode, bool)> destinations,
+  required List<(BackupConfig, bool)> configs,
+}) {
+  const gap = 24.0;
+  var sourceY = 130.0;
+  for (final (s, loose) in sources) {
+    if (!loose) {
+      sourceY = math.max(
+        sourceY,
+        s.pos.dy + CanvasGeometry.sourceSize.height + gap,
+      );
+    }
+  }
+  var destinationY = 88.0;
+  for (final (d, loose) in destinations) {
+    if (!loose) {
+      destinationY = math.max(
+        destinationY,
+        d.pos.dy + CanvasGeometry.destinationHeight(d) + gap,
+      );
+    }
+  }
+  final placedSources = <SourceNode>[];
+  for (final (s, loose) in sources) {
+    if (!loose) {
+      placedSources.add(s);
+      continue;
+    }
+    placedSources.add(s.copyWith(pos: Offset(40, sourceY)));
+    sourceY += CanvasGeometry.sourceSize.height + gap;
+  }
+  final placedDestinations = <DestinationNode>[];
+  for (final (d, loose) in destinations) {
+    if (!loose) {
+      placedDestinations.add(d);
+      continue;
+    }
+    placedDestinations.add(d.copyWith(pos: Offset(760, destinationY)));
+    destinationY += CanvasGeometry.destinationHeight(d) + gap;
+  }
+  final placedConfigs = [
+    for (final (c, loose) in configs)
+      if (!loose) c,
+  ];
+  for (final (c, loose) in configs) {
+    if (!loose) continue;
+    final source = placedSources.where((s) => s.id == c.sourceId).firstOrNull;
+    final dest = placedDestinations
+        .where((d) => d.id == c.destinationId)
+        .firstOrNull;
+    var pos = const Offset(400, 130);
+    if (source != null && dest != null) {
+      final a = CanvasGeometry.sourceOut(source);
+      final b = CanvasGeometry.destinationPort(dest, c.folderId);
+      pos = Offset(
+        ((a.dx + b.dx) / 2 - CanvasGeometry.configSize.width / 2)
+            .roundToDouble(),
+        ((a.dy + b.dy) / 2 - CanvasGeometry.configPortY).roundToDouble(),
+      );
+    }
+    // another config there already: below it, as a wire drawn by hand
+    while (placedConfigs.any(
+      (o) =>
+          CanvasGeometry.configRect(o)
+              .inflate(12)
+              .overlaps(pos & CanvasGeometry.configSize),
+    )) {
+      pos += Offset(0, CanvasGeometry.configSize.height + gap);
+    }
+    placedConfigs.add(c.copyWith(pos: pos));
+  }
+  // in the order the service sent them
+  final order = {for (final (i, (c, _)) in configs.indexed) c.id: i};
+  placedConfigs.sort((a, b) => order[a.id]!.compareTo(order[b.id]!));
+  return (
+    sources: placedSources,
+    destinations: placedDestinations,
+    configs: placedConfigs,
+  );
 }
 
 extension CanvasDataMapping on CanvasData {
@@ -148,12 +253,25 @@ extension CanvasDataMapping on CanvasData {
   /// an orphan one, and leaving it out deletes it
   CanvasRequest toRequest() {
     Map<String, double> position(Offset p) => {'x': p.dx, 'y': p.dy};
+    // on the canvas or off it, each list keeps its order; new ones last
+    List<(T, bool)> inOrder<T>(
+      List<T> placed,
+      List<T> pool,
+      String Function(T) id,
+    ) {
+      final all = [
+        for (final n in placed) (n, true),
+        for (final n in pool) (n, false),
+      ];
+      int rank(int i) => order[id(all[i].$1)] ?? order.length + i;
+      final indexes = [for (var i = 0; i < all.length; i++) i]
+        ..sort((a, b) => rank(a).compareTo(rank(b)));
+      return [for (final i in indexes) all[i]];
+    }
+
     return CanvasRequest(
       sources: [
-        for (final (s, placed) in [
-          for (final s in sources) (s, true),
-          for (final s in sourcePool) (s, false),
-        ])
+        for (final (s, placed) in inOrder(sources, sourcePool, (s) => s.id))
           {
             'id': s.id,
             'position': placed ? position(s.pos) : null,
@@ -163,10 +281,11 @@ extension CanvasDataMapping on CanvasData {
           },
       ],
       destinations: [
-        for (final (d, placed) in [
-          for (final d in destinations) (d, true),
-          for (final d in destinationPool) (d, false),
-        ])
+        for (final (d, placed) in inOrder(
+          destinations,
+          destinationPool,
+          (d) => d.id,
+        ))
           {
             'id': d.id,
             'position': placed ? position(d.pos) : null,

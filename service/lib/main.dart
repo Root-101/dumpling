@@ -51,6 +51,13 @@ class Dumpling {
       ..addDeserializer(
         Deserializer<ConfigRequest>.json(ConfigRequest.fromJson),
       )
+      ..addDeserializer(Deserializer<OrderRequest>.json(OrderRequest.fromJson))
+      ..addDeserializer(
+        Deserializer<ApiKeyRequest>.json(ApiKeyRequest.fromJson),
+      )
+      ..addDeserializer(
+        Deserializer<RunNowRequest>.json(RunNowRequest.fromJson),
+      )
       ..addDeserializer(
         Deserializer<CanvasRequest>.json(CanvasRequest.fromJson),
       )

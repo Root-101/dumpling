@@ -1,148 +1,123 @@
 # Roadmap
 
-Dumpling backs up databases on a schedule and stores the dumps somewhere else. 0.1.0 has one source
-(PostgreSQL) and one destination (S3), behind generic contracts: MySQL or MongoDB as sources and
-Google Drive as a destination are a new implementation, not a change to the rest. What connects
-them is the **canvas**: a source, a destination and the config between them, drawn and connected by
-hand.
+What is still to do, numbered to talk about each item by its number and to do them in any order.
+An item done is ticked (`[x]`) in the same change, and leaves this file once its version is
+released: what each version brought is in the [changelog](CHANGELOG.md).
 
-## 0.1.0
+## Next
 
-Built over the release candidates `0.1.0-rc.1` (2026-10-30) to `rc.8`; their changes, one by one,
-are in the changelogs of [`service/`](service/CHANGELOG.md) and [`console/`](console/CHANGELOG.md).
+Already defined, what comes next. Not started.
 
-- **Foundations:** the service (Winter 1.0.0, drift + SQLite in WAL, slang, Problem Details) and
-  the console (Flutter Web, flutter_bloc, go_router), in English and Spanish (the browser's
-  language at first). Credentials encrypted with AES-GCM and never returned. `SourceDriver` and
-  `DestinationDriver` contracts with a registry of types, the planned ones shown as disabled. CI
-  with analyze and tests of both packages.
-- **Release:** one image where the service serves the console, with the `pg_dump` of
-  `PG_VERSION`; `docker-compose.yml` and `.env.example`; it deploys on Railway (a Volume on
-  `/data`). A new console shows on reload (`Cache-Control: no-cache`).
-- **Auth:** one admin from the environment, a JWT of 12 h, failed logins limited per IP; an
-  expired session signs in again over the screen.
-- **Workspaces:** create, edit, delete by typing the name (which cancels its schedules; the files
-  in the buckets stay); defaults for new configs; health on each card.
-- **Sources and destinations:** PostgreSQL (fields or URL, custom or plain dumps, TLS by default)
-  and S3-compatible (our own SigV4, folders as connection points). Forms in steps: name and type,
-  then the connection with its test (*Next* waits for it), then options or folders, each new
-  folder tested before saving.
-- **Canvas:** edited whole and saved in one transaction; configs with cron (UTC, with an ⓘ),
-  object key placeholders, compression and enabled, starting with the workspace's defaults; Run
-  now, a Test run of every flow, a guide for an empty workspace.
-- **Backup engine:** cron scheduler; `pg_dump` → gzip → S3 multipart streamed without touching the
-  disk; failed or cut uploads aborted; one run per config at a time, with its status, size, log and
-  object key.
-- **Backups and run log:** health summary, configs with last and next run, filters and sort, the
-  next backup counting down by the second and reloading once due; the run log with filters and the
-  detail of each run, its location, log and error selectable.
-- **Quality of life:** a path per screen; warnings for long names and double compression; leaving
-  an unsaved canvas asks first; a rail that expands from a notch; a splash, skeletons, Not found
-  and Connection lost pages.
-- **Checked:** restore guide (`docs/restore.md`), security model (`SECURITY.md`), end-to-end test
-  in Docker, git history reviewed for secrets, every screen against the design, a manual test from
-  scratch, and a code audit (18 findings) and a security audit (10 leads), all fixed.
+1. [ ] **Dumpling as a source of each workspace:** a source type whose dump is the export of its
+   own workspace, so it goes through the same backups as any database (schedule, compression,
+   destination, run log) and the file lands in a bucket on its own.
 
-## Seen after 0.1.0
+   - **Goal:** recovering when the server is lost, above all around the versions that don't migrate
+     the database.
+   - **A source like the others:** added from the same place, only its type differs. No connection
+     fields and no limit per workspace.
+   - **Only its own workspace:** a source is configured inside a workspace, so it exports that one.
+   - **The same file as the export**, reusing `TransferService.export`: the canvas, the credentials
+     as stored (encrypted) and the runs of the last month. Its extension is `.json`, and `{db}` in
+     the object key is the slug of the workspace. The file includes this source, so a workspace
+     imported from it keeps backing itself up.
+   - **Readable in the bucket** until *Encrypt the dump* exists: hosts, users, bucket names and run
+     logs. Accepted.
+   - **Restoring is the current Import.** It needs the credentials of the bucket, to fetch the file
+     by hand, and the same `SECRETS_ENCRYPTION_KEY`: neither is in the file, so both are kept
+     outside Dumpling. On an empty instance it just works. On a live one it adds `Prod (2)` with
+     its schedules on, doubling the backups. API keys are not exported: pipelines need new ones.
+   - **Before a version without migration:** the file in the bucket is the one of the last cron, so
+     *Upgrading* in the README gets a step: **Run now** first.
+   - **The version of the file:** the import asks for exactly the same `version`, and a new one
+     would leave the backups in the bucket unreadable. So it isn't raised while the import can read
+     the older files, and when it has to be, the import also accepts the older versions.
+   - **API keys, no special case.** Running it sends the file where the admin chose. A key with
+     `config.update` or `canvas.save` could point it to its own bucket, but it can already do that
+     with a whole database, and this only adds credentials useless without
+     `SECRETS_ENCRYPTION_KEY`. It doesn't leave its workspace, which is why a key never gets the
+     export: add that distinction to DECISIONS §18.
+   - **How the driver knows its workspace:** `dump()` gets it as a parameter from the engine. Not in
+     `settings`: an import into `Prod (2)` changes the slug, and it would export another workspace.
+   - **Console:** the lists of sources show *This Dumpling* as the host and its version as the
+     server's.
+   - **No schema change, so no 🔴:** `sources.type` is text, a new value of `SourceType`; `settings`
+     is an empty JSON and `secrets_encrypted` an empty map, encrypted.
+   - **In the same change:** the flow of a visual change (canvas first), the docs (`docs/console.md`,
+     `docs/restore.md`, `README.md`, `DECISIONS.md`, changelogs) and the tests.
+2. [ ] **Imports that keep working between versions:** an export of any earlier version can be
+   imported, which is what *Upgrading* relies on. Today nothing guarantees it: the tests export and
+   import with the same code, so a field renamed passes them and fails the user who already deleted
+   the SQLite file.
 
-Things noticed using 0.1.0, numbered to do them in any order. What is already done is in the
-[changelog](CHANGELOG.md).
+   - **Additive changes:** a new field is optional or has a default, and `version` stays.
+   - **Changes that break the file** (a rename, a new required field, another structure of
+     `settings`, an enum value renamed or removed): `version` goes up, with a pure function that
+     converts the JSON of the previous version, run before `ImportRequest.fromJson`. They chain: a
+     file of 0.2.0 goes straight into 0.5.0. It isn't a migration of the SQLite file: that rule
+     stays.
+   - **The guarantee:** the tests keep a real export of each version of the format and import it,
+     so a break fails in CI.
+   - **Not supported:** a file of a newer version into an older Dumpling.
 
-1. Reorder by hand, dragging them: backups, sources, destinations and the folders of a
-   destination. The order is saved in the service (a new position column in each table). In
-   Backups it is a "Manual" option of the sort selector, and dragging works only with it chosen.
-2. A backup before a release: when a backend deploys a version with a migration, it asks Dumpling
-   (a request from its pipeline) to back up its database before running the migration. Needs
-   API keys or users allowed only to run a given config. To talk through before designing it.
-3. When restoring exists: back up the target database first, rename it, create a new database and
-   restore into that one, so a restore that goes wrong loses nothing.
-4. Encrypt the dump before uploading it to the bucket. To talk through how before implementing it.
-5. Dumpling itself as a source of each workspace: its export (0.1.2) goes through the same backups
-   as any database (schedule, compression, destination, run log), so the file lands in a bucket on
-   its own. To talk through.
+## Later
 
-## 0.2.0
+By priority, highest first. 🔴 changes the database schema (a version to export and import again).
 
-- Benchmarks, with a script that repeats them and its results in the repo (like feather-io's): the
-  memory of the service at rest, during a backup and after it, and how long a backup takes, by
-  size of the database. Measured by hand on 0.1.0-rc.8 (the image, PostgreSQL 18 and feather-io,
-  a 200 MB database): ~15 MiB at rest, ~100 MiB at the peak of a backup (the 16 MiB parts it
-  uploads, plus ~11 MiB of `pg_dump`) and ~66 MiB minutes after it, memory Dart doesn't give back.
-- Retention (needs ListObjects and DeleteObject in the destination).
-- Destination detail with what is in the bucket (ListObjects): used space, objects, and the files,
-  size and last write of each folder; and the history of its connection checks, not only the last.
-- Source detail with the size of the database, the copies stored and the success rate of its
-  runs; and the history of its connection checks, not only the last.
-- `verify-full` with a CA for PostgreSQL sources (`require` and `disable` exist).
-- Download a backup from the console.
-- Events feed (changes, connection checks) and alerts.
-- Live runs over a websocket: the service pushes each run's step, bytes and percentage as it goes,
-  and the run log and its dialog update without Refresh. Until then a run in progress shows a
-  generic bar and the bytes uploaded so far, and its log appears only when it ends. The same
-  socket tells Backups when a scheduled run starts and ends and the next one is planned, so the
-  countdown stays local and the screen updates without the reload it does once due (which stays,
-  for a socket that is down). The token goes in its first message (a browser can't send headers on
-  a WebSocket). To design in detail when it starts.
-- Hardening left by the security audit: a new admin password ends the sessions already open;
-  refuse to start with short secrets (today only a warning); pin the JWT algorithm and an
-  audience; a retention for the run log; no redirects followed by the S3 client; the stored
-  password dropped when a source's host changes; a `Content-Security-Policy` for the console.
-- Copying connections between workspaces; zstd compression.
-- More sources (MySQL, MariaDB, MongoDB) and destinations (Google Drive, SFTP, local download).
-
-## Docker image
-
-Done for 0.1.2 (`.github/workflows/release.yml`), except the Railway template. The plan: publish the image, built by CI on each tag, so running Dumpling needs no clone and no
-build. The `Dockerfile` at the root is already publishable (one image, no secrets in it, no
-`VOLUME`); what is missing is the CI, the compose and the docs.
-
-- **A release workflow** (`.github/workflows/release.yml`) on `push: tags: ['*.*.*']`, with
-  `permissions: packages: write`: `docker/setup-qemu-action`, `setup-buildx-action`,
-  `login-action` (ghcr.io with `GITHUB_TOKEN`), `metadata-action` (`type=semver,pattern={{version}}`:
-  `latest` only on versions without `-rc`) and `build-push-action` with
-  `platforms: linux/amd64,linux/arm64` and `cache-from/to: type=gha`. It runs the tests first
-  (`needs:` a check job, or reuse `ci.yml`): a pushed tag publishes at once.
-- **`docker-compose.yml` pulls it:** `image: ghcr.io/root-101/dumpling:<version>` instead of
-  `build:`, so the compose and `.env.example` are all a user needs. The `build:` moves to a
-  `docker-compose.override.yml` or stays in the README (`docker build`).
-- **Docs:** "Run it" in the README starts with `docker run ghcr.io/...`.
-- **The Railway template** deploys the published image instead of building the repo (the build
-  takes minutes, the Flutter SDK included); its `PG_VERSION` variable goes away with the build.
-- **Registry:** `ghcr.io` first (no extra secret, linked to the repo and its releases). Docker Hub
-  is easier to find but needs a token as a secret and rate-limits anonymous pulls; both at once is
-  a second login and a second line in `images:`.
-- **`PG_VERSION`:** a build arg, so each published image carries one `pg_dump`. Publish with 18
-  only: a newer `pg_dump` dumps older servers. Catch: a plain SQL dump of `pg_dump` 18 can carry
-  statements (`SET transaction_timeout`) that fail when restored into an older server. Tags per
-  version (`0.1.0-pg16`, a matrix) only if someone asks.
-- **arm64:** QEMU is slow, worst on the Flutter web build. `FROM --platform=$BUILDPLATFORM
-  debian:trixie-slim AS console` builds it once, natively (its output is JS, the same for every
-  arch). The Dart stage does compile per arch: QEMU (slow, works), or `ubuntu-24.04-arm` runners
-  (free on public repos) and a merged manifest. Start with QEMU.
-- **Gotchas:** on ghcr.io the package is born private (make it public after the first push); the
-  image name is lowercase (`root-101`, not `Root-101`).
-- **Check first:** that `dart build cli` builds for arm64 under QEMU with the build hook of
-  sqlite3, the likeliest to break: `docker buildx build --platform linux/arm64 .` locally, before
-  writing the workflow.
+3. [ ] **Live runs in the console:** the run log and its dialog follow each run's step, bytes and
+   percentage as it goes, without Refresh. The service already streams one run as Server-Sent
+   Events (`GET …/runs/{id}/events`, made for pipelines); the console can follow a run with it, or
+   with a stream of the whole workspace. Until then a run in progress shows a generic bar and the
+   bytes uploaded so far, and its log appears only when it ends. The same stream tells Backups
+   when a scheduled run starts and ends and the next one is planned, so the countdown stays local
+   and the screen updates without the reload it does once due (which stays, for a stream that is
+   down). To design in detail when it starts.
+4. [ ] 🔴 **Events feed** (changes, connection checks) and alerts.
+5. [ ] 🔴 **Retention** (needs ListObjects and DeleteObject in the destination).
+6. [ ] 🔴 **A restore that loses nothing:** when restoring exists, back up the target database
+   first, rename it, create a new database and restore into that one.
+7. [ ] **More sources** (MySQL, MariaDB, MongoDB) **and destinations** (Google Drive, SFTP, local
+   download).
+8. [ ] 🔴 **Encrypt the dump** before uploading it to the bucket. `To talk through how before
+   implementing it.`
+9. [ ] 🔴 **Download a backup** from the console.
+10. [ ] **Hardening left by the security audit:** a new admin password ends the sessions already
+    open; refuse to start with short secrets (today only a warning); pin the JWT algorithm and an
+    audience; a retention for the run log; no redirects followed by the S3 client; the stored
+    password dropped when a source's host changes; a `Content-Security-Policy` for the console.
+11. [ ] **`verify-full` with a CA** for PostgreSQL sources (`require` and `disable` exist).
+12. [ ] **Destination detail** with what is in the bucket (ListObjects): used space, objects, and
+    the files, size and last write of each folder; and the history of its connection checks, not
+    only the last (🔴 only this history).
+13. [ ] **Source detail** with the size of the database, the copies stored and the success rate of
+    its runs; and the history of its connection checks, not only the last (🔴 only this history).
+14. [ ] **Copying connections between workspaces.**
+15. [ ] **zstd compression.**
+16. [ ] **Benchmarks**, with a script that repeats them and its results in the repo (like
+    feather-io's): the memory of the service at rest, during a backup and after it, and how long a
+    backup takes, by size of the database. Measured by hand on 0.1.0-rc.8 (the image, PostgreSQL 18
+    and feather-io, a 200 MB database): ~15 MiB at rest, ~100 MiB at the peak of a backup (the
+    16 MiB parts it uploads, plus ~11 MiB of `pg_dump`) and ~66 MiB minutes after it, memory Dart
+    doesn't give back.
 
 ## After 1.0
 
-- Source metadata: the detail of a source shows what is in its database without reading any row:
-  schemas, tables with their column count, estimated rows and size, and the types (enums,
-  composites, domains). One more `SourceDriver` method each driver implements from its catalog
-  (`pg_catalog` in PostgreSQL, `information_schema` in MySQL/MariaDB, `stats()` and a sample of
-  documents in MongoDB, whose fields are only inferred). Row counts are estimates
-  (`reltuples`, `TABLE_ROWS`, `estimatedDocumentCount`), never `count(*)`; what the user can't
-  read shows as not available; the last result is kept with its time instead of querying on every
-  visit.
+17. [ ] **Source metadata:** the detail of a source shows what is in its database without reading
+    any row: schemas, tables with their column count, estimated rows and size, and the types
+    (enums, composites, domains). One more `SourceDriver` method each driver implements from its
+    catalog (`pg_catalog` in PostgreSQL, `information_schema` in MySQL/MariaDB, `stats()` and a
+    sample of documents in MongoDB, whose fields are only inferred). Row counts are estimates
+    (`reltuples`, `TABLE_ROWS`, `estimatedDocumentCount`), never `count(*)`; what the user can't
+    read shows as not available; the last result is kept with its time instead of querying on
+    every visit.
 
 ## Random ideas
 
-Loose ideas for possible improvements, not planned or weighed yet.
+Loose ideas, not planned or weighed yet.
 
-- Backup preview: a "Preview" on a backup shows what it holds without restoring it. The service
-  downloads the file from the bucket, `pg_restore --list` gives the tree of schemas and tables,
-  and picking a table shows its first rows, parsed from its `COPY` block
-  (`pg_restore -a -t <table> -n <schema> -f -`). A plain SQL backup is already text. To check
-  first: that the image carries `pg_restore` next to `pg_dump`, and the cost of downloading a big
-  backup whole just to preview it.
+18. [ ] **Backup preview:** a "Preview" on a backup shows what it holds without restoring it. The
+    service downloads the file from the bucket, `pg_restore --list` gives the tree of schemas and
+    tables, and picking a table shows its first rows, parsed from its `COPY` block
+    (`pg_restore -a -t <table> -n <schema> -f -`). A plain SQL backup is already text. To check
+    first: that the image carries `pg_restore` next to `pg_dump`, and the cost of downloading a
+    big backup whole just to preview it.

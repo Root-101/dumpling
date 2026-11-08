@@ -78,6 +78,32 @@ void main() {
   });
   tearDownAll(server.stop);
 
+  test('Should keep the order of the configs given by hand', () async {
+    Future<String> make(String name) => createdId(configs, {
+      'name': name,
+      'source_id': sourceId,
+      'destination_id': rootId,
+    });
+    Future<List<Object?>> ids() async {
+      final response = await http.get(
+        server.url(configs),
+        headers: server.auth(),
+      );
+      return [for (final c in jsonDecode(response.body) as List) c['id']];
+    }
+
+    await make('first');
+    await make('second');
+    final reversed = (await ids()).reversed.toList();
+    final response = await put('$configs/order', {'ids': reversed});
+    expect(response.statusCode, 200, reason: response.body);
+    expect(await ids(), reversed);
+    expect((await put('$configs/order', {'ids': []})).statusCode, 422);
+    for (final id in reversed) {
+      await http.delete(server.url('$configs/$id'), headers: server.auth());
+    }
+  });
+
   Map<String, Object?> config({
     String name = 'Orders nightly',
     String? destinationId,
@@ -172,10 +198,9 @@ void main() {
         {'schedule', 'object_key'},
       );
       // It parses, but February has no 30th: it would never run
-      expect(
-        await fieldsOf(config(extra: {'schedule': '0 0 30 2 *'})),
-        {'schedule'},
-      );
+      expect(await fieldsOf(config(extra: {'schedule': '0 0 30 2 *'})), {
+        'schedule',
+      });
     });
 
     test('Should not use a source of another workspace', () async {

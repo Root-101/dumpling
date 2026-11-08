@@ -10,6 +10,14 @@ void main() {
   // the messages come from app.intl, which reads the navigator
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  // the workspaces of the rail, none loaded: one for every page here
+  final workspaces = _MockWorkspaces();
+  when(() => workspaces.state).thenReturn(
+    const WorkspaceLoadingInProgressState(data: WorkspaceData.empty()),
+  );
+  when(() => workspaces.load()).thenAnswer((_) async {});
+  app.di.put<WorkspaceCubit>(workspaces);
+
   DioException response(int status, Object? data) {
     final request = RequestOptions(path: '/api/workspaces/gone/canvas');
     return DioException.badResponse(
@@ -67,9 +75,11 @@ void main() {
         ),
       ),
     );
-    expect(find.text('Not found'), findsOneWidget);
-    expect(find.text('The workspace "gone" does not exist.'), findsOneWidget);
+    // the 404 of the design: no open workspace, so only the way back to them
+    expect(find.text('404'), findsOneWidget);
+    expect(find.text('This page doesn’t exist'), findsOneWidget);
     expect(find.text('Workspaces'), findsOneWidget);
+    expect(find.text('Go to Backups'), findsNothing);
   });
 
   testWidgets('Connection lost names the service and tries again', (
@@ -77,12 +87,6 @@ void main() {
   ) async {
     var retried = 0;
     // the service went away before the workspaces of the rail loaded
-    final workspaces = _MockWorkspaces();
-    when(() => workspaces.state).thenReturn(
-      const WorkspaceLoadingInProgressState(data: WorkspaceData.empty()),
-    );
-    when(() => workspaces.load()).thenAnswer((_) async {});
-    app.di.put<WorkspaceCubit>(workspaces);
     await pump(
       tester,
       ErrorPage.of(

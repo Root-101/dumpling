@@ -1,12 +1,13 @@
 import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// A settings row: title, help and a switch on the right
+/// A settings row: title, help and a switch on the right. Without
+/// [onChanged] it is disabled: dimmed, and the help says why
 class AppSwitchTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final bool value;
-  final VoidCallback onChanged;
+  final VoidCallback? onChanged;
 
   const AppSwitchTile({
     required this.title,
@@ -21,6 +22,7 @@ class AppSwitchTile extends StatelessWidget {
     final colors = app.colors;
     return Semantics(
       toggled: value,
+      enabled: onChanged != null,
       child: InkWell(
         onTap: onChanged,
         borderRadius: app.dimensions.radius.s,
@@ -47,24 +49,29 @@ class AppSwitchTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 120),
-                width: 34,
-                height: 20,
-                padding: const EdgeInsets.all(3),
-                alignment: value ? Alignment.centerRight : Alignment.centerLeft,
-                decoration: BoxDecoration(
-                  color: value
-                      ? colors.brand.primaryAction
-                      : colors.surface.border,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Container(
-                  width: 14,
-                  height: 14,
+              Opacity(
+                opacity: onChanged == null ? 0.4 : 1,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 120),
+                  width: 34,
+                  height: 20,
+                  padding: const EdgeInsets.all(3),
+                  alignment: value
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
                   decoration: BoxDecoration(
-                    color: colors.text.primary,
-                    shape: BoxShape.circle,
+                    color: value
+                        ? colors.brand.primaryAction
+                        : colors.surface.border,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Container(
+                    width: 14,
+                    height: 14,
+                    decoration: BoxDecoration(
+                      color: colors.text.primary,
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ),
               ),

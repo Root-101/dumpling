@@ -277,12 +277,13 @@ class ConfigNodeView extends StatelessWidget {
     final lastColor = switch (last?.status) {
       RunStatus.success => colors.status.success,
       RunStatus.failed => colors.status.error,
-      RunStatus.running || null => colors.status.pending,
+      RunStatus.running || RunStatus.queued || null => colors.status.pending,
     };
     final lastLabel = switch (last?.status) {
       RunStatus.success => app.intl.canvas.runStatus.success,
       RunStatus.failed => app.intl.canvas.runStatus.failed,
       RunStatus.running => app.intl.canvas.runStatus.running,
+      RunStatus.queued => app.intl.canvas.runStatus.queued,
       null => '',
     };
     final schedule = config.schedule;
@@ -441,18 +442,25 @@ class ConfigNodeView extends StatelessWidget {
                             style: rowStyle.copyWith(color: colors.text.subtle),
                           ),
                           const SizedBox(width: 6),
+                          // a longer date (Spanish) shrinks instead of being cut
                           Expanded(
-                            child: Text(
-                              last == null
-                                  ? app.intl.canvas.neverRun
-                                  : app.intl.time.utc(
-                                      time: time.format(last.startedAt.toUtc()),
-                                    ),
-                              style: rowStyle,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                last == null
+                                    ? app.intl.canvas.neverRun
+                                    : app.intl.time.utc(
+                                        time: time.format(
+                                          last.startedAt.toUtc(),
+                                        ),
+                                      ),
+                                style: rowStyle,
+                                maxLines: 1,
+                              ),
                             ),
                           ),
+                          const SizedBox(width: 6),
                           Text(
                             lastLabel,
                             style: rowStyle.copyWith(

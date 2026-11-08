@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:console/app_exporter.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -121,6 +122,11 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
     );
   }
 
+  void _copyConfigId(BackupRow backup) {
+    Clipboard.setData(ClipboardData(text: backup.config.id));
+    app.snack.showSuccess(message: app.intl.common.copied, context: context);
+  }
+
   void _confirmDelete(BackupRow backup) {
     ConfirmDialog.show(
       title: app.intl.backups.deleteTitle(name: backup.config.name),
@@ -203,6 +209,13 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        // loaded, then the service stopped answering
+                        if (state is BackupLoadingErrorState &&
+                            state.exception.type ==
+                                GlobalExceptionType.offline) ...[
+                          OfflineBanner(onRetry: cubit.reload),
+                          SizedBox(height: app.dimensions.padding.l),
+                        ],
                         _buildSummary(state.data),
                         SizedBox(height: app.dimensions.padding.l),
                         _buildTable(state.data),
@@ -267,18 +280,23 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
     final t = app.intl.backups;
     final next = data.next;
     final at = next?.config.nextRun;
+    final healthy = data.count(BackupHealth.healthy);
+    final failing = data.count(BackupHealth.failing);
     return Row(
       spacing: 12,
       children: [
         DetailStat(
           t.healthy,
-          '${data.count(BackupHealth.healthy)}',
+          '$healthy',
           t.healthySub,
+          tone: healthy > 0 ? app.colors.status.success : null,
         ),
         DetailStat(
           t.failing,
-          '${data.count(BackupHealth.failing)}',
+          '$failing',
           t.failingSub,
+          tone: failing > 0 ? app.colors.status.error : null,
+          alert: failing > 0,
         ),
         _EverySecond(
           onTick: () => _reloadOnceDue(at),
@@ -290,6 +308,27 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
         ),
       ],
     );
+  }
+
+  /// The schedule as the design says it: `Every hour`, `Daily at 02:30`,
+  /// `Sundays at 03:00`, `Every 6 hours`; any other cron, its kind
+  static String _scheduleText(String cron) {
+    final t = app.intl.backups;
+    final f = cron.trim().split(RegExp(r'\s+'));
+    String time() => '${f[1].padLeft(2, '0')}:${f[0].padLeft(2, '0')}';
+    final every = f.length == 5 && f[0] == '0' && f[2] == '*' && f[3] == '*'
+        ? RegExp(r'^\*/(\d+)$').firstMatch(f[1])
+        : null;
+    if (every != null && f[4] == '*') {
+      return t.everyHours(n: int.parse(every.group(1)!));
+    }
+    return switch (Frequency.of(cron)) {
+      Frequency.hourly =>
+        f[0] == '0' ? t.everyHour : t.everyHourAt(minute: f[0].padLeft(2, '0')),
+      Frequency.daily => t.dailyAt(time: time()),
+      Frequency.weekly => t.sundaysAt(time: time()),
+      Frequency.cron => Frequency.cron.label,
+    };
   }
 
   /// The next run the list was reloaded for, so a due one reloads it once
@@ -333,9 +372,10 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
   List<AppTableColumn> _columns(BackupData data) {
     final t = app.intl.backups;
     return [
-      AppTableColumn(t.columnStatus, width: 120),
-      AppTableColumn(t.columnSource, flex: 115),
-      AppTableColumn(t.columnDestination, flex: 150),
+      AppTableColumn(t.columnStatus, width: 68),
+      AppTableColumn(t.columnSource, flex: 110),
+      AppTableColumn(t.columnConfig, flex: 115),
+      AppTableColumn(t.columnDestination, flex: 135),
       AppTableColumn(t.columnSchedule, flex: 100),
       AppTableColumn(
         [
@@ -378,8 +418,9 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
             rows: [
               for (final f in const [0.62, 0.48, 0.7, 0.55, 0.66, 0.5])
                 AppTableRow([
-                  const AppSkeleton(width: 78, height: 26, radius: 6),
+                  const AppSkeleton(width: 30, height: 30, radius: 8),
                   AppSkeleton.named(f, 0.4),
+                  AppSkeleton.lines(f + 0.04, 0.8),
                   AppSkeleton.lines(1.2 - f, 0.44),
                   AppSkeleton.lines(0.5, 0.64),
                   AppSkeleton.lines(0.78, 0.56),
@@ -424,10 +465,14 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
         ],
       ),
       columns: _columns(data),
+      // dragging only in the manual sort, and with every row shown
+      onReorder: data.sort == BackupSort.manual ? cubit.reorder : null,
+      reorderBlocked: data.filtered ? app.intl.common.clearToReorder : null,
       rows: [
         for (final backup in data.visible)
           AppTableRow(
             _buildCells(backup),
+            id: backup.config.id,
             minHeight: 64,
             onTap: () => _toggle(backup),
             background: _open.contains(backup.config.id)
@@ -577,7 +622,11 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
     final open = _open.contains(c.id);
     final running = health == BackupHealth.running;
     return [
-      _StatusChip(health: health, updating: _updating(next)),
+      _StatusChip(
+        health: health,
+        queued: last?.status == RunStatus.queued,
+        updating: _updating(next),
+      ),
       Row(
         children: [
           TypeBadge(look: backup.source.look),
@@ -594,7 +643,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
                 Text(
-                  c.name,
+                  SourceTypeLook.labelOf(backup.source.type),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: muted,
@@ -602,6 +651,19 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
               ],
             ),
           ),
+        ],
+      ),
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            c.name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          AppCopyId(id: c.id, tooltip: t.copyConfigId, fontSize: 11),
         ],
       ),
       Column(
@@ -634,7 +696,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
                 ? app.intl.canvas.disabled
                 : schedule == null
                 ? app.intl.canvas.workspaceDefault
-                : Frequency.of(schedule).label,
+                : _scheduleText(schedule),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -665,6 +727,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
                       ? ''
                       : app.storageFormatter.formatSize(last.sizeBytes!),
                 RunStatus.failed => last.error ?? '',
+                RunStatus.queued => app.intl.canvas.runStatus.queued,
                 RunStatus.running => t.startedAgo(
                   time: RunsScreen.durationOf(
                     DateTime.now().difference(last.startedAt),
@@ -748,6 +811,11 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
                 onTap: () => _edit(backup),
               ),
               AppRowMenuItem(
+                label: t.copyConfigId,
+                icon: app.assets.icons.actions.duplicate,
+                onTap: () => _copyConfigId(backup),
+              ),
+              AppRowMenuItem(
                 label: app.intl.canvas.run.button,
                 icon: app.assets.icons.actions.play,
                 enabled: !running,
@@ -768,56 +836,63 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
   }
 }
 
-/// *Success*, *Failed*, *Running* (with the ring of the run log), *Never
-/// run* or *Paused*, on its tint
+/// The status as a square on its tint: the ring of the run log while it
+/// runs, an hourglass while it waits its turn, ✓ or ✕ for how the last one
+/// ended, a dot for *Never run* and *Paused*. Its label is the tooltip.
 class _StatusChip extends StatelessWidget {
   final BackupHealth health;
+
+  /// Its run waits for the one before (shown as running otherwise)
+  final bool queued;
 
   /// The list reloads for its next run, already due
   final bool updating;
 
-  const _StatusChip({required this.health, this.updating = false});
+  const _StatusChip({
+    required this.health,
+    this.queued = false,
+    this.updating = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final color = updating
         ? app.colors.status.running
         : BackupsScreen.colorOf(health);
-    return Container(
-      height: 26,
-      padding: const EdgeInsets.symmetric(horizontal: 9),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        spacing: 6,
-        children: [
-          if (updating || health == BackupHealth.running)
-            RunProgressRing(size: 12, color: color)
-          else
-            Container(
+    final icons = app.assets.icons.actions;
+    final label = updating
+        ? app.intl.common.loading
+        : queued
+        ? app.intl.canvas.runStatus.queued
+        : BackupsScreen.labelOf(health);
+    return Tooltip(
+      message: label,
+      child: Semantics(
+        label: label,
+        child: Container(
+          width: 30,
+          height: 30,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: switch (health) {
+            _ when queued && !updating => icons.queued.build(
+              size: 15,
+              color: color,
+            ),
+            _ when updating => RunProgressRing(size: 15, color: color),
+            BackupHealth.running => RunProgressRing(size: 15, color: color),
+            BackupHealth.healthy => icons.check.build(size: 15, color: color),
+            BackupHealth.failing => icons.close.build(size: 14, color: color),
+            BackupHealth.neverRan || BackupHealth.paused => Container(
               width: 7,
               height: 7,
               decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             ),
-          Flexible(
-            child: Text(
-              // short: the column is narrow
-              updating
-                  ? app.intl.common.loading
-                  : BackupsScreen.labelOf(health),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
-            ),
-          ),
-        ],
+          },
+        ),
       ),
     );
   }
@@ -837,6 +912,7 @@ class _SortButton extends StatelessWidget {
       BackupSort.lastRunOldest => (t.sortLastOld, t.sortLastOldSub),
       BackupSort.nextRun => (t.sortNext, t.sortNextSub),
       BackupSort.name => (t.sortName, t.sortNameSub),
+      BackupSort.manual => (t.sortManual, t.sortManualSub),
     };
   }
 

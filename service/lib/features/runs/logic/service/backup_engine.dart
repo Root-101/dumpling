@@ -19,7 +19,8 @@ class RunFailure implements Exception {
 /// Runs the backups: each enabled config is a task of the [Scheduler] on its
 /// cron (UTC), and can also run now. A run streams from end to end: the dump
 /// tool → gzip → the destination, part by part, never on disk. One run per
-/// config at a time.
+/// config at a time: a run asked for while one is in progress waits its turn
+/// (queued); a scheduled one is skipped.
 class BackupEngine {
   final Scheduler scheduler;
   final ConfigTableRepo configs;
@@ -31,7 +32,12 @@ class BackupEngine {
   /// The configs with a run in progress.
   final Set<String> _active = {};
 
-  /// The manual runs in progress (a scheduled one is awaited by its task).
+  /// The runs asked for while their config was busy, in order, by config:
+  /// each the row being written, so the run that ends can't miss it.
+  final Map<String, List<Future<RunTableData>>> _queue = {};
+
+  /// The runs started now or from the queue (a scheduled one is awaited by
+  /// its task).
   final Set<Future<void>> _manual = {};
 
   BackupEngine()
@@ -50,8 +56,8 @@ class BackupEngine {
     for (final run in await runs.running()) {
       if (run.pendingUpload != null) await _abortPending(run);
     }
-    final interrupted = await runs.failRunning(
-      'Interrupted: the service stopped during the run',
+    final interrupted = await runs.failUnfinished(
+      'Interrupted: the service stopped before the run ended',
     );
     if (interrupted > 0) {
       logger.warning(
@@ -78,27 +84,102 @@ class BackupEngine {
 
   void unschedule(String configId) => scheduler[taskName(configId)]?.cancel();
 
-  /// Starts a run of [config] now and returns it, still running; a 409 when
-  /// one is already in progress.
-  Future<RunTableData> runNow(ConfigTableData config) async {
+  /// Starts a run of [config] now and returns it: running, or queued when
+  /// one of [config] is in progress (it starts once that one and those queued
+  /// before it end). With [key], it was asked for with that API key.
+  Future<RunTableData> runNow(
+    ConfigTableData config, {
+    String? label,
+    ApiKeyPrincipal? key,
+  }) async {
+    final trigger = key == null ? RunTrigger.manual : RunTrigger.api;
     if (!_active.add(config.id)) {
-      throw ConflictException(detail: intl.errors.runs.alreadyRunning);
+      final queued = _begin(
+        config,
+        trigger,
+        status: RunStatus.queued,
+        label: label,
+        key: key,
+      );
+      (_queue[config.id] ??= []).add(queued);
+      return queued;
     }
     final RunTableData run;
     try {
-      run = await _begin(config, RunTrigger.manual);
+      run = await _begin(config, trigger, label: label, key: key);
     } catch (_) {
-      _active.remove(config.id);
+      _next(config.id);
       rethrow;
     }
-    final execution = _execute(config, run);
-    _manual.add(execution);
-    unawaited(execution.whenComplete(() => _manual.remove(execution)));
+    _track(_execute(config, run));
     return run;
   }
 
-  /// Waits for the manual runs in progress (the tests).
-  Future<void> idle() => Future.wait([..._manual]);
+  /// Waits for the runs started now, and those queued, to end (the tests).
+  Future<void> idle() async {
+    while (_manual.isNotEmpty) {
+      await Future.wait([..._manual]);
+    }
+  }
+
+  void _track(Future<void> execution) {
+    _manual.add(execution);
+    unawaited(execution.whenComplete(() => _manual.remove(execution)));
+  }
+
+  /// The run of [configId] ended: the next one queued starts, or the config
+  /// is free.
+  void _next(String configId) {
+    final queue = _queue[configId];
+    if (queue == null || queue.isEmpty) {
+      _queue.remove(configId);
+      _active.remove(configId);
+      return;
+    }
+    final pending = queue.removeAt(0);
+    _track(_startQueued(configId, pending));
+  }
+
+  Future<void> _startQueued(
+    String configId,
+    Future<RunTableData> pending,
+  ) async {
+    final RunTableData queued;
+    try {
+      queued = await pending;
+    } catch (_) {
+      // Its row was never written: the request got the error
+      return _next(configId);
+    }
+    final config = await configs.byId(configId);
+    final now = DateTime.now().toUtc();
+    if (config == null) {
+      await runs.update(
+        queued.id,
+        RunTableCompanion(
+          status: const Value(RunStatus.failed),
+          error: const Value('The config was deleted before the run started'),
+          finishedAt: Value(now),
+        ),
+      );
+      return _next(configId);
+    }
+    await runs.update(
+      queued.id,
+      RunTableCompanion(
+        status: const Value(RunStatus.running),
+        startedAt: Value(now),
+      ),
+    );
+    logger.info(
+      'Queued run started',
+      fields: {'config': configId, 'run': queued.id},
+    );
+    await _execute(
+      config,
+      queued.copyWith(status: RunStatus.running, startedAt: now),
+    );
+  }
 
   Future<void> _scheduled(String configId) async {
     final config = await configs.byId(configId);
@@ -114,7 +195,7 @@ class BackupEngine {
     try {
       await _execute(config, await _begin(config, RunTrigger.schedule));
     } catch (_) {
-      _active.remove(configId);
+      _next(configId);
       rethrow;
     }
   }
@@ -122,8 +203,11 @@ class BackupEngine {
   /// The row of a new run, with the names and types it uses.
   Future<RunTableData> _begin(
     ConfigTableData config,
-    RunTrigger trigger,
-  ) async {
+    RunTrigger trigger, {
+    RunStatus status = RunStatus.running,
+    String? label,
+    ApiKeyPrincipal? key,
+  }) async {
     final source = (await sources.get(config.workspaceSlug, config.sourceId))!;
     final destination = (await destinations.get(
       config.workspaceSlug,
@@ -141,13 +225,22 @@ class BackupEngine {
         destinationName: destination.name,
         destinationType: destination.type,
         trigger: trigger,
-        status: RunStatus.running,
+        status: status,
+        label: Value(label),
+        keyId: Value(key?.id),
+        keyName: Value(key?.name),
         startedAt: DateTime.now().toUtc(),
       ),
     );
     logger.info(
-      'Run started',
-      fields: {'config': config.id, 'run': id, 'trigger': trigger.name},
+      status == RunStatus.queued ? 'Run queued' : 'Run started',
+      fields: {
+        'config': config.id,
+        'run': id,
+        'trigger': trigger.name,
+        'key': ?key?.id,
+        'label': ?label,
+      },
     );
     return (await runs.get(config.workspaceSlug, id))!;
   }
@@ -275,7 +368,7 @@ class BackupEngine {
       );
       logger.warning('Run failed', fields: {'run': run.id, 'error': error});
     } finally {
-      _active.remove(config.id);
+      _next(config.id);
     }
   }
 

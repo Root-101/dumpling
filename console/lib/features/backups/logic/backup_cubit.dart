@@ -84,6 +84,30 @@ class BackupCubit extends Cubit<BackupState> {
     ),
   );
 
+  /// Moves the backup at [from] to [to] (in the manual sort with no filter
+  /// on, the list shown is the whole one) and saves the order; back as it was
+  /// if that fails
+  Future<void> reorder(int from, int to) async {
+    final before = state.data;
+    final backups = reordered(before.backups, from, to);
+    emit(BackupLoadingSuccessState(data: before._copy(backups: backups)));
+    try {
+      await _configs.reorder(
+        workspace: before.workspace!,
+        ids: [for (final b in backups) b.config.id],
+        token: _token,
+      );
+    } catch (e) {
+      if (state.data.workspace != before.workspace) return;
+      emit(
+        BackupProcessingErrorState(
+          ExceptionConverter.parse(e).message,
+          data: before,
+        ),
+      );
+    }
+  }
+
   /// The [recentRuns] newest runs of [configId], for its row once opened
   Future<void> loadRecent(String configId) async {
     final workspace = state.data.workspace!;
@@ -216,7 +240,7 @@ enum BackupHealth {
   paused;
 
   static BackupHealth of(BackupConfig c) => switch (c.lastRun?.status) {
-    RunStatus.running => running,
+    RunStatus.running || RunStatus.queued => running,
     _ when !c.enabled => paused,
     null => neverRan,
     RunStatus.failed => failing,
@@ -224,8 +248,9 @@ enum BackupHealth {
   };
 }
 
-/// [name]: of the source, then of the config
-enum BackupSort { lastRun, lastRunOldest, nextRun, name }
+/// [name]: of the source, then of the config. [manual]: the order the user
+/// dragged them to, kept in the service
+enum BackupSort { lastRun, lastRunOldest, nextRun, name, manual }
 
 /// A backup with the nodes it connects
 class BackupRow {
@@ -318,6 +343,7 @@ class BackupData {
       return newest ? b.compareTo(a) : a.compareTo(b);
     }
 
+    final position = {for (final (i, b) in backups_.indexed) b.config.id: i};
     final visible = backups_.where(matches).toList()
       ..sort(
         (a, b) => switch (sort_) {
@@ -336,6 +362,9 @@ class BackupData {
             b.config.lastRun?.startedAt,
           ),
           BackupSort.nextRun => byDate(a.config.nextRun, b.config.nextRun),
+          BackupSort.manual => position[a.config.id]!.compareTo(
+            position[b.config.id]!,
+          ),
         },
       );
     return BackupData._(
@@ -406,6 +435,9 @@ class BackupData {
   /// How many filters are on (the search box and the sort apart)
   int get activeFilters =>
       [health, sourceId, destinationId].where((f) => f != null).length;
+
+  /// The rows can be dragged only when they are all shown
+  bool get filtered => activeFilters > 0 || query.trim().isNotEmpty;
 }
 
 abstract class BackupState {

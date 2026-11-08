@@ -152,6 +152,14 @@ class _ConfigDialogState extends State<ConfigDialog> {
     return StepsDialogTemplate(
       title: _c.name.trim().isEmpty ? widget.config.name : _c.name,
       description: _route,
+      // a new config has no id until the canvas is saved
+      titleTrailing: widget.config.id.startsWith(CanvasCubit.newPrefix)
+          ? null
+          : AppCopyId(
+              id: widget.config.id,
+              tooltip: app.intl.backups.copyConfigId,
+              tag: true,
+            ),
       icon: app.assets.icons.nodes.clock,
       width: 640,
       fullHeight: true,
@@ -329,14 +337,16 @@ class _ConfigDialogState extends State<ConfigDialog> {
     return [
       _Summary(
         title: _c.name,
-        sub: [
-          _frequency,
-          ?_c.schedule,
-          if (_nextRun case final next?)
-            app.intl.time.utc(
-              time: app.dateFormatter.time.format(next.toUtc()),
-            ),
-        ].join(' · '),
+        sub: !_c.enabled
+            ? app.intl.canvas.disabled
+            : [
+                _frequency,
+                ?_c.schedule,
+                if (_nextRun case final next?)
+                  app.intl.time.utc(
+                    time: app.dateFormatter.time.format(next.toUtc()),
+                  ),
+              ].join(' · '),
         onEdit: () => setState(() => _step = 0),
       ),
       const StepDivider(),
@@ -401,14 +411,17 @@ class _ConfigDialogState extends State<ConfigDialog> {
         onEdit: () => setState(() => _step = 0),
         rows: [
           (t.configName, Text(_c.name)),
-          (t.frequency, Text(_frequency)),
-          (
-            t.cron,
-            Text(
-              _c.schedule ?? app.intl.canvas.workspaceDefault,
-              style: AppText.mono.copyWith(fontSize: 13),
+          if (_c.enabled) ...[
+            (t.frequency, Text(_frequency)),
+            (
+              t.cron,
+              Text(
+                _c.schedule ?? app.intl.canvas.workspaceDefault,
+                style: AppText.mono.copyWith(fontSize: 13),
+              ),
             ),
-          ),
+          ] else
+            (app.intl.backups.columnSchedule, Text(app.intl.canvas.disabled)),
           (
             t.nextRun,
             next == null

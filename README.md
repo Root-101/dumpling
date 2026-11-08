@@ -17,7 +17,7 @@ both (see [Sources and destinations](#sources-and-destinations)).
   schedules and the backups, keeps its data in SQLite and serves the API and the console.
 - **`console/`**: the web console, in Flutter Web. The service serves it: one image, one port.
 
-> **Status: `0.1.2`.** It backs up and is tested end to end (a real backup
+> **Status: `0.1.7`.** It backs up and is tested end to end (a real backup
 > restored and compared), but it hasn't had long-running production use yet.
 
 ![The pipeline editor of the console](docs/design/screens/09-canvas.png)
@@ -27,12 +27,12 @@ both (see [Sources and destinations](#sources-and-destinations)).
 > ### Where it comes from
 >
 > - **None of the backup tools fit.** Some back up only one database or write to only one
-    > destination, some have no console, and the console of others is so complex it gets in the way.
+>     destination, some have no console, and the console of others is so complex it gets in the way.
 > - **Most of them are built to manage thousands of backups**, and that scale makes everything more
-    > complex than it needs to be. Dumpling goes the other way: it is made for small and medium
-    > projects. It doesn't break under load, but huge volumes are not who it is for.
+>     complex than it needs to be. Dumpling goes the other way: it is made for small and medium
+>     projects. It doesn't break under load, but huge volumes are not who it is for.
 > - **Hosting is paid by the megabyte.** Tools like Databasus are heavy services; on a small VPS or
-    > a platform that bills memory, every megabyte counts.
+>     a platform that bills memory, every megabyte counts.
 >
 > ### What it is today
 >
@@ -53,15 +53,16 @@ both (see [Sources and destinations](#sources-and-destinations)).
 
 ## What it does
 
-|                  |                                                                                                                                    |
-|------------------|------------------------------------------------------------------------------------------------------------------------------------|
-| **Sources**      | Databases, each dumped with its own tool; today PostgreSQL (up to the `pg_dump` of the image, 18 by default), over TLS by default  |
-| **Destinations** | Storages for the dumps, at their root or in folders; today any S3-compatible one (AWS S3, MinIO, feather-io…)                      |
-| **Canvas**       | Sources, destinations and the backups between them, connected by hand and saved in one go; a test run checks every flow first      |
-| **Backups**      | Cron schedules in UTC and Run now; gzip or none; object keys with placeholders (`{db}/{yyyy}-{MM}-{dd}`); streamed in 16 MiB parts |
-| **Monitoring**   | Health of every backup with its last and next run, and a run log with the log of each run                                          |
-| **Workspaces**   | Separate canvases for environments, clients or projects                                                                            |
-| **Console**      | English and Spanish; times in UTC with the local time next to them                                                                 |
+|                  |                                                                                                                                     |
+|------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| **Sources**      | Databases, each dumped with its own tool; today PostgreSQL (up to the `pg_dump` of the image, 18 by default), over TLS by default   |
+| **Destinations** | Storages for the dumps, at their root or in folders; today any S3-compatible one (AWS S3, MinIO, feather-io…)                       |
+| **Canvas**       | Sources, destinations and the backups between them, connected by hand and saved in one go; a test run checks every flow first       |
+| **Backups**      | Cron schedules in UTC and Run now; gzip or none; object keys with placeholders (`{db}/{yyyy}-{MM}-{dd}`); streamed in 16 MiB parts  |
+| **Monitoring**   | Health of every backup with its last and next run, and a run log with the log of each run                                           |
+| **Workspaces**   | Separate canvases for environments, clients or projects                                                                             |
+| **API keys**     | Per workspace, for pipelines and scripts: back up before a deploy and follow the run until it ends, with only the permissions given |
+| **Console**      | English and Spanish; times in UTC with the local time next to them                                                                  |
 
 |                                                                   |                                                                      |
 |-------------------------------------------------------------------|----------------------------------------------------------------------|
@@ -139,7 +140,7 @@ PostgreSQL without TLS, like the one of a plain `postgres` container, needs it o
 ```bash
 docker run -p 8080:8080 -v dumpling-data:/data \
   -e DUMPLING_ADMIN_USER=… -e DUMPLING_ADMIN_PASSWORD=… \
-  -e JWT_SECRET=… -e SECRETS_ENCRYPTION_KEY=… ghcr.io/root-101/dumpling:0.1.2
+  -e JWT_SECRET=… -e SECRETS_ENCRYPTION_KEY=… ghcr.io/root-101/dumpling:0.1.7
 ```
 
 ### Building the image
@@ -148,7 +149,7 @@ From the root of the repo. `PG_VERSION` chooses another `pg_dump`; tagged with t
 compose, `docker compose up -d` runs this one:
 
 ```bash
-docker build -t ghcr.io/root-101/dumpling:0.1.2 --build-arg PG_VERSION=18 .
+docker build -t ghcr.io/root-101/dumpling:0.1.7 --build-arg PG_VERSION=18 .
 ```
 
 ### Locally
@@ -196,11 +197,16 @@ Workspaces, since 0.1.2) and import the file once the new version runs, with the
 From the version you run (left) to the one you upgrade to (top), 🔴 means export first and — means
 nothing to do:
 
-| From \ To | 0.1.0 | 0.1.1 | 0.1.2 |
-|-----------|:-----:|:-----:|:-----:|
-| 0.1.0     |   —   |   —   |   —   |
-| 0.1.1     |       |   —   |   —   |
-| 0.1.2     |       |       |   —   |
+| From \ To | 0.1.0 | 0.1.1 | 0.1.2 | 0.1.3 | 0.1.4 | 0.1.5 | 0.1.6 | 0.1.7 |
+|-----------|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
+| 0.1.0     |   —   |   —   |   —   |  🔴   |  🔴   |  🔴   |  🔴   |  🔴   |
+| 0.1.1     |       |   —   |   —   |  🔴   |  🔴   |  🔴   |  🔴   |  🔴   |
+| 0.1.2     |       |       |   —   |  🔴   |  🔴   |  🔴   |  🔴   |  🔴   |
+| 0.1.3     |       |       |       |   —   |   —   |   —   |  🔴   |  🔴   |
+| 0.1.4     |       |       |       |       |   —   |   —   |  🔴   |  🔴   |
+| 0.1.5     |       |       |       |       |       |   —   |  🔴   |  🔴   |
+| 0.1.6     |       |       |       |       |       |       |   —   |   —   |
+| 0.1.7     |       |       |       |       |       |       |       |   —   |
 
 ## Restoring
 
@@ -216,6 +222,8 @@ against real backups.
 - [`docs/brand.md`](docs/brand.md): the logo, what it means, its versions, colors and type, and the
   presentation images (files in [`docs/design/brand/`](docs/design/brand)).
 - [`docs/restore.md`](docs/restore.md): restoring a backup, step by step.
+- [`docs/integrations.md`](docs/integrations.md): API keys, and a backup before each deploy from a
+  pipeline.
 - [`service/README.md`](service/README.md) and [`console/README.md`](console/README.md): running and
   testing each package, and the end-to-end test.
 - [`SECURITY.md`](SECURITY.md): the security model and how to deploy it safely (a read-only

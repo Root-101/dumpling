@@ -113,10 +113,41 @@ void main() {
           'access_key_id': FakeS3.accessKeyId,
           'path_style': true,
         });
-        // Without slashes around, in alphabetical order
-        expect(body['folders'], ['daily/billing', 'orders', 'users']);
+        // Without slashes around, in the order they came
+        expect(body['folders'], ['orders', 'daily/billing', 'users']);
       },
     );
+
+    test('Should keep the order of the destinations given by hand', () async {
+      await server.createWorkspace('Ordering');
+      Future<String> make(String name) async {
+        final response = await create(
+          bucket(name: name),
+          workspace: 'ordering',
+        );
+        expect(response.statusCode, 201, reason: response.body);
+        return jsonDecode(response.body)['id'] as String;
+      }
+
+      final a = await make('a-bucket');
+      final b = await make('b-bucket');
+      final response = await http.put(
+        server.url(path('ordering', '/order')),
+        headers: jsonHeaders(),
+        body: jsonEncode({
+          'ids': [b, a],
+        }),
+      );
+      expect(response.statusCode, 200, reason: response.body);
+      final list = await http.get(
+        server.url(path('ordering')),
+        headers: server.auth(),
+      );
+      expect(
+        [for (final d in jsonDecode(list.body) as List) d['name']],
+        ['b-bucket', 'a-bucket'],
+      );
+    });
 
     test('Should replace the folders and keep the secret on update', () async {
       final destination = await created(bucket(folders: ['a', 'b']));

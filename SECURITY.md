@@ -11,7 +11,7 @@ unless you'd rather not.
 
 ## Supported versions
 
-Only the latest release gets security fixes (today `0.1.2`).
+Only the latest release gets security fixes (today `0.1.7`).
 
 ## Security model
 
@@ -22,13 +22,25 @@ reasons behind each decision are in [`DECISIONS.md`](DECISIONS.md).
 
 - One user, the admin (`DUMPLING_ADMIN_USER` / `DUMPLING_ADMIN_PASSWORD`), signs in to the console
   and gets a JWT (HS256, `JWT_SECRET`) that expires in 12 hours; tokens without an expiry are
-  rejected. Every route of the API but the login needs it, in the `Authorization` header: never a
-  cookie, so there is no CSRF.
+  rejected. Every route of the API but the login and `GET /api/health` (it only says `up` or
+  `down`) needs it, in the `Authorization` header: never a cookie, so there is no CSRF.
 - The username and password are compared in constant time. Each failed login waits 1 second, and
   10 in a row lock the client IP for 15 minutes, even with the right password afterward
   (`LOGIN_MAX_FAILURES`, `LOGIN_LOCK_SECONDS`, `LOGIN_FAILURE_DELAY_MS`).
 - A general rate limit per IP (600 requests per minute by default, `RATE_LIMIT_REQUESTS` and
   `RATE_LIMIT_WINDOW_SECONDS`) stops floods before a body is read or a token checked.
+- **API keys** are the second credential: the admin creates them per workspace, for a pipeline or
+  a script. A key is `dmp_` and an id and a secret of 32 random characters (about 190 bits); only
+  the sha256 of the secret is stored, compared in constant time, and the key is shown once. It is
+  sent as a Bearer token or with Basic auth, never in a URL. It reaches only its workspace and the
+  permissions it was given, never the session, other workspaces, export, import nor the keys (a
+  key can't make another), and optionally only some configs and their runs; a limited key can't
+  create configs nor use the canvas, which reaches every config (refused when it is saved, and
+  dropped when it is used if stored anyway). A wrong key counts as
+  a failed login of its IP (the same wait and lock). Keys don't expire: deleting one cuts it at its
+  next request. They are not exported. The logs name the key of a run, never its secret.
+- The admin's token gets every permission of the running version, whatever list it was signed
+  with: a session open across an upgrade doesn't lose the routes it adds.
 
 **Credentials of sources and destinations**
 

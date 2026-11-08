@@ -250,8 +250,18 @@ class S3Client {
     return utf8.decode(bytes.takeBytes(), allowMalformed: true);
   }
 
-  static String? _tag(String xml, String name) =>
-      RegExp('<$name>([^<]*)</$name>').firstMatch(xml)?.group(1);
+  static String? _tag(String xml, String name) {
+    final text = RegExp('<$name>([^<]*)</$name>').firstMatch(xml)?.group(1);
+    return text == null ? null : _unescape(text);
+  }
+
+  // &amp; last: `&amp;quot;` is the text `&quot;`, not a quote
+  static String _unescape(String value) => value
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&apos;', "'")
+      .replaceAll('&amp;', '&');
 
   static String _escape(String value) => value
       .replaceAll('&', '&amp;')

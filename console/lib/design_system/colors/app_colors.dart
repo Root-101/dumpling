@@ -87,6 +87,9 @@ class PrimaryColor {
   /// Checked boxes and the border of what is selected
   Color get selection => primaryFaded;
 
+  /// The border of a checked box over its fill: 7d6cc0
+  Color get checkBorder => const Color(0xFF7D6CC0);
+
   /// Amber accent: e6b77e
   Color get secondary => const Color(0xFFE6B77E);
 

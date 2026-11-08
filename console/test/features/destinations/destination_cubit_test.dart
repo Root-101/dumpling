@@ -101,4 +101,54 @@ void main() {
       expect(FolderPath.isValid('a//b'), isFalse);
     });
   });
+
+  group('DestinationCubit order', () {
+    test('Moves a folder at once and saves the destination with it', () async {
+      when(() => repo.list(workspace: 'production', token: 'jwt')).thenAnswer(
+        (_) async => [
+          destination('bucket', folders: ['orders', 'users']),
+          destination('archive'),
+        ],
+      );
+      when(
+        () => repo.save(
+          workspace: 'production',
+          id: 'bucket',
+          draft: any(named: 'draft'),
+          token: 'jwt',
+        ),
+      ).thenAnswer(
+        (_) async => destination('bucket', folders: ['users', 'orders']),
+      );
+      when(
+        () => repo.reorder(
+          workspace: 'production',
+          ids: ['archive', 'bucket'],
+          token: 'jwt',
+        ),
+      ).thenAnswer((_) async {});
+      final cubit = DestinationCubit(repo, configs, auth);
+      await cubit.load('production');
+
+      await cubit.moveFolder(cubit.state.data.destinations.first, 1, 0);
+      expect(cubit.state.data.destinations.first.folders, ['users', 'orders']);
+      final draft =
+          verify(
+                () => repo.save(
+                  workspace: 'production',
+                  id: 'bucket',
+                  draft: captureAny(named: 'draft'),
+                  token: 'jwt',
+                ),
+              ).captured.single
+              as DestinationDraft;
+      expect(draft.folders, ['users', 'orders']);
+
+      await cubit.reorder(1, 0);
+      expect(
+        [for (final d in cubit.state.data.destinations) d.id],
+        ['archive', 'bucket'],
+      );
+    });
+  });
 }

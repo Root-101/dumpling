@@ -34,4 +34,37 @@ void main() {
       }
     },
   );
+
+  testWidgets(
+    'Without a ✕, as the canvas: Cancel answers false and the action true',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          navigatorKey: navigatorKey,
+          theme: ThemeConfig.theme,
+          home: const Scaffold(),
+        ),
+      );
+      Future<bool> ask() => ConfirmDialog.show(
+        title: 'Delete the source orders-db?',
+        description: 'Dumpling forgets the connection.',
+        confirmTitle: 'Delete',
+        confirmColor: app.colors.primary.errorAction,
+        confirmAction: () {},
+      );
+
+      final cancelled = ask();
+      await tester.pumpAndSettle();
+      expect(find.byType(DialogCloseButton), findsNothing);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(await cancelled, isFalse);
+
+      final confirmed = ask();
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Delete'));
+      await tester.pumpAndSettle();
+      expect(await confirmed, isTrue);
+    },
+  );
 }

@@ -33,6 +33,31 @@ class RunCubit extends Cubit<RunState> {
     if (workspace != null) await load(workspace);
   }
 
+  /// Runs the config of [run] again (Retry now, Run again in its dialog) and
+  /// reloads the log with the new run; false when the service refused it
+  Future<bool> runAgain(RunModel run, {String? workspace}) async {
+    final configId = run.configId;
+    workspace ??= state.data.workspace;
+    if (configId == null || workspace == null) return false;
+    try {
+      await _repo.runAgain(
+        workspace: workspace,
+        configId: configId,
+        token: _token,
+      );
+      if (state.data.workspace == workspace) await load(workspace);
+      return true;
+    } catch (e) {
+      emit(
+        RunProcessingErrorState(
+          ExceptionConverter.parse(e).message,
+          data: state.data,
+        ),
+      );
+      return false;
+    }
+  }
+
   /// Loads the log of [run]; a run still running is asked again every time
   ///
   /// [workspace] when it is opened out of the run log (Backups), whose list
@@ -95,6 +120,11 @@ class RunCubit extends Cubit<RunState> {
     RunLoadingSuccessState(data: state.data._copy(destinationType: () => type)),
   );
 
+  /// `schedule`, `manual` or `api`; null: all of them
+  void filterTrigger(String? trigger) => emit(
+    RunLoadingSuccessState(data: state.data._copy(trigger: () => trigger)),
+  );
+
   void clearFilters() => emit(
     RunLoadingSuccessState(
       data: state.data._copy(
@@ -102,6 +132,7 @@ class RunCubit extends Cubit<RunState> {
         status: () => null,
         sourceType: () => null,
         destinationType: () => null,
+        trigger: () => null,
       ),
     ),
   );
@@ -122,6 +153,9 @@ class RunData {
   final RunStatus? status;
   final String? sourceType;
   final String? destinationType;
+
+  /// Who started them: `schedule`, `manual` or `api`
+  final String? trigger;
   final List<RunModel> visibleRuns;
 
   const RunData._({
@@ -133,6 +167,7 @@ class RunData {
     required this.status,
     required this.sourceType,
     required this.destinationType,
+    required this.trigger,
     required this.visibleRuns,
   });
 
@@ -146,6 +181,7 @@ class RunData {
         status: null,
         sourceType: null,
         destinationType: null,
+        trigger: null,
         visibleRuns: const [],
       );
 
@@ -157,6 +193,7 @@ class RunData {
     RunStatus? Function()? status,
     String? Function()? sourceType,
     String? Function()? destinationType,
+    String? Function()? trigger,
   }) {
     final runs_ = runs ?? this.runs;
     final query_ = query ?? this.query;
@@ -165,16 +202,20 @@ class RunData {
     final destinationType_ = destinationType == null
         ? this.destinationType
         : destinationType();
+    final trigger_ = trigger == null ? this.trigger : trigger();
     final needle = query_.trim().toLowerCase();
     bool matches(RunModel r) =>
         (status_ == null || r.status == status_) &&
         (sourceType_ == null || r.sourceType == sourceType_) &&
         (destinationType_ == null || r.destinationType == destinationType_) &&
+        (trigger_ == null || r.trigger == trigger_) &&
         (needle.isEmpty ||
             [
               r.configName,
               r.sourceName,
               r.destinationName,
+              ?r.label,
+              ?r.keyName,
             ].join(' ').toLowerCase().contains(needle));
     return RunData._(
       workspace: workspace,
@@ -185,6 +226,7 @@ class RunData {
       status: status_,
       sourceType: sourceType_,
       destinationType: destinationType_,
+      trigger: trigger_,
       visibleRuns: runs_.where(matches).toList(),
     );
   }
@@ -207,8 +249,12 @@ class RunData {
   RunData withQuery(String query) => _copy(query: query);
 
   /// How many filters are on (the search box apart)
-  int get activeFilters =>
-      [status, sourceType, destinationType].where((f) => f != null).length;
+  int get activeFilters => [
+    status,
+    sourceType,
+    destinationType,
+    trigger,
+  ].where((f) => f != null).length;
 }
 
 abstract class RunState {

@@ -45,6 +45,18 @@ class ConfigRepo {
     }
   }
 
+  Future<void> reorder({
+    required String workspace,
+    required List<String> ids,
+    String? token,
+  }) async {
+    try {
+      await _client.reorder(workspace: workspace, ids: ids, token: token);
+    } catch (e) {
+      throw ExceptionConverter.parse(e);
+    }
+  }
+
   Future<void> delete({
     required String workspace,
     required String id,

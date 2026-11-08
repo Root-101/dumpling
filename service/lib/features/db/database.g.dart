@@ -702,6 +702,18 @@ class $SourceTableTable extends SourceTable
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -737,6 +749,7 @@ class $SourceTableTable extends SourceTable
     lastCheck,
     canvasX,
     canvasY,
+    position,
     createdAt,
     updatedAt,
   ];
@@ -813,6 +826,12 @@ class $SourceTableTable extends SourceTable
         canvasY.isAcceptableOrUnknown(data['canvas_y']!, _canvasYMeta),
       );
     }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -872,6 +891,10 @@ class $SourceTableTable extends SourceTable
         DriftSqlType.double,
         data['${effectivePrefix}canvas_y'],
       ),
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -914,6 +937,9 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
   /// Where it sits on the canvas; null while it is off it.
   final double? canvasX;
   final double? canvasY;
+
+  /// Its place in the lists, set by hand (dragging); new ones go last.
+  final int position;
   final DateTime createdAt;
   final DateTime updatedAt;
   const SourceTableData({
@@ -926,6 +952,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
     this.lastCheck,
     this.canvasX,
     this.canvasY,
+    required this.position,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -951,6 +978,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
     if (!nullToAbsent || canvasY != null) {
       map['canvas_y'] = Variable<double>(canvasY);
     }
+    map['position'] = Variable<int>(position);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -973,6 +1001,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
       canvasY: canvasY == null && nullToAbsent
           ? const Value.absent()
           : Value(canvasY),
+      position: Value(position),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -995,6 +1024,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
       lastCheck: serializer.fromJson<String?>(json['lastCheck']),
       canvasX: serializer.fromJson<double?>(json['canvasX']),
       canvasY: serializer.fromJson<double?>(json['canvasY']),
+      position: serializer.fromJson<int>(json['position']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -1014,6 +1044,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
       'lastCheck': serializer.toJson<String?>(lastCheck),
       'canvasX': serializer.toJson<double?>(canvasX),
       'canvasY': serializer.toJson<double?>(canvasY),
+      'position': serializer.toJson<int>(position),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -1029,6 +1060,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
     Value<String?> lastCheck = const Value.absent(),
     Value<double?> canvasX = const Value.absent(),
     Value<double?> canvasY = const Value.absent(),
+    int? position,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => SourceTableData(
@@ -1041,6 +1073,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
     lastCheck: lastCheck.present ? lastCheck.value : this.lastCheck,
     canvasX: canvasX.present ? canvasX.value : this.canvasX,
     canvasY: canvasY.present ? canvasY.value : this.canvasY,
+    position: position ?? this.position,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -1059,6 +1092,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
       lastCheck: data.lastCheck.present ? data.lastCheck.value : this.lastCheck,
       canvasX: data.canvasX.present ? data.canvasX.value : this.canvasX,
       canvasY: data.canvasY.present ? data.canvasY.value : this.canvasY,
+      position: data.position.present ? data.position.value : this.position,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -1076,6 +1110,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
           ..write('lastCheck: $lastCheck, ')
           ..write('canvasX: $canvasX, ')
           ..write('canvasY: $canvasY, ')
+          ..write('position: $position, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -1093,6 +1128,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
     lastCheck,
     canvasX,
     canvasY,
+    position,
     createdAt,
     updatedAt,
   );
@@ -1109,6 +1145,7 @@ class SourceTableData extends DataClass implements Insertable<SourceTableData> {
           other.lastCheck == this.lastCheck &&
           other.canvasX == this.canvasX &&
           other.canvasY == this.canvasY &&
+          other.position == this.position &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -1123,6 +1160,7 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
   final Value<String?> lastCheck;
   final Value<double?> canvasX;
   final Value<double?> canvasY;
+  final Value<int> position;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -1136,6 +1174,7 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
     this.lastCheck = const Value.absent(),
     this.canvasX = const Value.absent(),
     this.canvasY = const Value.absent(),
+    this.position = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1150,6 +1189,7 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
     this.lastCheck = const Value.absent(),
     this.canvasX = const Value.absent(),
     this.canvasY = const Value.absent(),
+    this.position = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1169,6 +1209,7 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
     Expression<String>? lastCheck,
     Expression<double>? canvasX,
     Expression<double>? canvasY,
+    Expression<int>? position,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -1183,6 +1224,7 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
       if (lastCheck != null) 'last_check': lastCheck,
       if (canvasX != null) 'canvas_x': canvasX,
       if (canvasY != null) 'canvas_y': canvasY,
+      if (position != null) 'position': position,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -1199,6 +1241,7 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
     Value<String?>? lastCheck,
     Value<double?>? canvasX,
     Value<double?>? canvasY,
+    Value<int>? position,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -1213,6 +1256,7 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
       lastCheck: lastCheck ?? this.lastCheck,
       canvasX: canvasX ?? this.canvasX,
       canvasY: canvasY ?? this.canvasY,
+      position: position ?? this.position,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -1251,6 +1295,9 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
     if (canvasY.present) {
       map['canvas_y'] = Variable<double>(canvasY.value);
     }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1275,6 +1322,7 @@ class SourceTableCompanion extends UpdateCompanion<SourceTableData> {
           ..write('lastCheck: $lastCheck, ')
           ..write('canvasX: $canvasX, ')
           ..write('canvasY: $canvasY, ')
+          ..write('position: $position, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -1385,6 +1433,18 @@ class $DestinationTableTable extends DestinationTable
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -1420,6 +1480,7 @@ class $DestinationTableTable extends DestinationTable
     lastCheck,
     canvasX,
     canvasY,
+    position,
     createdAt,
     updatedAt,
   ];
@@ -1496,6 +1557,12 @@ class $DestinationTableTable extends DestinationTable
         canvasY.isAcceptableOrUnknown(data['canvas_y']!, _canvasYMeta),
       );
     }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -1555,6 +1622,10 @@ class $DestinationTableTable extends DestinationTable
         DriftSqlType.double,
         data['${effectivePrefix}canvas_y'],
       ),
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -1598,6 +1669,9 @@ class DestinationTableData extends DataClass
   /// Where it sits on the canvas; null while it is off it.
   final double? canvasX;
   final double? canvasY;
+
+  /// Its place in the lists, set by hand (dragging); new ones go last.
+  final int position;
   final DateTime createdAt;
   final DateTime updatedAt;
   const DestinationTableData({
@@ -1610,6 +1684,7 @@ class DestinationTableData extends DataClass
     this.lastCheck,
     this.canvasX,
     this.canvasY,
+    required this.position,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -1635,6 +1710,7 @@ class DestinationTableData extends DataClass
     if (!nullToAbsent || canvasY != null) {
       map['canvas_y'] = Variable<double>(canvasY);
     }
+    map['position'] = Variable<int>(position);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -1657,6 +1733,7 @@ class DestinationTableData extends DataClass
       canvasY: canvasY == null && nullToAbsent
           ? const Value.absent()
           : Value(canvasY),
+      position: Value(position),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -1679,6 +1756,7 @@ class DestinationTableData extends DataClass
       lastCheck: serializer.fromJson<String?>(json['lastCheck']),
       canvasX: serializer.fromJson<double?>(json['canvasX']),
       canvasY: serializer.fromJson<double?>(json['canvasY']),
+      position: serializer.fromJson<int>(json['position']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -1698,6 +1776,7 @@ class DestinationTableData extends DataClass
       'lastCheck': serializer.toJson<String?>(lastCheck),
       'canvasX': serializer.toJson<double?>(canvasX),
       'canvasY': serializer.toJson<double?>(canvasY),
+      'position': serializer.toJson<int>(position),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -1713,6 +1792,7 @@ class DestinationTableData extends DataClass
     Value<String?> lastCheck = const Value.absent(),
     Value<double?> canvasX = const Value.absent(),
     Value<double?> canvasY = const Value.absent(),
+    int? position,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => DestinationTableData(
@@ -1725,6 +1805,7 @@ class DestinationTableData extends DataClass
     lastCheck: lastCheck.present ? lastCheck.value : this.lastCheck,
     canvasX: canvasX.present ? canvasX.value : this.canvasX,
     canvasY: canvasY.present ? canvasY.value : this.canvasY,
+    position: position ?? this.position,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -1743,6 +1824,7 @@ class DestinationTableData extends DataClass
       lastCheck: data.lastCheck.present ? data.lastCheck.value : this.lastCheck,
       canvasX: data.canvasX.present ? data.canvasX.value : this.canvasX,
       canvasY: data.canvasY.present ? data.canvasY.value : this.canvasY,
+      position: data.position.present ? data.position.value : this.position,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -1760,6 +1842,7 @@ class DestinationTableData extends DataClass
           ..write('lastCheck: $lastCheck, ')
           ..write('canvasX: $canvasX, ')
           ..write('canvasY: $canvasY, ')
+          ..write('position: $position, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -1777,6 +1860,7 @@ class DestinationTableData extends DataClass
     lastCheck,
     canvasX,
     canvasY,
+    position,
     createdAt,
     updatedAt,
   );
@@ -1793,6 +1877,7 @@ class DestinationTableData extends DataClass
           other.lastCheck == this.lastCheck &&
           other.canvasX == this.canvasX &&
           other.canvasY == this.canvasY &&
+          other.position == this.position &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -1807,6 +1892,7 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
   final Value<String?> lastCheck;
   final Value<double?> canvasX;
   final Value<double?> canvasY;
+  final Value<int> position;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -1820,6 +1906,7 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
     this.lastCheck = const Value.absent(),
     this.canvasX = const Value.absent(),
     this.canvasY = const Value.absent(),
+    this.position = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1834,6 +1921,7 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
     this.lastCheck = const Value.absent(),
     this.canvasX = const Value.absent(),
     this.canvasY = const Value.absent(),
+    this.position = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1853,6 +1941,7 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
     Expression<String>? lastCheck,
     Expression<double>? canvasX,
     Expression<double>? canvasY,
+    Expression<int>? position,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -1867,6 +1956,7 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
       if (lastCheck != null) 'last_check': lastCheck,
       if (canvasX != null) 'canvas_x': canvasX,
       if (canvasY != null) 'canvas_y': canvasY,
+      if (position != null) 'position': position,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -1883,6 +1973,7 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
     Value<String?>? lastCheck,
     Value<double?>? canvasX,
     Value<double?>? canvasY,
+    Value<int>? position,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -1897,6 +1988,7 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
       lastCheck: lastCheck ?? this.lastCheck,
       canvasX: canvasX ?? this.canvasX,
       canvasY: canvasY ?? this.canvasY,
+      position: position ?? this.position,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -1935,6 +2027,9 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
     if (canvasY.present) {
       map['canvas_y'] = Variable<double>(canvasY.value);
     }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1959,6 +2054,7 @@ class DestinationTableCompanion extends UpdateCompanion<DestinationTableData> {
           ..write('lastCheck: $lastCheck, ')
           ..write('canvasX: $canvasX, ')
           ..write('canvasY: $canvasY, ')
+          ..write('position: $position, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -2110,6 +2206,18 @@ class $ConfigTableTable extends ConfigTable
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -2148,6 +2256,7 @@ class $ConfigTableTable extends ConfigTable
     enabled,
     canvasX,
     canvasY,
+    position,
     createdAt,
     updatedAt,
   ];
@@ -2246,6 +2355,12 @@ class $ConfigTableTable extends ConfigTable
         canvasY.isAcceptableOrUnknown(data['canvas_y']!, _canvasYMeta),
       );
     }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -2317,6 +2432,10 @@ class $ConfigTableTable extends ConfigTable
         DriftSqlType.double,
         data['${effectivePrefix}canvas_y'],
       ),
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -2367,6 +2486,9 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
   /// Where it sits on the canvas; null while it is off it.
   final double? canvasX;
   final double? canvasY;
+
+  /// Its place in the lists, set by hand (dragging); new ones go last.
+  final int position;
   final DateTime createdAt;
   final DateTime updatedAt;
   const ConfigTableData({
@@ -2382,6 +2504,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
     required this.enabled,
     this.canvasX,
     this.canvasY,
+    required this.position,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -2410,6 +2533,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
     if (!nullToAbsent || canvasY != null) {
       map['canvas_y'] = Variable<double>(canvasY);
     }
+    map['position'] = Variable<int>(position);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -2435,6 +2559,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
       canvasY: canvasY == null && nullToAbsent
           ? const Value.absent()
           : Value(canvasY),
+      position: Value(position),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -2460,6 +2585,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
       enabled: serializer.fromJson<bool>(json['enabled']),
       canvasX: serializer.fromJson<double?>(json['canvasX']),
       canvasY: serializer.fromJson<double?>(json['canvasY']),
+      position: serializer.fromJson<int>(json['position']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -2482,6 +2608,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
       'enabled': serializer.toJson<bool>(enabled),
       'canvasX': serializer.toJson<double?>(canvasX),
       'canvasY': serializer.toJson<double?>(canvasY),
+      'position': serializer.toJson<int>(position),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -2500,6 +2627,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
     bool? enabled,
     Value<double?> canvasX = const Value.absent(),
     Value<double?> canvasY = const Value.absent(),
+    int? position,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => ConfigTableData(
@@ -2515,6 +2643,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
     enabled: enabled ?? this.enabled,
     canvasX: canvasX.present ? canvasX.value : this.canvasX,
     canvasY: canvasY.present ? canvasY.value : this.canvasY,
+    position: position ?? this.position,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -2538,6 +2667,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
       enabled: data.enabled.present ? data.enabled.value : this.enabled,
       canvasX: data.canvasX.present ? data.canvasX.value : this.canvasX,
       canvasY: data.canvasY.present ? data.canvasY.value : this.canvasY,
+      position: data.position.present ? data.position.value : this.position,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -2558,6 +2688,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
           ..write('enabled: $enabled, ')
           ..write('canvasX: $canvasX, ')
           ..write('canvasY: $canvasY, ')
+          ..write('position: $position, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -2578,6 +2709,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
     enabled,
     canvasX,
     canvasY,
+    position,
     createdAt,
     updatedAt,
   );
@@ -2597,6 +2729,7 @@ class ConfigTableData extends DataClass implements Insertable<ConfigTableData> {
           other.enabled == this.enabled &&
           other.canvasX == this.canvasX &&
           other.canvasY == this.canvasY &&
+          other.position == this.position &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -2614,6 +2747,7 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
   final Value<bool> enabled;
   final Value<double?> canvasX;
   final Value<double?> canvasY;
+  final Value<int> position;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -2630,6 +2764,7 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
     this.enabled = const Value.absent(),
     this.canvasX = const Value.absent(),
     this.canvasY = const Value.absent(),
+    this.position = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2647,6 +2782,7 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
     this.enabled = const Value.absent(),
     this.canvasX = const Value.absent(),
     this.canvasY = const Value.absent(),
+    this.position = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2671,6 +2807,7 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
     Expression<bool>? enabled,
     Expression<double>? canvasX,
     Expression<double>? canvasY,
+    Expression<int>? position,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -2688,6 +2825,7 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
       if (enabled != null) 'enabled': enabled,
       if (canvasX != null) 'canvas_x': canvasX,
       if (canvasY != null) 'canvas_y': canvasY,
+      if (position != null) 'position': position,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -2707,6 +2845,7 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
     Value<bool>? enabled,
     Value<double?>? canvasX,
     Value<double?>? canvasY,
+    Value<int>? position,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -2724,6 +2863,7 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
       enabled: enabled ?? this.enabled,
       canvasX: canvasX ?? this.canvasX,
       canvasY: canvasY ?? this.canvasY,
+      position: position ?? this.position,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -2771,6 +2911,9 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
     if (canvasY.present) {
       map['canvas_y'] = Variable<double>(canvasY.value);
     }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -2798,6 +2941,7 @@ class ConfigTableCompanion extends UpdateCompanion<ConfigTableData> {
           ..write('enabled: $enabled, ')
           ..write('canvasX: $canvasX, ')
           ..write('canvasY: $canvasY, ')
+          ..write('position: $position, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -2918,6 +3062,35 @@ class $RunTableTable extends RunTable
         type: DriftSqlType.string,
         requiredDuringInsert: true,
       ).withConverter<RunStatus>($RunTableTable.$converterstatus);
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _keyIdMeta = const VerificationMeta('keyId');
+  @override
+  late final GeneratedColumn<String> keyId = GeneratedColumn<String>(
+    'key_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _keyNameMeta = const VerificationMeta(
+    'keyName',
+  );
+  @override
+  late final GeneratedColumn<String> keyName = GeneratedColumn<String>(
+    'key_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _locationMeta = const VerificationMeta(
     'location',
   );
@@ -3016,6 +3189,9 @@ class $RunTableTable extends RunTable
     destinationType,
     trigger,
     status,
+    label,
+    keyId,
+    keyName,
     location,
     sizeBytes,
     error,
@@ -3085,6 +3261,24 @@ class $RunTableTable extends RunTable
       );
     } else if (isInserting) {
       context.missing(_destinationNameMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    }
+    if (data.containsKey('key_id')) {
+      context.handle(
+        _keyIdMeta,
+        keyId.isAcceptableOrUnknown(data['key_id']!, _keyIdMeta),
+      );
+    }
+    if (data.containsKey('key_name')) {
+      context.handle(
+        _keyNameMeta,
+        keyName.isAcceptableOrUnknown(data['key_name']!, _keyNameMeta),
+      );
     }
     if (data.containsKey('location')) {
       context.handle(
@@ -3196,6 +3390,18 @@ class $RunTableTable extends RunTable
           data['${effectivePrefix}status'],
         )!,
       ),
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      ),
+      keyId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}key_id'],
+      ),
+      keyName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}key_name'],
+      ),
       location: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}location'],
@@ -3265,6 +3471,13 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
   final RunTrigger trigger;
   final RunStatus status;
 
+  /// What the request that started it sent (`v1.4.2`, a commit), if any.
+  final String? label;
+
+  /// The API key that started it, kept by name too: the key may be deleted.
+  final String? keyId;
+  final String? keyName;
+
   /// Where the backup goes (`backups/orders/2026/10/20.dump.gz`), once known.
   final String? location;
 
@@ -3297,6 +3510,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
     required this.destinationType,
     required this.trigger,
     required this.status,
+    this.label,
+    this.keyId,
+    this.keyName,
     this.location,
     required this.sizeBytes,
     this.error,
@@ -3337,6 +3553,15 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
         $RunTableTable.$converterstatus.toSql(status),
       );
     }
+    if (!nullToAbsent || label != null) {
+      map['label'] = Variable<String>(label);
+    }
+    if (!nullToAbsent || keyId != null) {
+      map['key_id'] = Variable<String>(keyId);
+    }
+    if (!nullToAbsent || keyName != null) {
+      map['key_name'] = Variable<String>(keyName);
+    }
     if (!nullToAbsent || location != null) {
       map['location'] = Variable<String>(location);
     }
@@ -3372,6 +3597,15 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
       destinationType: Value(destinationType),
       trigger: Value(trigger),
       status: Value(status),
+      label: label == null && nullToAbsent
+          ? const Value.absent()
+          : Value(label),
+      keyId: keyId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(keyId),
+      keyName: keyName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(keyName),
       location: location == null && nullToAbsent
           ? const Value.absent()
           : Value(location),
@@ -3417,6 +3651,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
       status: $RunTableTable.$converterstatus.fromJson(
         serializer.fromJson<String>(json['status']),
       ),
+      label: serializer.fromJson<String?>(json['label']),
+      keyId: serializer.fromJson<String?>(json['keyId']),
+      keyName: serializer.fromJson<String?>(json['keyName']),
       location: serializer.fromJson<String?>(json['location']),
       sizeBytes: serializer.fromJson<int>(json['sizeBytes']),
       error: serializer.fromJson<String?>(json['error']),
@@ -3449,6 +3686,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
       'status': serializer.toJson<String>(
         $RunTableTable.$converterstatus.toJson(status),
       ),
+      'label': serializer.toJson<String?>(label),
+      'keyId': serializer.toJson<String?>(keyId),
+      'keyName': serializer.toJson<String?>(keyName),
       'location': serializer.toJson<String?>(location),
       'sizeBytes': serializer.toJson<int>(sizeBytes),
       'error': serializer.toJson<String?>(error),
@@ -3471,6 +3711,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
     DestinationType? destinationType,
     RunTrigger? trigger,
     RunStatus? status,
+    Value<String?> label = const Value.absent(),
+    Value<String?> keyId = const Value.absent(),
+    Value<String?> keyName = const Value.absent(),
     Value<String?> location = const Value.absent(),
     int? sizeBytes,
     Value<String?> error = const Value.absent(),
@@ -3490,6 +3733,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
     destinationType: destinationType ?? this.destinationType,
     trigger: trigger ?? this.trigger,
     status: status ?? this.status,
+    label: label.present ? label.value : this.label,
+    keyId: keyId.present ? keyId.value : this.keyId,
+    keyName: keyName.present ? keyName.value : this.keyName,
     location: location.present ? location.value : this.location,
     sizeBytes: sizeBytes ?? this.sizeBytes,
     error: error.present ? error.value : this.error,
@@ -3525,6 +3771,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
           : this.destinationType,
       trigger: data.trigger.present ? data.trigger.value : this.trigger,
       status: data.status.present ? data.status.value : this.status,
+      label: data.label.present ? data.label.value : this.label,
+      keyId: data.keyId.present ? data.keyId.value : this.keyId,
+      keyName: data.keyName.present ? data.keyName.value : this.keyName,
       location: data.location.present ? data.location.value : this.location,
       sizeBytes: data.sizeBytes.present ? data.sizeBytes.value : this.sizeBytes,
       error: data.error.present ? data.error.value : this.error,
@@ -3555,6 +3804,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
           ..write('destinationType: $destinationType, ')
           ..write('trigger: $trigger, ')
           ..write('status: $status, ')
+          ..write('label: $label, ')
+          ..write('keyId: $keyId, ')
+          ..write('keyName: $keyName, ')
           ..write('location: $location, ')
           ..write('sizeBytes: $sizeBytes, ')
           ..write('error: $error, ')
@@ -3568,7 +3820,7 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     workspaceSlug,
     configId,
@@ -3579,6 +3831,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
     destinationType,
     trigger,
     status,
+    label,
+    keyId,
+    keyName,
     location,
     sizeBytes,
     error,
@@ -3587,7 +3842,7 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
     startedAt,
     finishedAt,
     durationMs,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3602,6 +3857,9 @@ class RunTableData extends DataClass implements Insertable<RunTableData> {
           other.destinationType == this.destinationType &&
           other.trigger == this.trigger &&
           other.status == this.status &&
+          other.label == this.label &&
+          other.keyId == this.keyId &&
+          other.keyName == this.keyName &&
           other.location == this.location &&
           other.sizeBytes == this.sizeBytes &&
           other.error == this.error &&
@@ -3623,6 +3881,9 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
   final Value<DestinationType> destinationType;
   final Value<RunTrigger> trigger;
   final Value<RunStatus> status;
+  final Value<String?> label;
+  final Value<String?> keyId;
+  final Value<String?> keyName;
   final Value<String?> location;
   final Value<int> sizeBytes;
   final Value<String?> error;
@@ -3643,6 +3904,9 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
     this.destinationType = const Value.absent(),
     this.trigger = const Value.absent(),
     this.status = const Value.absent(),
+    this.label = const Value.absent(),
+    this.keyId = const Value.absent(),
+    this.keyName = const Value.absent(),
     this.location = const Value.absent(),
     this.sizeBytes = const Value.absent(),
     this.error = const Value.absent(),
@@ -3664,6 +3928,9 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
     required DestinationType destinationType,
     required RunTrigger trigger,
     required RunStatus status,
+    this.label = const Value.absent(),
+    this.keyId = const Value.absent(),
+    this.keyName = const Value.absent(),
     this.location = const Value.absent(),
     this.sizeBytes = const Value.absent(),
     this.error = const Value.absent(),
@@ -3694,6 +3961,9 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
     Expression<String>? destinationType,
     Expression<String>? trigger,
     Expression<String>? status,
+    Expression<String>? label,
+    Expression<String>? keyId,
+    Expression<String>? keyName,
     Expression<String>? location,
     Expression<int>? sizeBytes,
     Expression<String>? error,
@@ -3715,6 +3985,9 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
       if (destinationType != null) 'destination_type': destinationType,
       if (trigger != null) 'trigger': trigger,
       if (status != null) 'status': status,
+      if (label != null) 'label': label,
+      if (keyId != null) 'key_id': keyId,
+      if (keyName != null) 'key_name': keyName,
       if (location != null) 'location': location,
       if (sizeBytes != null) 'size_bytes': sizeBytes,
       if (error != null) 'error': error,
@@ -3738,6 +4011,9 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
     Value<DestinationType>? destinationType,
     Value<RunTrigger>? trigger,
     Value<RunStatus>? status,
+    Value<String?>? label,
+    Value<String?>? keyId,
+    Value<String?>? keyName,
     Value<String?>? location,
     Value<int>? sizeBytes,
     Value<String?>? error,
@@ -3759,6 +4035,9 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
       destinationType: destinationType ?? this.destinationType,
       trigger: trigger ?? this.trigger,
       status: status ?? this.status,
+      label: label ?? this.label,
+      keyId: keyId ?? this.keyId,
+      keyName: keyName ?? this.keyName,
       location: location ?? this.location,
       sizeBytes: sizeBytes ?? this.sizeBytes,
       error: error ?? this.error,
@@ -3812,6 +4091,15 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
         $RunTableTable.$converterstatus.toSql(status.value),
       );
     }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (keyId.present) {
+      map['key_id'] = Variable<String>(keyId.value);
+    }
+    if (keyName.present) {
+      map['key_name'] = Variable<String>(keyName.value);
+    }
     if (location.present) {
       map['location'] = Variable<String>(location.value);
     }
@@ -3855,6 +4143,9 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
           ..write('destinationType: $destinationType, ')
           ..write('trigger: $trigger, ')
           ..write('status: $status, ')
+          ..write('label: $label, ')
+          ..write('keyId: $keyId, ')
+          ..write('keyName: $keyName, ')
           ..write('location: $location, ')
           ..write('sizeBytes: $sizeBytes, ')
           ..write('error: $error, ')
@@ -3863,6 +4154,639 @@ class RunTableCompanion extends UpdateCompanion<RunTableData> {
           ..write('startedAt: $startedAt, ')
           ..write('finishedAt: $finishedAt, ')
           ..write('durationMs: $durationMs, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ApiKeyTableTable extends ApiKeyTable
+    with TableInfo<$ApiKeyTableTable, ApiKeyTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ApiKeyTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _workspaceSlugMeta = const VerificationMeta(
+    'workspaceSlug',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceSlug = GeneratedColumn<String>(
+    'workspace_slug',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES workspace (slug) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _secretHashMeta = const VerificationMeta(
+    'secretHash',
+  );
+  @override
+  late final GeneratedColumn<String> secretHash = GeneratedColumn<String>(
+    'secret_hash',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _permissionsMeta = const VerificationMeta(
+    'permissions',
+  );
+  @override
+  late final GeneratedColumn<String> permissions = GeneratedColumn<String>(
+    'permissions',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _configIdsMeta = const VerificationMeta(
+    'configIds',
+  );
+  @override
+  late final GeneratedColumn<String> configIds = GeneratedColumn<String>(
+    'config_ids',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _lastUsedAtMeta = const VerificationMeta(
+    'lastUsedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUsedAt = GeneratedColumn<DateTime>(
+    'last_used_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    workspaceSlug,
+    name,
+    secretHash,
+    permissions,
+    configIds,
+    position,
+    createdAt,
+    updatedAt,
+    lastUsedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'api_key';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ApiKeyTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('workspace_slug')) {
+      context.handle(
+        _workspaceSlugMeta,
+        workspaceSlug.isAcceptableOrUnknown(
+          data['workspace_slug']!,
+          _workspaceSlugMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceSlugMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('secret_hash')) {
+      context.handle(
+        _secretHashMeta,
+        secretHash.isAcceptableOrUnknown(data['secret_hash']!, _secretHashMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_secretHashMeta);
+    }
+    if (data.containsKey('permissions')) {
+      context.handle(
+        _permissionsMeta,
+        permissions.isAcceptableOrUnknown(
+          data['permissions']!,
+          _permissionsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_permissionsMeta);
+    }
+    if (data.containsKey('config_ids')) {
+      context.handle(
+        _configIdsMeta,
+        configIds.isAcceptableOrUnknown(data['config_ids']!, _configIdsMeta),
+      );
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    if (data.containsKey('last_used_at')) {
+      context.handle(
+        _lastUsedAtMeta,
+        lastUsedAt.isAcceptableOrUnknown(
+          data['last_used_at']!,
+          _lastUsedAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ApiKeyTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ApiKeyTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      workspaceSlug: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_slug'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      secretHash: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}secret_hash'],
+      )!,
+      permissions: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}permissions'],
+      )!,
+      configIds: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}config_ids'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      lastUsedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_used_at'],
+      ),
+    );
+  }
+
+  @override
+  $ApiKeyTableTable createAlias(String alias) {
+    return $ApiKeyTableTable(attachedDatabase, alias);
+  }
+}
+
+class ApiKeyTableData extends DataClass implements Insertable<ApiKeyTableData> {
+  /// `key_` and 16 random characters; the key is `dmp_<those 16>_<secret>`.
+  final String id;
+
+  /// Deleting the workspace deletes its keys.
+  final String workspaceSlug;
+  final String name;
+
+  /// The sha256 of the secret, in hex: the secret is random and long, so no
+  /// slow hash is needed.
+  final String secretHash;
+
+  /// The permission keys it has, as a JSON list.
+  final String permissions;
+
+  /// The configs it is limited to, as a JSON list; empty for all of them.
+  final String configIds;
+
+  /// Its place in the list, set by hand (dragging); new ones go last.
+  final int position;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  /// The last request it made, null until then.
+  final DateTime? lastUsedAt;
+  const ApiKeyTableData({
+    required this.id,
+    required this.workspaceSlug,
+    required this.name,
+    required this.secretHash,
+    required this.permissions,
+    required this.configIds,
+    required this.position,
+    required this.createdAt,
+    required this.updatedAt,
+    this.lastUsedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['workspace_slug'] = Variable<String>(workspaceSlug);
+    map['name'] = Variable<String>(name);
+    map['secret_hash'] = Variable<String>(secretHash);
+    map['permissions'] = Variable<String>(permissions);
+    map['config_ids'] = Variable<String>(configIds);
+    map['position'] = Variable<int>(position);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || lastUsedAt != null) {
+      map['last_used_at'] = Variable<DateTime>(lastUsedAt);
+    }
+    return map;
+  }
+
+  ApiKeyTableCompanion toCompanion(bool nullToAbsent) {
+    return ApiKeyTableCompanion(
+      id: Value(id),
+      workspaceSlug: Value(workspaceSlug),
+      name: Value(name),
+      secretHash: Value(secretHash),
+      permissions: Value(permissions),
+      configIds: Value(configIds),
+      position: Value(position),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      lastUsedAt: lastUsedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastUsedAt),
+    );
+  }
+
+  factory ApiKeyTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ApiKeyTableData(
+      id: serializer.fromJson<String>(json['id']),
+      workspaceSlug: serializer.fromJson<String>(json['workspaceSlug']),
+      name: serializer.fromJson<String>(json['name']),
+      secretHash: serializer.fromJson<String>(json['secretHash']),
+      permissions: serializer.fromJson<String>(json['permissions']),
+      configIds: serializer.fromJson<String>(json['configIds']),
+      position: serializer.fromJson<int>(json['position']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      lastUsedAt: serializer.fromJson<DateTime?>(json['lastUsedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'workspaceSlug': serializer.toJson<String>(workspaceSlug),
+      'name': serializer.toJson<String>(name),
+      'secretHash': serializer.toJson<String>(secretHash),
+      'permissions': serializer.toJson<String>(permissions),
+      'configIds': serializer.toJson<String>(configIds),
+      'position': serializer.toJson<int>(position),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'lastUsedAt': serializer.toJson<DateTime?>(lastUsedAt),
+    };
+  }
+
+  ApiKeyTableData copyWith({
+    String? id,
+    String? workspaceSlug,
+    String? name,
+    String? secretHash,
+    String? permissions,
+    String? configIds,
+    int? position,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> lastUsedAt = const Value.absent(),
+  }) => ApiKeyTableData(
+    id: id ?? this.id,
+    workspaceSlug: workspaceSlug ?? this.workspaceSlug,
+    name: name ?? this.name,
+    secretHash: secretHash ?? this.secretHash,
+    permissions: permissions ?? this.permissions,
+    configIds: configIds ?? this.configIds,
+    position: position ?? this.position,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    lastUsedAt: lastUsedAt.present ? lastUsedAt.value : this.lastUsedAt,
+  );
+  ApiKeyTableData copyWithCompanion(ApiKeyTableCompanion data) {
+    return ApiKeyTableData(
+      id: data.id.present ? data.id.value : this.id,
+      workspaceSlug: data.workspaceSlug.present
+          ? data.workspaceSlug.value
+          : this.workspaceSlug,
+      name: data.name.present ? data.name.value : this.name,
+      secretHash: data.secretHash.present
+          ? data.secretHash.value
+          : this.secretHash,
+      permissions: data.permissions.present
+          ? data.permissions.value
+          : this.permissions,
+      configIds: data.configIds.present ? data.configIds.value : this.configIds,
+      position: data.position.present ? data.position.value : this.position,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      lastUsedAt: data.lastUsedAt.present
+          ? data.lastUsedAt.value
+          : this.lastUsedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ApiKeyTableData(')
+          ..write('id: $id, ')
+          ..write('workspaceSlug: $workspaceSlug, ')
+          ..write('name: $name, ')
+          ..write('secretHash: $secretHash, ')
+          ..write('permissions: $permissions, ')
+          ..write('configIds: $configIds, ')
+          ..write('position: $position, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastUsedAt: $lastUsedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    workspaceSlug,
+    name,
+    secretHash,
+    permissions,
+    configIds,
+    position,
+    createdAt,
+    updatedAt,
+    lastUsedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ApiKeyTableData &&
+          other.id == this.id &&
+          other.workspaceSlug == this.workspaceSlug &&
+          other.name == this.name &&
+          other.secretHash == this.secretHash &&
+          other.permissions == this.permissions &&
+          other.configIds == this.configIds &&
+          other.position == this.position &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.lastUsedAt == this.lastUsedAt);
+}
+
+class ApiKeyTableCompanion extends UpdateCompanion<ApiKeyTableData> {
+  final Value<String> id;
+  final Value<String> workspaceSlug;
+  final Value<String> name;
+  final Value<String> secretHash;
+  final Value<String> permissions;
+  final Value<String> configIds;
+  final Value<int> position;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> lastUsedAt;
+  final Value<int> rowid;
+  const ApiKeyTableCompanion({
+    this.id = const Value.absent(),
+    this.workspaceSlug = const Value.absent(),
+    this.name = const Value.absent(),
+    this.secretHash = const Value.absent(),
+    this.permissions = const Value.absent(),
+    this.configIds = const Value.absent(),
+    this.position = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastUsedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ApiKeyTableCompanion.insert({
+    required String id,
+    required String workspaceSlug,
+    required String name,
+    required String secretHash,
+    required String permissions,
+    this.configIds = const Value.absent(),
+    this.position = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastUsedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       workspaceSlug = Value(workspaceSlug),
+       name = Value(name),
+       secretHash = Value(secretHash),
+       permissions = Value(permissions);
+  static Insertable<ApiKeyTableData> custom({
+    Expression<String>? id,
+    Expression<String>? workspaceSlug,
+    Expression<String>? name,
+    Expression<String>? secretHash,
+    Expression<String>? permissions,
+    Expression<String>? configIds,
+    Expression<int>? position,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? lastUsedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (workspaceSlug != null) 'workspace_slug': workspaceSlug,
+      if (name != null) 'name': name,
+      if (secretHash != null) 'secret_hash': secretHash,
+      if (permissions != null) 'permissions': permissions,
+      if (configIds != null) 'config_ids': configIds,
+      if (position != null) 'position': position,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (lastUsedAt != null) 'last_used_at': lastUsedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ApiKeyTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? workspaceSlug,
+    Value<String>? name,
+    Value<String>? secretHash,
+    Value<String>? permissions,
+    Value<String>? configIds,
+    Value<int>? position,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? lastUsedAt,
+    Value<int>? rowid,
+  }) {
+    return ApiKeyTableCompanion(
+      id: id ?? this.id,
+      workspaceSlug: workspaceSlug ?? this.workspaceSlug,
+      name: name ?? this.name,
+      secretHash: secretHash ?? this.secretHash,
+      permissions: permissions ?? this.permissions,
+      configIds: configIds ?? this.configIds,
+      position: position ?? this.position,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      lastUsedAt: lastUsedAt ?? this.lastUsedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (workspaceSlug.present) {
+      map['workspace_slug'] = Variable<String>(workspaceSlug.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (secretHash.present) {
+      map['secret_hash'] = Variable<String>(secretHash.value);
+    }
+    if (permissions.present) {
+      map['permissions'] = Variable<String>(permissions.value);
+    }
+    if (configIds.present) {
+      map['config_ids'] = Variable<String>(configIds.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (lastUsedAt.present) {
+      map['last_used_at'] = Variable<DateTime>(lastUsedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ApiKeyTableCompanion(')
+          ..write('id: $id, ')
+          ..write('workspaceSlug: $workspaceSlug, ')
+          ..write('name: $name, ')
+          ..write('secretHash: $secretHash, ')
+          ..write('permissions: $permissions, ')
+          ..write('configIds: $configIds, ')
+          ..write('position: $position, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastUsedAt: $lastUsedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3898,8 +4822,20 @@ class $DestinationFolderTableTable extends DestinationFolderTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
   @override
-  List<GeneratedColumn> get $columns => [destinationId, path];
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [destinationId, path, position];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -3931,6 +4867,12 @@ class $DestinationFolderTableTable extends DestinationFolderTable
     } else if (isInserting) {
       context.missing(_pathMeta);
     }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
     return context;
   }
 
@@ -3951,6 +4893,10 @@ class $DestinationFolderTableTable extends DestinationFolderTable
         DriftSqlType.string,
         data['${effectivePrefix}path'],
       )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
     );
   }
 
@@ -3967,15 +4913,20 @@ class DestinationFolderTableData extends DataClass
 
   /// Without slashes around it.
   final String path;
+
+  /// Its place among the folders of the destination, in the order they come.
+  final int position;
   const DestinationFolderTableData({
     required this.destinationId,
     required this.path,
+    required this.position,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['destination_id'] = Variable<String>(destinationId);
     map['path'] = Variable<String>(path);
+    map['position'] = Variable<int>(position);
     return map;
   }
 
@@ -3983,6 +4934,7 @@ class DestinationFolderTableData extends DataClass
     return DestinationFolderTableCompanion(
       destinationId: Value(destinationId),
       path: Value(path),
+      position: Value(position),
     );
   }
 
@@ -3994,6 +4946,7 @@ class DestinationFolderTableData extends DataClass
     return DestinationFolderTableData(
       destinationId: serializer.fromJson<String>(json['destinationId']),
       path: serializer.fromJson<String>(json['path']),
+      position: serializer.fromJson<int>(json['position']),
     );
   }
   @override
@@ -4002,14 +4955,19 @@ class DestinationFolderTableData extends DataClass
     return <String, dynamic>{
       'destinationId': serializer.toJson<String>(destinationId),
       'path': serializer.toJson<String>(path),
+      'position': serializer.toJson<int>(position),
     };
   }
 
-  DestinationFolderTableData copyWith({String? destinationId, String? path}) =>
-      DestinationFolderTableData(
-        destinationId: destinationId ?? this.destinationId,
-        path: path ?? this.path,
-      );
+  DestinationFolderTableData copyWith({
+    String? destinationId,
+    String? path,
+    int? position,
+  }) => DestinationFolderTableData(
+    destinationId: destinationId ?? this.destinationId,
+    path: path ?? this.path,
+    position: position ?? this.position,
+  );
   DestinationFolderTableData copyWithCompanion(
     DestinationFolderTableCompanion data,
   ) {
@@ -4018,6 +4976,7 @@ class DestinationFolderTableData extends DataClass
           ? data.destinationId.value
           : this.destinationId,
       path: data.path.present ? data.path.value : this.path,
+      position: data.position.present ? data.position.value : this.position,
     );
   }
 
@@ -4025,45 +4984,52 @@ class DestinationFolderTableData extends DataClass
   String toString() {
     return (StringBuffer('DestinationFolderTableData(')
           ..write('destinationId: $destinationId, ')
-          ..write('path: $path')
+          ..write('path: $path, ')
+          ..write('position: $position')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(destinationId, path);
+  int get hashCode => Object.hash(destinationId, path, position);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DestinationFolderTableData &&
           other.destinationId == this.destinationId &&
-          other.path == this.path);
+          other.path == this.path &&
+          other.position == this.position);
 }
 
 class DestinationFolderTableCompanion
     extends UpdateCompanion<DestinationFolderTableData> {
   final Value<String> destinationId;
   final Value<String> path;
+  final Value<int> position;
   final Value<int> rowid;
   const DestinationFolderTableCompanion({
     this.destinationId = const Value.absent(),
     this.path = const Value.absent(),
+    this.position = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DestinationFolderTableCompanion.insert({
     required String destinationId,
     required String path,
+    this.position = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : destinationId = Value(destinationId),
        path = Value(path);
   static Insertable<DestinationFolderTableData> custom({
     Expression<String>? destinationId,
     Expression<String>? path,
+    Expression<int>? position,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (destinationId != null) 'destination_id': destinationId,
       if (path != null) 'path': path,
+      if (position != null) 'position': position,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4071,11 +5037,13 @@ class DestinationFolderTableCompanion
   DestinationFolderTableCompanion copyWith({
     Value<String>? destinationId,
     Value<String>? path,
+    Value<int>? position,
     Value<int>? rowid,
   }) {
     return DestinationFolderTableCompanion(
       destinationId: destinationId ?? this.destinationId,
       path: path ?? this.path,
+      position: position ?? this.position,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4089,6 +5057,9 @@ class DestinationFolderTableCompanion
     if (path.present) {
       map['path'] = Variable<String>(path.value);
     }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -4100,6 +5071,7 @@ class DestinationFolderTableCompanion
     return (StringBuffer('DestinationFolderTableCompanion(')
           ..write('destinationId: $destinationId, ')
           ..write('path: $path, ')
+          ..write('position: $position, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4116,6 +5088,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $ConfigTableTable configTable = $ConfigTableTable(this);
   late final $RunTableTable runTable = $RunTableTable(this);
+  late final $ApiKeyTableTable apiKeyTable = $ApiKeyTableTable(this);
   late final $DestinationFolderTableTable destinationFolderTable =
       $DestinationFolderTableTable(this);
   late final Index runConfigStarted = Index(
@@ -4136,6 +5109,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     destinationTable,
     configTable,
     runTable,
+    apiKeyTable,
     destinationFolderTable,
     runConfigStarted,
     runWorkspaceStarted,
@@ -4176,6 +5150,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('run', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'workspace',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('api_key', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -4295,6 +5276,24 @@ final class $$WorkspaceTableTableReferences
     );
 
     final cache = $_typedResult.readTableOrNull(_runTableRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$ApiKeyTableTable, List<ApiKeyTableData>>
+  _apiKeyTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.apiKeyTable,
+    aliasName: 'workspace__slug__api_key__workspace_slug',
+  );
+
+  $$ApiKeyTableTableProcessedTableManager get apiKeyTableRefs {
+    final manager = $$ApiKeyTableTableTableManager($_db, $_db.apiKeyTable)
+        .filter(
+          (f) => f.workspaceSlug.slug.sqlEquals($_itemColumn<String>('slug')!),
+        );
+
+    final cache = $_typedResult.readTableOrNull(_apiKeyTableRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -4447,6 +5446,31 @@ class $$WorkspaceTableTableFilterComposer
           }) => $$RunTableTableFilterComposer(
             $db: $db,
             $table: $db.runTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> apiKeyTableRefs(
+    Expression<bool> Function($$ApiKeyTableTableFilterComposer f) f,
+  ) {
+    final $$ApiKeyTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.slug,
+      referencedTable: $db.apiKeyTable,
+      getReferencedColumn: (t) => t.workspaceSlug,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ApiKeyTableTableFilterComposer(
+            $db: $db,
+            $table: $db.apiKeyTable,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4656,6 +5680,31 @@ class $$WorkspaceTableTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> apiKeyTableRefs<T extends Object>(
+    Expression<T> Function($$ApiKeyTableTableAnnotationComposer a) f,
+  ) {
+    final $$ApiKeyTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.slug,
+      referencedTable: $db.apiKeyTable,
+      getReferencedColumn: (t) => t.workspaceSlug,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ApiKeyTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.apiKeyTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$WorkspaceTableTableTableManager
@@ -4676,6 +5725,7 @@ class $$WorkspaceTableTableTableManager
             bool destinationTableRefs,
             bool configTableRefs,
             bool runTableRefs,
+            bool apiKeyTableRefs,
           })
         > {
   $$WorkspaceTableTableTableManager(
@@ -4753,6 +5803,7 @@ class $$WorkspaceTableTableTableManager
                 destinationTableRefs = false,
                 configTableRefs = false,
                 runTableRefs = false,
+                apiKeyTableRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -4761,6 +5812,7 @@ class $$WorkspaceTableTableTableManager
                     if (destinationTableRefs) db.destinationTable,
                     if (configTableRefs) db.configTable,
                     if (runTableRefs) db.runTable,
+                    if (apiKeyTableRefs) db.apiKeyTable,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -4849,6 +5901,27 @@ class $$WorkspaceTableTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (apiKeyTableRefs)
+                        await $_getPrefetchedData<
+                          WorkspaceTableData,
+                          $WorkspaceTableTable,
+                          ApiKeyTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$WorkspaceTableTableReferences
+                              ._apiKeyTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$WorkspaceTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).apiKeyTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.workspaceSlug == item.slug,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -4874,6 +5947,7 @@ typedef $$WorkspaceTableTableProcessedTableManager =
         bool destinationTableRefs,
         bool configTableRefs,
         bool runTableRefs,
+        bool apiKeyTableRefs,
       })
     >;
 typedef $$SourceTableTableCreateCompanionBuilder =
@@ -4887,6 +5961,7 @@ typedef $$SourceTableTableCreateCompanionBuilder =
       Value<String?> lastCheck,
       Value<double?> canvasX,
       Value<double?> canvasY,
+      Value<int> position,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -4902,6 +5977,7 @@ typedef $$SourceTableTableUpdateCompanionBuilder =
       Value<String?> lastCheck,
       Value<double?> canvasX,
       Value<double?> canvasY,
+      Value<int> position,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -4994,6 +6070,11 @@ class $$SourceTableTableFilterComposer
 
   ColumnFilters<double> get canvasY => $composableBuilder(
     column: $table.canvasY,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5105,6 +6186,11 @@ class $$SourceTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -5173,6 +6259,9 @@ class $$SourceTableTableAnnotationComposer
 
   GeneratedColumn<double> get canvasY =>
       $composableBuilder(column: $table.canvasY, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -5266,6 +6355,7 @@ class $$SourceTableTableTableManager
                 Value<String?> lastCheck = const Value.absent(),
                 Value<double?> canvasX = const Value.absent(),
                 Value<double?> canvasY = const Value.absent(),
+                Value<int> position = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5279,6 +6369,7 @@ class $$SourceTableTableTableManager
                 lastCheck: lastCheck,
                 canvasX: canvasX,
                 canvasY: canvasY,
+                position: position,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5294,6 +6385,7 @@ class $$SourceTableTableTableManager
                 Value<String?> lastCheck = const Value.absent(),
                 Value<double?> canvasX = const Value.absent(),
                 Value<double?> canvasY = const Value.absent(),
+                Value<int> position = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5307,6 +6399,7 @@ class $$SourceTableTableTableManager
                 lastCheck: lastCheck,
                 canvasX: canvasX,
                 canvasY: canvasY,
+                position: position,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5412,6 +6505,7 @@ typedef $$DestinationTableTableCreateCompanionBuilder =
       Value<String?> lastCheck,
       Value<double?> canvasX,
       Value<double?> canvasY,
+      Value<int> position,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -5427,6 +6521,7 @@ typedef $$DestinationTableTableUpdateCompanionBuilder =
       Value<String?> lastCheck,
       Value<double?> canvasX,
       Value<double?> canvasY,
+      Value<int> position,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -5554,6 +6649,11 @@ class $$DestinationTableTableFilterComposer
 
   ColumnFilters<double> get canvasY => $composableBuilder(
     column: $table.canvasY,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5691,6 +6791,11 @@ class $$DestinationTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -5759,6 +6864,9 @@ class $$DestinationTableTableAnnotationComposer
 
   GeneratedColumn<double> get canvasY =>
       $composableBuilder(column: $table.canvasY, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -5884,6 +6992,7 @@ class $$DestinationTableTableTableManager
                 Value<String?> lastCheck = const Value.absent(),
                 Value<double?> canvasX = const Value.absent(),
                 Value<double?> canvasY = const Value.absent(),
+                Value<int> position = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5897,6 +7006,7 @@ class $$DestinationTableTableTableManager
                 lastCheck: lastCheck,
                 canvasX: canvasX,
                 canvasY: canvasY,
+                position: position,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5912,6 +7022,7 @@ class $$DestinationTableTableTableManager
                 Value<String?> lastCheck = const Value.absent(),
                 Value<double?> canvasX = const Value.absent(),
                 Value<double?> canvasY = const Value.absent(),
+                Value<int> position = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5925,6 +7036,7 @@ class $$DestinationTableTableTableManager
                 lastCheck: lastCheck,
                 canvasX: canvasX,
                 canvasY: canvasY,
+                position: position,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -6065,6 +7177,7 @@ typedef $$ConfigTableTableCreateCompanionBuilder =
       Value<bool> enabled,
       Value<double?> canvasX,
       Value<double?> canvasY,
+      Value<int> position,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -6083,6 +7196,7 @@ typedef $$ConfigTableTableUpdateCompanionBuilder =
       Value<bool> enabled,
       Value<double?> canvasX,
       Value<double?> canvasY,
+      Value<int> position,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -6215,6 +7329,11 @@ class $$ConfigTableTableFilterComposer
 
   ColumnFilters<double> get canvasY => $composableBuilder(
     column: $table.canvasY,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6377,6 +7496,11 @@ class $$ConfigTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -6495,6 +7619,9 @@ class $$ConfigTableTableAnnotationComposer
 
   GeneratedColumn<double> get canvasY =>
       $composableBuilder(column: $table.canvasY, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -6642,6 +7769,7 @@ class $$ConfigTableTableTableManager
                 Value<bool> enabled = const Value.absent(),
                 Value<double?> canvasX = const Value.absent(),
                 Value<double?> canvasY = const Value.absent(),
+                Value<int> position = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -6658,6 +7786,7 @@ class $$ConfigTableTableTableManager
                 enabled: enabled,
                 canvasX: canvasX,
                 canvasY: canvasY,
+                position: position,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -6676,6 +7805,7 @@ class $$ConfigTableTableTableManager
                 Value<bool> enabled = const Value.absent(),
                 Value<double?> canvasX = const Value.absent(),
                 Value<double?> canvasY = const Value.absent(),
+                Value<int> position = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -6692,6 +7822,7 @@ class $$ConfigTableTableTableManager
                 enabled: enabled,
                 canvasX: canvasX,
                 canvasY: canvasY,
+                position: position,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -6827,6 +7958,9 @@ typedef $$RunTableTableCreateCompanionBuilder = RunTableCompanion Function({
   required DestinationType destinationType,
   required RunTrigger trigger,
   required RunStatus status,
+  Value<String?> label,
+  Value<String?> keyId,
+  Value<String?> keyName,
   Value<String?> location,
   Value<int> sizeBytes,
   Value<String?> error,
@@ -6848,6 +7982,9 @@ typedef $$RunTableTableUpdateCompanionBuilder = RunTableCompanion Function({
   Value<DestinationType> destinationType,
   Value<RunTrigger> trigger,
   Value<RunStatus> status,
+  Value<String?> label,
+  Value<String?> keyId,
+  Value<String?> keyName,
   Value<String?> location,
   Value<int> sizeBytes,
   Value<String?> error,
@@ -6950,6 +8087,21 @@ class $$RunTableTableFilterComposer
         column: $table.status,
         builder: (column) => ColumnWithTypeConverterFilters(column),
       );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get keyId => $composableBuilder(
+    column: $table.keyId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get keyName => $composableBuilder(
+    column: $table.keyName,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get location => $composableBuilder(
     column: $table.location,
@@ -7087,6 +8239,21 @@ class $$RunTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get keyId => $composableBuilder(
+    column: $table.keyId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get keyName => $composableBuilder(
+    column: $table.keyName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get location => $composableBuilder(
     column: $table.location,
     builder: (column) => ColumnOrderings(column),
@@ -7219,6 +8386,15 @@ class $$RunTableTableAnnotationComposer
   GeneratedColumnWithTypeConverter<RunStatus, String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
 
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get keyId =>
+      $composableBuilder(column: $table.keyId, builder: (column) => column);
+
+  GeneratedColumn<String> get keyName =>
+      $composableBuilder(column: $table.keyName, builder: (column) => column);
+
   GeneratedColumn<String> get location =>
       $composableBuilder(column: $table.location, builder: (column) => column);
 
@@ -7334,6 +8510,9 @@ class $$RunTableTableTableManager
                 Value<DestinationType> destinationType = const Value.absent(),
                 Value<RunTrigger> trigger = const Value.absent(),
                 Value<RunStatus> status = const Value.absent(),
+                Value<String?> label = const Value.absent(),
+                Value<String?> keyId = const Value.absent(),
+                Value<String?> keyName = const Value.absent(),
                 Value<String?> location = const Value.absent(),
                 Value<int> sizeBytes = const Value.absent(),
                 Value<String?> error = const Value.absent(),
@@ -7354,6 +8533,9 @@ class $$RunTableTableTableManager
                 destinationType: destinationType,
                 trigger: trigger,
                 status: status,
+                label: label,
+                keyId: keyId,
+                keyName: keyName,
                 location: location,
                 sizeBytes: sizeBytes,
                 error: error,
@@ -7376,6 +8558,9 @@ class $$RunTableTableTableManager
                 required DestinationType destinationType,
                 required RunTrigger trigger,
                 required RunStatus status,
+                Value<String?> label = const Value.absent(),
+                Value<String?> keyId = const Value.absent(),
+                Value<String?> keyName = const Value.absent(),
                 Value<String?> location = const Value.absent(),
                 Value<int> sizeBytes = const Value.absent(),
                 Value<String?> error = const Value.absent(),
@@ -7396,6 +8581,9 @@ class $$RunTableTableTableManager
                 destinationType: destinationType,
                 trigger: trigger,
                 status: status,
+                label: label,
+                keyId: keyId,
+                keyName: keyName,
                 location: location,
                 sizeBytes: sizeBytes,
                 error: error,
@@ -7482,16 +8670,434 @@ typedef $$RunTableTableProcessedTableManager =
       RunTableData,
       PrefetchHooks Function({bool workspaceSlug, bool configId})
     >;
+typedef $$ApiKeyTableTableCreateCompanionBuilder =
+    ApiKeyTableCompanion Function({
+      required String id,
+      required String workspaceSlug,
+      required String name,
+      required String secretHash,
+      required String permissions,
+      Value<String> configIds,
+      Value<int> position,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> lastUsedAt,
+      Value<int> rowid,
+    });
+typedef $$ApiKeyTableTableUpdateCompanionBuilder =
+    ApiKeyTableCompanion Function({
+      Value<String> id,
+      Value<String> workspaceSlug,
+      Value<String> name,
+      Value<String> secretHash,
+      Value<String> permissions,
+      Value<String> configIds,
+      Value<int> position,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> lastUsedAt,
+      Value<int> rowid,
+    });
+
+final class $$ApiKeyTableTableReferences
+    extends BaseReferences<_$AppDatabase, $ApiKeyTableTable, ApiKeyTableData> {
+  $$ApiKeyTableTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $WorkspaceTableTable _workspaceSlugTable(_$AppDatabase db) =>
+      db.workspaceTable.createAlias('api_key__workspace_slug__workspace__slug');
+
+  $$WorkspaceTableTableProcessedTableManager get workspaceSlug {
+    final $_column = $_itemColumn<String>('workspace_slug')!;
+
+    final manager = $$WorkspaceTableTableTableManager(
+      $_db,
+      $_db.workspaceTable,
+    ).filter((f) => f.slug.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_workspaceSlugTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$ApiKeyTableTableFilterComposer
+    extends Composer<_$AppDatabase, $ApiKeyTableTable> {
+  $$ApiKeyTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get secretHash => $composableBuilder(
+    column: $table.secretHash,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get permissions => $composableBuilder(
+    column: $table.permissions,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get configIds => $composableBuilder(
+    column: $table.configIds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastUsedAt => $composableBuilder(
+    column: $table.lastUsedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$WorkspaceTableTableFilterComposer get workspaceSlug {
+    final $$WorkspaceTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.workspaceSlug,
+      referencedTable: $db.workspaceTable,
+      getReferencedColumn: (t) => t.slug,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WorkspaceTableTableFilterComposer(
+            $db: $db,
+            $table: $db.workspaceTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ApiKeyTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $ApiKeyTableTable> {
+  $$ApiKeyTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get secretHash => $composableBuilder(
+    column: $table.secretHash,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get permissions => $composableBuilder(
+    column: $table.permissions,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get configIds => $composableBuilder(
+    column: $table.configIds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastUsedAt => $composableBuilder(
+    column: $table.lastUsedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$WorkspaceTableTableOrderingComposer get workspaceSlug {
+    final $$WorkspaceTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.workspaceSlug,
+      referencedTable: $db.workspaceTable,
+      getReferencedColumn: (t) => t.slug,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WorkspaceTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.workspaceTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ApiKeyTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ApiKeyTableTable> {
+  $$ApiKeyTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get secretHash => $composableBuilder(
+    column: $table.secretHash,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get permissions => $composableBuilder(
+    column: $table.permissions,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get configIds =>
+      $composableBuilder(column: $table.configIds, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUsedAt => $composableBuilder(
+    column: $table.lastUsedAt,
+    builder: (column) => column,
+  );
+
+  $$WorkspaceTableTableAnnotationComposer get workspaceSlug {
+    final $$WorkspaceTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.workspaceSlug,
+      referencedTable: $db.workspaceTable,
+      getReferencedColumn: (t) => t.slug,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WorkspaceTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.workspaceTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ApiKeyTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ApiKeyTableTable,
+          ApiKeyTableData,
+          $$ApiKeyTableTableFilterComposer,
+          $$ApiKeyTableTableOrderingComposer,
+          $$ApiKeyTableTableAnnotationComposer,
+          $$ApiKeyTableTableCreateCompanionBuilder,
+          $$ApiKeyTableTableUpdateCompanionBuilder,
+          (ApiKeyTableData, $$ApiKeyTableTableReferences),
+          ApiKeyTableData,
+          PrefetchHooks Function({bool workspaceSlug})
+        > {
+  $$ApiKeyTableTableTableManager(_$AppDatabase db, $ApiKeyTableTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ApiKeyTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ApiKeyTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ApiKeyTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> workspaceSlug = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> secretHash = const Value.absent(),
+                Value<String> permissions = const Value.absent(),
+                Value<String> configIds = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> lastUsedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ApiKeyTableCompanion(
+                id: id,
+                workspaceSlug: workspaceSlug,
+                name: name,
+                secretHash: secretHash,
+                permissions: permissions,
+                configIds: configIds,
+                position: position,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                lastUsedAt: lastUsedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String workspaceSlug,
+                required String name,
+                required String secretHash,
+                required String permissions,
+                Value<String> configIds = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> lastUsedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ApiKeyTableCompanion.insert(
+                id: id,
+                workspaceSlug: workspaceSlug,
+                name: name,
+                secretHash: secretHash,
+                permissions: permissions,
+                configIds: configIds,
+                position: position,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                lastUsedAt: lastUsedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ApiKeyTableTable, ApiKeyTableData>(table),
+                  $$ApiKeyTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({workspaceSlug = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (workspaceSlug) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.workspaceSlug,
+                        referencedTable: $$ApiKeyTableTableReferences
+                            ._workspaceSlugTable(db),
+                        referencedColumn: $$ApiKeyTableTableReferences
+                            ._workspaceSlugTable(db)
+                            .slug,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ApiKeyTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ApiKeyTableTable,
+      ApiKeyTableData,
+      $$ApiKeyTableTableFilterComposer,
+      $$ApiKeyTableTableOrderingComposer,
+      $$ApiKeyTableTableAnnotationComposer,
+      $$ApiKeyTableTableCreateCompanionBuilder,
+      $$ApiKeyTableTableUpdateCompanionBuilder,
+      (ApiKeyTableData, $$ApiKeyTableTableReferences),
+      ApiKeyTableData,
+      PrefetchHooks Function({bool workspaceSlug})
+    >;
 typedef $$DestinationFolderTableTableCreateCompanionBuilder =
     DestinationFolderTableCompanion Function({
       required String destinationId,
       required String path,
+      Value<int> position,
       Value<int> rowid,
     });
 typedef $$DestinationFolderTableTableUpdateCompanionBuilder =
     DestinationFolderTableCompanion Function({
       Value<String> destinationId,
       Value<String> path,
+      Value<int> position,
       Value<int> rowid,
     });
 
@@ -7541,6 +9147,11 @@ class $$DestinationFolderTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$DestinationTableTableFilterComposer get destinationId {
     final $$DestinationTableTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -7579,6 +9190,11 @@ class $$DestinationFolderTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$DestinationTableTableOrderingComposer get destinationId {
     final $$DestinationTableTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -7614,6 +9230,9 @@ class $$DestinationFolderTableTableAnnotationComposer
   });
   GeneratedColumn<String> get path =>
       $composableBuilder(column: $table.path, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
 
   $$DestinationTableTableAnnotationComposer get destinationId {
     final $$DestinationTableTableAnnotationComposer composer = $composerBuilder(
@@ -7680,20 +9299,24 @@ class $$DestinationFolderTableTableTableManager
               ({
                 Value<String> destinationId = const Value.absent(),
                 Value<String> path = const Value.absent(),
+                Value<int> position = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DestinationFolderTableCompanion(
                 destinationId: destinationId,
                 path: path,
+                position: position,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String destinationId,
                 required String path,
+                Value<int> position = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DestinationFolderTableCompanion.insert(
                 destinationId: destinationId,
                 path: path,
+                position: position,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -7779,6 +9402,8 @@ class $AppDatabaseManager {
       $$ConfigTableTableTableManager(_db, _db.configTable);
   $$RunTableTableTableManager get runTable =>
       $$RunTableTableTableManager(_db, _db.runTable);
+  $$ApiKeyTableTableTableManager get apiKeyTable =>
+      $$ApiKeyTableTableTableManager(_db, _db.apiKeyTable);
   $$DestinationFolderTableTableTableManager get destinationFolderTable =>
       $$DestinationFolderTableTableTableManager(
         _db,

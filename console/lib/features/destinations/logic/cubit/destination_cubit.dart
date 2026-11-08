@@ -124,6 +124,61 @@ class DestinationCubit extends Cubit<DestinationState> {
         path,
       );
 
+  /// Moves the folder of [destination] at [from] to [to] and saves it; back
+  /// as it was if that fails. Its last check stays: the same folders
+  Future<void> moveFolder(DestinationModel destination, int from, int to) {
+    final folders = reordered(destination.folders, from, to);
+    return _saveOrder(
+      (data) => data._copy(
+        destinations: [
+          for (final d in data.destinations)
+            d.id == destination.id ? d.withFolders(folders) : d,
+        ],
+      ),
+      (workspace) => _repo.save(
+        workspace: workspace,
+        id: destination.id,
+        draft: DestinationDraft.of(destination, folders: folders),
+        token: _token,
+      ),
+    );
+  }
+
+  /// Moves the destination at [from] to [to] (with no filter on, the list
+  /// shown is the whole one) and saves the order; back as it was if that
+  /// fails
+  Future<void> reorder(int from, int to) {
+    final destinations = reordered(state.data.destinations, from, to);
+    return _saveOrder(
+      (data) => data._copy(destinations: destinations),
+      (workspace) => _repo.reorder(
+        workspace: workspace,
+        ids: [for (final d in destinations) d.id],
+        token: _token,
+      ),
+    );
+  }
+
+  /// Shows [change] at once and runs [save]; an error puts the list back
+  Future<void> _saveOrder(
+    DestinationData Function(DestinationData) change,
+    Future<void> Function(String workspace) save,
+  ) async {
+    final before = state.data;
+    emit(DestinationLoadingSuccessState(data: change(before)));
+    try {
+      await save(before.workspace!);
+    } catch (e) {
+      if (state.data.workspace != before.workspace) return;
+      emit(
+        DestinationProcessingErrorState(
+          ExceptionConverter.parse(e).message,
+          data: before,
+        ),
+      );
+    }
+  }
+
   Future<void> _saveFolders(
     DestinationAction action,
     DestinationModel destination,
@@ -252,6 +307,8 @@ class DestinationData {
         d.name,
         DestinationTypeLook.labelOf(d.type),
         d.s3?.address ?? '',
+        // the list shows only the endpoint: the bucket is still found
+        d.s3?.bucket ?? '',
         ...d.folders,
       ].join(' ').toLowerCase();
       return (type == null || d.type == type) &&
@@ -343,6 +400,9 @@ class DestinationData {
 
   /// How many filters are on (the search box apart)
   int get activeFilters => type == null ? 0 : 1;
+
+  /// The rows can be dragged only when they are all shown
+  bool get filtered => activeFilters > 0 || query.trim().isNotEmpty;
 }
 
 abstract class DestinationState {

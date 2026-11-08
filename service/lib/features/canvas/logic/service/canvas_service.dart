@@ -241,6 +241,13 @@ class CanvasService {
         }
       }
 
+      // The order of each list is the one of the request
+      await sources.reorder([for (final n in request.sources) ids[n.id]!]);
+      await destinations.reorder([
+        for (final n in request.destinations) ids[n.id]!,
+      ]);
+      await configs.reorder([for (final n in request.configs) ids[n.id]!]);
+
       await repo.replace(workspace, {
         for (final node in [
           ...request.sources,

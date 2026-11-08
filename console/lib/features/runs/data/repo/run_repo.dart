@@ -24,6 +24,23 @@ class RunRepo {
     }
   }
 
+  Future<RunModel> runAgain({
+    required String workspace,
+    required String configId,
+    String? token,
+  }) async {
+    try {
+      final response = await _client.runAgain(
+        workspace: workspace,
+        configId: configId,
+        token: token,
+      );
+      return RunModel.fromJson(response);
+    } catch (e) {
+      throw ExceptionConverter.parse(e);
+    }
+  }
+
   Future<RunModel> get({
     required String workspace,
     required String id,

@@ -65,6 +65,8 @@ class NavigationIcons {
   SvgAsset get events => const SvgAsset('$_navigation/events.svg');
 
   SvgAsset get settings => const SvgAsset('$_navigation/settings.svg');
+
+  SvgAsset get keys => const SvgAsset('$_navigation/keys.svg');
 }
 
 /// What the canvas shows: sources, configs, destinations and folders
@@ -99,6 +101,10 @@ class ActionsIcons {
 
   SvgAsset get warning => const SvgAsset('$_actions/warning.svg');
 
+  /// Filled, the ! cut out of it: the confirmation of something that can't be
+  /// undone
+  SvgAsset get warningFilled => const SvgAsset('$_actions/warning_filled.svg');
+
   SvgAsset get edit => const SvgAsset('$_actions/edit.svg');
 
   SvgAsset get logout => const SvgAsset('$_actions/logout.svg');
@@ -110,6 +116,9 @@ class ActionsIcons {
   SvgAsset get search => const SvgAsset('$_actions/search.svg');
 
   SvgAsset get filter => const SvgAsset('$_actions/filter.svg');
+
+  /// Six dots: the handle that drags a row
+  SvgAsset get drag => const SvgAsset('$_actions/drag.svg');
 
   /// Two arrows: the sort
   SvgAsset get sort => const SvgAsset('$_actions/sort.svg');
@@ -127,6 +136,9 @@ class ActionsIcons {
 
   /// A triangle: run now
   SvgAsset get play => const SvgAsset('$_actions/play.svg');
+
+  /// An hourglass: a run waiting its turn
+  SvgAsset get queued => const SvgAsset('$_actions/queued.svg');
 
   SvgAsset get check => const SvgAsset('$_actions/check.svg');
 

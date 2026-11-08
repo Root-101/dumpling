@@ -258,6 +258,12 @@ void main() {
     expect(find.text('Switch & open canvas'), findsOneWidget);
     // the failing configs on the run log of the rail
     expect(find.widgetWithText(RailBadge, '2'), findsOneWidget);
+    // every card as tall, one with a last run and one without
+    final heights = {
+      for (final e in find.byType(WorkspaceCard).evaluate())
+        tester.getSize(find.byWidget(e.widget)).height,
+    };
+    expect(heights, hasLength(1));
 
     await tester.tap(
       find.text('A fresh canvas for another environment, client or project.'),
@@ -314,6 +320,18 @@ void main() {
     expect(find.text('WORKSPACE SETTINGS'), findsOneWidget);
     expect(find.text('Defaults for new configs'), findsOneWidget);
     expect(find.text('Danger zone'), findsOneWidget);
+
+    // the id leads the details, and Edit sits under them, not in the footer
+    expect(
+      tester.getCenter(find.text('Workspace ID')).dy,
+      lessThan(tester.getCenter(find.text('Name')).dy),
+    );
+    expect(
+      tester.getCenter(find.widgetWithText(PrimaryButton, 'Edit')).dy,
+      lessThan(
+        tester.getCenter(find.text('Applies only to this workspace')).dy,
+      ),
+    );
 
     // Edit, and a new name in the header as it is typed
     await tester.tap(find.widgetWithText(PrimaryButton, 'Edit'));
@@ -395,9 +413,15 @@ void main() {
     expect(find.text('orders-db'), findsWidgets);
     expect(find.text('Nightly full'), findsOneWidget);
     expect(find.text('0 2 * * *'), findsOneWidget);
-    expect(find.text('Success'), findsOneWidget);
-    expect(find.text('Failed'), findsOneWidget);
-    expect(find.text('Never run'), findsOneWidget);
+    // the schedule in words over its cron
+    expect(find.text('Daily at 02:00'), findsOneWidget);
+    // the status is a square: its label is the tooltip
+    expect(find.byTooltip('Success'), findsOneWidget);
+    expect(find.byTooltip('Failed'), findsOneWidget);
+    expect(find.byTooltip('Paused'), findsOneWidget);
+    // the config with its id, the source with its type
+    expect(find.text('j1'), findsOneWidget);
+    expect(find.text('PostgreSQL'), findsWidgets);
     expect(find.text('20/Oct 02:14 AM UTC'), findsOneWidget);
     expect(find.text('5.00 MB'), findsOneWidget);
     expect(find.text('pg_dump: connection refused'), findsOneWidget);
@@ -418,7 +442,42 @@ void main() {
     await settle(tester);
     expect(find.text('Step 1 of 3'), findsOneWidget);
     expect(find.text('Config name'), findsOneWidget);
+    // its id in a tag beside the name, above the route
+    expect(find.text('j1'), findsNWidgets(2));
+    expect(
+      tester.getCenter(find.text('j1').last).dy,
+      lessThan(tester.getCenter(find.textContaining(' → ').last).dy),
+    );
   });
+
+  testWidgets(
+    'Backups loaded, then the service went away: a banner over them',
+    (tester) async {
+      when(() => auth.auth).thenReturn(session());
+      whenListen(
+        backups,
+        const Stream<BackupState>.empty(),
+        initialState: BackupLoadingErrorState(
+          GlobalException(type: GlobalExceptionType.offline, message: ''),
+          data: const BackupData.empty('production').withCanvas(backupCanvas()),
+        ),
+      );
+      RouteConfig.router.go('/workspaces/production/backups');
+      await pumpApp(tester);
+      await settle(tester);
+
+      expect(
+        find.textContaining(
+          'Can’t reach the Dumpling server.',
+          findRichText: true,
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Retry now'), findsOneWidget);
+      // what was loaded stays under it
+      expect(find.text('Nightly full'), findsOneWidget);
+    },
+  );
 
   testWidgets('Backups whose next run is due show the reload', (tester) async {
     when(() => auth.auth).thenReturn(session());
@@ -435,7 +494,7 @@ void main() {
     await settle(tester);
 
     // the status and next run of the two scheduled rows, and the summary
-    expect(find.text('Loading'), findsNWidgets(2));
+    expect(find.byTooltip('Loading'), findsNWidgets(2));
     expect(find.text('Updating…'), findsNWidgets(2));
     expect(
       find.textContaining('Updating…', findRichText: true),
@@ -563,6 +622,36 @@ void main() {
     expect(find.text(about), findsNothing);
     expect(find.text('orders-db'), findsOneWidget);
 
+    // another id by its URL: its dialog replaces the one open
+    RouteConfig.router.go('/workspaces/production/sources/orders');
+    await settle(tester);
+    RouteConfig.router.go('/workspaces/production/sources/users');
+    await settle(tester);
+    expect(find.text(about), findsOneWidget);
+    RouteConfig.router.go('/workspaces/production/sources');
+    await settle(tester);
+    expect(find.text(about), findsNothing);
+
+    // another screen by its URL: the dialog doesn't stay over it
+    RouteConfig.router.go('/workspaces/production/sources/orders');
+    await settle(tester);
+    expect(find.text(about), findsOneWidget);
+    RouteConfig.router.go('/workspaces/production/runs');
+    await settle(tester);
+    expect(find.text(about), findsNothing);
+
+    // a dialog without a URL of its own closes with its screen too
+    RouteConfig.router.go('/workspaces');
+    await settle(tester);
+    await tester.tap(
+      find.text('A fresh canvas for another environment, client or project.'),
+    );
+    await settle(tester);
+    expect(find.text('Create workspace'), findsOneWidget);
+    RouteConfig.router.go('/workspaces/production/sources');
+    await settle(tester);
+    expect(find.text('Create workspace'), findsNothing);
+
     // an id that is not there: a notice, and the list
     RouteConfig.router.go('/workspaces/production/sources/gone');
     await settle(tester);
@@ -591,7 +680,7 @@ void main() {
 
     expect(find.text('bucket'), findsOneWidget);
     expect(find.text('2 folders'), findsOneWidget);
-    expect(find.text('s3.us-east-1.amazonaws.com/bucket'), findsOneWidget);
+    expect(find.text('s3.us-east-1.amazonaws.com'), findsOneWidget);
     expect(find.text('Not tested'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Show the folders of bucket'));
@@ -724,6 +813,12 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Copy log'), findsOneWidget);
+    // a failed run: Edit config, Close and Retry now under it
+    expect(find.text('Edit config'), findsOneWidget);
+    expect(find.text('Retry now'), findsOneWidget);
+    await tester.tap(find.text('Close'));
+    await settle(tester);
+    expect(find.text('The backup failed'), findsNothing);
   });
 
   // last: its loading states stay on the shared mocks

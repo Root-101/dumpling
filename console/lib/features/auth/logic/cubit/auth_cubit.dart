@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:console/app_exporter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -6,7 +8,7 @@ class AuthCubit extends Cubit<AuthState> {
   AuthModel? _auth;
 
   /// Typed at the last login, only in memory: the session expired dialog
-  /// fills it in
+  /// fills it in (after a reload, [username] reads it from the token)
   String? _username;
 
   bool _expired = false;
@@ -15,7 +17,21 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthModel? get auth => _auth;
 
-  String? get username => _username;
+  String? get username => _username ?? subjectOf(_auth?.accessToken);
+
+  /// Who [token] belongs to (its `sub`); null when it isn't a JWT
+  static String? subjectOf(String? token) {
+    final parts = token?.split('.');
+    if (parts == null || parts.length != 3) return null;
+    try {
+      final payload = utf8.decode(
+        base64Url.decode(base64Url.normalize(parts[1])),
+      );
+      return (jsonDecode(payload) as Map<String, dynamic>)['sub'] as String?;
+    } catch (_) {
+      return null;
+    }
+  }
 
   /// The service refused the token: until a new login the screen stays,
   /// under the session expired dialog

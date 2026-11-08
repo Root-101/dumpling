@@ -163,8 +163,8 @@ class _NewWorkspaceTile extends StatelessWidget {
           child: DashedBorder(
             color: app.colors.neutral.grey5,
             radius: 12,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 330),
+            child: SizedBox(
+              height: WorkspaceCard.height,
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -222,6 +222,7 @@ class _CardSkeleton extends StatelessWidget {
     final colors = app.colors;
     final line = BorderSide(color: colors.neutral.grey5.withValues(alpha: 0.6));
     return Container(
+      height: WorkspaceCard.height,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: colors.primary.background2,
@@ -235,28 +236,30 @@ class _CardSkeleton extends StatelessWidget {
             height: WorkspacePreviewPainter.height,
             child: AppSkeleton(radius: 0, dim: true),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(border: Border(top: line)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: 14,
-              children: [
-                AppSkeleton.named(0.6, 0.8, 34),
-                Row(
-                  children: [
-                    for (var i = 0; i < 3; i++)
-                      Expanded(child: AppSkeleton.lines(0.3, 0.6)),
-                  ],
-                ),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    AppSkeleton(width: 84, height: 10),
-                    AppSkeleton(width: 132, height: 10, dim: true),
-                  ],
-                ),
-              ],
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(border: Border(top: line)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: 14,
+                children: [
+                  AppSkeleton.named(0.6, 0.8, 44),
+                  Row(
+                    children: [
+                      for (var i = 0; i < 3; i++)
+                        Expanded(child: AppSkeleton.lines(0.3, 0.6)),
+                    ],
+                  ),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AppSkeleton(width: 84, height: 10),
+                      AppSkeleton(width: 132, height: 10, dim: true),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           Container(

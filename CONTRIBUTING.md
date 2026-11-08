@@ -38,7 +38,8 @@ client) is needed to run backups locally, and Docker for the image and the end-t
 - A change to authentication, credentials, limits or what the logs show updates
   [`SECURITY.md`](SECURITY.md) in the same change.
 - A non-obvious decision goes into [`DECISIONS.md`](DECISIONS.md), and a finished roadmap task is
-  marked in [`ROADMAP.md`](ROADMAP.md), in the same change.
+  ticked (`[x]`) in [`ROADMAP.md`](ROADMAP.md), in the same change; it leaves the roadmap once its
+  version is released.
 - A route added or changed updates [`docs/api.md`](docs/api.md); a screen, URL or action of the
   console, [`docs/console.md`](docs/console.md).
 - **Any change to what the console looks like**, in the same change: the design canvas first,
