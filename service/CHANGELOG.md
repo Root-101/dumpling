@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.7
+
+- Nothing in the service; the version follows the console.
+
 ## 0.1.6
 
 - The schema changes: a table `api_key`, and `label`, `key_id` and `key_name` in `run`; the SQLite

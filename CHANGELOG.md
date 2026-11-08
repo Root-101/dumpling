@@ -4,6 +4,11 @@ What changes in each version of Dumpling, from 0.1.0. The detail of each package
 changelogs of [`service/`](service/CHANGELOG.md) and [`console/`](console/CHANGELOG.md), which also
 have the release candidates before 0.1.0 one by one.
 
+## 0.1.7
+
+- Console: the dialog of a disabled config says *Disabled* in its *Output* and *Review* steps
+  instead of its frequency and cron.
+
 ## 0.1.6
 
 - 🔴 **The database changes** (a table `api_key`, and the label and key of each run): export your
@@ -32,8 +37,8 @@ have the release candidates before 0.1.0 one by one.
   destination; its three templates are the same height.
 - Console: Backups keeps what it showed when the service stops answering, under a banner that tries
   again; what is made through the API lands on the canvas, each config between its ends; a dialog
-  opened by its URL closes when another screen takes the URL; the dialog of a disabled config says
-  so instead of its cron; *Not found* and the detail of a run as in the design.
+  opened by its URL closes when another screen takes the URL; *Not found* and the detail of a run
+  as in the design.
 - The error of an S3 server is read as text, without XML entities.
 
 ## 0.1.5

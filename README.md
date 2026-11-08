@@ -17,7 +17,7 @@ both (see [Sources and destinations](#sources-and-destinations)).
   schedules and the backups, keeps its data in SQLite and serves the API and the console.
 - **`console/`**: the web console, in Flutter Web. The service serves it: one image, one port.
 
-> **Status: `0.1.6`.** It backs up and is tested end to end (a real backup
+> **Status: `0.1.7`.** It backs up and is tested end to end (a real backup
 > restored and compared), but it hasn't had long-running production use yet.
 
 ![The pipeline editor of the console](docs/design/screens/09-canvas.png)
@@ -140,7 +140,7 @@ PostgreSQL without TLS, like the one of a plain `postgres` container, needs it o
 ```bash
 docker run -p 8080:8080 -v dumpling-data:/data \
   -e DUMPLING_ADMIN_USER=… -e DUMPLING_ADMIN_PASSWORD=… \
-  -e JWT_SECRET=… -e SECRETS_ENCRYPTION_KEY=… ghcr.io/root-101/dumpling:0.1.6
+  -e JWT_SECRET=… -e SECRETS_ENCRYPTION_KEY=… ghcr.io/root-101/dumpling:0.1.7
 ```
 
 ### Building the image
@@ -149,7 +149,7 @@ From the root of the repo. `PG_VERSION` chooses another `pg_dump`; tagged with t
 compose, `docker compose up -d` runs this one:
 
 ```bash
-docker build -t ghcr.io/root-101/dumpling:0.1.6 --build-arg PG_VERSION=18 .
+docker build -t ghcr.io/root-101/dumpling:0.1.7 --build-arg PG_VERSION=18 .
 ```
 
 ### Locally
@@ -197,15 +197,16 @@ Workspaces, since 0.1.2) and import the file once the new version runs, with the
 From the version you run (left) to the one you upgrade to (top), 🔴 means export first and — means
 nothing to do:
 
-| From \ To | 0.1.0 | 0.1.1 | 0.1.2 | 0.1.3 | 0.1.4 | 0.1.5 | 0.1.6 |
-|-----------|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
-| 0.1.0     |   —   |   —   |   —   |  🔴   |  🔴   |  🔴   |  🔴   |
-| 0.1.1     |       |   —   |   —   |  🔴   |  🔴   |  🔴   |  🔴   |
-| 0.1.2     |       |       |   —   |  🔴   |  🔴   |  🔴   |  🔴   |
-| 0.1.3     |       |       |       |   —   |   —   |   —   |  🔴   |
-| 0.1.4     |       |       |       |       |   —   |   —   |  🔴   |
-| 0.1.5     |       |       |       |       |       |   —   |  🔴   |
-| 0.1.6     |       |       |       |       |       |       |   —   |
+| From \ To | 0.1.0 | 0.1.1 | 0.1.2 | 0.1.3 | 0.1.4 | 0.1.5 | 0.1.6 | 0.1.7 |
+|-----------|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
+| 0.1.0     |   —   |   —   |   —   |  🔴   |  🔴   |  🔴   |  🔴   |  🔴   |
+| 0.1.1     |       |   —   |   —   |  🔴   |  🔴   |  🔴   |  🔴   |  🔴   |
+| 0.1.2     |       |       |   —   |  🔴   |  🔴   |  🔴   |  🔴   |  🔴   |
+| 0.1.3     |       |       |       |   —   |   —   |   —   |  🔴   |  🔴   |
+| 0.1.4     |       |       |       |       |   —   |   —   |  🔴   |  🔴   |
+| 0.1.5     |       |       |       |       |       |   —   |  🔴   |  🔴   |
+| 0.1.6     |       |       |       |       |       |       |   —   |   —   |
+| 0.1.7     |       |       |       |       |       |       |       |   —   |
 
 ## Restoring
 
