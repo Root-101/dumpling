@@ -1233,7 +1233,7 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   @override
   String get sortLastSub => 'El más reciente primero';
   @override
-  String get sortLastOld => 'Último respaldo (antiguo)';
+  String get sortLastOld => 'Último respaldo';
   @override
   String get sortLastOldSub => 'El más antiguo primero';
   @override
@@ -3050,7 +3050,7 @@ extension on AppMessagesEs {
           'backups.sortBy' => 'Ordenar por',
           'backups.sortLast' => 'Último respaldo',
           'backups.sortLastSub' => 'El más reciente primero',
-          'backups.sortLastOld' => 'Último respaldo (antiguo)',
+          'backups.sortLastOld' => 'Último respaldo',
           'backups.sortLastOldSub' => 'El más antiguo primero',
           'backups.sortNext' => 'Próximo respaldo',
           'backups.sortNextSub' => 'El más cercano primero',

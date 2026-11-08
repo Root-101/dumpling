@@ -662,6 +662,8 @@ class _RunRow extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     color: colors.primary.primaryFaded,
+                    decoration: TextDecoration.underline,
+                    decorationColor: colors.primary.primaryFaded,
                   ),
                 ),
               ),

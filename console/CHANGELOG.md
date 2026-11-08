@@ -26,6 +26,10 @@
   new run instead of failing.
 - The detail of a run as in the design: no big status icon, and *Edit config*, *Close* and *Retry
   now* (or *Run again*) under it.
+- Small things as in the design: a disabled primary button dims its text (*Save canvas* without
+  changes), *View run* underlined, *How to use a key* in the header of API keys, the folders of a
+  destination in grey, *Last backup* / *Oldest first* in the sort, and the ⋮ lit while its menu is
+  open.
 - Run log filters in the order of the design (source type, destination type, started by, status),
   each status with its colored dot.
 - *Your session expired* over the screen blurred, with the user already in (after a reload too,

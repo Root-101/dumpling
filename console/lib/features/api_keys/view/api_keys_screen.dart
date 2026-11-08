@@ -94,6 +94,10 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
             title: t.title,
             workspace: workspaceName,
             description: t.description,
+            link: (
+              t.howTo,
+              () => BrowserWindow.openUrl(ApiKeysScreen.guideUrl),
+            ),
             actions: [
               BlocBuilder<ApiKeyCubit, ApiKeyState>(
                 builder: (context, state) => AppRefreshButton(
@@ -252,29 +256,9 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
               : null,
         ),
         12.gap(),
-        Text.rich(
-          TextSpan(
-            style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
-            children: [
-              TextSpan(text: '${t.footer} '),
-              WidgetSpan(
-                alignment: PlaceholderAlignment.baseline,
-                baseline: TextBaseline.alphabetic,
-                child: InkWell(
-                  onTap: () => BrowserWindow.openUrl(ApiKeysScreen.guideUrl),
-                  child: Text(
-                    t.howTo,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: colors.primary.primaryFaded,
-                      decoration: TextDecoration.underline,
-                      decorationColor: colors.primary.primaryFaded,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+        Text(
+          t.footer,
+          style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
         ),
       ],
     );

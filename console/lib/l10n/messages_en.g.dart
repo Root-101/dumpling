@@ -1629,8 +1629,8 @@ class AppMessages$backups$en {
   /// en: 'Most recent first'
   String get sortLastSub => 'Most recent first';
 
-  /// en: 'Last backup (oldest)'
-  String get sortLastOld => 'Last backup (oldest)';
+  /// en: 'Last backup'
+  String get sortLastOld => 'Last backup';
 
   /// en: 'Oldest first'
   String get sortLastOldSub => 'Oldest first';
@@ -3709,7 +3709,7 @@ extension on AppMessages {
           'backups.sortBy' => 'Sort by',
           'backups.sortLast' => 'Last backup',
           'backups.sortLastSub' => 'Most recent first',
-          'backups.sortLastOld' => 'Last backup (oldest)',
+          'backups.sortLastOld' => 'Last backup',
           'backups.sortLastOldSub' => 'Oldest first',
           'backups.sortNext' => 'Next backup',
           'backups.sortNextSub' => 'Soonest first',

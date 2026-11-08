@@ -679,7 +679,7 @@ backups:
   sortBy: 'Ordenar por'
   sortLast: 'Último respaldo'
   sortLastSub: 'El más reciente primero'
-  sortLastOld: 'Último respaldo (antiguo)'
+  sortLastOld: 'Último respaldo'
   sortLastOldSub: 'El más antiguo primero'
   sortNext: 'Próximo respaldo'
   sortNextSub: 'El más cercano primero'

@@ -115,7 +115,7 @@ class _DestinationFoldersState extends State<DestinationFolders> {
           const SizedBox(width: 10),
           app.assets.icons.nodes.folder.build(
             size: 16,
-            color: app.colors.primary.secondary,
+            color: app.colors.neutral.grey3,
           ),
           const SizedBox(width: 10),
           Expanded(
