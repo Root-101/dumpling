@@ -1993,14 +1993,13 @@ class AppMessages$workspaces$transfer$en {
   /// en: 'Name taken'
   String get nameTaken => 'Name taken';
 
-  /// en: '{sources: int} sources · {destinations: int} destinations · {configs: int} backups · {runs: int} runs'
-  String counts({
-    required int sources,
-    required int destinations,
-    required int configs,
-    required int runs,
-  }) =>
-      '${sources} sources · ${destinations} destinations · ${configs} backups · ${runs} runs';
+  /// en: '(one) {{n} run} (other) {{n} runs}'
+  String nRuns({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} run',
+        other: '${n} runs',
+      );
 
   /// en: 'Credentials come encrypted: they only work with the same SECRETS_ENCRYPTION_KEY as the Dumpling that exported them. The run log brings its last month.'
   String get keyNote =>
@@ -3044,12 +3043,14 @@ extension on AppMessages {
                 ),
           'workspaces.transfer.as' => 'as',
           'workspaces.transfer.nameTaken' => 'Name taken',
-          'workspaces.transfer.counts' => ({
-            required int sources,
-            required int destinations,
-            required int configs,
-            required int runs,
-          }) => '${sources} sources · ${destinations} destinations · ${configs} backups · ${runs} runs',
+          'workspaces.transfer.nRuns' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} run',
+                  other: '${n} runs',
+                ),
           'workspaces.transfer.keyNote' => 'Credentials come encrypted: they only work with the same SECRETS_ENCRYPTION_KEY as the Dumpling that exported them. The run log brings its last month.',
           'workspaces.transfer.importCount' =>
             ({required num n}) =>

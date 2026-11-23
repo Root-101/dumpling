@@ -472,12 +472,17 @@ class _WorkspaceImportDialogState extends State<WorkspaceImportDialog> {
                               ],
                             ),
                             Text(
-                              t.counts(
-                                sources: r.sources,
-                                destinations: r.destinations,
-                                configs: r.configs,
-                                runs: r.runs,
-                              ),
+                              // each count with its own plural: 1 destination
+                              [
+                                app.intl.workspaces.settings.nSources(
+                                  n: r.sources,
+                                ),
+                                app.intl.workspaces.settings.nDestinations(
+                                  n: r.destinations,
+                                ),
+                                app.intl.common.backupCount(n: r.configs),
+                                t.nRuns(n: r.runs),
+                              ].join(' · '),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: colors.neutral.grey4,

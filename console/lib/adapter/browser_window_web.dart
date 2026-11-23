@@ -9,6 +9,11 @@ typedef PickedFile = ({String name, Uint8List bytes});
 
 /// The browser window: new tabs and the warning before leaving
 class BrowserWindow {
+  /// Leaves the language in plain sight for the splash of `index.html`, which
+  /// runs before Flutter and can't read the secure storage
+  static void rememberLanguage(String key) =>
+      web.window.localStorage.setItem('dumpling.language', key);
+
   /// Opens [bytes] in a new tab, shown by the browser as [contentType]
   static void openBytes(List<int> bytes, {String? contentType}) {
     final blob = web.Blob(

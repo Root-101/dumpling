@@ -6,6 +6,11 @@
   with its URL, not that the internet connection failed.
 - A sign-in locked after too many failures says *Try again in N minutes*, from the
   `Retry-After` of the service.
+- In Spanish, *backups* everywhere, as in the rail: the title of Backups and other texts said
+  *respaldos*.
+- The splash of `index.html` comes in the language chosen with the flag, like the console; the
+  browser's only until one is chosen.
+- The workspaces of an import count each thing with its plural: *1 destination*.
 
 ## 0.1.7
 

@@ -100,7 +100,7 @@ class AppMessages$app$es implements AppMessages$app$en {
   @override
   String get needMoreSpace => 'Se necesita más espacio';
   @override
-  String get splashText => 'Conectando con el servicio de respaldos…';
+  String get splashText => 'Conectando con el servicio de backups…';
   @override
   String version({required Object version}) => 'Dumpling v${version}';
 }
@@ -339,7 +339,7 @@ class AppMessages$login$es implements AppMessages$login$en {
   @override
   String get envHintAnd => 'y';
   @override
-  String get tagline => 'Respaldos';
+  String get tagline => 'Backups';
   @override
   String get taglineAccent => 'sin esfuerzo';
   @override
@@ -932,7 +932,7 @@ class AppMessages$canvas$es implements AppMessages$canvas$en {
   // Translations
   @override
   String get description =>
-      'Conecta orígenes con destinos para armar los respaldos de este workspace.';
+      'Conecta orígenes con destinos para armar los backups de este workspace.';
   @override
   String get save => 'Guardar canvas';
   @override
@@ -1051,9 +1051,9 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   String get title => 'Registro de ejecuciones';
   @override
   String get description =>
-      'Cada ejecución de respaldo de este workspace: programada, manual o por la API. Horas en UTC, tu hora local debajo.';
+      'Cada ejecución de backup de este workspace: programada, manual o por la API. Horas en UTC, tu hora local debajo.';
   @override
-  String get search => 'Buscar por respaldo, origen o destino';
+  String get search => 'Buscar por backup, origen o destino';
   @override
   String get columnStatus => 'Estado';
   @override
@@ -1076,7 +1076,7 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   String get emptyTitle => 'Aún no hay ejecuciones';
   @override
   String get emptyDescription =>
-      'Los respaldos se ejecutan según su programación, o con Ejecutar ahora en el editor.';
+      'Los backups se ejecutan según su programación, o con Ejecutar ahora en el editor.';
   @override
   String get newestOnly =>
       'Solo se muestran las 200 ejecuciones más recientes.';
@@ -1140,9 +1140,9 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   @override
   String get stepWaiting => 'En espera';
   @override
-  String get resultSuccess => 'Respaldo guardado';
+  String get resultSuccess => 'Backup guardado';
   @override
-  String get resultFailed => 'El respaldo falló';
+  String get resultFailed => 'El backup falló';
   @override
   String get resultRunning => 'En curso. Actualiza para ver cuánto avanzó.';
   @override
@@ -1158,14 +1158,14 @@ class AppMessages$backups$es implements AppMessages$backups$en {
 
   // Translations
   @override
-  String get title => 'Respaldos';
+  String get title => 'Backups';
   @override
   String get description =>
-      'Cada respaldo de este workspace, su última ejecución y la siguiente.';
+      'Cada backup de este workspace, su última ejecución y la siguiente.';
   @override
   String get openEditor => 'Abrir editor';
   @override
-  String get newBackup => 'Nuevo respaldo';
+  String get newBackup => 'Nuevo backup';
   @override
   String get healthy => 'Correctos';
   @override
@@ -1177,9 +1177,9 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   @override
   String get paused => 'Pausado';
   @override
-  String get nextBackup => 'Próximo respaldo';
+  String get nextBackup => 'Próximo backup';
   @override
-  String get nextBackupIn => 'Próximo respaldo en';
+  String get nextBackupIn => 'Próximo backup en';
   @override
   String get nothingScheduled => 'Nada programado';
   @override
@@ -1187,7 +1187,7 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   @override
   String get updating => 'Actualizando…';
   @override
-  String get search => 'Buscar respaldos';
+  String get search => 'Buscar backups';
   @override
   String get columnStatus => 'Estado';
   @override
@@ -1209,19 +1209,19 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   @override
   String everyHours({required int n}) => 'Cada ${n} horas';
   @override
-  String get columnLastRun => 'Último respaldo';
+  String get columnLastRun => 'Último backup';
   @override
-  String get columnNextRun => 'Próximo respaldo';
+  String get columnNextRun => 'Próximo backup';
   @override
   String get allSources => 'Todos los orígenes';
   @override
   String get allDestinations => 'Todos los destinos';
   @override
   String shown({required Object shown, required Object total}) =>
-      '${shown} de ${total} respaldos';
+      '${shown} de ${total} backups';
   @override
   String showing({required Object shown, required Object total}) =>
-      'Mostrando ${shown} de ${total} respaldos';
+      'Mostrando ${shown} de ${total} backups';
   @override
   String timesNote({required Object utc, required Object local}) =>
       'Horas en UTC · ahora ${utc} (${local})';
@@ -1230,15 +1230,15 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   @override
   String get sortBy => 'Ordenar por';
   @override
-  String get sortLast => 'Último respaldo';
+  String get sortLast => 'Último backup';
   @override
   String get sortLastSub => 'El más reciente primero';
   @override
-  String get sortLastOld => 'Último respaldo';
+  String get sortLastOld => 'Último backup';
   @override
   String get sortLastOldSub => 'El más antiguo primero';
   @override
-  String get sortNext => 'Próximo respaldo';
+  String get sortNext => 'Próximo backup';
   @override
   String get sortNextSub => 'El más cercano primero';
   @override
@@ -1266,7 +1266,7 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   @override
   String get editConfig => 'Editar config';
   @override
-  String get deleteBackup => 'Eliminar respaldo';
+  String get deleteBackup => 'Eliminar backup';
   @override
   String get recentRuns => 'Ejecuciones recientes';
   @override
@@ -1286,15 +1286,14 @@ class AppMessages$backups$es implements AppMessages$backups$en {
   @override
   String get scheduled => 'Programada';
   @override
-  String deleteTitle({required Object name}) =>
-      '¿Eliminar el respaldo ${name}?';
+  String deleteTitle({required Object name}) => '¿Eliminar el backup ${name}?';
   @override
   String get deleteConfirm =>
       'Su programación se detiene. Sus ejecuciones quedan en el registro y los archivos que ya están en el destino se quedan ahí.';
   @override
-  String deleted({required Object name}) => 'Respaldo ${name} eliminado';
+  String deleted({required Object name}) => 'Backup ${name} eliminado';
   @override
-  String saved({required Object name}) => 'Respaldo ${name} guardado';
+  String saved({required Object name}) => 'Backup ${name} guardado';
   @override
   String get emptyDescription =>
       'Conecta un origen con un destino en el editor para crear uno.';
@@ -1348,11 +1347,11 @@ class AppMessages$apiKeys$es implements AppMessages$apiKeys$en {
   String get emptyTitle => 'Aún no hay API keys';
   @override
   String get emptyDescription =>
-      'Una key deja que un pipeline u otro sistema use este workspace sin tu contraseña: ejecutar un respaldo antes de un despliegue y esperarlo, leer el registro de ejecuciones, agregar orígenes. Cada key hace solo lo que permitas.';
+      'Una key deja que un pipeline u otro sistema use este workspace sin tu contraseña: ejecutar un backup antes de un despliegue y esperarlo, leer el registro de ejecuciones, agregar orígenes. Cada key hace solo lo que permitas.';
   @override
-  String get run => 'Ejecutar respaldos';
+  String get run => 'Ejecutar backups';
   @override
-  String get runSub => 'Lanza respaldos y sigue sus ejecuciones';
+  String get runSub => 'Lanza backups y sigue sus ejecuciones';
   @override
   String get read => 'Solo lectura';
   @override
@@ -1499,13 +1498,12 @@ class AppMessages$workspaces$transfer$es
   @override
   String get nameTaken => 'Nombre en uso';
   @override
-  String counts({
-    required Object sources,
-    required Object destinations,
-    required Object configs,
-    required Object runs,
-  }) =>
-      '${sources} orígenes · ${destinations} destinos · ${configs} backups · ${runs} ejecuciones';
+  String nRuns({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: '${n} ejecución',
+        other: '${n} ejecuciones',
+      );
   @override
   String get keyNote =>
       'Las credenciales vienen cifradas: solo funcionan con la misma SECRETS_ENCRYPTION_KEY del Dumpling que las exportó. El historial de ejecuciones trae su último mes.';
@@ -1781,7 +1779,7 @@ class AppMessages$canvas$inspector$es
       'El formato custom (pg_dump -Fc) ya va comprimido: gzip apenas lo reduce.';
   @override
   String get nameHelp =>
-      'Se muestra en el canvas, en Respaldos y en el registro de ejecuciones.';
+      'Se muestra en el canvas, en Backups y en el registro de ejecuciones.';
   @override
   String get frequency => 'Frecuencia';
   @override
@@ -2064,7 +2062,7 @@ class AppMessages$apiKeys$perm$es implements AppMessages$apiKeys$perm$en {
       'Borrar configs (su historial de ejecuciones se queda)';
   @override
   String get configRun =>
-      'Lanzar un respaldo ahora, con una etiqueta opcional; espera su turno si la config ya se ejecuta';
+      'Lanzar un backup ahora, con una etiqueta opcional; espera su turno si la config ya se ejecuta';
   @override
   String get runList => 'Listar las ejecuciones del registro';
   @override
@@ -2153,7 +2151,7 @@ extension on AppMessagesEs {
     return switch (path) {
           'app.name' => 'Dumpling',
           'app.needMoreSpace' => 'Se necesita más espacio',
-          'app.splashText' => 'Conectando con el servicio de respaldos…',
+          'app.splashText' => 'Conectando con el servicio de backups…',
           'app.version' => ({
             required Object version,
           }) => 'Dumpling v${version}',
@@ -2277,7 +2275,7 @@ extension on AppMessagesEs {
           'login.envHint' =>
             'El usuario y la contraseña se definen en el servidor con',
           'login.envHintAnd' => 'y',
-          'login.tagline' => 'Respaldos',
+          'login.tagline' => 'Backups',
           'login.taglineAccent' => 'sin esfuerzo',
           'login.tagLightweight' => 'Ligero',
           'login.tagCanvas' => 'Canvas drag & drop',
@@ -2376,12 +2374,14 @@ extension on AppMessagesEs {
                 ),
           'workspaces.transfer.as' => 'como',
           'workspaces.transfer.nameTaken' => 'Nombre en uso',
-          'workspaces.transfer.counts' => ({
-            required Object sources,
-            required Object destinations,
-            required Object configs,
-            required Object runs,
-          }) => '${sources} orígenes · ${destinations} destinos · ${configs} backups · ${runs} ejecuciones',
+          'workspaces.transfer.nRuns' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: '${n} ejecución',
+                  other: '${n} ejecuciones',
+                ),
           'workspaces.transfer.keyNote' => 'Las credenciales vienen cifradas: solo funcionan con la misma SECRETS_ENCRYPTION_KEY del Dumpling que las exportó. El historial de ejecuciones trae su último mes.',
           'workspaces.transfer.importCount' =>
             ({required num n}) =>
@@ -2748,7 +2748,7 @@ extension on AppMessagesEs {
           'destinations.typeSub.dropbox' => 'Carpeta de la app',
           'destinations.typeSub.azure' => 'Contenedor de almacenamiento',
           'destinations.typeSub.sftp' => 'Cualquier servidor SSH',
-          'canvas.description' => 'Conecta orígenes con destinos para armar los respaldos de este workspace.',
+          'canvas.description' => 'Conecta orígenes con destinos para armar los backups de este workspace.',
           'canvas.save' => 'Guardar canvas',
           'canvas.saved' => 'Canvas guardado',
           'canvas.unsavedTitle' => '¿Descartar los cambios?',
@@ -2833,7 +2833,7 @@ extension on AppMessagesEs {
           'canvas.view.ctrlZoomOff' => 'La rueda siempre hace zoom',
           'canvas.inspector.configName' => 'Nombre de la config',
           'canvas.inspector.doubleCompression' => 'El formato custom (pg_dump -Fc) ya va comprimido: gzip apenas lo reduce.',
-          'canvas.inspector.nameHelp' => 'Se muestra en el canvas, en Respaldos y en el registro de ejecuciones.',
+          'canvas.inspector.nameHelp' => 'Se muestra en el canvas, en Backups y en el registro de ejecuciones.',
           'canvas.inspector.frequency' => 'Frecuencia',
           'canvas.inspector.review' => 'Revisión',
           'canvas.inspector.source' => 'Origen',
@@ -2946,8 +2946,8 @@ extension on AppMessagesEs {
           'canvas.guide.create' => 'Crear uno',
           'canvas.guide.place' => ({required String name}) => 'Colocar ${name}',
           'runs.title' => 'Registro de ejecuciones',
-          'runs.description' => 'Cada ejecución de respaldo de este workspace: programada, manual o por la API. Horas en UTC, tu hora local debajo.',
-          'runs.search' => 'Buscar por respaldo, origen o destino',
+          'runs.description' => 'Cada ejecución de backup de este workspace: programada, manual o por la API. Horas en UTC, tu hora local debajo.',
+          'runs.search' => 'Buscar por backup, origen o destino',
           'runs.columnStatus' => 'Estado',
           'runs.columnSource' => 'Origen',
           'runs.columnDestination' => 'Destino',
@@ -2958,7 +2958,7 @@ extension on AppMessagesEs {
           'runs.manual' => 'Manual',
           'runs.api' => 'API',
           'runs.emptyTitle' => 'Aún no hay ejecuciones',
-          'runs.emptyDescription' => 'Los respaldos se ejecutan según su programación, o con Ejecutar ahora en el editor.',
+          'runs.emptyDescription' => 'Los backups se ejecutan según su programación, o con Ejecutar ahora en el editor.',
           'runs.newestOnly' =>
             'Solo se muestran las 200 ejecuciones más recientes.',
           'runs.log' => 'Log (UTC)',
@@ -3003,28 +3003,28 @@ extension on AppMessagesEs {
           }) => 'Volcar y subir a ${name}',
           'runs.stepSkipped' => 'Omitido',
           'runs.stepWaiting' => 'En espera',
-          'runs.resultSuccess' => 'Respaldo guardado',
-          'runs.resultFailed' => 'El respaldo falló',
+          'runs.resultSuccess' => 'Backup guardado',
+          'runs.resultFailed' => 'El backup falló',
           'runs.resultRunning' => 'En curso. Actualiza para ver cuánto avanzó.',
           'runs.resultQueued' =>
             'Empieza cuando termine la ejecución en curso de esta config.',
-          'backups.title' => 'Respaldos',
-          'backups.description' => 'Cada respaldo de este workspace, su última ejecución y la siguiente.',
+          'backups.title' => 'Backups',
+          'backups.description' => 'Cada backup de este workspace, su última ejecución y la siguiente.',
           'backups.openEditor' => 'Abrir editor',
-          'backups.newBackup' => 'Nuevo respaldo',
+          'backups.newBackup' => 'Nuevo backup',
           'backups.healthy' => 'Correctos',
           'backups.healthySub' => 'la última ejecución salió bien',
           'backups.failing' => 'Con fallas',
           'backups.failingSub' => 'requieren atención',
           'backups.paused' => 'Pausado',
-          'backups.nextBackup' => 'Próximo respaldo',
-          'backups.nextBackupIn' => 'Próximo respaldo en',
+          'backups.nextBackup' => 'Próximo backup',
+          'backups.nextBackupIn' => 'Próximo backup en',
           'backups.nothingScheduled' => 'Nada programado',
           'backups.updatingIn' => ({
             required Object seconds,
           }) => 'Actualizando en ${seconds}…',
           'backups.updating' => 'Actualizando…',
-          'backups.search' => 'Buscar respaldos',
+          'backups.search' => 'Buscar backups',
           'backups.columnStatus' => 'Estado',
           'backups.columnConfig' => 'Config',
           'backups.columnSource' => 'Origen',
@@ -3041,29 +3041,29 @@ extension on AppMessagesEs {
             required String time,
           }) => 'Los domingos a las ${time}',
           'backups.everyHours' => ({required int n}) => 'Cada ${n} horas',
-          'backups.columnLastRun' => 'Último respaldo',
-          'backups.columnNextRun' => 'Próximo respaldo',
+          'backups.columnLastRun' => 'Último backup',
+          'backups.columnNextRun' => 'Próximo backup',
           'backups.allSources' => 'Todos los orígenes',
           'backups.allDestinations' => 'Todos los destinos',
           'backups.shown' => ({
             required Object shown,
             required Object total,
-          }) => '${shown} de ${total} respaldos',
+          }) => '${shown} de ${total} backups',
           'backups.showing' => ({
             required Object shown,
             required Object total,
-          }) => 'Mostrando ${shown} de ${total} respaldos',
+          }) => 'Mostrando ${shown} de ${total} backups',
           'backups.timesNote' => ({
             required Object utc,
             required Object local,
           }) => 'Horas en UTC · ahora ${utc} (${local})',
           'backups.sort' => 'Orden:',
           'backups.sortBy' => 'Ordenar por',
-          'backups.sortLast' => 'Último respaldo',
+          'backups.sortLast' => 'Último backup',
           'backups.sortLastSub' => 'El más reciente primero',
-          'backups.sortLastOld' => 'Último respaldo',
+          'backups.sortLastOld' => 'Último backup',
           'backups.sortLastOldSub' => 'El más antiguo primero',
-          'backups.sortNext' => 'Próximo respaldo',
+          'backups.sortNext' => 'Próximo backup',
           'backups.sortNextSub' => 'El más cercano primero',
           'backups.sortName' => 'Nombre del origen',
           'backups.sortNameSub' => 'De la A a la Z',
@@ -3083,7 +3083,7 @@ extension on AppMessagesEs {
           }) => 'Más acciones de ${name}',
           'backups.viewLastRun' => 'Ver la última ejecución',
           'backups.editConfig' => 'Editar config',
-          'backups.deleteBackup' => 'Eliminar respaldo',
+          'backups.deleteBackup' => 'Eliminar backup',
           'backups.recentRuns' => 'Ejecuciones recientes',
           'backups.copyConfigId' => 'Copiar id de la config',
           'backups.noRuns' => 'Aún no hay ejecuciones',
@@ -3095,14 +3095,14 @@ extension on AppMessagesEs {
           'backups.scheduled' => 'Programada',
           'backups.deleteTitle' => ({
             required Object name,
-          }) => '¿Eliminar el respaldo ${name}?',
+          }) => '¿Eliminar el backup ${name}?',
           'backups.deleteConfirm' => 'Su programación se detiene. Sus ejecuciones quedan en el registro y los archivos que ya están en el destino se quedan ahí.',
           'backups.deleted' => ({
             required Object name,
-          }) => 'Respaldo ${name} eliminado',
+          }) => 'Backup ${name} eliminado',
           'backups.saved' => ({
             required Object name,
-          }) => 'Respaldo ${name} guardado',
+          }) => 'Backup ${name} guardado',
           'backups.emptyDescription' =>
             'Conecta un origen con un destino en el editor para crear uno.',
           'apiKeys.title' => 'API keys',
@@ -3124,9 +3124,9 @@ extension on AppMessagesEs {
           'apiKeys.ran' => ({required Object config}) => 'ejecutó ${config}',
           'apiKeys.footer' => 'Una key se muestra una sola vez, al crearla. No vencen: para renovar una, crea otra y borra la vieja. No forman parte de una exportación.',
           'apiKeys.emptyTitle' => 'Aún no hay API keys',
-          'apiKeys.emptyDescription' => 'Una key deja que un pipeline u otro sistema use este workspace sin tu contraseña: ejecutar un respaldo antes de un despliegue y esperarlo, leer el registro de ejecuciones, agregar orígenes. Cada key hace solo lo que permitas.',
-          'apiKeys.run' => 'Ejecutar respaldos',
-          'apiKeys.runSub' => 'Lanza respaldos y sigue sus ejecuciones',
+          'apiKeys.emptyDescription' => 'Una key deja que un pipeline u otro sistema use este workspace sin tu contraseña: ejecutar un backup antes de un despliegue y esperarlo, leer el registro de ejecuciones, agregar orígenes. Cada key hace solo lo que permitas.',
+          'apiKeys.run' => 'Ejecutar backups',
+          'apiKeys.runSub' => 'Lanza backups y sigue sus ejecuciones',
           'apiKeys.read' => 'Solo lectura',
           'apiKeys.readSub' => 'Ve todo, no cambia nada',
           'apiKeys.full' => 'Acceso completo',
@@ -3229,7 +3229,7 @@ extension on AppMessagesEs {
           'apiKeys.perm.configUpdate' => 'Cambiar una config: programación, carpeta, nombre del archivo, activa',
           'apiKeys.perm.configDelete' =>
             'Borrar configs (su historial de ejecuciones se queda)',
-          'apiKeys.perm.configRun' => 'Lanzar un respaldo ahora, con una etiqueta opcional; espera su turno si la config ya se ejecuta',
+          'apiKeys.perm.configRun' => 'Lanzar un backup ahora, con una etiqueta opcional; espera su turno si la config ya se ejecuta',
           'apiKeys.perm.runList' => 'Listar las ejecuciones del registro',
           'apiKeys.perm.runGet' =>
             'Ver una ejecución, su log, y seguirla hasta que termine',

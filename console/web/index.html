@@ -175,7 +175,9 @@
 </div>
 
 <script>
-    if ((navigator.language || "").toLowerCase().startsWith("es")) {
+    // as the app: the language chosen with the flag, else the browser's
+    const saved = localStorage.getItem("dumpling.language");
+    if (saved ? saved === "es" : (navigator.language || "").toLowerCase().startsWith("es")) {
       document.documentElement.lang = "es";
       document.getElementById("splash-text").textContent = "Conectando con el servicio de respaldos…";
     }

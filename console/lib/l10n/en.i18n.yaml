@@ -177,7 +177,9 @@ workspaces:
       other: '{n} workspaces to add'
     as: 'as'
     nameTaken: 'Name taken'
-    counts: '{sources: int} sources · {destinations: int} destinations · {configs: int} backups · {runs: int} runs'
+    nRuns(plural, param=n):
+      one: '{n} run'
+      other: '{n} runs'
     keyNote: 'Credentials come encrypted: they only work with the same SECRETS_ENCRYPTION_KEY as the Dumpling that exported them. The run log brings its last month.'
     importCount(plural, param=n):
       one: 'Import {n} workspace'

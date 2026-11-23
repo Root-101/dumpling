@@ -411,8 +411,8 @@ when a row is dropped, and [`DELETE …/keys/{id}`](api.md#delete-an-api-key).
 
 ## Loading and errors
 
-While it starts, the console shows its mark, its name and a bar, in the language of the browser
-(Spanish or English):
+While it starts, the console shows its mark, its name and a bar, in its language (the one chosen
+with the flag, else the browser's):
 
 ![Starting](design/screens/42-splash.png)
 

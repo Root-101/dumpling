@@ -5,6 +5,8 @@ typedef PickedFile = ({String name, Uint8List bytes});
 
 /// Outside the browser there is no window: nothing is opened or guarded
 class BrowserWindow {
+  static void rememberLanguage(String key) {}
+
   static void openBytes(List<int> bytes, {String? contentType}) {}
 
   static void openUrl(String url) {}

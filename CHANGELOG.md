@@ -9,6 +9,9 @@ have the release candidates before 0.1.0 one by one.
 - Console: when the service can't be reached, the errors say so with its URL (*Can't reach the
   Dumpling service at …*) instead of blaming the internet connection.
 - Console: a sign-in locked after too many failures says how many minutes are left.
+- Console: in Spanish the backups are *backups* everywhere, as in the rail (some texts said
+  *respaldos*); the splash comes in the language chosen with the flag, like the console; the
+  import says *1 destination*, not *1 destinations*.
 
 ## 0.1.7
 
