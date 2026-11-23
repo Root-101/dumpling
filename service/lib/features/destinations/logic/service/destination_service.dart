@@ -9,9 +9,11 @@ class DestinationService {
   final ConfigTableRepo configs;
   final WorkspaceService workspaces;
   final Secrets secrets;
+  final AppDatabase db;
 
   DestinationService()
-    : repo = di.find(),
+    : db = di.find(),
+      repo = di.find(),
       configs = di.find(),
       workspaces = di.find(),
       secrets = Secrets();
@@ -50,14 +52,17 @@ class DestinationService {
     final values = Secrets.require(settings.requiredSecrets, settings.secrets);
 
     final id = Secrets.newId(idPrefix);
-    await repo.insert(
-      id: id,
-      workspace: workspace,
-      name: request.trimmedName,
-      type: request.destinationType!,
-      settings: jsonEncode(settings),
-      secretsEncrypted: secrets.encrypt(id, values),
-      folders: request.cleanFolders,
+    // The destination and its folders, or nothing
+    await db.transaction(
+      () => repo.insert(
+        id: id,
+        workspace: workspace,
+        name: request.trimmedName,
+        type: request.destinationType!,
+        settings: jsonEncode(settings),
+        secretsEncrypted: secrets.encrypt(id, values),
+        folders: request.cleanFolders,
+      ),
     );
     logger.info(
       'Destination created',
@@ -84,19 +89,21 @@ class DestinationService {
     });
     await _checkTargets(id, request.cleanFolders);
 
-    await repo.update(
-      id: id,
-      name: request.trimmedName,
-      type: request.destinationType!,
-      settings: jsonEncode(settings),
-      secretsEncrypted: secrets.encrypt(id, values),
-      folders: request.cleanFolders,
-      connectionChanged: DestinationTableRepo.connectionChanged(
-        row,
+    await db.transaction(
+      () => repo.update(
+        id: id,
+        name: request.trimmedName,
         type: request.destinationType!,
         settings: jsonEncode(settings),
-        secrets: (stored, values),
+        secretsEncrypted: secrets.encrypt(id, values),
         folders: request.cleanFolders,
+        connectionChanged: DestinationTableRepo.connectionChanged(
+          row,
+          type: request.destinationType!,
+          settings: jsonEncode(settings),
+          secrets: (stored, values),
+          folders: request.cleanFolders,
+        ),
       ),
     );
     logger.info(

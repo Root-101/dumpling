@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:drift/drift.dart' show Value;
 import 'package:service/dumpling.dart';
 
 class CanvasService {
@@ -240,9 +239,7 @@ class CanvasService {
         if (before.contains(id)) {
           await configs.update(id, values);
         } else {
-          await configs.insert(
-            values.copyWith(id: Value(id), workspaceSlug: Value(workspace)),
-          );
+          await configs.insert(id: id, workspace: workspace, values: values);
         }
       }
 

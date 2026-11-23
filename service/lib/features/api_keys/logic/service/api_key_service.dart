@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:drift/drift.dart' show Value;
 import 'package:service/dumpling.dart';
 
 class ApiKeyService {
@@ -33,14 +32,12 @@ class ApiKeyService {
     final id = Secrets.newId(ApiKeyToken.idPrefix);
     final secret = ApiKeyToken.newSecret();
     await repo.insert(
-      ApiKeyTableCompanion.insert(
-        id: id,
-        workspaceSlug: workspace,
-        name: request.trimmedName,
-        secretHash: ApiKeyToken.hash(secret),
-        permissions: jsonEncode(request.cleanPermissions),
-        configIds: Value(jsonEncode(configIds)),
-      ),
+      id: id,
+      workspace: workspace,
+      name: request.trimmedName,
+      secretHash: ApiKeyToken.hash(secret),
+      permissions: jsonEncode(request.cleanPermissions),
+      configIds: jsonEncode(configIds),
     );
     logger.info('API key created', fields: {'workspace': workspace, 'key': id});
     return ApiKeyModel.fromRow(
@@ -58,12 +55,9 @@ class ApiKeyService {
     final configIds = await _configIds(workspace, request);
     await repo.update(
       id,
-      ApiKeyTableCompanion(
-        name: Value(request.trimmedName),
-        permissions: Value(jsonEncode(request.cleanPermissions)),
-        configIds: Value(jsonEncode(configIds)),
-        updatedAt: Value(utcNow()),
-      ),
+      name: request.trimmedName,
+      permissions: jsonEncode(request.cleanPermissions),
+      configIds: jsonEncode(configIds),
     );
     logger.info('API key changed', fields: {'workspace': workspace, 'key': id});
     final last = await repo.lastRuns(workspace);
@@ -105,7 +99,7 @@ class ApiKeyService {
     final now = utcNow();
     final used = row.lastUsedAt;
     if (used == null || now.difference(used) >= touchEvery) {
-      await repo.update(id, ApiKeyTableCompanion(lastUsedAt: Value(now)));
+      await repo.touch(id, now);
     }
     final model = ApiKeyModel.fromRow(row);
     final configIds = model.configIds;

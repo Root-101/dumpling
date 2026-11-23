@@ -1,6 +1,17 @@
 import 'package:drift/drift.dart';
 import 'package:service/dumpling.dart';
 
+/// What a workspace stores, besides its slug: its name and look, and the
+/// defaults a new config of its canvas starts with.
+typedef WorkspaceValues = ({
+  String name,
+  String? description,
+  int? color,
+  String schedule,
+  Compression compression,
+  String objectKey,
+});
+
 class WorkspaceTableRepo {
   final AppDatabase _db;
 
@@ -89,19 +100,19 @@ class WorkspaceTableRepo {
 
   Future<void> insert({
     required String slug,
-    required WorkspaceRequest request,
+    required WorkspaceValues values,
   }) async {
     await _db
         .into(_db.workspaceTable)
         .insert(
           WorkspaceTableCompanion.insert(
             slug: slug,
-            name: request.trimmedName,
-            description: Value(request.cleanDescription),
-            color: Value(request.color),
-            defaultSchedule: request.schedule,
-            defaultCompression: request.compression,
-            defaultObjectKey: request.objectKey,
+            name: values.name,
+            description: Value(values.description),
+            color: Value(values.color),
+            defaultSchedule: values.schedule,
+            defaultCompression: values.compression,
+            defaultObjectKey: values.objectKey,
           ),
         );
   }
@@ -109,18 +120,18 @@ class WorkspaceTableRepo {
   /// Replaces everything but the slug and the creation date.
   Future<void> update({
     required String slug,
-    required WorkspaceRequest request,
+    required WorkspaceValues values,
   }) async {
     await (_db.update(
       _db.workspaceTable,
     )..where((tbl) => tbl.slug.equals(slug))).write(
       WorkspaceTableCompanion(
-        name: Value(request.trimmedName),
-        description: Value(request.cleanDescription),
-        color: Value(request.color),
-        defaultSchedule: Value(request.schedule),
-        defaultCompression: Value(request.compression),
-        defaultObjectKey: Value(request.objectKey),
+        name: Value(values.name),
+        description: Value(values.description),
+        color: Value(values.color),
+        defaultSchedule: Value(values.schedule),
+        defaultCompression: Value(values.compression),
+        defaultObjectKey: Value(values.objectKey),
         updatedAt: Value(utcNow()),
       ),
     );

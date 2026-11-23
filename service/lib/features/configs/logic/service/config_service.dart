@@ -1,4 +1,3 @@
-import 'package:drift/drift.dart' show Value;
 import 'package:service/dumpling.dart';
 
 class ConfigService {
@@ -58,9 +57,7 @@ class ConfigService {
   Future<ConfigModel> create(String workspace, ConfigRequest request) async {
     final values = await _values(workspace, request);
     final id = Secrets.newId(idPrefix);
-    await repo.insert(
-      values.copyWith(id: Value(id), workspaceSlug: Value(workspace)),
-    );
+    await repo.insert(id: id, workspace: workspace, values: values);
     engine.schedule((await repo.get(workspace, id))!);
     logger.info(
       'Config created',
@@ -102,10 +99,7 @@ class ConfigService {
 
   /// What [request] stores, once its source, destination and folder are known
   /// to be of [workspace] (a 422 naming the field otherwise).
-  Future<ConfigTableCompanion> _values(
-    String workspace,
-    ConfigRequest request,
-  ) async {
+  Future<ConfigValues> _values(String workspace, ConfigRequest request) async {
     final defaults = (await workspaces.get(workspace)).defaults;
     final source = await sources.get(workspace, request.sourceId!);
     final destination = await destinations.get(
