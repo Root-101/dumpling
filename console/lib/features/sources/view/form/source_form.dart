@@ -295,7 +295,11 @@ class _SourceFormState extends State<SourceForm> {
                     helperText: app.intl.sources.nameHelp,
                     autofocus: !_editing,
                     maxLength: _nameMaxLength,
-                    warningText: CanvasGeometry.longName(_nameController.text)
+                    warningText:
+                        CanvasGeometry.longName(
+                          _nameController.text,
+                          CanvasGeometry.sourceNameRoom,
+                        )
                         ? app.intl.common.longName
                         : null,
                     errorText: _serverErrors[SourceFormField.name],

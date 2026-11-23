@@ -229,7 +229,14 @@ class _ConfigDialogState extends State<ConfigDialog> {
         onChanged: (v) => _set(_c.copyWith(name: v)),
       ),
       const SizedBox(height: 6),
-      if (_nameError == null && CanvasGeometry.longName(_c.name))
+      if (_nameError == null &&
+          CanvasGeometry.longName(
+            _c.name,
+            // the tag the node shows next to the name
+            CanvasGeometry.configNameRoom(
+              _c.enabled ? _c.schedule : app.intl.canvas.disabled,
+            ),
+          ))
         AppFieldWarning(app.intl.common.longName)
       else
         _Help(t.nameHelp),

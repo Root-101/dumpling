@@ -8,12 +8,40 @@ import 'package:material_ui/material_ui.dart';
 class CanvasGeometry {
   CanvasGeometry._();
 
-  /// Characters of a name that fit on its node; a longer one is cut, and its
-  /// form warns about it
-  static const int readableName = 10;
+  /// Room for the name on a source and on a destination: the node less its
+  /// paddings, its badge and the gap after it
+  static const double sourceNameRoom = 200 - 2 * 14 - 30 - 10;
+  static const double destinationNameRoom = 256 - 2 * 14 - 30 - 10;
 
-  /// [name] would be cut on its node
-  static bool longName(String name) => name.trim().length > readableName;
+  /// A config shares the line of its name with [tag] (its cron, or Disabled)
+  static double configNameRoom(String? tag) =>
+      240 - 2 * 14 - 30 - 10 - (tag == null ? 0 : 6 + 12 + _width(tag, _tag));
+
+  static const TextStyle _title = TextStyle(
+    fontFamily: AppText.sans,
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+  );
+  static const TextStyle _tag = TextStyle(
+    fontFamily: AppText.monoFamily,
+    fontSize: 11,
+  );
+
+  static double _width(String text, TextStyle style) {
+    final painter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+    )..layout();
+    final width = painter.width;
+    painter.dispose();
+    return width;
+  }
+
+  /// [name] would be cut on a node that gives it [room]: its form warns about
+  /// it. Measured, not counted: what fits depends on the letters and the node
+  static bool longName(String name, double room) =>
+      _width(name.trim(), _title) > room;
 
   static const Size sourceSize = Size(200, 88);
   static const Size configSize = Size(240, 140);

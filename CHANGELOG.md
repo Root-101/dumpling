@@ -12,6 +12,7 @@ have the release candidates before 0.1.0 one by one.
 - Console: in Spanish the backups are *backups* everywhere, as in the rail (some texts said
   *respaldos*); the splash comes in the language chosen with the flag, like the console; the
   import says *1 destination*, not *1 destinations*.
+- Console: the warning of a long name only shows when the name would be cut on its node.
 
 ## 0.1.7
 

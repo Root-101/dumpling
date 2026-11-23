@@ -11,6 +11,8 @@
 - The splash of `index.html` comes in the language chosen with the flag, like the console; the
   browser's only until one is chosen.
 - The workspaces of an import count each thing with its plural: *1 destination*.
+- The warning of a long name (source, destination or config) measures it on its node: a config's
+  name shares its line with the cron, and *Nightly full* no longer warns.
 - Built with Flutter 3.50.1 and the latest version of every dependency (go_router 18, material_ui
   1.11, flutter_svg 2.5, flutter_secure_storage 11.2…).
 

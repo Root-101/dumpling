@@ -51,6 +51,9 @@ void main() {
     name: 'English',
   );
 
+  // the warning of a long name measures it with the app's fonts
+  setUpAll(loadAppFonts);
+
   setUpAll(() {
     whenListen(auth, authStates.stream, initialState: AuthInitialState());
     whenListen(

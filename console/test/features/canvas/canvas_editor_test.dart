@@ -20,26 +20,7 @@ class _MockWorkspaces extends Mock implements WorkspaceCubit {}
 
 void main() {
   // the real fonts, so text overflows are the ones of the browser
-  setUpAll(() async {
-    for (final (family, files) in [
-      (
-        'DMSans',
-        [
-          'DMSans/DMSans-Regular',
-          'DMSans/DMSans-Medium',
-          'DMSans/DMSans-SemiBold',
-          'DMSans/DMSans-Bold',
-        ],
-      ),
-      ('JetBrainsMono', ['JetBrainsMono/JetBrainsMono-Regular']),
-    ]) {
-      final loader = FontLoader(family);
-      for (final f in files) {
-        loader.addFont(rootBundle.load('assets/fonts/$f.ttf'));
-      }
-      await loader.load();
-    }
-  });
+  setUpAll(loadAppFonts);
 
   /// The editor with [demoCanvas] loaded
   Future<CanvasCubit> pump(WidgetTester tester, [CanvasModel? canvas]) async {

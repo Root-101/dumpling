@@ -1,5 +1,28 @@
 import 'package:console/app_exporter.dart';
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart' show Offset;
+
+/// The fonts of the app instead of the test one, where a width matters
+Future<void> loadAppFonts() async {
+  for (final (family, files) in [
+    (
+      'DMSans',
+      [
+        'DMSans/DMSans-Regular',
+        'DMSans/DMSans-Medium',
+        'DMSans/DMSans-SemiBold',
+        'DMSans/DMSans-Bold',
+      ],
+    ),
+    ('JetBrainsMono', ['JetBrainsMono/JetBrainsMono-Regular']),
+  ]) {
+    final loader = FontLoader(family);
+    for (final f in files) {
+      loader.addFont(rootBundle.load('assets/fonts/$f.ttf'));
+    }
+    await loader.load();
+  }
+}
 
 /// A workspace with sensible defaults; each test changes only what it checks
 WorkspaceModel workspace(
