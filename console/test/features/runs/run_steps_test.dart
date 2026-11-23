@@ -90,4 +90,28 @@ void main() {
     });
     expect((r.configId, r.configName), (null, 'shop'));
   });
+
+  test(
+    'the duration is the one the service measured, not the times to the second',
+    () {
+      final json = {
+        'id': 'r1',
+        'config_id': 'c1',
+        'config_name': 'Nightly',
+        'source_name': 'shop',
+        'source_type': 'postgres',
+        'destination_name': 'feather',
+        'destination_type': 's3',
+        'trigger': 'manual',
+        'status': 'success',
+        'started_at': '2026-11-23T22:10:10.000Z',
+        'finished_at': '2026-11-23T22:10:10.000Z',
+      };
+      expect(
+        RunModel.fromJson({...json, 'duration_ms': 190}).duration,
+        const Duration(milliseconds: 190),
+      );
+      expect(RunModel.fromJson(json).duration, Duration.zero);
+    },
+  );
 }

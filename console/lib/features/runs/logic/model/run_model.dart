@@ -45,6 +45,9 @@ class RunModel {
   final DateTime startedAt;
   final DateTime? finishedAt;
 
+  /// Measured by the service; the times above are kept to the second
+  final int? durationMs;
+
   /// What the request that started it sent (`v1.4.2`), if any
   final String? label;
 
@@ -69,6 +72,7 @@ class RunModel {
     this.sizeBytes,
     this.error,
     this.finishedAt,
+    this.durationMs,
     this.label,
     this.keyName,
     this.log,
@@ -92,6 +96,7 @@ class RunModel {
       error: json['error'],
       startedAt: DateTime.parse(json['started_at']),
       finishedAt: finished == null ? null : DateTime.parse(finished),
+      durationMs: json['duration_ms'],
       label: json['label'],
       keyName: json['key_name'],
       log: log?.map((e) => RunLogLine.fromJson(e)).toList(),
@@ -109,7 +114,9 @@ class RunModel {
       ? app.intl.runs.manual
       : app.intl.runs.scheduled;
 
-  Duration? get duration => finishedAt?.difference(startedAt);
+  Duration? get duration => durationMs != null
+      ? Duration(milliseconds: durationMs!)
+      : finishedAt?.difference(startedAt);
 
   /// Connect, then dump and upload (one stream), read from the lines the
   /// service writes. While it runs there is no log yet (written at the end):
