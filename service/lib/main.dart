@@ -146,7 +146,8 @@ class Dumpling {
       // In development the console runs on another origin; the token goes in
       // `Authorization`, never in a cookie, so any origin is fine
       securityConfig: SecurityConfig(
-        cors: const CorsConfig(),
+        // Retry-After: the console says how long a locked sign-in waits
+        cors: const CorsConfig(exposedHeaders: ['Retry-After']),
         // Winter always adds nosniff and X-Frame-Options: DENY; no URL leaves
         // in a Referer either. Not its CSP for APIs: the same server serves
         // the console, and Flutter Web needs inline scripts and WebAssembly

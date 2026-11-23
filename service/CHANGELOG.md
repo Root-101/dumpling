@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- CORS exposes `Retry-After`, so the console (on another origin in development) can say how long
+  a locked sign-in waits.
+
 ## 0.1.7
 
 - Nothing in the service; the version follows the console.
