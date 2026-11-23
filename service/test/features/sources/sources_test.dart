@@ -60,7 +60,13 @@ void main() {
   Future<Map<String, dynamic>> created(Object body) async {
     final response = await create(body);
     expect(response.statusCode, 201, reason: response.body);
-    return jsonDecode(response.body);
+    final source = jsonDecode(response.body);
+    // where it is now
+    expect(
+      response.headers['location'],
+      '/api/workspaces/production/sources/${source['id']}',
+    );
+    return source;
   }
 
   /// The stored secrets of [id], decrypted.

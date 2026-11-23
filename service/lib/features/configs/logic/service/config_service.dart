@@ -49,12 +49,7 @@ class ConfigService {
     String id, {
     Set<String>? only,
   }) async {
-    if (only != null && !only.contains(id)) {
-      throw AppException(
-        ErrorCode.configsNotFound,
-        intl.errors.configs.notFound(id: id),
-      );
-    }
+    _reach(id, only);
     final row = await _row(workspace, id);
     final last = await runs.getAll(workspace, configId: id, limit: 1);
     return ConfigModel.fromRow(row, lastRun: last.firstOrNull);
@@ -79,8 +74,10 @@ class ConfigService {
   Future<ConfigModel> update(
     String workspace,
     String id,
-    ConfigRequest request,
-  ) async {
+    ConfigRequest request, {
+    Set<String>? only,
+  }) async {
+    _reach(id, only);
     await _row(workspace, id);
     await repo.update(id, await _values(workspace, request));
     // A new schedule, or none once disabled
@@ -92,7 +89,8 @@ class ConfigService {
     return get(workspace, id);
   }
 
-  Future<void> delete(String workspace, String id) async {
+  Future<void> delete(String workspace, String id, {Set<String>? only}) async {
+    _reach(id, only);
     await _row(workspace, id);
     engine.unschedule(id);
     await repo.delete(id);
@@ -158,5 +156,16 @@ class ConfigService {
       );
     }
     return row;
+  }
+
+  /// A config an API key limited to others ([only]) doesn't reach is not
+  /// found, as one of another workspace.
+  static void _reach(String id, Set<String>? only) {
+    if (only != null && !only.contains(id)) {
+      throw AppException(
+        ErrorCode.configsNotFound,
+        intl.errors.configs.notFound(id: id),
+      );
+    }
   }
 }

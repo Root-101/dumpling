@@ -34,6 +34,8 @@ class RunService {
     Set<String>? only,
     int limit = maxRuns,
   }) async {
+    (ConstraintValidatorContext()..field('limit', limit).min(1).max(maxRuns))
+        .throwOnFailure();
     await workspaces.get(workspace);
     final rows = await repo.getAll(
       workspace,

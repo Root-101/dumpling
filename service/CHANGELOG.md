@@ -14,6 +14,9 @@
   (it was epoch milliseconds); every time is written with milliseconds and `Z`.
 - `/api/health` answers the health check format (`application/health+json`, `pass` / `fail`), not
   `{"status": "up"}`: a monitor that read `up` reads `pass` now.
+- A create answers `201` with a `Location` header (the path of what was created).
+- `limit` out of 1–200 in the run log is a `422` naming `limit` (a `limit` that is not a number,
+  and a filter that is none of its values, stay `400`).
 
 ## 0.1.7
 

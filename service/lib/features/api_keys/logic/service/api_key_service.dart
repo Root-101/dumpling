@@ -22,7 +22,7 @@ class ApiKeyService {
     final last = await repo.lastRuns(workspace);
     return [
       for (final row in await repo.getAll(workspace))
-        ApiKeyModel(row, lastRun: last[row.id]),
+        ApiKeyModel.fromRow(row, lastRun: last[row.id]),
     ];
   }
 
@@ -43,7 +43,7 @@ class ApiKeyService {
       ),
     );
     logger.info('API key created', fields: {'workspace': workspace, 'key': id});
-    return ApiKeyModel(
+    return ApiKeyModel.fromRow(
       (await repo.get(workspace, id))!,
       key: ApiKeyToken.of(id, secret),
     );
@@ -67,7 +67,10 @@ class ApiKeyService {
     );
     logger.info('API key changed', fields: {'workspace': workspace, 'key': id});
     final last = await repo.lastRuns(workspace);
-    return ApiKeyModel((await repo.get(workspace, id))!, lastRun: last[id]);
+    return ApiKeyModel.fromRow(
+      (await repo.get(workspace, id))!,
+      lastRun: last[id],
+    );
   }
 
   /// Whatever uses it gets a 401 from the next request; its runs stay.
@@ -103,7 +106,7 @@ class ApiKeyService {
     if (used == null || now.difference(used) >= touchEvery) {
       await repo.update(id, ApiKeyTableCompanion(lastUsedAt: Value(now)));
     }
-    final model = ApiKeyModel(row);
+    final model = ApiKeyModel.fromRow(row);
     final configIds = model.configIds;
     return (
       ApiKeyPrincipal(

@@ -911,11 +911,12 @@ GET /api/workspaces/e2e/runs?status=failed&config=cfg_hleo4cvfwnc6tmtp&limit=1
 (a run cut by a stop of the service gets it from those times). Newest first. Every filter is
 optional: `status` (`queued`, `running`, `success`, `failed`), `trigger` (`schedule`, `manual`,
 `api`), `label` (exact), `source_type`, `destination_type`, `config` (an id) and `limit` (1 to 200,
-200 by default). An API key limited to some configs only sees their runs. A value out of them is a
-`400` (`"limit must be from 1 to 200"`):
+200 by default). An API key limited to some configs only sees their runs. A filter that is none of
+its values (or a `limit` that is not a number) is a `400`; a `limit` out of 1–200, a `422` naming
+`limit`:
 
 ```json
-{"type": "about:blank", "title": "Bad Request", "status": 400, "detail": "status must be one of: queued, running, success, failed", "instance": "/api/workspaces/e2e/runs"}
+{"type": "about:blank", "title": "Bad Request", "status": 400, "detail": "The query param status must be one of: queued, running, success, failed", "instance": "/api/workspaces/e2e/runs"}
 ```
 
 ### A run and its log

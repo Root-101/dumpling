@@ -10,7 +10,9 @@ class WorkspaceController {
   }
 
   Future<ResponseEntity> get(RequestEntity request) async {
-    final workspace = await workspaceService.get(request.pathParams['slug']!);
+    final workspace = await workspaceService.get(
+      request.pathParam<String>('workspace'),
+    );
     return ResponseEntity.ok(body: workspace);
   }
 
@@ -18,21 +20,21 @@ class WorkspaceController {
     final body = await request.body<WorkspaceRequest>();
 
     final workspace = await workspaceService.create(body);
-    return ResponseEntity(201, body: workspace);
+    return created(request, workspace.slug, workspace);
   }
 
   Future<ResponseEntity> update(RequestEntity request) async {
     final body = await request.body<WorkspaceRequest>();
 
     final workspace = await workspaceService.update(
-      request.pathParams['slug']!,
+      request.pathParam<String>('workspace'),
       body,
     );
     return ResponseEntity.ok(body: workspace);
   }
 
   Future<ResponseEntity> delete(RequestEntity request) async {
-    await workspaceService.delete(request.pathParams['slug']!);
+    await workspaceService.delete(request.pathParam<String>('workspace'));
     return ResponseEntity.noContent();
   }
 }

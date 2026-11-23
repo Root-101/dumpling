@@ -22,8 +22,6 @@ errors:
     notFound: 'The API key "{id: String}" does not exist in this workspace.'
   runs:
     notFound: 'The run "{id: String}" does not exist in this workspace.'
-    invalidFilter: '{name: String} must be one of: {values: String}'
-    invalidLimit: 'limit must be from 1 to {max: int}'
   transfer:
     notAnExport: 'Not a file exported by Dumpling'
     version: 'This file is of another version of the export format: this Dumpling reads version {version: int}'

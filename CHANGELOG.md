@@ -23,6 +23,7 @@ have the release candidates before 0.1.0 one by one.
 - Service: `expire_at` of the sign-in is ISO 8601 UTC, like every other time (it was epoch
   milliseconds); the console reads it so.
 - Service: `/api/health` answers `application/health+json` (`pass` / `fail`) instead of `up` / `down`.
+- Service: creates answer with `Location`; a `limit` out of range in the run log is a `422`.
 
 ## 0.1.7
 

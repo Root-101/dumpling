@@ -7,7 +7,7 @@ class ConfigController {
 
   Future<ResponseEntity> list(RequestEntity request) async {
     final configs = await configService.list(
-      request.pathParams['slug']!,
+      request.pathParam<String>('workspace'),
       only: ApiKeyPrincipal.configsOf(request),
     );
     return ResponseEntity.ok(body: configs);
@@ -17,7 +17,7 @@ class ConfigController {
     final body = await request.body<OrderRequest>();
 
     final items = await configService.reorder(
-      request.pathParams['slug']!,
+      request.pathParam<String>('workspace'),
       body,
     );
     return ResponseEntity.ok(body: items);
@@ -25,8 +25,8 @@ class ConfigController {
 
   Future<ResponseEntity> get(RequestEntity request) async {
     final config = await configService.get(
-      request.pathParams['slug']!,
-      request.pathParams['id']!,
+      request.pathParam<String>('workspace'),
+      request.pathParam<String>('config'),
       only: ApiKeyPrincipal.configsOf(request),
     );
     return ResponseEntity.ok(body: config);
@@ -36,42 +36,28 @@ class ConfigController {
     final body = await request.body<ConfigRequest>();
 
     final config = await configService.create(
-      request.pathParams['slug']!,
+      request.pathParam<String>('workspace'),
       body,
     );
-    return ResponseEntity(201, body: config);
+    return created(request, config.id, config);
   }
 
   Future<ResponseEntity> update(RequestEntity request) async {
-    _reach(request);
-    final body = await request.body<ConfigRequest>();
-
     final config = await configService.update(
-      request.pathParams['slug']!,
-      request.pathParams['id']!,
-      body,
+      request.pathParam<String>('workspace'),
+      request.pathParam<String>('config'),
+      await request.body<ConfigRequest>(),
+      only: ApiKeyPrincipal.configsOf(request),
     );
     return ResponseEntity.ok(body: config);
   }
 
   Future<ResponseEntity> delete(RequestEntity request) async {
-    _reach(request);
     await configService.delete(
-      request.pathParams['slug']!,
-      request.pathParams['id']!,
+      request.pathParam<String>('workspace'),
+      request.pathParam<String>('config'),
+      only: ApiKeyPrincipal.configsOf(request),
     );
     return ResponseEntity.noContent();
-  }
-
-  /// A config an API key limited to others doesn't reach is not found.
-  static void _reach(RequestEntity request) {
-    final only = ApiKeyPrincipal.configsOf(request);
-    final id = request.pathParams['id']!;
-    if (only != null && !only.contains(id)) {
-      throw AppException(
-        ErrorCode.configsNotFound,
-        intl.errors.configs.notFound(id: id),
-      );
-    }
   }
 }

@@ -10,27 +10,26 @@ class RunController {
   /// the last runs of one config
   Future<ResponseEntity> list(RequestEntity request) async {
     final runs = await runService.list(
-      request.pathParams['slug']!,
-      sourceType: _enum(request, 'source_type', SourceType.values),
-      destinationType: _enum(
-        request,
+      request.pathParam<String>('workspace'),
+      sourceType: request.queryParam('source_type', values: SourceType.values),
+      destinationType: request.queryParam(
         'destination_type',
-        DestinationType.values,
+        values: DestinationType.values,
       ),
-      status: _enum(request, 'status', RunStatus.values),
-      trigger: _enum(request, 'trigger', RunTrigger.values),
+      status: request.queryParam('status', values: RunStatus.values),
+      trigger: request.queryParam('trigger', values: RunTrigger.values),
       label: request.queryParam<String>('label'),
       configId: request.queryParam<String>('config'),
       only: ApiKeyPrincipal.configsOf(request),
-      limit: _limit(request),
+      limit: request.queryParam<int>('limit') ?? RunService.maxRuns,
     );
     return ResponseEntity.ok(body: runs);
   }
 
   Future<ResponseEntity> get(RequestEntity request) async {
     final run = await runService.get(
-      request.pathParams['slug']!,
-      request.pathParams['id']!,
+      request.pathParam<String>('workspace'),
+      request.pathParam<String>('run'),
       only: ApiKeyPrincipal.configsOf(request),
     );
     return ResponseEntity.ok(body: run);
@@ -41,8 +40,8 @@ class RunController {
   Future<ResponseEntity> runNow(RequestEntity request) async {
     final body = await request.body<RunNowRequest?>();
     final run = await runService.runNow(
-      request.pathParams['slug']!,
-      request.pathParams['id']!,
+      request.pathParam<String>('workspace'),
+      request.pathParam<String>('config'),
       label: body?.label,
       key: ApiKeyPrincipal.of(request),
     );
@@ -52,44 +51,10 @@ class RunController {
   /// Server-Sent Events of a run until it ends (see [RunService.events]).
   Future<ResponseEntity> events(RequestEntity request) async {
     final events = await runService.events(
-      request.pathParams['slug']!,
-      request.pathParams['id']!,
+      request.pathParam<String>('workspace'),
+      request.pathParam<String>('run'),
       only: ApiKeyPrincipal.configsOf(request),
     );
     return ResponseEntity.sse(events);
-  }
-
-  /// `limit`: from 1 to [RunService.maxRuns]; a 400 otherwise.
-  static int _limit(RequestEntity request) {
-    final raw = request.queryParam<String>('limit');
-    if (raw == null) return RunService.maxRuns;
-    final limit = int.tryParse(raw);
-    if (limit == null || limit < 1 || limit > RunService.maxRuns) {
-      throw BadRequestException(
-        detail: intl.errors.runs.invalidLimit(max: RunService.maxRuns),
-      );
-    }
-    return limit;
-  }
-
-  /// The value of the query parameter [name] among [values]; a 400 if it is
-  /// none of them.
-  static T? _enum<T extends Enum>(
-    RequestEntity request,
-    String name,
-    List<T> values,
-  ) {
-    final raw = request.queryParam<String>(name);
-    if (raw == null) return null;
-    final value = values.asNameMap()[raw];
-    if (value == null) {
-      throw BadRequestException(
-        detail: intl.errors.runs.invalidFilter(
-          name: name,
-          values: values.map((v) => v.name).join(', '),
-        ),
-      );
-    }
-    return value;
   }
 }

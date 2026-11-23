@@ -11,7 +11,9 @@ class SourceController {
   }
 
   Future<ResponseEntity> list(RequestEntity request) async {
-    final sources = await sourceService.list(request.pathParams['slug']!);
+    final sources = await sourceService.list(
+      request.pathParam<String>('workspace'),
+    );
     return ResponseEntity.ok(body: sources);
   }
 
@@ -19,7 +21,7 @@ class SourceController {
     final body = await request.body<OrderRequest>();
 
     final items = await sourceService.reorder(
-      request.pathParams['slug']!,
+      request.pathParam<String>('workspace'),
       body,
     );
     return ResponseEntity.ok(body: items);
@@ -27,8 +29,8 @@ class SourceController {
 
   Future<ResponseEntity> get(RequestEntity request) async {
     final source = await sourceService.get(
-      request.pathParams['slug']!,
-      request.pathParams['id']!,
+      request.pathParam<String>('workspace'),
+      request.pathParam<String>('source'),
     );
     return ResponseEntity.ok(body: source);
   }
@@ -37,18 +39,18 @@ class SourceController {
     final body = await request.body<SourceRequest>();
 
     final source = await sourceService.create(
-      request.pathParams['slug']!,
+      request.pathParam<String>('workspace'),
       body,
     );
-    return ResponseEntity(201, body: source);
+    return created(request, source.id, source);
   }
 
   Future<ResponseEntity> update(RequestEntity request) async {
     final body = await request.body<SourceRequest>();
 
     final source = await sourceService.update(
-      request.pathParams['slug']!,
-      request.pathParams['id']!,
+      request.pathParam<String>('workspace'),
+      request.pathParam<String>('source'),
       body,
     );
     return ResponseEntity.ok(body: source);
@@ -56,8 +58,8 @@ class SourceController {
 
   Future<ResponseEntity> delete(RequestEntity request) async {
     await sourceService.delete(
-      request.pathParams['slug']!,
-      request.pathParams['id']!,
+      request.pathParam<String>('workspace'),
+      request.pathParam<String>('source'),
     );
     return ResponseEntity.noContent();
   }
@@ -68,7 +70,7 @@ class SourceController {
     final body = await request.body<SourceRequest>();
 
     final check = await sourceService.testUnsaved(
-      request.pathParams['slug']!,
+      request.pathParam<String>('workspace'),
       body,
       sourceId: request.queryParam<String>('source'),
     );
@@ -77,8 +79,8 @@ class SourceController {
 
   Future<ResponseEntity> testSaved(RequestEntity request) async {
     final check = await sourceService.testSaved(
-      request.pathParams['slug']!,
-      request.pathParams['id']!,
+      request.pathParam<String>('workspace'),
+      request.pathParam<String>('source'),
     );
     return ResponseEntity.ok(body: check);
   }

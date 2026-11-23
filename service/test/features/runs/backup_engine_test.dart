@@ -364,12 +364,19 @@ void main() {
       ) as List;
       expect(last, hasLength(1));
       expect(last.single['config_id'], configId);
-      for (final limit in ['0', '201', 'x']) {
+      // not a number: 400; out of 1 to 200: a violation of `limit`
+      final notNumber = await http.get(
+        server.url('$base/runs?limit=x'),
+        headers: server.auth(),
+      );
+      expect(notNumber.statusCode, 400);
+      for (final limit in ['0', '201']) {
         final bad = await http.get(
           server.url('$base/runs?limit=$limit'),
           headers: server.auth(),
         );
-        expect(bad.statusCode, 400);
+        expect(bad.statusCode, 422);
+        expect(jsonDecode(bad.body)['violations'][0]['fieldName'], 'limit');
       }
 
       // The workspace counts the configs whose last run failed
