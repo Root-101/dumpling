@@ -111,10 +111,10 @@ Content-Type: application/json
 ```
 
 ```json
-{"access_token": "eyJ…", "expires_in": 43200000, "expire_at": 1793381180834}
+{"access_token": "eyJ…", "expires_in": 43200000, "expire_at": "2026-10-30T17:26:20.834Z"}
 ```
 
-The token lasts 12 hours (`expires_in` in milliseconds, `expire_at` as epoch milliseconds). Wrong
+The token lasts 12 hours (`expires_in` in milliseconds, `expire_at` in UTC, like every time of the API). Wrong
 credentials:
 
 ```json
@@ -131,7 +131,7 @@ GET /api/auth/session
 ```
 
 ```json
-{"username": "admin", "expire_at": 1793381180000}
+{"username": "admin", "expire_at": "2026-10-30T17:26:20.000Z"}
 ```
 
 Who the token belongs to and when it expires (epoch milliseconds, to the second). A quick way to

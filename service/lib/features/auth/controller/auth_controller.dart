@@ -50,7 +50,7 @@ class AuthController {
       }
       rateLimiter.succeeded(client);
 
-      final expireAt = DateTime.now().add(tokenDuration);
+      final expireAt = utcNow().add(tokenDuration);
       final token = jwtService.generateToken({
         'sub': loginReq.username,
         // The admin can do everything
@@ -81,6 +81,7 @@ class AuthController {
         username: payload['sub'] as String,
         expireAt: DateTime.fromMillisecondsSinceEpoch(
           (payload['exp'] as int) * 1000,
+          isUtc: true,
         ),
       ),
     );

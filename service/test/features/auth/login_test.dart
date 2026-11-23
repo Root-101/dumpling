@@ -37,10 +37,9 @@ void main() {
       final body = jsonDecode(response.body);
       expect(body['access_token'], isNotEmpty);
       expect(body['expires_in'], const Duration(hours: 12).inMilliseconds);
-      expect(
-        body['expire_at'],
-        greaterThan(DateTime.now().millisecondsSinceEpoch),
-      );
+      // ISO 8601 in UTC, like every time of the API
+      expect(body['expire_at'], endsWith('Z'));
+      expect(DateTime.parse(body['expire_at']).isAfter(DateTime.now()), isTrue);
     });
 
     test(
@@ -112,10 +111,9 @@ void main() {
       expect(response.statusCode, 200);
       final body = jsonDecode(response.body);
       expect(body['username'], testUser);
-      expect(
-        body['expire_at'],
-        greaterThan(DateTime.now().millisecondsSinceEpoch),
-      );
+      // ISO 8601 in UTC, like every time of the API
+      expect(body['expire_at'], endsWith('Z'));
+      expect(DateTime.parse(body['expire_at']).isAfter(DateTime.now()), isTrue);
     });
 
     test('Should forbid a valid token without the permission (403)', () async {

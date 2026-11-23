@@ -152,7 +152,7 @@ class BackupEngine {
       return _next(configId);
     }
     final config = await configs.byId(configId);
-    final now = DateTime.now().toUtc();
+    final now = utcNow();
     if (config == null) {
       await runs.update(
         queued.id,
@@ -229,7 +229,7 @@ class BackupEngine {
         label: Value(label),
         keyId: Value(key?.id),
         keyName: Value(key?.name),
-        startedAt: DateTime.now().toUtc(),
+        startedAt: utcNow(),
       ),
     );
     logger.info(
@@ -249,8 +249,7 @@ class BackupEngine {
   Future<void> _execute(ConfigTableData config, RunTableData run) async {
     final log = <RunLogLine>[];
     final watch = Stopwatch()..start();
-    void write(String message) =>
-        log.add(RunLogLine(DateTime.now().toUtc(), message));
+    void write(String message) => log.add(RunLogLine(utcNow(), message));
     String logJson() => jsonEncode(log);
 
     try {
@@ -346,7 +345,7 @@ class BackupEngine {
           status: const Value(RunStatus.success),
           sizeBytes: Value(size),
           log: Value(logJson()),
-          finishedAt: Value(DateTime.now().toUtc()),
+          finishedAt: Value(utcNow()),
           durationMs: Value(watch.elapsedMilliseconds),
         ),
       );
@@ -367,7 +366,7 @@ class BackupEngine {
           status: const Value(RunStatus.failed),
           error: Value(error),
           log: Value(logJson()),
-          finishedAt: Value(DateTime.now().toUtc()),
+          finishedAt: Value(utcNow()),
           durationMs: Value(watch.elapsedMilliseconds),
         ),
       );

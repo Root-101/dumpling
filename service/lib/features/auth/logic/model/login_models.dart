@@ -29,7 +29,7 @@ class LoginResponse {
     return {
       'access_token': accessToken,
       'expires_in': expiresIn,
-      'expire_at': expireAt.millisecondsSinceEpoch,
+      'expire_at': expireAt.toJsonDate(),
     };
   }
 }
@@ -43,6 +43,6 @@ class SessionResponse {
   SessionResponse({required this.username, required this.expireAt});
 
   Map<String, Object?> toJson() {
-    return {'username': username, 'expire_at': expireAt.millisecondsSinceEpoch};
+    return {'username': username, 'expire_at': expireAt.toJsonDate()};
   }
 }

@@ -25,9 +25,9 @@ class ApiKeyModel {
     'name': row.name,
     'permissions': permissions,
     'config_ids': configIds,
-    'created_at': row.createdAt.toUtc().toIso8601String(),
-    'updated_at': row.updatedAt.toUtc().toIso8601String(),
-    'last_used_at': row.lastUsedAt?.toUtc().toIso8601String(),
+    'created_at': row.createdAt.toJsonDate(),
+    'updated_at': row.updatedAt.toJsonDate(),
+    'last_used_at': row.lastUsedAt?.toJsonDate(),
     'last_run': lastRun == null
         ? null
         : {
@@ -35,7 +35,7 @@ class ApiKeyModel {
             'config_name': lastRun!.configName,
             'label': lastRun!.label,
             'status': lastRun!.status.name,
-            'started_at': lastRun!.startedAt.toUtc().toIso8601String(),
+            'started_at': lastRun!.startedAt.toJsonDate(),
           },
     if (key != null) 'key': key,
   };

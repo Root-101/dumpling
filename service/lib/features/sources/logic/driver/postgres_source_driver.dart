@@ -146,7 +146,7 @@ class PostgresSourceDriver implements SourceDriver {
       toolVersion: tool == null ? null : 'pg_dump $tool',
       message: message,
       durationMs: watch.elapsedMilliseconds,
-      checkedAt: DateTime.now().toUtc(),
+      checkedAt: utcNow(),
     );
 
     final server = await _askServer(

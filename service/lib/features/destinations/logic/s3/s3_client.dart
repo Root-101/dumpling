@@ -160,7 +160,7 @@ class S3Client {
         : '$basePath/$keyPath';
     final authority = endpoint.hasPort ? '$host:${endpoint.port}' : host;
 
-    final now = DateTime.now().toUtc();
+    final now = utcNow();
     final amzDate = SigV4Signer.amzDate(now);
     final scope = SigV4Signer.scope(SigV4Signer.dateStamp(now), region: region);
     final payloadHash = body == null

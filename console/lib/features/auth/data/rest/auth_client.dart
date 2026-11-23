@@ -43,7 +43,7 @@ class LoginResponse {
     return LoginResponse(
       accessToken: json['access_token'],
       expiresIn: json['expires_in'],
-      expireAt: DateTime.fromMillisecondsSinceEpoch(json['expire_at']),
+      expireAt: DateTime.parse(json['expire_at']),
     );
   }
 }

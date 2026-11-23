@@ -103,7 +103,7 @@ class RunTableRepo {
             RunTableCompanion(
               status: const Value(RunStatus.failed),
               error: Value(error),
-              finishedAt: Value(DateTime.now()),
+              finishedAt: Value(utcNow()),
             ),
           );
 }

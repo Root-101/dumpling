@@ -1,3 +1,5 @@
+import 'package:service/dumpling.dart';
+
 /// The most of a text from a server (an error, a version) that is kept: it
 /// goes into the check, the run and the log, on every run, and a server can
 /// make it as long as it likes.
@@ -63,6 +65,6 @@ class ConnectionCheck {
     'tool_version': toolVersion,
     'message': message,
     'duration_ms': durationMs,
-    'checked_at': checkedAt.toUtc().toIso8601String(),
+    'checked_at': checkedAt.toJsonDate(),
   };
 }

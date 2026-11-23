@@ -23,7 +23,7 @@ class S3DestinationDriver implements DestinationDriver {
           status: status,
           message: message,
           durationMs: watch.elapsedMilliseconds,
-          checkedAt: DateTime.now().toUtc(),
+          checkedAt: utcNow(),
         );
 
     final name = '.dumpling-check-${_random.nextInt(1 << 32)}';

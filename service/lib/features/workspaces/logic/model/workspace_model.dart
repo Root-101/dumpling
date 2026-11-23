@@ -47,8 +47,8 @@ class WorkspaceModel {
     'description': description,
     'color': color,
     'defaults': defaults,
-    'created_at': createdAt.toUtc().toIso8601String(),
-    'updated_at': updatedAt.toUtc().toIso8601String(),
+    'created_at': createdAt.toJsonDate(),
+    'updated_at': updatedAt.toJsonDate(),
     if (stats != null) 'stats': stats,
   };
 }
@@ -85,7 +85,7 @@ class WorkspaceStats {
     'configs': configs,
     'failing': failing,
     'running': running,
-    'last_run_at': lastRunAt?.toUtc().toIso8601String(),
+    'last_run_at': lastRunAt?.toJsonDate(),
     'preview': preview,
   };
 }

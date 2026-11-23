@@ -55,7 +55,7 @@ class ConfigTableRepo {
   /// Replaces everything but the id, the workspace and the creation date.
   Future<void> update(String id, ConfigTableCompanion config) async {
     await (_db.update(_db.configTable)..where((tbl) => tbl.id.equals(id)))
-        .write(config.copyWith(updatedAt: Value(DateTime.now())));
+        .write(config.copyWith(updatedAt: Value(utcNow())));
   }
 
   Future<void> delete(String id) async {

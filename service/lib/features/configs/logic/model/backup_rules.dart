@@ -42,11 +42,7 @@ extension BackupRules on FieldValidator<String?> {
 
   static bool isCron(String value) {
     try {
-      return CronSchedule.parse(
-            value,
-            utc: true,
-          ).next(DateTime.now().toUtc()) !=
-          null;
+      return CronSchedule.parse(value, utc: true).next(utcNow()) != null;
     } on FormatException {
       return false;
     }

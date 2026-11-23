@@ -23,7 +23,7 @@ class TransferService {
 
   /// [slug], or every workspace when null.
   Future<Map<String, Object?>> export({String? slug}) async {
-    final now = DateTime.now();
+    final now = utcNow();
     final list = slug == null
         ? await workspaces.list()
         : [await workspaces.get(slug)];

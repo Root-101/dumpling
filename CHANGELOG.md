@@ -20,6 +20,8 @@ have the release candidates before 0.1.0 one by one.
   couldn't connect; a server that refuses TLS says so plainly.
 - Console: a run that wrote nothing shows no size instead of *0 B*.
 - Service: every error and violation carries a stable `code` to decide on (`sources.inUse`).
+- Service: `expire_at` of the sign-in is ISO 8601 UTC, like every other time (it was epoch
+  milliseconds); the console reads it so.
 
 ## 0.1.7
 

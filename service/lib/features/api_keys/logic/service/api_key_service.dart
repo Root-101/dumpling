@@ -62,7 +62,7 @@ class ApiKeyService {
         name: Value(request.trimmedName),
         permissions: Value(jsonEncode(request.cleanPermissions)),
         configIds: Value(jsonEncode(configIds)),
-        updatedAt: Value(DateTime.now().toUtc()),
+        updatedAt: Value(utcNow()),
       ),
     );
     logger.info('API key changed', fields: {'workspace': workspace, 'key': id});
@@ -98,7 +98,7 @@ class ApiKeyService {
     if (row == null || !_same(ApiKeyToken.hash(secret), row.secretHash)) {
       return null;
     }
-    final now = DateTime.now().toUtc();
+    final now = utcNow();
     final used = row.lastUsedAt;
     if (used == null || now.difference(used) >= touchEvery) {
       await repo.update(id, ApiKeyTableCompanion(lastUsedAt: Value(now)));

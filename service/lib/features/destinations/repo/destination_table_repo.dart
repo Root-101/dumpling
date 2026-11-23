@@ -116,7 +116,7 @@ class DestinationTableRepo {
           lastCheck: connectionChanged
               ? const Value(null)
               : const Value.absent(),
-          updatedAt: Value(DateTime.now()),
+          updatedAt: Value(utcNow()),
         ),
       );
       await (_db.delete(

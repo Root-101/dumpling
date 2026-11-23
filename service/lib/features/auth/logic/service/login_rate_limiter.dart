@@ -35,7 +35,7 @@ class LoginRateLimiter {
     this.failureDelay = const Duration(seconds: 1),
     DateTime Function()? now,
     Future<void> Function(Duration)? wait,
-  }) : _now = now ?? DateTime.now,
+  }) : _now = now ?? utcNow,
        _wait = wait ?? Future<void>.delayed;
 
   /// What is left of [client]'s lock, or null if it may try.

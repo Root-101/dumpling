@@ -121,7 +121,7 @@ class WorkspaceTableRepo {
         defaultSchedule: Value(request.schedule),
         defaultCompression: Value(request.compression),
         defaultObjectKey: Value(request.objectKey),
-        updatedAt: Value(DateTime.now()),
+        updatedAt: Value(utcNow()),
       ),
     );
   }

@@ -23,7 +23,7 @@ abstract final class TransferFile {
   }) => {
     'format': format,
     'version': version,
-    'exported_at': exportedAt.toUtc().toIso8601String(),
+    'exported_at': exportedAt.toJsonDate(),
     'workspaces': workspaces,
   };
 }
