@@ -12,11 +12,11 @@ class ConfigService {
   final BackupEngine engine;
 
   ConfigService()
-    : repo = ConfigTableRepo(di.find()),
-      sources = SourceTableRepo(di.find()),
-      destinations = DestinationTableRepo(di.find()),
-      workspaces = WorkspaceService(),
-      runs = RunTableRepo(di.find()),
+    : repo = di.find(),
+      sources = di.find(),
+      destinations = di.find(),
+      workspaces = di.find(),
+      runs = di.find(),
       engine = di.find();
 
   /// With [only], just those configs (an API key limited to them).

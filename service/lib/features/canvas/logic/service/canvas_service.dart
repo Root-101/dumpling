@@ -16,12 +16,12 @@ class CanvasService {
 
   CanvasService()
     : db = di.find(),
-      repo = CanvasRepo(di.find()),
-      sources = SourceTableRepo(di.find()),
-      destinations = DestinationTableRepo(di.find()),
-      configs = ConfigTableRepo(di.find()),
-      runs = RunTableRepo(di.find()),
-      workspaces = WorkspaceService(),
+      repo = di.find(),
+      sources = di.find(),
+      destinations = di.find(),
+      configs = di.find(),
+      runs = di.find(),
+      workspaces = di.find(),
       engine = di.find(),
       secrets = Secrets();
 

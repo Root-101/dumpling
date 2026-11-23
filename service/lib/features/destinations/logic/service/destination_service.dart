@@ -11,9 +11,9 @@ class DestinationService {
   final Secrets secrets;
 
   DestinationService()
-    : repo = DestinationTableRepo(di.find()),
-      configs = ConfigTableRepo(di.find()),
-      workspaces = WorkspaceService(),
+    : repo = di.find(),
+      configs = di.find(),
+      workspaces = di.find(),
       secrets = Secrets();
 
   Future<List<DestinationModel>> list(String workspace) async {

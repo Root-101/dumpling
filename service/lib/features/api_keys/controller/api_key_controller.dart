@@ -3,7 +3,7 @@ import 'package:service/dumpling.dart';
 class ApiKeyController {
   final ApiKeyService apiKeyService;
 
-  ApiKeyController() : apiKeyService = ApiKeyService();
+  ApiKeyController() : apiKeyService = di.find();
 
   Future<ResponseEntity> list(RequestEntity request) async {
     final keys = await apiKeyService.list(request.pathParams['slug']!);

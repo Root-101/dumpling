@@ -3,7 +3,7 @@ import 'package:service/dumpling.dart';
 class SourceController {
   final SourceService sourceService;
 
-  SourceController() : sourceService = SourceService();
+  SourceController() : sourceService = di.find();
 
   /// Every type, the disabled ones too (the console shows them as soon).
   Future<ResponseEntity> types(RequestEntity request) async {

@@ -9,9 +9,9 @@ class RunService {
   final BackupEngine engine;
 
   RunService()
-    : repo = RunTableRepo(di.find()),
-      configs = ConfigTableRepo(di.find()),
-      workspaces = WorkspaceService(),
+    : repo = di.find(),
+      configs = di.find(),
+      workspaces = di.find(),
       engine = di.find();
 
   /// The most runs a list answers.

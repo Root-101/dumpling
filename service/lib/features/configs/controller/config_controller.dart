@@ -3,7 +3,7 @@ import 'package:service/dumpling.dart';
 class ConfigController {
   final ConfigService configService;
 
-  ConfigController() : configService = ConfigService();
+  ConfigController() : configService = di.find();
 
   Future<ResponseEntity> list(RequestEntity request) async {
     final configs = await configService.list(

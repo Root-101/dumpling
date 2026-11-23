@@ -13,12 +13,12 @@ class TransferService {
   final Secrets secrets;
 
   TransferService()
-    : workspaces = WorkspaceService(),
-      workspaceRepo = WorkspaceTableRepo(di.find()),
-      canvas = CanvasService(),
-      sources = SourceTableRepo(di.find()),
-      destinations = DestinationTableRepo(di.find()),
-      runs = RunTableRepo(di.find()),
+    : workspaces = di.find(),
+      workspaceRepo = di.find(),
+      canvas = di.find(),
+      sources = di.find(),
+      destinations = di.find(),
+      runs = di.find(),
       secrets = Secrets();
 
   /// [slug], or every workspace when null.

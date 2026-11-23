@@ -11,7 +11,7 @@ class ApiKeyFilter extends Filter {
   late final LoginRateLimiter rateLimiter;
 
   ApiKeyFilter._() {
-    keys = ApiKeyService();
+    keys = di.find();
     rateLimiter = di.find();
   }
 

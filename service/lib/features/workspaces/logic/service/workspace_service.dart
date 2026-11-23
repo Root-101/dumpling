@@ -7,9 +7,7 @@ class WorkspaceService {
   final WorkspaceTableRepo repo;
   final ConfigTableRepo configs;
 
-  WorkspaceService()
-    : repo = WorkspaceTableRepo(di.find()),
-      configs = ConfigTableRepo(di.find());
+  WorkspaceService() : repo = di.find(), configs = di.find();
 
   Future<List<WorkspaceModel>> list() async {
     final stats = await repo.stats();

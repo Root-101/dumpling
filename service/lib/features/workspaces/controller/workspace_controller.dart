@@ -3,7 +3,7 @@ import 'package:service/dumpling.dart';
 class WorkspaceController {
   final WorkspaceService workspaceService;
 
-  WorkspaceController() : workspaceService = WorkspaceService();
+  WorkspaceController() : workspaceService = di.find();
 
   Future<ResponseEntity> list(RequestEntity request) async {
     return ResponseEntity.ok(body: await workspaceService.list());

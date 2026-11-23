@@ -9,9 +9,9 @@ class ApiKeyService {
   final WorkspaceService workspaces;
 
   ApiKeyService()
-    : repo = ApiKeyTableRepo(di.find()),
-      configs = ConfigTableRepo(di.find()),
-      workspaces = WorkspaceService();
+    : repo = di.find(),
+      configs = di.find(),
+      workspaces = di.find();
 
   /// A key used again within this time doesn't write its last use: one write
   /// a minute at most, however often a script calls.

@@ -3,7 +3,7 @@ import 'package:service/dumpling.dart';
 class RunController {
   final RunService runService;
 
-  RunController() : runService = RunService();
+  RunController() : runService = di.find();
 
   /// `?source_type=postgres&destination_type=s3&status=failed&config=cfg_…`,
   /// `trigger=api`, `label=v1.4.2` and `limit` (1 to 200, the default), e.g.

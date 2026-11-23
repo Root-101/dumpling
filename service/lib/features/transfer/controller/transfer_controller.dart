@@ -3,7 +3,7 @@ import 'package:service/dumpling.dart';
 class TransferController {
   final TransferService transferService;
 
-  TransferController() : transferService = TransferService();
+  TransferController() : transferService = di.find();
 
   /// `?workspace=<slug>` exports that one; without it, all of them.
   Future<ResponseEntity> export(RequestEntity request) async {

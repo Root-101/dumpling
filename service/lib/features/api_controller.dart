@@ -16,15 +16,15 @@ class ApiController {
   final ApiKeyController apiKeyController;
 
   ApiController()
-    : authController = AuthController(),
-      workspaceController = WorkspaceController(),
-      sourceController = SourceController(),
-      destinationController = DestinationController(),
-      configController = ConfigController(),
-      runController = RunController(),
-      canvasController = CanvasController(),
-      transferController = TransferController(),
-      apiKeyController = ApiKeyController();
+    : authController = di.find(),
+      workspaceController = di.find(),
+      sourceController = di.find(),
+      destinationController = di.find(),
+      configController = di.find(),
+      runController = di.find(),
+      canvasController = di.find(),
+      transferController = di.find(),
+      apiKeyController = di.find();
 
   Route get routing => Route.parent(
     path: '/api',

@@ -11,9 +11,9 @@ class SourceService {
   final Secrets secrets;
 
   SourceService()
-    : repo = SourceTableRepo(di.find()),
-      configs = ConfigTableRepo(di.find()),
-      workspaces = WorkspaceService(),
+    : repo = di.find(),
+      configs = di.find(),
+      workspaces = di.find(),
       secrets = Secrets();
 
   Future<List<SourceModel>> list(String workspace) async {

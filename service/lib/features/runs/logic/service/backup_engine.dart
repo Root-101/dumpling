@@ -42,10 +42,10 @@ class BackupEngine {
 
   BackupEngine()
     : scheduler = di.find(),
-      configs = ConfigTableRepo(di.find()),
-      sources = SourceTableRepo(di.find()),
-      destinations = DestinationTableRepo(di.find()),
-      runs = RunTableRepo(di.find()),
+      configs = di.find(),
+      sources = di.find(),
+      destinations = di.find(),
+      runs = di.find(),
       secrets = Secrets();
 
   static String taskName(String configId) => 'config:$configId';

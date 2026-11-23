@@ -3,7 +3,7 @@ import 'package:service/dumpling.dart';
 class CanvasController {
   final CanvasService canvasService;
 
-  CanvasController() : canvasService = CanvasService();
+  CanvasController() : canvasService = di.find();
 
   Future<ResponseEntity> get(RequestEntity request) async {
     final canvas = await canvasService.get(request.pathParams['slug']!);

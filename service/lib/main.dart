@@ -72,6 +72,9 @@ class Dumpling {
     // Of sources and destinations, stored encrypted with SECRETS_ENCRYPTION_KEY
     di.put(SecretCipher(env.secretsEncryptionKey));
 
+    //--------------- Repos, services, controllers ---------------\\
+    registerDependencies();
+
     //--------------- Backups ---------------\\
     // Each enabled config is a task on its cron; Winter starts the scheduler
     // once the port is open. A stop cuts the runs in progress: the next start
