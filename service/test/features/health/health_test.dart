@@ -15,19 +15,27 @@ void main() {
   setUpAll(server.start);
   tearDownAll(server.stop);
 
-  group('HealthController', () {
-    test('Should answer up without a token', () async {
+  group('Health', () {
+    test('Should pass without a token', () async {
       final response = await http.get(server.url('/api/health'));
       expect(response.statusCode, 200);
-      expect(jsonDecode(response.body), {'status': 'up'});
+      expect(jsonDecode(response.body)['status'], 'pass');
+      expect(
+        response.headers['content-type'],
+        startsWith('application/health+json'),
+      );
     });
 
-    test('Should answer down (503) when the database fails', () async {
+    test('Should fail (503) when the database fails', () async {
       final db = di.find<AppDatabase>();
       await db.close();
       final response = await http.get(server.url('/api/health'));
       expect(response.statusCode, 503);
-      expect(jsonDecode(response.body), {'status': 'down'});
+      expect(jsonDecode(response.body)['status'], 'fail');
+      expect(
+        jsonDecode(response.body)['checks']['database'][0]['status'],
+        'fail',
+      );
     });
   });
 }

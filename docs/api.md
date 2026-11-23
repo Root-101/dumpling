@@ -144,12 +144,13 @@ GET /api/health
 ```
 
 ```json
-{"status": "up"}
+{"status": "pass", "checks": {"database": [{"status": "pass"}]}}
 ```
 
-For load balancers and container checks: no token, and nothing else in the answer. `up` means the
-service answers and so does its database; if the database doesn't, it is a `503` with
-`{"status": "down"}` and the error goes to the log.
+For load balancers and container checks: no token. It answers in the format of the draft *Health
+Check Response Format for HTTP APIs* (`application/health+json`): `pass` means the service answers
+and so does its database; if the database doesn't, it is a `503` with `"status": "fail"` (and `fail`
+in its check), and the reason goes to the log.
 
 ## Types of sources and destinations
 

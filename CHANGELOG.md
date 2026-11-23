@@ -22,6 +22,7 @@ have the release candidates before 0.1.0 one by one.
 - Service: every error and violation carries a stable `code` to decide on (`sources.inUse`).
 - Service: `expire_at` of the sign-in is ISO 8601 UTC, like every other time (it was epoch
   milliseconds); the console reads it so.
+- Service: `/api/health` answers `application/health+json` (`pass` / `fail`) instead of `up` / `down`.
 
 ## 0.1.7
 

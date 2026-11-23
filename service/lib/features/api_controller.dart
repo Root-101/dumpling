@@ -13,7 +13,6 @@ class ApiController {
   final RunController runController;
   final CanvasController canvasController;
   final TransferController transferController;
-  final HealthController healthController;
   final ApiKeyController apiKeyController;
 
   ApiController()
@@ -25,17 +24,17 @@ class ApiController {
       runController = RunController(),
       canvasController = CanvasController(),
       transferController = TransferController(),
-      healthController = HealthController(),
       apiKeyController = ApiKeyController();
 
   Route get routing => Route.parent(
     path: '/api',
     filterConfig: [JwtFilter(), ApiKeyFilter()].toFilterConfig(),
     routes: [
-      Route.get(
+      // For load balancers and container checks: no token, only whether the
+      // service and its database answer (application/health+json)
+      Route.health(
         key: 'health',
-        path: '/health',
-        handler: healthController.health,
+        checks: {'database': () => di.find<AppDatabase>().ping()},
       ),
       Route.post(
         key: 'auth.login',

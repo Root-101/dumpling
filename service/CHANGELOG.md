@@ -12,6 +12,8 @@
   every violation of its own rules too (`validations.cron`): clients decide on it, never on the text.
 - `expire_at` of the sign-in and the session is ISO 8601 in UTC, like every other time of the API
   (it was epoch milliseconds); every time is written with milliseconds and `Z`.
+- `/api/health` answers the health check format (`application/health+json`, `pass` / `fail`), not
+  `{"status": "up"}`: a monitor that read `up` reads `pass` now.
 
 ## 0.1.7
 
