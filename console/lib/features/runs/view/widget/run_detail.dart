@@ -364,7 +364,7 @@ class _Meta extends StatelessWidget {
       color: colors.text.primary,
       fontFeatures: const [FontFeature.tabularFigures()],
     );
-    final size = run.sizeBytes;
+    final size = run.written;
     Widget item(String label, Widget child) => Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -103,6 +103,10 @@ class RunModel {
     );
   }
 
+  /// The bytes written, null when nothing was: a run that failed connecting
+  /// comes with 0, which is no size
+  int? get written => (sizeBytes ?? 0) > 0 ? sizeBytes : null;
+
   bool get manual => trigger == 'manual';
 
   bool get byApi => trigger == 'api';

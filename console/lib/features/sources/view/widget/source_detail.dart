@@ -36,7 +36,7 @@ class SourceDialog extends StatelessWidget {
       null,
       (a, b) => a == null || b.startedAt.isAfter(a.startedAt) ? b : a,
     );
-    final size = lastRun?.sizeBytes;
+    final size = lastRun?.written;
     final destinations = {for (final c in uses) c.destinationId}.length;
     return DetailDialogTemplate(
       header: DetailHeader(

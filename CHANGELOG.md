@@ -16,6 +16,9 @@ have the release candidates before 0.1.0 one by one.
 - Console: the warning of a long name only shows when the name would be cut on its node.
 - Console: a run shows the duration the service measured (a short one said *0.0 s*), and the
   days of the run log say *1 correcta* in Spanish.
+- Service: a source's last check is also the one of each run, so its detail says when a run
+  couldn't connect; a server that refuses TLS says so plainly.
+- Console: a run that wrote nothing shows no size instead of *0 B*.
 
 ## 0.1.7
 

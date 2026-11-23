@@ -114,4 +114,10 @@ void main() {
       expect(RunModel.fromJson(json).duration, Duration.zero);
     },
   );
+
+  test('a run that wrote nothing has no size, not 0 B', () {
+    expect(run(RunStatus.failed, {}, size: 0).written, isNull);
+    expect(run(RunStatus.failed, {}).written, isNull);
+    expect(run(RunStatus.success, {}, size: 140290).written, 140290);
+  });
 }
