@@ -11,6 +11,9 @@
 - The splash of `index.html` comes in the language chosen with the flag, like the console; the
   browser's only until one is chosen.
 - The workspaces of an import count each thing with its plural: *1 destination*.
+- The days of the run log count with their plural in Spanish: *1 correcta · 1 fallida*.
+- The duration of a run is the one the service measured: a backup of 190 ms said *0.0 s*, as
+  its start and end are kept to the second.
 - In Spanish, *clave del objeto* everywhere: the field of a config and its errors said *object key*,
   the service *clave del objeto*.
 - The warning of a long name (source, destination or config) measures it on its node: a config's

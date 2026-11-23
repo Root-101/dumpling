@@ -14,6 +14,8 @@ have the release candidates before 0.1.0 one by one.
   import says *1 destination*, not *1 destinations*; the object key is *clave del objeto*
   everywhere, as the service says it.
 - Console: the warning of a long name only shows when the name would be cut on its node.
+- Console: a run shows the duration the service measured (a short one said *0.0 s*), and the
+  days of the run log say *1 correcta* in Spanish.
 
 ## 0.1.7
 

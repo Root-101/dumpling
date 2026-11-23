@@ -624,8 +624,12 @@ runs:
   today: 'Hoy · {date: String} (UTC)'
   yesterday: 'Ayer · {date: String} (UTC)'
   day: '{date: String} (UTC)'
-  succeeded: '{n: int} correctas'
-  failedCount: '{n: int} fallidas'
+  succeeded(plural, param=n):
+    one: '{n} correcta'
+    other: '{n} correctas'
+  failedCount(plural, param=n):
+    one: '{n} fallida'
+    other: '{n} fallidas'
   savedIn: '{size: String} en {duration: String}'
   inProgress: 'En curso'
   soFar: 'En curso · {size: String} hasta ahora'

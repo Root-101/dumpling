@@ -1107,9 +1107,19 @@ class AppMessages$runs$es implements AppMessages$runs$en {
   @override
   String day({required String date}) => '${date} (UTC)';
   @override
-  String succeeded({required int n}) => '${n} correctas';
+  String succeeded({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: '${n} correcta',
+        other: '${n} correctas',
+      );
   @override
-  String failedCount({required int n}) => '${n} fallidas';
+  String failedCount({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        n,
+        one: '${n} fallida',
+        other: '${n} fallidas',
+      );
   @override
   String savedIn({required String size, required String duration}) =>
       '${size} en ${duration}';
@@ -2978,8 +2988,22 @@ extension on AppMessagesEs {
             required String date,
           }) => 'Ayer · ${date} (UTC)',
           'runs.day' => ({required String date}) => '${date} (UTC)',
-          'runs.succeeded' => ({required int n}) => '${n} correctas',
-          'runs.failedCount' => ({required int n}) => '${n} fallidas',
+          'runs.succeeded' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: '${n} correcta',
+                  other: '${n} correctas',
+                ),
+          'runs.failedCount' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  n,
+                  one: '${n} fallida',
+                  other: '${n} fallidas',
+                ),
           'runs.savedIn' => ({
             required String size,
             required String duration,

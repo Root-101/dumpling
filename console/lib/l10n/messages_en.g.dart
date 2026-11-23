@@ -1446,11 +1446,21 @@ class AppMessages$runs$en {
   /// en: '{date: String} (UTC)'
   String day({required String date}) => '${date} (UTC)';
 
-  /// en: '{n: int} succeeded'
-  String succeeded({required int n}) => '${n} succeeded';
+  /// en: '(one) {{n} succeeded} (other) {{n} succeeded}'
+  String succeeded({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} succeeded',
+        other: '${n} succeeded',
+      );
 
-  /// en: '{n: int} failed'
-  String failedCount({required int n}) => '${n} failed';
+  /// en: '(one) {{n} failed} (other) {{n} failed}'
+  String failedCount({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} failed',
+        other: '${n} failed',
+      );
 
   /// en: '{size: String} in {duration: String}'
   String savedIn({required String size, required String duration}) =>
@@ -3637,8 +3647,22 @@ extension on AppMessages {
             required String date,
           }) => 'Yesterday · ${date} (UTC)',
           'runs.day' => ({required String date}) => '${date} (UTC)',
-          'runs.succeeded' => ({required int n}) => '${n} succeeded',
-          'runs.failedCount' => ({required int n}) => '${n} failed',
+          'runs.succeeded' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} succeeded',
+                  other: '${n} succeeded',
+                ),
+          'runs.failedCount' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} failed',
+                  other: '${n} failed',
+                ),
           'runs.savedIn' => ({
             required String size,
             required String duration,
