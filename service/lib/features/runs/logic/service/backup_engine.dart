@@ -283,6 +283,11 @@ class BackupEngine {
         sourceSettings,
         sourceSecrets,
       );
+      // the source's last check is this one: its detail says what the run saw
+      await sources.updateLastCheck(
+        id: source.id,
+        lastCheck: jsonEncode(check),
+      );
       if (check.status != CheckStatus.connected) {
         throw RunFailure(_describe(check));
       }

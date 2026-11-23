@@ -343,8 +343,8 @@ GET /api/workspaces/e2e/sources
 ```
 
 They come in the order set by hand ([Reorder sources](#reorder-sources)), a new one last.
-`last_check` is the last [test of the saved source](#test-a-saved-source), `null` until the first
-one. `dump_format` is `custom` (`pg_dump -Fc`, for `pg_restore`) or `plain` (SQL); `ssl_mode` is
+`last_check` is the last check of its connection: a [test of the saved source](#test-a-saved-source)
+or the one each run makes before dumping, `null` until the first one. `dump_format` is `custom` (`pg_dump -Fc`, for `pg_restore`) or `plain` (SQL); `ssl_mode` is
 `require` (the default: TLS without checking the certificate) or `disable`.
 
 ### Get a source

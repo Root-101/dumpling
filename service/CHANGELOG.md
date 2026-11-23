@@ -4,6 +4,10 @@
 
 - CORS exposes `Retry-After`, so the console (on another origin in development) can say how long
   a locked sign-in waits.
+- The check each run makes before dumping is kept as the source's last check: its detail no
+  longer says *Connected* after a run that couldn't connect.
+- A test with TLS required against a server without TLS says *The server doesn't accept TLS:
+  turn TLS off if it is on a network you trust*, not the driver's text.
 
 ## 0.1.7
 

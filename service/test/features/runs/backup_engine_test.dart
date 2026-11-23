@@ -202,6 +202,10 @@ void main() {
         expect(run['error'], 'Could not connect: Connection refused');
         expect(run['location'], isNull);
         expect(s3.requests, isEmpty);
+        // the source's last check is the run's, not an older test
+        final check = (await getJson('$base/sources/$sourceId'))['last_check'];
+        expect(check['status'], 'failed');
+        expect(check['message'], 'Connection refused');
       },
     );
 
@@ -481,6 +485,29 @@ void main() {
       // its parts are no longer billed
       expect(s3.openUploads, isEmpty);
       expect(s3.requests.last, startsWith('DELETE /backups/orders/half.dump'));
+    });
+  });
+
+  group('PostgresSourceDriver.testConnection', () {
+    test('Should say plainly that the server refuses TLS', () async {
+      // a PostgreSQL without TLS answers `N` to the request for it
+      final server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      server.listen(
+        (socket) => socket.listen((_) => socket.add('N'.codeUnits)),
+      );
+      final check = await original.testConnection(
+        PostgresSettings(
+          host: '127.0.0.1',
+          port: server.port,
+          database: 'd',
+          username: 'u',
+          sslMode: 'require',
+        ),
+        {'password': 'p'},
+      );
+      await server.close();
+      expect(check.status, CheckStatus.failed);
+      expect(check.message, startsWith("The server doesn't accept TLS"));
     });
   });
 

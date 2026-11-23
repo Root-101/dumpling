@@ -252,7 +252,7 @@ only when no backup uses it (the menu says how many do):
 ![Delete a source](design/screens/20-source-delete.png)
 
 The detail shows the backups that dump it (with their schedule, last and next run), the last check
-and the connection:
+(a test, or the one each run makes before dumping) and the connection:
 
 ![Source detail](design/screens/21-source-detail.png)
 
