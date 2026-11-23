@@ -67,8 +67,9 @@ class RunService {
     final config = await configs.get(workspace, configId);
     final reached = key?.configs?.contains(configId) ?? true;
     if (config == null || !reached) {
-      throw NotFoundException(
-        detail: intl.errors.configs.notFound(id: configId),
+      throw AppException(
+        ErrorCode.configsNotFound,
+        intl.errors.configs.notFound(id: configId),
       );
     }
     return RunModel(await engine.runNow(config, label: label, key: key));
@@ -129,7 +130,10 @@ class RunService {
     await workspaces.get(workspace);
     final row = await repo.get(workspace, id);
     if (row == null || (only != null && !only.contains(row.configId))) {
-      throw NotFoundException(detail: intl.errors.runs.notFound(id: id));
+      throw AppException(
+        ErrorCode.runsNotFound,
+        intl.errors.runs.notFound(id: id),
+      );
     }
     return row;
   }

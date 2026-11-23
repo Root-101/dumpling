@@ -111,8 +111,9 @@ class DestinationService {
     await _row(workspace, id);
     final using = await configs.byDestination(id);
     if (using.isNotEmpty) {
-      throw ConflictException(
-        detail: intl.errors.destinations.inUse(configs: using.length),
+      throw AppException(
+        ErrorCode.destinationsInUse,
+        intl.errors.destinations.inUse(configs: using.length),
       );
     }
     await repo.delete(id);
@@ -168,8 +169,9 @@ class DestinationService {
     await workspaces.get(workspace);
     final row = await repo.get(workspace, id);
     if (row == null) {
-      throw NotFoundException(
-        detail: intl.errors.destinations.notFound(id: id),
+      throw AppException(
+        ErrorCode.destinationsNotFound,
+        intl.errors.destinations.notFound(id: id),
       );
     }
     return row;
@@ -183,8 +185,9 @@ class DestinationService {
           ? config.folder == null
           : folders.contains(config.folder);
       if (!kept) {
-        throw ConflictException(
-          detail: intl.errors.destinations.folderInUse(
+        throw AppException(
+          ErrorCode.destinationsFolderInUse,
+          intl.errors.destinations.folderInUse(
             folder: config.folder ?? '/',
             config: config.name,
           ),

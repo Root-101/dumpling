@@ -19,9 +19,10 @@ class AuthController {
     void checkLock() {
       final locked = rateLimiter.lockedFor(client);
       if (locked != null) {
-        throw TooManyRequestsException(
-          detail: intl.errors.auth.tooManyLoginAttempts,
-          retryAfter: (locked.inMilliseconds / 1000).ceil(),
+        throw AppException(
+          ErrorCode.authTooManyLoginAttempts,
+          intl.errors.auth.tooManyLoginAttempts,
+          headers: {'Retry-After': '${(locked.inMilliseconds / 1000).ceil()}'},
         );
       }
     }
@@ -42,8 +43,9 @@ class AuthController {
         // The IP, never what was typed
         logger.warning('Failed login', fields: {'client': client});
         await rateLimiter.failed(client);
-        throw UnauthorizedException(
-          detail: intl.errors.auth.invalidCredentials,
+        throw AppException(
+          ErrorCode.authInvalidCredentials,
+          intl.errors.auth.invalidCredentials,
         );
       }
       rateLimiter.succeeded(client);

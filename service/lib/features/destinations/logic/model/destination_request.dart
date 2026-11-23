@@ -45,16 +45,26 @@ class DestinationRequest implements Validatable {
             (value) => destinationType?.enabled ?? true
                 ? null
                 : intl.errors.validations.destinationTypeDisabled,
+            code: 'validations.destinationTypeDisabled',
           )
-      ..field('folders', folders).size(max: maxFolders).custom((value) {
-        final paths = cleanFolders;
-        if (paths.any((p) => p.length > maxFolderLength || !_isFolder(p))) {
-          return intl.errors.validations.folderPath;
-        }
-        return paths.toSet().length == paths.length
-            ? null
-            : intl.errors.validations.repeatedFolder;
-      });
+      ..field('folders', folders)
+          .size(max: maxFolders)
+          .custom(
+            (_) =>
+                cleanFolders.any(
+                  (p) => p.length > maxFolderLength || !_isFolder(p),
+                )
+                ? intl.errors.validations.folderPath
+                : null,
+            code: 'validations.folderPath',
+            stopOnFailure: true,
+          )
+          .custom(
+            (_) => cleanFolders.toSet().length == cleanFolders.length
+                ? null
+                : intl.errors.validations.repeatedFolder,
+            code: 'validations.repeatedFolder',
+          );
     // The settings depend on the type: only checked for one that works
     if (destinationType?.enabled ?? false) {
       context.field('settings', settings).notNull().valid();

@@ -19,6 +19,7 @@ have the release candidates before 0.1.0 one by one.
 - Service: a source's last check is also the one of each run, so its detail says when a run
   couldn't connect; a server that refuses TLS says so plainly.
 - Console: a run that wrote nothing shows no size instead of *0 B*.
+- Service: every error and violation carries a stable `code` to decide on (`sources.inUse`).
 
 ## 0.1.7
 

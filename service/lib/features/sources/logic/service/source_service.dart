@@ -98,8 +98,9 @@ class SourceService {
     await _row(workspace, id);
     final using = await configs.bySource(id);
     if (using.isNotEmpty) {
-      throw ConflictException(
-        detail: intl.errors.sources.inUse(configs: using.length),
+      throw AppException(
+        ErrorCode.sourcesInUse,
+        intl.errors.sources.inUse(configs: using.length),
       );
     }
     await repo.delete(id);
@@ -149,7 +150,10 @@ class SourceService {
     await workspaces.get(workspace);
     final row = await repo.get(workspace, id);
     if (row == null) {
-      throw NotFoundException(detail: intl.errors.sources.notFound(id: id));
+      throw AppException(
+        ErrorCode.sourcesNotFound,
+        intl.errors.sources.notFound(id: id),
+      );
     }
     return row;
   }

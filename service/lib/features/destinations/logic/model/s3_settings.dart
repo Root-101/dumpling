@@ -39,6 +39,7 @@ class S3Settings implements DestinationSettings {
           (value) => value == null || _isEndpoint(value)
               ? null
               : intl.errors.validations.s3Endpoint,
+          code: 'validations.s3Endpoint',
         )
     ..field('region', region?.trim()).size(min: 1, max: 64)
     // The rules of S3 for a bucket name

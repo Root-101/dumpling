@@ -115,7 +115,10 @@ class TransferService {
         } on Object {
           context
               .field('$prefix.secrets.$id', id)
-              .custom((_) => intl.errors.transfer.secrets);
+              .custom(
+                (_) => intl.errors.transfer.secrets,
+                code: 'transfer.secrets',
+              );
         }
       }
       final settings = node['settings'];

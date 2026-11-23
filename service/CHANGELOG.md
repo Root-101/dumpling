@@ -8,6 +8,8 @@
   longer says *Connected* after a run that couldn't connect.
 - A test with TLS required against a server without TLS says *The server doesn't accept TLS:
   turn TLS off if it is on a network you trust*, not the driver's text.
+- Every error of Dumpling carries a stable `code` (`sources.inUse`, `workspaces.notFound`…) and
+  every violation of its own rules too (`validations.cron`): clients decide on it, never on the text.
 
 ## 0.1.7
 

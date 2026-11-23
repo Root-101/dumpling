@@ -36,7 +36,8 @@ Without a token, or with an expired one, or a wrong key:
 ## Errors
 
 Every error is a Problem Details (RFC 9457). The `detail` is in English, or in Spanish with
-`Accept-Language: es`, and the `instance` is the path of the request:
+`Accept-Language: es`, and the `instance` is the path of the request. The errors of Dumpling itself
+carry a `code` that never changes: decide on it, never on the text.
 
 ```http
 GET /api/workspaces/nope
@@ -49,9 +50,24 @@ Accept-Language: es
   "title": "Not Found",
   "status": 404,
   "detail": "El workspace \"nope\" no existe.",
-  "instance": "/api/workspaces/nope"
+  "instance": "/api/workspaces/nope",
+  "code": "workspaces.notFound"
 }
 ```
+
+| `code`                       | Status | When                                                         |
+|------------------------------|--------|--------------------------------------------------------------|
+| `auth.invalidCredentials`    | 401    | Wrong username or password                                   |
+| `auth.tooManyLoginAttempts`  | 429    | Sign-in locked after too many failures (`Retry-After`)       |
+| `workspaces.notFound`        | 404    | No workspace with that slug                                  |
+| `sources.notFound`           | 404    | No such source in the workspace                              |
+| `sources.inUse`              | 409    | Deleting a source that configs back up                       |
+| `destinations.notFound`      | 404    | No such destination in the workspace                         |
+| `destinations.inUse`         | 409    | Deleting a destination that configs write to                 |
+| `destinations.folderInUse`   | 409    | Removing a folder (or the root) a config writes to           |
+| `configs.notFound`           | 404    | No such config in the workspace (or out of an API key's reach) |
+| `apiKeys.notFound`           | 404    | No such API key in the workspace                             |
+| `runs.notFound`              | 404    | No such run in the workspace (or out of an API key's reach)  |
 
 A body that can't be read is a `400` naming the field, and one that breaks a rule a `422` with its
 `violations` (the console shows each one under its field):
@@ -64,7 +80,7 @@ A body that can't be read is a `400` naming the field, and one that breaks a rul
 {
   "violations": [
     {"fieldName": "name", "message": "The minimum is 1", "code": "size.min", "params": {"value": 1}},
-    {"fieldName": "defaults.schedule", "message": "Not a valid cron expression (minute hour day month weekday)"},
+    {"fieldName": "defaults.schedule", "message": "Not a valid cron expression (minute hour day month weekday)", "code": "validations.cron"},
     {"fieldName": "defaults.compression", "message": "The value must be one of: gzip, none", "code": "isEnum", "params": {"values": ["gzip", "none"]}}
   ],
   "type": "about:blank",
@@ -74,8 +90,8 @@ A body that can't be read is a `400` naming the field, and one that breaks a rul
 }
 ```
 
-Not every violation has a `code`: the rules of Dumpling itself (a cron expression, a folder of the
-destination…) only bring the `message`.
+Every violation has a `code`: Winter's own rules (`size.min`, `isEnum`, `notNull`…) and those of
+Dumpling (`validations.cron`, `validations.folderPath`, `transfer.notAnExport`…).
 
 Other common answers: `404` for a workspace, source, destination, config or run that doesn't exist
 (in that workspace), `409` when something is in use, and `429` above the rate
@@ -102,7 +118,7 @@ The token lasts 12 hours (`expires_in` in milliseconds, `expire_at` as epoch mil
 credentials:
 
 ```json
-{"type": "about:blank", "title": "Unauthorized", "status": 401, "detail": "Wrong username or password", "instance": "/api/auth/login"}
+{"type": "about:blank", "title": "Unauthorized", "status": 401, "detail": "Wrong username or password", "instance": "/api/auth/login", "code": "auth.invalidCredentials"}
 ```
 
 Every failure waits a second, and 10 in a row lock the IP for 15 minutes, even with the right
@@ -448,7 +464,7 @@ DELETE /api/workspaces/docs-tour/sources/src_qnr4bf2dwuxtg3uz
 `204`, only when no config backs it up:
 
 ```json
-{"type": "about:blank", "title": "Conflict", "status": 409, "detail": "Configs back up this source (1): delete them or connect them to another source first.", "instance": "/api/workspaces/docs-tour/sources/src_qnr4bf2dwuxtg3uz"}
+{"type": "about:blank", "title": "Conflict", "status": 409, "detail": "Configs back up this source (1): delete them or connect them to another source first.", "instance": "/api/workspaces/docs-tour/sources/src_qnr4bf2dwuxtg3uz", "code": "sources.inUse"}
 ```
 
 ### Reorder sources
@@ -591,7 +607,7 @@ Answers the destination (here with `"folders": ["daily", "weekly", "monthly"]`, 
 it, `folders` included, except the secret key: without one, the saved one stays. Removing a folder a config writes to is refused:
 
 ```json
-{"type": "about:blank", "title": "Conflict", "status": 409, "detail": "The config \"Shop daily\" writes to \"daily\": move it before removing that folder.", "instance": "/api/workspaces/docs-tour/destinations/dst_6zzbgd4gbnfidygl"}
+{"type": "about:blank", "title": "Conflict", "status": 409, "detail": "The config \"Shop daily\" writes to \"daily\": move it before removing that folder.", "instance": "/api/workspaces/docs-tour/destinations/dst_6zzbgd4gbnfidygl", "code": "destinations.folderInUse"}
 ```
 
 ### Test a saved destination

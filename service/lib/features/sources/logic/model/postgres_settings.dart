@@ -92,11 +92,10 @@ class PostgresSettings implements SourceSettings {
 
   @override
   ConstraintValidatorContext validate() => ConstraintValidatorContext()
-    ..field(
-      connectionUrlKey,
-      connectionUrl,
-      sensitive: true,
-    ).custom((_) => invalidUrl ? intl.errors.validations.postgresUrl : null)
+    ..field(connectionUrlKey, connectionUrl, sensitive: true).custom(
+      (_) => invalidUrl ? intl.errors.validations.postgresUrl : null,
+      code: 'validations.postgresUrl',
+    )
     ..field('host', host?.trim()).notNull().size(min: 1, max: 255)
     ..field('port', port).min(1).max(65535)
     ..field('database', database?.trim()).notNull().size(min: 1, max: 63)

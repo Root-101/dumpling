@@ -68,7 +68,10 @@ class ConfigController {
     final only = ApiKeyPrincipal.configsOf(request);
     final id = request.pathParams['id']!;
     if (only != null && !only.contains(id)) {
-      throw NotFoundException(detail: intl.errors.configs.notFound(id: id));
+      throw AppException(
+        ErrorCode.configsNotFound,
+        intl.errors.configs.notFound(id: id),
+      );
     }
   }
 }

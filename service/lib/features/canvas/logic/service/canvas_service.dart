@@ -84,7 +84,10 @@ class CanvasService {
           } else {
             context
                 .field('$name[$i].id', node.id)
-                .custom((_) => intl.errors.validations.unknownNode);
+                .custom(
+                  (_) => intl.errors.validations.unknownNode,
+                  code: 'validations.unknownNode',
+                );
           }
         }
       }
@@ -116,11 +119,13 @@ class CanvasService {
             (id) => sourceIds.contains(id)
                 ? null
                 : intl.errors.validations.unknownSource,
+            code: 'validations.unknownSource',
           )
           ..field('configs[$i].destination_id', config.destinationId).custom(
             (_) => destinationFolders == null
                 ? intl.errors.validations.unknownDestination
                 : null,
+            code: 'validations.unknownDestination',
           );
         if (destinationFolders != null) {
           context

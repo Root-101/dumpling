@@ -22,8 +22,9 @@ class WorkspaceService {
   Future<WorkspaceModel> get(String slug) async {
     final row = await repo.get(slug);
     if (row == null) {
-      throw NotFoundException(
-        detail: intl.errors.workspaces.notFound(slug: slug),
+      throw AppException(
+        ErrorCode.workspacesNotFound,
+        intl.errors.workspaces.notFound(slug: slug),
       );
     }
     return WorkspaceModel.fromRow(row);

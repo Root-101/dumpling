@@ -29,11 +29,13 @@ class ApiKeyRequest implements Validatable {
           (list) => list!.every(Permissions.grantable.contains)
               ? null
               : intl.errors.validations.permission,
+          code: 'validations.permission',
         )
     ..field('config_ids', configIds).custom(
       (list) => (list ?? const []).every((id) => id is String)
           ? null
           : intl.errors.validations.unknownConfig,
+      code: 'validations.unknownConfig',
     )
     ..field('config_ids', configIds).custom(
       (list) =>
@@ -41,6 +43,7 @@ class ApiKeyRequest implements Validatable {
               (permissions ?? const []).any(Permissions.limitable.contains)
           ? null
           : intl.errors.validations.limitWithout,
+      code: 'validations.limitWithout',
     )
     ..field('permissions', permissions).custom(
       (list) =>
@@ -48,6 +51,7 @@ class ApiKeyRequest implements Validatable {
               !(list ?? const []).any(Permissions.notLimitable.contains)
           ? null
           : intl.errors.validations.notLimitable,
+      code: 'validations.notLimitable',
     );
 
   String get trimmedName => name!.trim();
@@ -83,5 +87,6 @@ class RunNowRequest implements Validatable {
                   (value.length <= maxLabelLength && _label.hasMatch(value))
               ? null
               : intl.errors.validations.label(max: maxLabelLength),
+          code: 'validations.label',
         );
 }

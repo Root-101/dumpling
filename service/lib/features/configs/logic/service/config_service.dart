@@ -50,7 +50,10 @@ class ConfigService {
     Set<String>? only,
   }) async {
     if (only != null && !only.contains(id)) {
-      throw NotFoundException(detail: intl.errors.configs.notFound(id: id));
+      throw AppException(
+        ErrorCode.configsNotFound,
+        intl.errors.configs.notFound(id: id),
+      );
     }
     final row = await _row(workspace, id);
     final last = await runs.getAll(workspace, configId: id, limit: 1);
@@ -121,11 +124,13 @@ class ConfigService {
     final context = ConstraintValidatorContext()
       ..field('source_id', request.sourceId).custom(
         (_) => source == null ? intl.errors.validations.unknownSource : null,
+        code: 'validations.unknownSource',
       )
       ..field('destination_id', request.destinationId).custom(
         (_) => destination == null
             ? intl.errors.validations.unknownDestination
             : null,
+        code: 'validations.unknownDestination',
       );
     if (destination != null) {
       // With folders, one of them; without, the root
@@ -147,7 +152,10 @@ class ConfigService {
     await workspaces.get(workspace);
     final row = await repo.get(workspace, id);
     if (row == null) {
-      throw NotFoundException(detail: intl.errors.configs.notFound(id: id));
+      throw AppException(
+        ErrorCode.configsNotFound,
+        intl.errors.configs.notFound(id: id),
+      );
     }
     return row;
   }

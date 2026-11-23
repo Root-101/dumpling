@@ -97,6 +97,7 @@ class CanvasRequest implements Validatable {
           ..merge(node.request.validate(), prefix: '$name[$i]')
           ..field('$name[$i].id', node.id).custom(
             (id) => ids.add(id) ? null : intl.errors.validations.repeatedNode,
+            code: 'validations.repeatedNode',
           )
           ..field('$name[$i].position', node.position).custom(
             (p) => p == null || p.inRange
@@ -104,6 +105,7 @@ class CanvasRequest implements Validatable {
                 : intl.errors.validations.canvasPosition(
                     max: CanvasPosition.maxCoordinate,
                   ),
+            code: 'validations.canvasPosition',
           );
       }
     }

@@ -230,11 +230,13 @@ void main() {
         headers: server.auth(),
       );
       expect(source.statusCode, 409);
+      expect(jsonDecode(source.body)['code'], 'sources.inUse');
       final destination = await http.delete(
         server.url('/api/workspaces/production/destinations/$foldersId'),
         headers: server.auth(),
       );
       expect(destination.statusCode, 409);
+      expect(jsonDecode(destination.body)['code'], 'destinations.inUse');
     });
 
     test('Should not remove a folder or the root in use (409)', () async {
@@ -242,6 +244,7 @@ void main() {
       // `orders` has a config
       final removed = await put('$path/$foldersId', destination(['users']));
       expect(removed.statusCode, 409);
+      expect(jsonDecode(removed.body)['code'], 'destinations.folderInUse');
       expect(jsonDecode(removed.body)['detail'], contains('"orders"'));
       // The root has a config: it can't get folders
       final rooted = await put('$path/$rootId', destination(['new']));

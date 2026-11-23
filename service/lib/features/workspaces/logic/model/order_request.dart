@@ -21,10 +21,10 @@ class OrderRequest implements Validatable {
     final valid =
         ids!.length == expected.length && ids!.toSet().containsAll(expected);
     (ConstraintValidatorContext()
-          ..field(
-            'ids',
-            ids,
-          ).custom((_) => valid ? null : intl.errors.validations.order))
+          ..field('ids', ids).custom(
+            (_) => valid ? null : intl.errors.validations.order,
+            code: 'validations.order',
+          ))
         .throwOnFailure();
     return ids!.cast<String>();
   }

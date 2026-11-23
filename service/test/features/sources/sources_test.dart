@@ -254,6 +254,8 @@ void main() {
         headers: server.auth(),
       );
       expect(response.statusCode, 404);
+      // clients decide on the code, never on the text
+      expect(jsonDecode(response.body)['code'], 'sources.notFound');
     });
 
     test('Should keep the order given by hand, new ones last', () async {

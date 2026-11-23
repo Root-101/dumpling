@@ -35,9 +35,10 @@ class ApiKeyFilter extends Filter {
     final client = clientIdOf(request);
     final locked = rateLimiter.lockedFor(client);
     if (locked != null) {
-      throw TooManyRequestsException(
-        detail: intl.errors.auth.tooManyLoginAttempts,
-        retryAfter: (locked.inMilliseconds / 1000).ceil(),
+      throw AppException(
+        ErrorCode.authTooManyLoginAttempts,
+        intl.errors.auth.tooManyLoginAttempts,
+        headers: {'Retry-After': '${(locked.inMilliseconds / 1000).ceil()}'},
       );
     }
     final (id, secret) = credentials;

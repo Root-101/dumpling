@@ -126,7 +126,10 @@ class ApiKeyService {
     await workspaces.get(workspace);
     final row = await repo.get(workspace, id);
     if (row == null) {
-      throw NotFoundException(detail: intl.errors.apiKeys.notFound(id: id));
+      throw AppException(
+        ErrorCode.apiKeysNotFound,
+        intl.errors.apiKeys.notFound(id: id),
+      );
     }
     return row;
   }
@@ -145,6 +148,7 @@ class ApiKeyService {
             (_) => saved.containsAll(ids)
                 ? null
                 : intl.errors.validations.unknownConfig,
+            code: 'validations.unknownConfig',
           ))
         .throwOnFailure();
     return ids;

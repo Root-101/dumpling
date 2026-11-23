@@ -94,11 +94,13 @@ class ImportRequest implements Validatable {
       ..field('format', format).custom(
         (f) =>
             f == TransferFile.format ? null : intl.errors.transfer.notAnExport,
+        code: 'transfer.notAnExport',
       )
       ..field('version', version).custom(
         (v) => v == TransferFile.version
             ? null
             : intl.errors.transfer.version(version: TransferFile.version),
+        code: 'transfer.version',
       )
       ..field('workspaces', workspaces).size(min: 1);
     for (final (i, w) in workspaces.indexed) {
