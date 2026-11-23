@@ -1,4 +1,3 @@
-import 'package:drift/drift.dart' show Value;
 import 'package:service/dumpling.dart';
 
 /// Export and import of workspaces ([TransferFile]): how the data crosses a
@@ -75,11 +74,25 @@ class TransferService {
         final saved = await canvas.save(workspace.slug, canvasRequest);
         for (final run in w.runs) {
           await runs.insert(
-            run.copyWith(
-              id: Value(Secrets.newId('run_')),
-              workspaceSlug: Value(workspace.slug),
-              configId: Value(saved.ids[_newId(run.configId.value)]),
-            ),
+            id: Secrets.newId('run_'),
+            workspace: workspace.slug,
+            configId: saved.ids[_newId(run.configId)],
+            configName: run.configName,
+            sourceName: run.sourceName,
+            sourceType: run.sourceType,
+            destinationName: run.destinationName,
+            destinationType: run.destinationType,
+            trigger: run.trigger,
+            status: run.status,
+            label: run.label,
+            keyName: run.keyName,
+            location: run.location,
+            sizeBytes: run.sizeBytes,
+            error: run.error,
+            log: run.log,
+            startedAt: run.startedAt,
+            finishedAt: run.finishedAt,
+            durationMs: run.durationMs,
           );
         }
       }

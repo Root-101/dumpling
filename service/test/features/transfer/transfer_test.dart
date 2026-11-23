@@ -3,7 +3,6 @@ library;
 
 import 'dart:convert';
 
-import 'package:drift/drift.dart' show Value;
 import 'package:http/http.dart' as http;
 import 'package:service/dumpling.dart';
 import 'package:test/test.dart';
@@ -96,27 +95,24 @@ void main() {
     configId = (jsonDecode(response.body)['ids'] as Map)['new_c'];
 
     // A run of the last month and one older, which stays behind
-    final runs = RunTableRepo(di.find());
-    RunTableCompanion run(String id, DateTime startedAt) =>
-        RunTableCompanion.insert(
-          id: id,
-          workspaceSlug: 'production',
-          configId: Value(configId),
-          configName: 'Orders nightly',
-          sourceName: 'orders-db',
-          sourceType: SourceType.postgres,
-          destinationName: 'bucket',
-          destinationType: DestinationType.s3,
-          trigger: RunTrigger.manual,
-          status: RunStatus.success,
-          location: const Value('backups/orders/x.dump.gz'),
-          startedAt: startedAt,
-          finishedAt: Value(startedAt.add(const Duration(seconds: 3))),
-        );
-    await runs.insert(run('run_recent', DateTime.now()));
-    await runs.insert(
-      run('run_old', DateTime.now().subtract(const Duration(days: 40))),
+    final RunTableRepo runs = di.find();
+    Future<void> run(String id, DateTime startedAt) => runs.insert(
+      id: id,
+      workspace: 'production',
+      configId: configId,
+      configName: 'Orders nightly',
+      sourceName: 'orders-db',
+      sourceType: SourceType.postgres,
+      destinationName: 'bucket',
+      destinationType: DestinationType.s3,
+      trigger: RunTrigger.manual,
+      status: RunStatus.success,
+      location: 'backups/orders/x.dump.gz',
+      startedAt: startedAt,
+      finishedAt: startedAt.add(const Duration(seconds: 3)),
     );
+    await run('run_recent', DateTime.now());
+    await run('run_old', DateTime.now().subtract(const Duration(days: 40)));
   });
   tearDownAll(server.stop);
 

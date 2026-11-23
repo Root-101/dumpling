@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:drift/drift.dart' show Value;
 import 'package:service/dumpling.dart';
 
 /// A step of a run that can't go on (a connection that fails, a server newer
@@ -154,23 +153,14 @@ class BackupEngine {
     final config = await configs.byId(configId);
     final now = utcNow();
     if (config == null) {
-      await runs.update(
+      await runs.failBeforeStart(
         queued.id,
-        RunTableCompanion(
-          status: const Value(RunStatus.failed),
-          error: const Value('The config was deleted before the run started'),
-          finishedAt: Value(now),
-        ),
+        'The config was deleted before the run started',
+        now,
       );
       return _next(configId);
     }
-    await runs.update(
-      queued.id,
-      RunTableCompanion(
-        status: const Value(RunStatus.running),
-        startedAt: Value(now),
-      ),
-    );
+    await runs.start(queued.id, now);
     logger.info(
       'Queued run started',
       fields: {'config': configId, 'run': queued.id},
@@ -215,22 +205,20 @@ class BackupEngine {
     ))!.destination;
     final id = Secrets.newId('run_');
     await runs.insert(
-      RunTableCompanion.insert(
-        id: id,
-        workspaceSlug: config.workspaceSlug,
-        configId: Value(config.id),
-        configName: config.name,
-        sourceName: source.name,
-        sourceType: source.type,
-        destinationName: destination.name,
-        destinationType: destination.type,
-        trigger: trigger,
-        status: status,
-        label: Value(label),
-        keyId: Value(key?.id),
-        keyName: Value(key?.name),
-        startedAt: utcNow(),
-      ),
+      id: id,
+      workspace: config.workspaceSlug,
+      configId: config.id,
+      configName: config.name,
+      sourceName: source.name,
+      sourceType: source.type,
+      destinationName: destination.name,
+      destinationType: destination.type,
+      trigger: trigger,
+      status: status,
+      label: label,
+      keyId: key?.id,
+      keyName: key?.name,
+      startedAt: utcNow(),
     );
     logger.info(
       status == RunStatus.queued ? 'Run queued' : 'Run started',
@@ -308,7 +296,7 @@ class BackupEngine {
         config.folder,
         key,
       );
-      await runs.update(run.id, RunTableCompanion(location: Value(location)));
+      await runs.setLocation(run.id, location);
       write(
         'Dumping into ${destination.name}: $location'
         '${gzipped ? ' (gzip)' : ''}',
@@ -323,31 +311,23 @@ class BackupEngine {
         key,
         data,
         // The progress the console shows while it runs
-        onProgress: (bytes) => unawaited(
-          runs.update(run.id, RunTableCompanion(sizeBytes: Value(bytes))),
-        ),
+        onProgress: (bytes) => unawaited(runs.setSize(run.id, bytes)),
         onPending: (pending) => unawaited(
-          runs.update(
+          runs.setPendingUpload(
             run.id,
-            RunTableCompanion(
-              pendingUpload: Value(
-                jsonEncode({'destination': destination.id, ...pending}),
-              ),
-            ),
+            jsonEncode({'destination': destination.id, ...pending}),
           ),
         ),
       );
       write('Uploaded $size bytes in ${watch.elapsed.inSeconds} s');
 
-      await runs.update(
+      await runs.finish(
         run.id,
-        RunTableCompanion(
-          status: const Value(RunStatus.success),
-          sizeBytes: Value(size),
-          log: Value(logJson()),
-          finishedAt: Value(utcNow()),
-          durationMs: Value(watch.elapsedMilliseconds),
-        ),
+        status: RunStatus.success,
+        sizeBytes: size,
+        log: logJson(),
+        finishedAt: utcNow(),
+        durationMs: watch.elapsedMilliseconds,
       );
       logger.info('Run succeeded', fields: {'run': run.id, 'bytes': size});
     } catch (e, stackTrace) {
@@ -360,15 +340,13 @@ class BackupEngine {
       // Kept in every run that fails, and its text may come from a server
       final error = clipText('$e');
       write('Failed: $error');
-      await runs.update(
+      await runs.finish(
         run.id,
-        RunTableCompanion(
-          status: const Value(RunStatus.failed),
-          error: Value(error),
-          log: Value(logJson()),
-          finishedAt: Value(utcNow()),
-          durationMs: Value(watch.elapsedMilliseconds),
-        ),
+        status: RunStatus.failed,
+        error: error,
+        log: logJson(),
+        finishedAt: utcNow(),
+        durationMs: watch.elapsedMilliseconds,
       );
       logger.warning('Run failed', fields: {'run': run.id, 'error': error});
     } finally {
