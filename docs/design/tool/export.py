@@ -18,56 +18,57 @@ import threading
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.parse import quote
 
 DESIGN = Path(__file__).resolve().parent.parent
 CHROME = r'C:\Program Files\Google\Chrome\Application\chrome.exe' if sys.platform == 'win32' \
     else 'google-chrome'
 
-# (section, file name, artboard, caption): the screens worth keeping, in reading order. A fifth
-# item lists (text, replacement) pairs that put the artboard in another state for that shot
+# (section, file name, artboard, caption, tweaks): the screens worth keeping, in reading order. The
+# tweaks (a query string, read by support.js) put the artboard in the state of that shot
 SCREENS = [
     ('Access', 'login', 'Login', 'Sign in'),
-    ('Access', 'login-error', 'Login-Error', 'Sign in: wrong password'),
+    ('Access', 'login-error', 'Login', 'Sign in: wrong password', 'state=Wrong password'),
     ('Workspaces', 'workspaces', 'Workspaces-List', 'Workspaces'),
     ('Workspaces', 'new-workspace', 'Workspaces', 'New workspace'),
     ('Workspaces', 'workspace-settings', 'Settings', 'Workspace settings'),
-    ('Workspaces', 'workspace-delete', 'Settings-Delete', 'Delete a workspace, confirmed with its name'),
-    ('Workspaces', 'import', 'Workspaces-Import-Drop', 'Import workspaces: drop or choose an exported file'),
-    ('Workspaces', 'import-file', 'Workspaces-Import', 'Import workspaces: what the file adds, a taken name as Name (2)'),
+    ('Workspaces', 'workspace-delete', 'Settings', 'Delete a workspace, confirmed with its name', 'state=Delete · typed'),
+    ('Workspaces', 'import', 'Workspaces-Import', 'Import workspaces: drop or choose an exported file', 'step=Drop'),
+    ('Workspaces', 'import-file', 'Workspaces-Import', 'Import workspaces: what the file adds, a taken name as Name (2)',
+     'step=File chosen'),
     ('Pipeline editor', 'canvas', 'Proposal-A', 'The canvas: source, config and destination'),
     ('Pipeline editor', 'config', 'Proposal-A-Config', 'A config in its dialog in steps'),
-    ('Pipeline editor', 'getting-started', 'Getting-Started', 'An empty workspace and its guide'),
+    ('Pipeline editor', 'getting-started', 'Proposal-A', 'An empty workspace and its guide', 'state=Empty'),
     ('Backups', 'backups', 'Backups', 'Backups: health and every config'),
-    ('Backups', 'backups-filters', 'Backups-Filters', 'Backups: filters'),
-    ('Backups', 'backups-sort', 'Backups-Sort', 'Backups: sort'),
-    ('Backups', 'backups-run', 'Backups-Run', 'The recent runs of a backup'),
+    ('Backups', 'backups-filters', 'Backups', 'Backups: filters', 'panel=Filters'),
+    ('Backups', 'backups-sort', 'Backups', 'Backups: sort', 'panel=Sort'),
+    ('Backups', 'backups-run', 'Backups', 'The recent runs of a backup', 'panel=Recent runs'),
     ('Sources', 'sources', 'Sources-List', 'Sources, list view'),
-    ('Sources', 'sources-grid', 'Sources-Grid', 'Sources, grid view'),
-    ('Sources', 'new-source', 'Sources', 'New source: the connection step'),
-    ('Sources', 'source-menu', 'Sources-Menu', 'The options of a source'),
-    ('Sources', 'source-delete', 'Sources-Confirm', 'Delete a source'),
+    ('Sources', 'sources-grid', 'Sources-List', 'Sources, grid view', 'view=Grid'),
+    ('Sources', 'new-source', 'Sources', 'New source: the connection step', 'step=Connection'),
+    ('Sources', 'source-menu', 'Sources-List', 'The options of a source', 'dialog=Row menu'),
+    ('Sources', 'source-delete', 'Sources-List', 'Delete a source', 'dialog=Delete'),
     ('Sources', 'source-detail', 'Source-Detail', 'Source detail'),
     ('Destinations', 'destinations', 'Destinations-List', 'Destinations, list view with the folders of a bucket'),
-    ('Destinations', 'destinations-grid', 'Destinations-Grid', 'Destinations, grid view'),
-    ('Destinations', 'new-destination', 'Destinations', 'New destination: the connection step'),
-    ('Destinations', 'destination-menu', 'Destinations-Menu', 'The options of a destination'),
-    ('Destinations', 'destination-delete', 'Destinations-Confirm', 'Delete a destination'),
+    ('Destinations', 'destinations-grid', 'Destinations-List', 'Destinations, grid view', 'view=Grid'),
+    ('Destinations', 'new-destination', 'Destinations', 'New destination: the connection step', 'step=Connection'),
+    ('Destinations', 'destination-menu', 'Destinations-List', 'The options of a destination', 'dialog=Row menu'),
+    ('Destinations', 'destination-delete', 'Destinations-List', 'Delete a destination', 'dialog=Delete'),
     ('Destinations', 'destination-detail', 'Destination-Detail', 'Destination detail'),
     ('Run log', 'run-log', 'Events', 'Run log'),
-    ('Run log', 'run-log-filters', 'Events-Filters', 'Run log: filters'),
-    ('Run log', 'run-failed', 'Events-Run', 'A failed run: the failed step, the error and the log'),
-    ('Run log', 'run-running', 'Events-Run-Running', 'A run in progress'),
-    ('Run log', 'run-succeeded', 'Events-Run-Success', 'A run that succeeded: where the file went'),
+    ('Run log', 'run-log-filters', 'Events', 'Run log: filters', 'panel=Filters'),
+    ('Run log', 'run-failed', 'Events-Run', 'A failed run: the failed step, the error and the log', 'run=Failed'),
+    ('Run log', 'run-running', 'Events-Run', 'A run in progress', 'run=Running'),
+    ('Run log', 'run-succeeded', 'Events-Run', 'A run that succeeded: where the file went', 'run=Succeeded'),
     ('API keys', 'api-keys', 'ApiKeys', 'API keys: what each one may do, on which configs, its last use'),
-    ('API keys', 'api-keys-filters', 'ApiKeys-Filters', 'API keys: filters by access, config and permission'),
+    ('API keys', 'api-keys-filters', 'ApiKeys', 'API keys: filters by access, config and permission', 'panel=Filters'),
     ('API keys', 'new-api-key', 'ApiKeys-New', 'New API key: a template, and the permissions one by one'),
     ('API keys', 'api-key-created', 'ApiKeys-Created', 'A new key, shown once, and how to use it'),
-    ('Errors', 'not-found', 'Not-Found', 'Not found'),
-    ('Errors', 'connection-lost', 'Offline', 'Connection lost'),
-    ('Errors', 'session-expired', 'Session-Expired', 'Session expired'),
-    ('Navigation', 'rail-expanded', 'Proposal-A', 'The rail, expanded from its notch',
-     [('class="rail-t"', 'class="rail-t" checked')]),
-    ('Loading', 'loading', 'Backups-Loading', 'A screen while it loads: a skeleton of itself'),
+    ('Errors', 'not-found', 'Errors', 'Not found', 'error=Not found'),
+    ('Errors', 'connection-lost', 'Backups', 'Connection lost', 'state=Offline'),
+    ('Errors', 'session-expired', 'Errors', 'Session expired', 'error=Session expired'),
+    ('Navigation', 'rail-expanded', 'Proposal-A', 'The rail, expanded', 'menu=Expanded'),
+    ('Loading', 'loading', 'Backups', 'A screen while it loads: a skeleton of itself', 'state=Loading'),
     ('Loading', 'splash', 'Splash', 'The console while it starts'),
 ]
 
@@ -127,15 +128,9 @@ def main(source: Path) -> None:
 
     screens = fresh(DESIGN / 'screens')
     pages = []
-    for i, (section, name, board, caption, *subs) in enumerate(SCREENS, 1):
+    for i, (section, name, board, caption, *tweaks) in enumerate(SCREENS, 1):
         frame = canvas['boards'][f'{board}.dc.html']
-        page = f'{board}.dc.html'
-        if subs:
-            text = (work / page).read_text(encoding='utf-8')
-            for a, b in subs[0]:
-                text = text.replace(a, b)
-            page = f'{name}.dc.html'
-            (work / page).write_text(text, encoding='utf-8')
+        page = f'{board}.dc.html' + (f'?{quote(tweaks[0], safe="=&")}' if tweaks else '')
         out = screens / f'{i:02d}-{name}.png'
         shot(port, page, frame['w'], frame['h'], out)
         pages.append(f'<div class="p"><div><div class="s">{section}</div><h1>{caption}</h1></div>'
