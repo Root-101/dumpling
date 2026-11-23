@@ -14,7 +14,7 @@ ARG PG_VERSION=18
 FROM --platform=$BUILDPLATFORM debian:trixie-slim AS console
 
 # The Flutter of the project (console/.fvmrc), from its official tag
-ARG FLUTTER_VERSION=3.47.1
+ARG FLUTTER_VERSION=3.50.1
 RUN apt-get update \
  && apt-get install -y --no-install-recommends ca-certificates curl git unzip xz-utils \
  && rm -rf /var/lib/apt/lists/* \

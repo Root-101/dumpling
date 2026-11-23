@@ -56,8 +56,8 @@ Prefix everything with `fvm` (versions pinned in `.fvmrc`; the `dart` on the PAT
 | Runs, drivers, image     | `service/` | `tool/e2e/run.sh` (Docker: image, PostgreSQL, S3)    |
 | Regenerate the design    | root       | `python docs/design/tool/export.py <canvas folder>`  |
 
-- The one known analyzer info (`MaterialUiCompatibilityBridge` in `console/lib/main.dart`) is on
-  purpose.
+- The known analyzer infos (`MaterialUiCompatibilityBridge` in `console/lib/main.dart`, and the
+  `flutter/material.dart` import it needs) are on purpose.
 - `dart format` on a folder reformats unrelated files: format only the files you touched.
 - Each service test file that starts a server uses its own port.
 

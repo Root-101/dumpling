@@ -74,6 +74,8 @@ void main() {
     when(() => canvas.load(any())).thenAnswer((_) async {});
     when(() => backups.load(any())).thenAnswer((_) async {});
     when(() => backups.loadRecent(any())).thenAnswer((_) async {});
+    // its countdown reloads the list while the page is still on its way out
+    when(() => backups.reload()).thenAnswer((_) async {});
     app.di.put<AuthCubit>(auth);
     app.di.put<LanguageCubit>(language);
     app.di.put<WorkspaceCubit>(workspaces);
@@ -89,7 +91,7 @@ void main() {
 
   /// Not `pumpAndSettle`: the flowing wires never settle
   Future<void> settle(WidgetTester tester) async {
-    for (var i = 0; i < 6; i++) {
+    for (var i = 0; i < 10; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }
   }

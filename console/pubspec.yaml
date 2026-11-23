@@ -5,8 +5,8 @@ publish_to: 'none'
 version: 0.1.7
 
 environment:
-  flutter: ^3.47.0
-  sdk: ^3.13.0
+  flutter: ^3.50.0
+  sdk: ^3.14.0
 
 dependencies:
   flutter:
@@ -17,23 +17,23 @@ dependencies:
   get: 4.7.3
 
   #routing
-  go_router: 17.5.0
+  go_router: 18.1.4
 
   #rest client
-  dio: 5.11.0
+  dio: 5.11.1
 
   #view
-  flutter_svg: 2.3.0    #to show icons in svg format
-  top_snackbar_flutter: 3.4.0     #snackbars
-  flutter_secure_storage: 11.0.0       #the session and the language survive a reload
-  gap: 3.0.1
-  material_ui: 1.0.1
+  flutter_svg: 2.5.0    #to show icons in svg format
+  top_snackbar_flutter: 3.5.0     #snackbars
+  flutter_secure_storage: 11.2.0       #the session and the language survive a reload
+  gap: 3.1.0
+  material_ui: 1.11.1
 
   #utils
   intl: 0.20.3
   #texts generated from lib/l10n/*.i18n.yaml (`fvm dart run slang`)
   slang: 4.19.2
-  web: 1.1.1
+  web: 1.1.2
 
 dev_dependencies:
   flutter_test:

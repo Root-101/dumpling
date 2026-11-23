@@ -185,7 +185,7 @@ void main() {
   /// The frames of a navigation or a dialog. Not `pumpAndSettle`: the cursor
   /// of a focused field blinks forever
   Future<void> settle(WidgetTester tester) async {
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 10; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }
   }
