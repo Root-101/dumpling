@@ -1,15 +1,19 @@
 import 'package:service/dumpling.dart';
 
-class LoginRequest {
-  final String username;
-  final String password;
+/// Body of the sign-in.
+class LoginRequest implements Validatable {
+  final String? username;
+  final String? password;
 
-  LoginRequest({required this.username, required this.password});
+  LoginRequest({this.username, this.password});
 
-  factory LoginRequest.fromJson(Map<String, dynamic> json) {
-    return LoginRequest(
-      username: json.field<String>('username'),
-      password: json.field<String>('password'),
-    );
-  }
+  factory LoginRequest.fromJson(Map<String, dynamic> json) => LoginRequest(
+    username: json.field<String?>('username'),
+    password: json.field<String?>('password'),
+  );
+
+  @override
+  ConstraintValidatorContext validate() => ConstraintValidatorContext()
+    ..field('username', username).notNull()
+    ..field('password', password).notNull();
 }

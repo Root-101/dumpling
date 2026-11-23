@@ -98,7 +98,8 @@ class ApiKeyService {
     String secret,
   ) async {
     final row = await repo.byId(id);
-    if (row == null || !_same(ApiKeyToken.hash(secret), row.secretHash)) {
+    if (row == null ||
+        !Secrets.sameText(ApiKeyToken.hash(secret), row.secretHash)) {
       return null;
     }
     final now = utcNow();
@@ -155,14 +156,5 @@ class ApiKeyService {
           ))
         .throwOnFailure();
     return ids;
-  }
-
-  static bool _same(String a, String b) {
-    if (a.length != b.length) return false;
-    var diff = 0;
-    for (var i = 0; i < a.length; i++) {
-      diff |= a.codeUnitAt(i) ^ b.codeUnitAt(i);
-    }
-    return diff == 0;
   }
 }

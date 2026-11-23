@@ -4,7 +4,6 @@ errors:
   auth:
     invalidCredentials: 'Usuario o contraseña incorrectos'
     tooManyLoginAttempts: 'Demasiados intentos de inicio de sesión fallidos'
-    invalidLoginRequest: 'Petición de inicio de sesión no válida'
   workspaces:
     notFound: 'El workspace "{slug}" no existe.'
   sources:

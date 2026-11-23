@@ -94,9 +94,6 @@ class ServiceMessages$errors$auth$en {
 
   /// en: 'Too many failed sign-in attempts'
   String get tooManyLoginAttempts => 'Too many failed sign-in attempts';
-
-  /// en: 'Invalid sign-in request'
-  String get invalidLoginRequest => 'Invalid sign-in request';
 }
 
 // Path: errors.workspaces
@@ -315,7 +312,6 @@ extension on ServiceMessages {
     return switch (path) {
       'errors.auth.invalidCredentials' => 'Wrong username or password',
       'errors.auth.tooManyLoginAttempts' => 'Too many failed sign-in attempts',
-      'errors.auth.invalidLoginRequest' => 'Invalid sign-in request',
       'errors.workspaces.notFound' => ({
         required String slug,
       }) => 'The workspace "${slug}" does not exist.',

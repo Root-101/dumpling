@@ -6,7 +6,6 @@ errors:
   auth:
     invalidCredentials: 'Wrong username or password'
     tooManyLoginAttempts: 'Too many failed sign-in attempts'
-    invalidLoginRequest: 'Invalid sign-in request'
   workspaces:
     notFound: 'The workspace "{slug: String}" does not exist.'
   sources:

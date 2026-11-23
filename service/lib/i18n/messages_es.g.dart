@@ -107,8 +107,6 @@ class ServiceMessages$errors$auth$es implements ServiceMessages$errors$auth$en {
   @override
   String get tooManyLoginAttempts =>
       'Demasiados intentos de inicio de sesión fallidos';
-  @override
-  String get invalidLoginRequest => 'Petición de inicio de sesión no válida';
 }
 
 // Path: errors.workspaces
@@ -299,8 +297,6 @@ extension on ServiceMessagesEs {
       'errors.auth.invalidCredentials' => 'Usuario o contraseña incorrectos',
       'errors.auth.tooManyLoginAttempts' =>
         'Demasiados intentos de inicio de sesión fallidos',
-      'errors.auth.invalidLoginRequest' =>
-        'Petición de inicio de sesión no válida',
       'errors.workspaces.notFound' => ({
         required Object slug,
       }) => 'El workspace "${slug}" no existe.',

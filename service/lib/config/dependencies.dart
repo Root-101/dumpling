@@ -14,6 +14,7 @@ void registerDependencies() {
     ..putLazy<ApiKeyTableRepo>(() => ApiKeyTableRepo(di.find()))
     ..putLazy<CanvasRepo>(() => CanvasRepo(di.find()))
     //--------------- Services ---------------\
+    ..putLazy<AuthService>(AuthService.new)
     ..putLazy<WorkspaceService>(WorkspaceService.new)
     ..putLazy<SourceService>(SourceService.new)
     ..putLazy<DestinationService>(DestinationService.new)

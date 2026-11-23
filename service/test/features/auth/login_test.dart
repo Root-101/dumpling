@@ -74,14 +74,16 @@ void main() {
       );
     });
 
-    test('Should reject a malformed body (400) naming the field', () async {
+    test('Should reject a missing field (422) naming it', () async {
       final missing = await login({'username': testUser});
-      expect(missing.statusCode, 400);
+      expect(missing.statusCode, 422);
       expect(
         missing.headers['content-type'],
         startsWith('application/problem+json'),
       );
-      expect(jsonDecode(missing.body)['detail'], r'$.password: missing');
+      final violation = jsonDecode(missing.body)['violations'][0];
+      expect(violation['fieldName'], 'password');
+      expect(violation['code'], 'notNull');
     });
 
     test('Should not reveal internal details on a malformed login', () async {
