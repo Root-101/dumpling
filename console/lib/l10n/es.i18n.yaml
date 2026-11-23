@@ -50,8 +50,6 @@ time:
 
 errors:
   requestCancelled: 'La petición al servidor fue cancelada'
-  connectionTimeout: 'Tiempo de conexión agotado con el servidor. Revisa tu conexión a internet'
-  noConnection: 'No se pudo conectar con el servidor. Revisa tu conexión a internet'
   receiveTimeout: 'Tiempo de espera agotado al recibir datos del servidor'
   sendTimeout: 'Tiempo de espera agotado al enviar datos al servidor'
   badCertificate: 'Certificado inválido'
@@ -99,6 +97,9 @@ login:
   button: 'Iniciar sesión'
   signingIn: 'Iniciando sesión…'
   failedHint: 'Revisa ambos e inténtalo de nuevo.'
+  retryIn(plural, param=minutes):
+    one: 'Vuelve a intentarlo en {minutes} minuto.'
+    other: 'Vuelve a intentarlo en {minutes} minutos.'
   envHint: 'El usuario y la contraseña se definen en el servidor con'
   envHintAnd: 'y'
   tagline: 'Respaldos'

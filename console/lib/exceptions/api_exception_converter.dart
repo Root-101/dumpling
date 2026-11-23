@@ -12,17 +12,17 @@ class ApiExceptionConverter {
       case DioExceptionType.connectionTimeout:
         return GlobalException(
           type: GlobalExceptionType.offline,
-          message: app.intl.errors.connectionTimeout,
+          message: _offline,
         );
       case DioExceptionType.transformTimeout:
         return GlobalException(
           type: GlobalExceptionType.offline,
-          message: app.intl.errors.noConnection,
+          message: _offline,
         );
       case DioExceptionType.unknown:
         return GlobalException(
           type: GlobalExceptionType.offline,
-          message: app.intl.errors.noConnection,
+          message: _offline,
         );
       case DioExceptionType.receiveTimeout:
         return GlobalException(
@@ -44,12 +44,16 @@ class ApiExceptionConverter {
         // with CORS headers, so they are bad responses)
         return GlobalException(
           type: GlobalExceptionType.offline,
-          message: app.intl.errors.noConnection,
+          message: _offline,
         );
       case DioExceptionType.badResponse:
         return _parseBadResponse(error);
     }
   }
+
+  /// Dumpling is self-hosted: what failed is the service, not the internet
+  static String get _offline =>
+      app.intl.errors.offline(url: Environment.serviceUrl);
 
   static GlobalException _parseBadResponse(DioException error) {
     if (error.response!.statusCode == 422) {
@@ -69,6 +73,16 @@ class ApiExceptionConverter {
         type: GlobalExceptionType.auth,
         message: _message(error.response!.data),
         data: error.response!.data,
+      );
+    } else if (error.response!.statusCode == 429) {
+      // The sign-in locked after too many failures: how long, from Retry-After
+      final seconds = int.tryParse(
+        error.response!.headers.value('retry-after') ?? '',
+      );
+      return GlobalException(
+        type: GlobalExceptionType.tooManyRequests,
+        message: _message(error.response!.data),
+        data: seconds == null ? null : Duration(seconds: seconds),
       );
     } else if (error.response!.statusCode == 404) {
       return GlobalException(

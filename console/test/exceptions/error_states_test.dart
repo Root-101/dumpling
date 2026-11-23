@@ -62,6 +62,46 @@ void main() {
     );
   });
 
+  test('offline says which service, not the internet', () {
+    final e = ExceptionConverter.parse(
+      DioException(
+        requestOptions: RequestOptions(path: '/api/auth/login'),
+        type: DioExceptionType.connectionError,
+      ),
+    );
+    expect(e.message, startsWith("Can't reach the Dumpling service at "));
+  });
+
+  test('a locked sign-in says how long it waits, from Retry-After', () {
+    final request = RequestOptions(path: '/api/auth/login');
+    final e = ExceptionConverter.parse(
+      DioException.badResponse(
+        statusCode: 429,
+        requestOptions: request,
+        response: Response(
+          requestOptions: request,
+          statusCode: 429,
+          data: {'detail': 'Too many failed sign-in attempts'},
+          headers: Headers.fromMap({
+            'retry-after': ['61'],
+          }),
+        ),
+      ),
+    );
+    expect(e.type, GlobalExceptionType.tooManyRequests);
+    expect(e.message, 'Too many failed sign-in attempts');
+    expect(loginErrorHint(e), 'Try again in 2 minutes.');
+    // without the header (or another origin that hides it), no hint
+    expect(
+      loginErrorHint(ExceptionConverter.parse(response(429, null))),
+      isNull,
+    );
+    expect(
+      loginErrorHint(ExceptionConverter.parse(response(401, null))),
+      'Check both and try again.',
+    );
+  });
+
   Future<void> pump(WidgetTester tester, Widget page) =>
       tester.pumpWidget(MaterialApp(navigatorKey: navigatorKey, home: page));
 

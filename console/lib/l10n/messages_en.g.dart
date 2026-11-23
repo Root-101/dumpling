@@ -240,14 +240,6 @@ class AppMessages$errors$en {
   /// en: 'Request to API server was cancelled'
   String get requestCancelled => 'Request to API server was cancelled';
 
-  /// en: 'Connection timeout with API server. Check your internet connection'
-  String get connectionTimeout =>
-      'Connection timeout with API server. Check your internet connection';
-
-  /// en: 'Connection to API server failed due to internet connection'
-  String get noConnection =>
-      'Connection to API server failed due to internet connection';
-
   /// en: 'Receive timeout in connection with API server'
   String get receiveTimeout => 'Receive timeout in connection with API server';
 
@@ -398,6 +390,14 @@ class AppMessages$login$en {
 
   /// en: 'Check both and try again.'
   String get failedHint => 'Check both and try again.';
+
+  /// en: '(one) {Try again in {minutes} minute.} (other) {Try again in {minutes} minutes.}'
+  String retryIn({required num minutes}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        minutes,
+        one: 'Try again in ${minutes} minute.',
+        other: 'Try again in ${minutes} minutes.',
+      );
 
   /// en: 'The username and password are set on the server with'
   String get envHint => 'The username and password are set on the server with';
@@ -2886,9 +2886,6 @@ extension on AppMessages {
           'time.utc' => ({required String time}) => '${time} UTC',
           'time.local' => ({required String time}) => '${time} local',
           'errors.requestCancelled' => 'Request to API server was cancelled',
-          'errors.connectionTimeout' => 'Connection timeout with API server. Check your internet connection',
-          'errors.noConnection' =>
-            'Connection to API server failed due to internet connection',
           'errors.receiveTimeout' =>
             'Receive timeout in connection with API server',
           'errors.sendTimeout' => 'Send timeout with API server',
@@ -2939,6 +2936,14 @@ extension on AppMessages {
           'login.button' => 'Sign in',
           'login.signingIn' => 'Signing in…',
           'login.failedHint' => 'Check both and try again.',
+          'login.retryIn' =>
+            ({required num minutes}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  minutes,
+                  one: 'Try again in ${minutes} minute.',
+                  other: 'Try again in ${minutes} minutes.',
+                ),
           'login.envHint' =>
             'The username and password are set on the server with',
           'login.envHintAnd' => 'and',
@@ -3577,11 +3582,11 @@ extension on AppMessages {
             'Nothing to test: connect a source to a destination first.',
           'canvas.run.button' => 'Run now',
           'canvas.run.help' => 'Runs this backup now, for real, as it is saved: the edits not saved yet are not used.',
+          'canvas.run.needsSave' =>
+            'Save the canvas first: a run uses the saved config.',
           _ => null,
         } ??
         switch (path) {
-          'canvas.run.needsSave' =>
-            'Save the canvas first: a run uses the saved config.',
           'canvas.run.done' => ({
             required String name,
             required String size,

@@ -214,9 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     18.gap(),
                     AppFormAlert(
                       title: state.exception.message,
-                      message: state.exception.type == GlobalExceptionType.auth
-                          ? app.intl.login.failedHint
-                          : null,
+                      message: loginErrorHint(state.exception),
                     ),
                   ],
                   18.gap(),
@@ -258,6 +256,18 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+/// Under the error of a sign-in: what to check, or how long a lock lasts
+String? loginErrorHint(GlobalException exception) => switch (exception.type) {
+  GlobalExceptionType.auth => app.intl.login.failedHint,
+  GlobalExceptionType.tooManyRequests => switch (exception.data) {
+    final Duration left => app.intl.login.retryIn(
+      minutes: (left.inSeconds / 60).ceil(),
+    ),
+    _ => null,
+  },
+  _ => null,
+};
 
 /// Where the user comes from: the names of the variables in monospace
 class _EnvHint extends StatelessWidget {

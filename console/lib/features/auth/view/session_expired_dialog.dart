@@ -151,10 +151,7 @@ class _SessionExpiredDialogState extends State<SessionExpiredDialog> {
                       16.gap(),
                       AppFormAlert(
                         title: state.exception.message,
-                        message:
-                            state.exception.type == GlobalExceptionType.auth
-                            ? t.failedHint
-                            : null,
+                        message: loginErrorHint(state.exception),
                       ),
                     ],
                     16.gap(),

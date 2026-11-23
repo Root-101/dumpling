@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- When the service can't be reached, the errors say *Can't reach the Dumpling service at …*
+  with its URL, not that the internet connection failed.
+- A sign-in locked after too many failures says *Try again in N minutes*, from the
+  `Retry-After` of the service.
+
 ## 0.1.7
 
 - The dialog of a disabled config says *Disabled* in *Output* and *Review*, not its frequency and

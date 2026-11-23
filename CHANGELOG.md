@@ -4,6 +4,12 @@ What changes in each version of Dumpling, from 0.1.0. The detail of each package
 changelogs of [`service/`](service/CHANGELOG.md) and [`console/`](console/CHANGELOG.md), which also
 have the release candidates before 0.1.0 one by one.
 
+## Unreleased
+
+- Console: when the service can't be reached, the errors say so with its URL (*Can't reach the
+  Dumpling service at …*) instead of blaming the internet connection.
+- Console: a sign-in locked after too many failures says how many minutes are left.
+
 ## 0.1.7
 
 - Console: the dialog of a disabled config says *Disabled* in its *Output* and *Review* steps

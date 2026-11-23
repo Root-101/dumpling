@@ -9,6 +9,9 @@ enum GlobalExceptionType {
 
   /// The service could not be reached
   offline,
+
+  /// A 429: the sign-in is locked for a while; `data`, the [Duration] left
+  tooManyRequests,
 }
 
 class GlobalException<T> implements Exception {

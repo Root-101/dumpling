@@ -217,12 +217,6 @@ class AppMessages$errors$es implements AppMessages$errors$en {
   @override
   String get requestCancelled => 'La petición al servidor fue cancelada';
   @override
-  String get connectionTimeout =>
-      'Tiempo de conexión agotado con el servidor. Revisa tu conexión a internet';
-  @override
-  String get noConnection =>
-      'No se pudo conectar con el servidor. Revisa tu conexión a internet';
-  @override
   String get receiveTimeout =>
       'Tiempo de espera agotado al recibir datos del servidor';
   @override
@@ -332,6 +326,13 @@ class AppMessages$login$es implements AppMessages$login$en {
   String get signingIn => 'Iniciando sesión…';
   @override
   String get failedHint => 'Revisa ambos e inténtalo de nuevo.';
+  @override
+  String retryIn({required num minutes}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(
+        minutes,
+        one: 'Vuelve a intentarlo en ${minutes} minuto.',
+        other: 'Vuelve a intentarlo en ${minutes} minutos.',
+      );
   @override
   String get envHint =>
       'El usuario y la contraseña se definen en el servidor con';
@@ -2211,8 +2212,6 @@ extension on AppMessagesEs {
           'time.utc' => ({required Object time}) => '${time} UTC',
           'time.local' => ({required Object time}) => '${time} local',
           'errors.requestCancelled' => 'La petición al servidor fue cancelada',
-          'errors.connectionTimeout' => 'Tiempo de conexión agotado con el servidor. Revisa tu conexión a internet',
-          'errors.noConnection' => 'No se pudo conectar con el servidor. Revisa tu conexión a internet',
           'errors.receiveTimeout' =>
             'Tiempo de espera agotado al recibir datos del servidor',
           'errors.sendTimeout' =>
@@ -2267,6 +2266,14 @@ extension on AppMessagesEs {
           'login.button' => 'Iniciar sesión',
           'login.signingIn' => 'Iniciando sesión…',
           'login.failedHint' => 'Revisa ambos e inténtalo de nuevo.',
+          'login.retryIn' =>
+            ({required num minutes}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('es'))(
+                  minutes,
+                  one: 'Vuelve a intentarlo en ${minutes} minuto.',
+                  other: 'Vuelve a intentarlo en ${minutes} minutos.',
+                ),
           'login.envHint' =>
             'El usuario y la contraseña se definen en el servidor con',
           'login.envHintAnd' => 'y',
@@ -2916,11 +2923,11 @@ extension on AppMessagesEs {
             'Nada que probar: primero conecta un origen a un destino.',
           'canvas.run.button' => 'Ejecutar ahora',
           'canvas.run.help' => 'Ejecuta este backup ahora, de verdad, tal como está guardado: los cambios sin guardar no se usan.',
+          'canvas.run.needsSave' =>
+            'Guarda el canvas primero: una ejecución usa la config guardada.',
           _ => null,
         } ??
         switch (path) {
-          'canvas.run.needsSave' =>
-            'Guarda el canvas primero: una ejecución usa la config guardada.',
           'canvas.run.done' => ({
             required String name,
             required String size,

@@ -50,8 +50,6 @@ time:
 
 errors:
   requestCancelled: 'Request to API server was cancelled'
-  connectionTimeout: 'Connection timeout with API server. Check your internet connection'
-  noConnection: 'Connection to API server failed due to internet connection'
   receiveTimeout: 'Receive timeout in connection with API server'
   sendTimeout: 'Send timeout with API server'
   badCertificate: 'Bad certificate'
@@ -99,6 +97,9 @@ login:
   button: 'Sign in'
   signingIn: 'Signing in…'
   failedHint: 'Check both and try again.'
+  retryIn(plural, param=minutes):
+    one: 'Try again in {minutes} minute.'
+    other: 'Try again in {minutes} minutes.'
   envHint: 'The username and password are set on the server with'
   envHintAnd: 'and'
   tagline: 'Backups made'
