@@ -3,18 +3,17 @@ library;
 
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
 import 'package:service/dumpling.dart';
 import 'package:test/test.dart';
 
-import '../../support/test_server.dart';
+import '../../support/test_app.dart';
 
 void main() {
-  final server = TestServer(port: 8187);
+  final server = TestApp();
   const canvas = '/api/workspaces/production/canvas';
 
-  Future<http.Response> save(Object body) => http.put(
-    server.url(canvas),
+  Future<TestResponse> save(Object body) => server.put(
+    canvas,
     headers: {...server.auth(), 'content-type': 'application/json'},
     body: jsonEncode(body),
   );
@@ -25,9 +24,8 @@ void main() {
     return jsonDecode(response.body);
   }
 
-  Future<Map<String, dynamic>> current() async => jsonDecode(
-    (await http.get(server.url(canvas), headers: server.auth())).body,
-  );
+  Future<Map<String, dynamic>> current() async =>
+      jsonDecode((await server.get(canvas, headers: server.auth())).body);
 
   Future<Set<Object?>> violations(Object body) async {
     final response = await save(body);

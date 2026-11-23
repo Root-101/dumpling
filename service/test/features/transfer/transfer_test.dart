@@ -3,38 +3,32 @@ library;
 
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
 import 'package:service/dumpling.dart';
 import 'package:test/test.dart';
 
-import '../../support/test_server.dart';
+import '../../support/test_app.dart';
 
 void main() {
-  final server = TestServer(port: 8190);
+  final server = TestApp();
 
   Future<Map<String, dynamic>> export([String? workspace]) async {
-    final response = await http.get(
-      server.url(
-        workspace == null ? '/api/export' : '/api/export?workspace=$workspace',
-      ),
+    final response = await server.get(
+      workspace == null ? '/api/export' : '/api/export?workspace=$workspace',
       headers: server.auth(),
     );
     expect(response.statusCode, 200, reason: response.body);
     return jsonDecode(response.body);
   }
 
-  Future<http.Response> import(Object body) => http.post(
-    server.url('/api/import'),
+  Future<TestResponse> import(Object body) => server.post(
+    '/api/import',
     headers: {...server.auth(), 'content-type': 'application/json'},
     body: jsonEncode(body),
   );
 
   Future<List<String>> names() async => [
     for (final w in jsonDecode(
-      (await http.get(
-        server.url('/api/workspaces'),
-        headers: server.auth(),
-      )).body,
+      (await server.get('/api/workspaces', headers: server.auth())).body,
     ) as List)
       w['name'] as String,
   ];
@@ -45,8 +39,8 @@ void main() {
     await server.start();
     await server.createWorkspace('Production');
     await server.createWorkspace('Staging');
-    final response = await http.put(
-      server.url('/api/workspaces/production/canvas'),
+    final response = await server.put(
+      '/api/workspaces/production/canvas',
       headers: {...server.auth(), 'content-type': 'application/json'},
       body: jsonEncode({
         'sources': [
@@ -142,8 +136,8 @@ void main() {
     });
 
     test('Should answer 404 for an unknown workspace', () async {
-      final response = await http.get(
-        server.url('/api/export?workspace=nope'),
+      final response = await server.get(
+        '/api/export?workspace=nope',
         headers: server.auth(),
       );
       expect(response.statusCode, 404);
@@ -159,8 +153,8 @@ void main() {
       final slug = created['slug'] as String;
 
       final canvas = jsonDecode(
-        (await http.get(
-          server.url('/api/workspaces/$slug/canvas'),
+        (await server.get(
+          '/api/workspaces/$slug/canvas',
           headers: server.auth(),
         )).body,
       );
@@ -178,8 +172,8 @@ void main() {
       });
 
       final runs = jsonDecode(
-        (await http.get(
-          server.url('/api/workspaces/$slug/runs'),
+        (await server.get(
+          '/api/workspaces/$slug/runs',
           headers: server.auth(),
         )).body,
       ) as List;

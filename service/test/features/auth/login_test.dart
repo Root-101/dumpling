@@ -4,26 +4,25 @@ library;
 import 'dart:convert';
 
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
-import 'package:http/http.dart' as http;
 import 'package:service/dumpling.dart';
 import 'package:test/test.dart';
 
-import '../../support/test_server.dart';
+import '../../support/test_app.dart';
 
 void main() {
-  final server = TestServer(port: 8181);
+  final server = TestApp();
 
   setUpAll(server.start);
   tearDownAll(server.stop);
 
-  Future<http.Response> login(Object body, {String? language}) => http.post(
-    server.url('/api/auth/login'),
+  Future<TestResponse> login(Object body, {String? language}) => server.post(
+    '/api/auth/login',
     headers: {'content-type': 'application/json', 'accept-language': ?language},
     body: jsonEncode(body),
   );
 
-  Future<int> sessionWith(String token) async => (await http.get(
-    server.url('/api/auth/session'),
+  Future<int> sessionWith(String token) async => (await server.get(
+    '/api/auth/session',
     headers: {'authorization': 'Bearer $token'},
   )).statusCode;
 
@@ -100,14 +99,14 @@ void main() {
       'permissions': [Permissions.authSession],
     };
     String sign(Map<String, Object?> payload, [String? secret]) =>
-        JWT(payload).sign(SecretKey(secret ?? testJwtSecret(server.port)));
+        JWT(payload).sign(SecretKey(secret ?? testJwtSecret));
     int inOneHour() =>
         DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch ~/
         1000;
 
     test('Should answer who is signed in with the issued token', () async {
-      final response = await http.get(
-        server.url('/api/auth/session'),
+      final response = await server.get(
+        '/api/auth/session',
         headers: server.auth(),
       );
       expect(response.statusCode, 200);
@@ -141,7 +140,7 @@ void main() {
     );
 
     test('Should reject a request without a token', () async {
-      final response = await http.get(server.url('/api/auth/session'));
+      final response = await server.get('/api/auth/session');
       expect(response.statusCode, 401);
     });
 
@@ -167,8 +166,8 @@ void main() {
     });
 
     test('Should answer 404 for an unknown route of the API', () async {
-      final response = await http.get(
-        server.url('/api/nothing-here'),
+      final response = await server.get(
+        '/api/nothing-here',
         headers: server.auth(),
       );
       expect(response.statusCode, 404);

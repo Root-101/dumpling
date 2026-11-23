@@ -29,7 +29,6 @@ dependencies:
   pointycastle: 4.0.0           #AES-GCM
 
 dev_dependencies:
-  http: 1.6.0
   lints: 6.1.0
   test: 1.33.0
 

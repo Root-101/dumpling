@@ -7,14 +7,13 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:drift/drift.dart' show Value;
-import 'package:http/http.dart' as http;
 import 'package:service/dumpling.dart';
 import 'package:test/test.dart';
 
-import '../../support/test_server.dart';
+import '../../support/test_app.dart';
 
 void main() {
-  final server = TestServer(port: 8183);
+  final server = TestApp();
 
   setUpAll(() async {
     await server.start();
@@ -48,14 +47,12 @@ void main() {
     },
   };
 
-  Future<http.Response> create(
-    Object body, {
-    String workspace = 'production',
-  }) => http.post(
-    server.url(path(workspace)),
-    headers: jsonHeaders(),
-    body: jsonEncode(body),
-  );
+  Future<TestResponse> create(Object body, {String workspace = 'production'}) =>
+      server.post(
+        path(workspace),
+        headers: jsonHeaders(),
+        body: jsonEncode(body),
+      );
 
   Future<Map<String, dynamic>> created(Object body) async {
     final response = await create(body);
@@ -83,8 +80,8 @@ void main() {
 
   group('SourceController', () {
     test('Should list every type, only PostgreSQL enabled', () async {
-      final response = await http.get(
-        server.url('/api/source-types'),
+      final response = await server.get(
+        '/api/source-types',
         headers: server.auth(),
       );
       expect(response.statusCode, 200);
@@ -121,8 +118,8 @@ void main() {
         expect(body['last_check'], isNull);
         expect(await storedSecrets(body['id']), {'password': 's3cr3t-pass'});
 
-        final read = await http.get(
-          server.url(path('production', '/${body['id']}')),
+        final read = await server.get(
+          path('production', '/${body['id']}'),
           headers: server.auth(),
         );
         expect(read.body, isNot(contains('s3cr3t')));
@@ -133,8 +130,8 @@ void main() {
       'Should keep the stored password when an update leaves it out',
       () async {
         final source = await created(postgres(name: 'users-db'));
-        final response = await http.put(
-          server.url(path('production', '/${source['id']}')),
+        final response = await server.put(
+          path('production', '/${source['id']}'),
           headers: jsonHeaders(),
           body: jsonEncode(postgres(name: 'users', password: null)),
         );
@@ -161,8 +158,8 @@ void main() {
             ),
           ),
         );
-        Future<http.Response> update(String? password) => http.put(
-          server.url(path('production', '/$id')),
+        Future<TestResponse> update(String? password) => server.put(
+          path('production', '/$id'),
           headers: jsonHeaders(),
           body: jsonEncode(postgres(name: 'rekeyed-db', password: password)),
         );
@@ -255,8 +252,8 @@ void main() {
 
     test('Should not find a source from another workspace', () async {
       final source = await created(postgres(name: 'billing-db'));
-      final response = await http.get(
-        server.url(path('staging', '/${source['id']}')),
+      final response = await server.get(
+        path('staging', '/${source['id']}'),
         headers: server.auth(),
       );
       expect(response.statusCode, 404);
@@ -275,15 +272,15 @@ void main() {
         return jsonDecode(response.body)['id'] as String;
       }
 
-      Future<http.Response> reorder(List<Object?> ids) => http.put(
-        server.url(path('ordering', '/order')),
+      Future<TestResponse> reorder(List<Object?> ids) => server.put(
+        path('ordering', '/order'),
         headers: jsonHeaders(),
         body: jsonEncode({'ids': ids}),
       );
 
       Future<List<Object?>> names() async {
-        final response = await http.get(
-          server.url(path('ordering')),
+        final response = await server.get(
+          path('ordering'),
           headers: server.auth(),
         );
         return [for (final s in jsonDecode(response.body) as List) s['name']];
@@ -305,8 +302,8 @@ void main() {
 
       // Every id of the workspace, each once and nothing else
       final other = await created(postgres(name: 'other-db'));
-      final all = (await http.get(
-        server.url(path('ordering')),
+      final all = (await server.get(
+        path('ordering'),
         headers: server.auth(),
       )).body;
       final ids = [for (final s in jsonDecode(all) as List) s['id']];
@@ -325,13 +322,13 @@ void main() {
 
     test('Should delete a source', () async {
       final source = await created(postgres(name: 'tmp-db'));
-      final deleted = await http.delete(
-        server.url(path('production', '/${source['id']}')),
+      final deleted = await server.delete(
+        path('production', '/${source['id']}'),
         headers: server.auth(),
       );
       expect(deleted.statusCode, 204);
-      final read = await http.get(
-        server.url(path('production', '/${source['id']}')),
+      final read = await server.get(
+        path('production', '/${source['id']}'),
         headers: server.auth(),
       );
       expect(read.statusCode, 404);
@@ -340,10 +337,7 @@ void main() {
     test('Should delete the sources with their workspace', () async {
       await server.createWorkspace('Doomed');
       await create(postgres(name: 'gone-db'), workspace: 'doomed');
-      await http.delete(
-        server.url('/api/workspaces/doomed'),
-        headers: server.auth(),
-      );
+      await server.delete('/api/workspaces/doomed', headers: server.auth());
       final db = di.find<AppDatabase>();
       final left = await (db.select(
         db.sourceTable,
@@ -354,8 +348,8 @@ void main() {
     test('Should report a connection that fails, without throwing', () async {
       // Nothing listens on port 1
       final body = postgres(host: '127.0.0.1', port: 1);
-      final response = await http.post(
-        server.url(path('production', '/test')),
+      final response = await server.post(
+        path('production', '/test'),
         headers: jsonHeaders(),
         body: jsonEncode(body),
       );
@@ -369,15 +363,15 @@ void main() {
     test('Should keep the result of testing a saved source', () async {
       final body = postgres(name: 'local-db', host: '127.0.0.1', port: 1);
       final source = await created(body);
-      final tested = await http.post(
-        server.url(path('production', '/${source['id']}/test')),
+      final tested = await server.post(
+        path('production', '/${source['id']}/test'),
         headers: server.auth(),
       );
       expect(jsonDecode(tested.body)['status'], 'failed');
 
       final read = jsonDecode(
-        (await http.get(
-          server.url(path('production', '/${source['id']}')),
+        (await server.get(
+          path('production', '/${source['id']}'),
           headers: server.auth(),
         )).body,
       );
@@ -387,19 +381,19 @@ void main() {
     test('Should keep the last check unless the connection changes, also through the canvas', () async {
       final body = postgres(name: 'kept-db', host: '127.0.0.1', port: 1);
       final id = (await created(body))['id'];
-      await http.post(
-        server.url(path('production', '/$id/test')),
+      await server.post(
+        path('production', '/$id/test'),
         headers: server.auth(),
       );
       Future<Object?> lastCheck() async => jsonDecode(
-        (await http.get(
-          server.url(path('production', '/$id')),
+        (await server.get(
+          path('production', '/$id'),
           headers: server.auth(),
         )).body,
       )['last_check'];
       Future<void> put(Map<String, Object?> body) async {
-        final response = await http.put(
-          server.url(path('production', '/$id')),
+        final response = await server.put(
+          path('production', '/$id'),
           headers: jsonHeaders(),
           body: jsonEncode(body),
         );
@@ -412,13 +406,13 @@ void main() {
 
       // the canvas sends every node on each save, without its password
       final canvas = jsonDecode(
-        (await http.get(
-          server.url('/api/workspaces/production/canvas'),
+        (await server.get(
+          '/api/workspaces/production/canvas',
           headers: server.auth(),
         )).body,
       );
-      final saved = await http.put(
-        server.url('/api/workspaces/production/canvas'),
+      final saved = await server.put(
+        '/api/workspaces/production/canvas',
         headers: jsonHeaders(),
         body: jsonEncode(canvas),
       );

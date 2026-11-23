@@ -1,14 +1,13 @@
 import 'dart:io';
 
-import 'package:http/http.dart' as http;
 import 'package:test/test.dart';
 
-import '../support/test_server.dart';
+import '../support/test_app.dart';
 
 void main() {
   // The console is served only when its web build is next to the service
   final built = Directory('../console/build/web').existsSync();
-  final server = TestServer(port: 8188);
+  final server = TestApp();
 
   setUpAll(() async {
     if (built) await server.start();
@@ -21,7 +20,7 @@ void main() {
     'Should serve every file of the console with its security headers',
     () async {
       for (final path in ['/', '/workspaces/production/runs', '/env.js']) {
-        final response = await http.get(server.url(path));
+        final response = await server.get(path);
         expect(response.statusCode, 200, reason: path);
         expect(response.headers['x-frame-options'], 'DENY', reason: path);
         expect(response.headers['x-content-type-options'], 'nosniff');
@@ -32,7 +31,7 @@ void main() {
         expect(response.headers['cache-control'], 'no-cache', reason: path);
       }
       // the API too, its errors included
-      final api = await http.get(server.url('/api/nothing'));
+      final api = await server.get('/api/nothing');
       expect(api.statusCode, 404);
       expect(api.headers['referrer-policy'], 'no-referrer');
     },

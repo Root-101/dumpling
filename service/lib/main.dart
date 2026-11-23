@@ -17,8 +17,26 @@ class Dumpling {
   /// The longest a request can take.
   static Duration requestTimeout = const Duration(minutes: 2);
 
-  /// [database] lets the tests use an in-memory database instead of the file.
+  /// Serves the API (and the console's build, if it is there) on [port].
   static Future<void> start({int port = 8080, AppDatabase? database}) async {
+    final app = await setUp(database: database);
+    await Winter.start(
+      config: ServerConfig(
+        port: port,
+        trustedProxies: app.trustedProxies,
+        requestTimeout: app.requestTimeout,
+      ),
+      globalFilterConfig: app.filters,
+      securityConfig: app.security,
+      router: app.router,
+      scheduler: app.scheduler,
+    );
+  }
+
+  /// The context, the dependencies and the pieces of the server, without
+  /// opening a port: the tests serve them in memory (`WinterTestClient`).
+  /// [database] lets them use an in-memory database instead of the file.
+  static Future<DumplingApp> setUp({AppDatabase? database}) async {
     // Every missing variable in one error, before anything is created
     env.requireAll(requiredEnvVariables);
 
@@ -122,20 +140,18 @@ class Dumpling {
       ],
     );
 
-    await Winter.start(
-      config: ServerConfig(
-        port: port,
-        // Behind your own proxies, clientIp and the scheme of requestedUri
-        // come from their X-Forwarded-* (ignored without them)
-        trustedProxies: env.trustedProxies > 0
-            ? TrustedProxies(env.trustedProxies)
-            : null,
-        // A client that sends its body slowly (or never) can't hold a
-        // request forever; above the slowest route, a connection test (the
-        // console waits 90 s for it)
-        requestTimeout: requestTimeout,
-      ),
-      globalFilterConfig: FilterConfig([
+    return (
+      router: router,
+      // Behind your own proxies, clientIp and the scheme of requestedUri
+      // come from their X-Forwarded-* (ignored without them)
+      trustedProxies: env.trustedProxies > 0
+          ? TrustedProxies(env.trustedProxies)
+          : null,
+      // A client that sends its body slowly (or never) can't hold a
+      // request forever; above the slowest route, a connection test (the
+      // console waits 90 s for it)
+      requestTimeout: requestTimeout,
+      filters: FilterConfig([
         // First: stops a flood before reading bodies or checking tokens
         if (env.rateLimitRequests > 0)
           RateLimiterFilter(
@@ -148,7 +164,7 @@ class Dumpling {
       ]),
       // In development the console runs on another origin; the token goes in
       // `Authorization`, never in a cookie, so any origin is fine
-      securityConfig: SecurityConfig(
+      security: SecurityConfig(
         // Retry-After: the console says how long a locked sign-in waits
         cors: const CorsConfig(exposedHeaders: ['Retry-After']),
         // Winter always adds nosniff and X-Frame-Options: DENY; no URL leaves
@@ -156,7 +172,6 @@ class Dumpling {
         // the console, and Flutter Web needs inline scripts and WebAssembly
         securityHeaders: const SecurityHeaders(contentSecurityPolicy: null),
       ),
-      router: router,
       scheduler: scheduler,
     );
   }
@@ -181,3 +196,13 @@ class Dumpling {
     return null;
   }
 }
+
+/// What [Dumpling.setUp] builds: everything the server needs but the port.
+typedef DumplingApp = ({
+  WinterRouter router,
+  FilterConfig filters,
+  SecurityConfig security,
+  TrustedProxies? trustedProxies,
+  Duration requestTimeout,
+  Scheduler scheduler,
+});

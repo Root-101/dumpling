@@ -59,7 +59,8 @@ Prefix everything with `fvm` (versions pinned in `.fvmrc`; the `dart` on the PAT
 - The known analyzer infos (`MaterialUiCompatibilityBridge` in `console/lib/main.dart`, and the
   `flutter/material.dart` import it needs) are on purpose.
 - `dart format` on a folder reformats unrelated files: format only the files you touched.
-- Each service test file that starts a server uses its own port.
+- Service tests run in memory (`TestApp`, Winter's `WinterTestClient`); one that needs a real socket
+  calls `listen(port)` with its own port, away from 8180/8181.
 
 ## Running it locally
 

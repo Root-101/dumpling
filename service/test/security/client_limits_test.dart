@@ -7,14 +7,16 @@ import 'dart:io';
 import 'package:service/dumpling.dart';
 import 'package:test/test.dart';
 
-import '../support/test_server.dart';
+import '../support/test_app.dart';
 
 void main() {
-  final server = TestServer(port: 8189);
+  final server = TestApp();
 
   setUpAll(() async {
     Dumpling.requestTimeout = const Duration(seconds: 2);
     await server.start();
+    // A body that never arrives needs a real socket
+    await server.listen(8189);
   });
   tearDownAll(server.stop);
 

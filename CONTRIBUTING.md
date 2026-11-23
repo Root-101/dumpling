@@ -49,8 +49,8 @@ client) is needed to run backups locally, and Docker for the image and the end-t
 
 ## Tests
 
-Every change comes with its tests (`service/test/` mirrors `service/lib/`; each test file that
-starts a server uses its own port).
+Every change comes with its tests (`service/test/` mirrors `service/lib/`; the API is tested in memory
+with `test/support/test_app.dart`, and a test that needs a real socket listens on its own port).
 
 | When                                                        | Run                                                                                                        | Time   |
 |-------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|--------|

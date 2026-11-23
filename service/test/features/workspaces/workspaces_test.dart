@@ -3,14 +3,13 @@ library;
 
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
 import 'package:service/dumpling.dart';
 import 'package:test/test.dart';
 
-import '../../support/test_server.dart';
+import '../../support/test_app.dart';
 
 void main() {
-  final server = TestServer(port: 8182);
+  final server = TestApp();
 
   setUpAll(server.start);
   tearDownAll(server.stop);
@@ -21,20 +20,20 @@ void main() {
     'accept-language': ?language,
   };
 
-  Future<http.Response> create(Object body, {String? language}) => http.post(
-    server.url('/api/workspaces'),
+  Future<TestResponse> create(Object body, {String? language}) => server.post(
+    '/api/workspaces',
     headers: jsonHeaders(language: language),
     body: jsonEncode(body),
   );
 
-  Future<http.Response> update(String slug, Object body) => http.put(
-    server.url('/api/workspaces/$slug'),
+  Future<TestResponse> update(String slug, Object body) => server.put(
+    '/api/workspaces/$slug',
     headers: jsonHeaders(),
     body: jsonEncode(body),
   );
 
-  Future<http.Response> get(String slug, {String? language}) => http.get(
-    server.url('/api/workspaces/$slug'),
+  Future<TestResponse> get(String slug, {String? language}) => server.get(
+    '/api/workspaces/$slug',
     headers: jsonHeaders(language: language),
   );
 
@@ -69,8 +68,8 @@ void main() {
 
     test('Should list every workspace, oldest first', () async {
       await create({'name': 'Listed'});
-      final response = await http.get(
-        server.url('/api/workspaces'),
+      final response = await server.get(
+        '/api/workspaces',
         headers: server.auth(),
       );
       expect(response.statusCode, 200);
@@ -114,8 +113,8 @@ void main() {
 
     test('Should delete a workspace', () async {
       await create({'name': 'Temporary'});
-      final response = await http.delete(
-        server.url('/api/workspaces/temporary'),
+      final response = await server.delete(
+        '/api/workspaces/temporary',
         headers: server.auth(),
       );
       expect(response.statusCode, 204);
@@ -177,7 +176,7 @@ void main() {
     });
 
     test('Should require the token', () async {
-      final response = await http.get(server.url('/api/workspaces'));
+      final response = await server.get('/api/workspaces');
       expect(response.statusCode, 401);
     });
   });
