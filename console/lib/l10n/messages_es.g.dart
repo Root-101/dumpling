@@ -1565,7 +1565,7 @@ class AppMessages$workspaces$settings$es
   @override
   String get compressionNone => 'Ninguna';
   @override
-  String get objectKey => 'Object key';
+  String get objectKey => 'Clave del objeto';
   @override
   String get objectKeyHelp =>
       'Relativa a la carpeta donde escribe cada config, sin extensión.';
@@ -1805,12 +1805,13 @@ class AppMessages$canvas$inspector$es
   @override
   String get compressionNone => 'Ninguna';
   @override
-  String get objectKeySlash => 'El object key no puede empezar con /';
+  String get objectKeySlash => 'La clave del objeto no puede empezar por /';
   @override
   String get objectKeyExtension =>
       'Omite la extensión: se agrega según el formato del dump y la compresión';
   @override
-  String get objectKeyDots => 'El object key no puede tener carpetas . o ..';
+  String get objectKeyDots =>
+      'La clave del objeto no puede tener carpetas . o ..';
   @override
   String get schedule => 'Nombre y programación';
   @override
@@ -1822,7 +1823,7 @@ class AppMessages$canvas$inspector$es
   @override
   String get output => 'Salida';
   @override
-  String get objectKey => 'Object key';
+  String get objectKey => 'Clave del objeto';
   @override
   String get placeholders => 'Qué escribe cada placeholder';
   @override
@@ -2416,7 +2417,7 @@ extension on AppMessagesEs {
           'workspaces.settings.cronHelp' => 'Siempre en UTC.',
           'workspaces.settings.compression' => 'Compresión',
           'workspaces.settings.compressionNone' => 'Ninguna',
-          'workspaces.settings.objectKey' => 'Object key',
+          'workspaces.settings.objectKey' => 'Clave del objeto',
           'workspaces.settings.objectKeyHelp' =>
             'Relativa a la carpeta donde escribe cada config, sin extensión.',
           'workspaces.settings.unsaved' => 'Tienes cambios sin guardar',
@@ -2847,16 +2848,16 @@ extension on AppMessagesEs {
             'Desactivada: solo se ejecuta con Ejecutar ahora',
           'canvas.inspector.compressionNone' => 'Ninguna',
           'canvas.inspector.objectKeySlash' =>
-            'El object key no puede empezar con /',
+            'La clave del objeto no puede empezar por /',
           'canvas.inspector.objectKeyExtension' => 'Omite la extensión: se agrega según el formato del dump y la compresión',
           'canvas.inspector.objectKeyDots' =>
-            'El object key no puede tener carpetas . o ..',
+            'La clave del objeto no puede tener carpetas . o ..',
           'canvas.inspector.schedule' => 'Nombre y programación',
           'canvas.inspector.cron' => 'Cron',
           'canvas.inspector.timeZone' => 'Zona horaria',
           'canvas.inspector.nextRun' => 'Próxima ejecución',
           'canvas.inspector.output' => 'Salida',
-          'canvas.inspector.objectKey' => 'Object key',
+          'canvas.inspector.objectKey' => 'Clave del objeto',
           'canvas.inspector.placeholders' => 'Qué escribe cada placeholder',
           'canvas.inspector.placeholdersIntro' => 'Cada placeholder se reemplaza cuando empieza el backup. Las fechas y horas van en UTC.',
           'canvas.inspector.placeholderHelp.year' =>

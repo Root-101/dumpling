@@ -1,6 +1,5 @@
 import 'package:console/app_exporter.dart';
 import 'package:flutter/services.dart';
-import 'package:material_ui/material_ui.dart' show Offset;
 
 /// The fonts of the app instead of the test one, where a width matters
 Future<void> loadAppFonts() async {

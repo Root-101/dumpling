@@ -11,7 +11,8 @@ have the release candidates before 0.1.0 one by one.
 - Console: a sign-in locked after too many failures says how many minutes are left.
 - Console: in Spanish the backups are *backups* everywhere, as in the rail (some texts said
   *respaldos*); the splash comes in the language chosen with the flag, like the console; the
-  import says *1 destination*, not *1 destinations*.
+  import says *1 destination*, not *1 destinations*; the object key is *clave del objeto*
+  everywhere, as the service says it.
 - Console: the warning of a long name only shows when the name would be cut on its node.
 
 ## 0.1.7
