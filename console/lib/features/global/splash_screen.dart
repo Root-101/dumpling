@@ -14,8 +14,8 @@ class SplashScreen extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeConfig.theme,
-      localizationsDelegates: appLocalizationsDelegates,
-      supportedLocales: appSupportedLocales,
+      localizationsDelegates: AppIntl.delegates,
+      supportedLocales: AppIntl.supportedLocales,
       builder: (context, child) => Scaffold(
         backgroundColor: colors.surface.background,
         body: CustomPaint(
@@ -59,7 +59,7 @@ class SplashScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 18),
                   Text(
-                    context.intl.app.splashText,
+                    app.intl.app.splashText,
                     style: TextStyle(
                       fontSize: 16,
                       height: 24 / 16,

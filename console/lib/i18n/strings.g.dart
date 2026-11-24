@@ -1,6 +1,6 @@
 /// Generated file. Do not edit.
 ///
-/// Source: lib/l10n
+/// Source: lib/i18n
 /// To regenerate, run: `dart run slang`
 
 // coverage:ignore-file
@@ -11,20 +11,20 @@ import 'package:slang/generated.dart';
 import 'package:slang/slang.dart';
 export 'package:slang/slang.dart';
 
-import 'messages_es.g.dart' as l_es;
-part 'messages_en.g.dart';
+import 'strings_es.g.dart' as l_es;
+part 'strings_en.g.dart';
 
 /// Supported locales.
 ///
 /// Usage:
-/// - LocaleSettings.setLocale(AppMessagesLocale.en) // set locale
-/// - Locale locale = AppMessagesLocale.en.flutterLocale // get flutter locale from enum
-/// - if (LocaleSettings.currentLocale == AppMessagesLocale.en) // locale check
-enum AppMessagesLocale with BaseAppLocale<AppMessagesLocale, AppMessages> {
+/// - LocaleSettings.setLocale(AppLocale.en) // set locale
+/// - Locale locale = AppLocale.en.flutterLocale // get flutter locale from enum
+/// - if (LocaleSettings.currentLocale == AppLocale.en) // locale check
+enum AppLocale with BaseAppLocale<AppLocale, AppTexts> {
   en(languageCode: 'en'),
   es(languageCode: 'es');
 
-  const AppMessagesLocale({
+  const AppLocale({
     required this.languageCode,
     this.scriptCode, // ignore: unused_element, unused_element_parameter
     this.countryCode, // ignore: unused_element, unused_element_parameter
@@ -38,7 +38,7 @@ enum AppMessagesLocale with BaseAppLocale<AppMessagesLocale, AppMessages> {
   final String? countryCode;
 
   @override
-  Future<AppMessages> build({
+  Future<AppTexts> build({
     Map<String, Node>? overrides,
     PluralResolver? cardinalResolver,
     PluralResolver? ordinalResolver,
@@ -51,20 +51,20 @@ enum AppMessagesLocale with BaseAppLocale<AppMessagesLocale, AppMessages> {
   }
 
   @override
-  AppMessages buildSync({
+  AppTexts buildSync({
     Map<String, Node>? overrides,
     PluralResolver? cardinalResolver,
     PluralResolver? ordinalResolver,
   }) {
     switch (this) {
-      case AppMessagesLocale.en:
-        return AppMessagesEn(
+      case AppLocale.en:
+        return AppTextsEn(
           overrides: overrides,
           cardinalResolver: cardinalResolver,
           ordinalResolver: ordinalResolver,
         );
-      case AppMessagesLocale.es:
-        return l_es.AppMessagesEs(
+      case AppLocale.es:
+        return l_es.AppTextsEs(
           overrides: overrides,
           cardinalResolver: cardinalResolver,
           ordinalResolver: ordinalResolver,
@@ -74,19 +74,15 @@ enum AppMessagesLocale with BaseAppLocale<AppMessagesLocale, AppMessages> {
 }
 
 /// Provides utility functions without any side effects.
-class AppLocaleUtils
-    extends BaseAppLocaleUtils<AppMessagesLocale, AppMessages> {
+class AppLocaleUtils extends BaseAppLocaleUtils<AppLocale, AppTexts> {
   AppLocaleUtils._()
-    : super(
-        baseLocale: AppMessagesLocale.en,
-        locales: AppMessagesLocale.values,
-      );
+    : super(baseLocale: AppLocale.en, locales: AppLocale.values);
 
   static final instance = AppLocaleUtils._();
 
   // static aliases (checkout base methods for documentation)
-  static AppMessagesLocale parse(String rawLocale) => instance.parse(rawLocale);
-  static AppMessagesLocale parseLocaleParts({
+  static AppLocale parse(String rawLocale) => instance.parse(rawLocale);
+  static AppLocale parseLocaleParts({
     required String languageCode,
     String? scriptCode,
     String? countryCode,

@@ -78,7 +78,7 @@ Prefix everything with `fvm` (versions pinned in `.fvmrc`; the `dart` on the PAT
   `onUpgrade`); the SQLite file is created again. That version gets 🔴 in the upgrade table of the
   README (*Upgrading*: export, upgrade, import) and a line in the changelog; tell the user to delete
   their local `data/dumpling.sqlite`.
-- **No user-visible text hardcoded**, in English and Spanish (`console/lib/l10n/*.i18n.yaml`,
+- **No user-visible text hardcoded**, in English and Spanish (`console/lib/i18n/*.i18n.yaml`,
   `service/lib/i18n/*.i18n.yaml`). Spanish says *origen* and *destino*, never *source* or
   *destination*.
 - **A visual change to the console**, in the same change: the Claude Design canvas first

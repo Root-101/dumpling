@@ -35,7 +35,7 @@ differs on purpose, it says so in [Exceptions to the standards](#exceptions-to-t
   a stream), registered by type. Nothing else should need to change.
 - **Console**: a feature is `data/rest` (client and DTOs) → `data/repo` → `logic/cubit` and
   `logic/model` → `view`, wired in its `<name>_init.dart`; views only call cubit methods. No
-  user-visible text is hardcoded (`lib/l10n/*.i18n.yaml`, both languages, then
+  user-visible text is hardcoded (`lib/i18n/*.i18n.yaml`, both languages, then
   `fvm dart run slang`).
 - **Both**: JSON keys are `snake_case`, times are UTC. A field renamed in the service changes the
   console's DTO in the same change.

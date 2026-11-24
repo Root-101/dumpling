@@ -4,19 +4,19 @@
 // coverage:ignore-file
 // ignore_for_file: type=lint, unused_import
 
-part of 'messages.g.dart';
+part of 'strings.g.dart';
 
 // Path: <root>
-typedef AppMessagesEn = AppMessages; // ignore: unused_element
+typedef AppTextsEn = AppTexts; // ignore: unused_element
 
-class AppMessages with BaseTranslations<AppMessagesLocale, AppMessages> {
+class AppTexts with BaseTranslations<AppLocale, AppTexts> {
   /// You can call this constructor and build your own translation instance of this locale.
-  /// Constructing via the enum [AppMessagesLocale.build] is preferred.
-  AppMessages({
+  /// Constructing via the enum [AppLocale.build] is preferred.
+  AppTexts({
     Map<String, Node>? overrides,
     PluralResolver? cardinalResolver,
     PluralResolver? ordinalResolver,
-    TranslationMetadata<AppMessagesLocale, AppMessages>? meta,
+    TranslationMetadata<AppLocale, AppTexts>? meta,
   }) : assert(
          overrides == null,
          'Set "translation_overrides: true" in order to enable this feature.',
@@ -24,7 +24,7 @@ class AppMessages with BaseTranslations<AppMessagesLocale, AppMessages> {
        _meta =
            meta ??
            TranslationMetadata(
-             locale: AppMessagesLocale.en,
+             locale: AppLocale.en,
              overrides: overrides ?? {},
              cardinalResolver: cardinalResolver,
              ordinalResolver: ordinalResolver,
@@ -33,46 +33,47 @@ class AppMessages with BaseTranslations<AppMessagesLocale, AppMessages> {
   }
 
   /// Metadata for the translations of <en>.
-  final TranslationMetadata<AppMessagesLocale, AppMessages> _meta;
+  final TranslationMetadata<AppLocale, AppTexts> _meta;
   @override
-  TranslationMetadata<AppMessagesLocale, AppMessages> get $meta => _meta;
+  TranslationMetadata<AppLocale, AppTexts> get $meta => _meta;
 
   /// Access flat map
   dynamic operator [](String key) => _meta.getTranslation(key);
 
-  late final AppMessages _root = this; // ignore: unused_field
+  late final AppTexts _root = this; // ignore: unused_field
 
-  AppMessages $copyWith({
-    TranslationMetadata<AppMessagesLocale, AppMessages>? meta,
-  }) => AppMessages(meta: meta ?? this.$meta);
+  AppTexts $copyWith({TranslationMetadata<AppLocale, AppTexts>? meta}) =>
+      AppTexts(meta: meta ?? this.$meta);
 
   // Translations
-  late final AppMessages$app$en app = AppMessages$app$en._(_root);
-  late final AppMessages$common$en common = AppMessages$common$en._(_root);
-  late final AppMessages$time$en time = AppMessages$time$en._(_root);
-  late final AppMessages$errors$en errors = AppMessages$errors$en._(_root);
-  late final AppMessages$nav$en nav = AppMessages$nav$en._(_root);
-  late final AppMessages$login$en login = AppMessages$login$en._(_root);
-  late final AppMessages$colors$en colors = AppMessages$colors$en._(_root);
-  late final AppMessages$workspaces$en workspaces = AppMessages$workspaces$en._(
+  late final AppTexts$app$en app = AppTexts$app$en._(_root);
+  late final AppTexts$common$en common = AppTexts$common$en._(_root);
+  late final AppTexts$time$en time = AppTexts$time$en._(_root);
+  late final AppTexts$errors$en errors = AppTexts$errors$en._(_root);
+  late final AppTexts$nav$en nav = AppTexts$nav$en._(_root);
+  late final AppTexts$login$en login = AppTexts$login$en._(_root);
+  late final AppTexts$colors$en colors = AppTexts$colors$en._(_root);
+  late final AppTexts$workspaces$en workspaces = AppTexts$workspaces$en._(
     _root,
   );
-  late final AppMessages$connections$en connections =
-      AppMessages$connections$en._(_root);
-  late final AppMessages$sources$en sources = AppMessages$sources$en._(_root);
-  late final AppMessages$destinations$en destinations =
-      AppMessages$destinations$en._(_root);
-  late final AppMessages$canvas$en canvas = AppMessages$canvas$en._(_root);
-  late final AppMessages$runs$en runs = AppMessages$runs$en._(_root);
-  late final AppMessages$backups$en backups = AppMessages$backups$en._(_root);
-  late final AppMessages$apiKeys$en apiKeys = AppMessages$apiKeys$en._(_root);
+  late final AppTexts$connections$en connections = AppTexts$connections$en._(
+    _root,
+  );
+  late final AppTexts$sources$en sources = AppTexts$sources$en._(_root);
+  late final AppTexts$destinations$en destinations = AppTexts$destinations$en._(
+    _root,
+  );
+  late final AppTexts$canvas$en canvas = AppTexts$canvas$en._(_root);
+  late final AppTexts$runs$en runs = AppTexts$runs$en._(_root);
+  late final AppTexts$backups$en backups = AppTexts$backups$en._(_root);
+  late final AppTexts$apiKeys$en apiKeys = AppTexts$apiKeys$en._(_root);
 }
 
 // Path: app
-class AppMessages$app$en {
-  AppMessages$app$en._(this._root);
+class AppTexts$app$en {
+  AppTexts$app$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -90,10 +91,10 @@ class AppMessages$app$en {
 }
 
 // Path: common
-class AppMessages$common$en {
-  AppMessages$common$en._(this._root);
+class AppTexts$common$en {
+  AppTexts$common$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -215,10 +216,10 @@ class AppMessages$common$en {
 }
 
 // Path: time
-class AppMessages$time$en {
-  AppMessages$time$en._(this._root);
+class AppTexts$time$en {
+  AppTexts$time$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -230,10 +231,10 @@ class AppMessages$time$en {
 }
 
 // Path: errors
-class AppMessages$errors$en {
-  AppMessages$errors$en._(this._root);
+class AppTexts$errors$en {
+  AppTexts$errors$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -302,10 +303,10 @@ class AppMessages$errors$en {
 }
 
 // Path: nav
-class AppMessages$nav$en {
-  AppMessages$nav$en._(this._root);
+class AppTexts$nav$en {
+  AppTexts$nav$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -351,10 +352,10 @@ class AppMessages$nav$en {
 }
 
 // Path: login
-class AppMessages$login$en {
-  AppMessages$login$en._(this._root);
+class AppTexts$login$en {
+  AppTexts$login$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -432,10 +433,10 @@ class AppMessages$login$en {
 }
 
 // Path: colors
-class AppMessages$colors$en {
-  AppMessages$colors$en._(this._root);
+class AppTexts$colors$en {
+  AppTexts$colors$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -491,10 +492,10 @@ class AppMessages$colors$en {
 }
 
 // Path: workspaces
-class AppMessages$workspaces$en {
-  AppMessages$workspaces$en._(this._root);
+class AppTexts$workspaces$en {
+  AppTexts$workspaces$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -589,17 +590,17 @@ class AppMessages$workspaces$en {
   /// en: 'Settings for {name: String}'
   String settingsOf({required String name}) => 'Settings for ${name}';
 
-  late final AppMessages$workspaces$transfer$en transfer =
-      AppMessages$workspaces$transfer$en._(_root);
-  late final AppMessages$workspaces$settings$en settings =
-      AppMessages$workspaces$settings$en._(_root);
+  late final AppTexts$workspaces$transfer$en transfer =
+      AppTexts$workspaces$transfer$en._(_root);
+  late final AppTexts$workspaces$settings$en settings =
+      AppTexts$workspaces$settings$en._(_root);
 }
 
 // Path: connections
-class AppMessages$connections$en {
-  AppMessages$connections$en._(this._root);
+class AppTexts$connections$en {
+  AppTexts$connections$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -665,10 +666,10 @@ class AppMessages$connections$en {
 }
 
 // Path: sources
-class AppMessages$sources$en {
-  AppMessages$sources$en._(this._root);
+class AppTexts$sources$en {
+  AppTexts$sources$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -916,10 +917,10 @@ class AppMessages$sources$en {
 }
 
 // Path: destinations
-class AppMessages$destinations$en {
-  AppMessages$destinations$en._(this._root);
+class AppTexts$destinations$en {
+  AppTexts$destinations$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -1208,15 +1209,15 @@ class AppMessages$destinations$en {
   /// en: 'Off'
   String get off => 'Off';
 
-  late final AppMessages$destinations$typeSub$en typeSub =
-      AppMessages$destinations$typeSub$en._(_root);
+  late final AppTexts$destinations$typeSub$en typeSub =
+      AppTexts$destinations$typeSub$en._(_root);
 }
 
 // Path: canvas
-class AppMessages$canvas$en {
-  AppMessages$canvas$en._(this._root);
+class AppTexts$canvas$en {
+  AppTexts$canvas$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -1310,10 +1311,10 @@ class AppMessages$canvas$en {
   /// en: 'Next'
   String get next => 'Next';
 
-  late final AppMessages$canvas$runStatus$en runStatus =
-      AppMessages$canvas$runStatus$en._(_root);
-  late final AppMessages$canvas$frequency$en frequency =
-      AppMessages$canvas$frequency$en._(_root);
+  late final AppTexts$canvas$runStatus$en runStatus =
+      AppTexts$canvas$runStatus$en._(_root);
+  late final AppTexts$canvas$frequency$en frequency =
+      AppTexts$canvas$frequency$en._(_root);
 
   /// en: '+ Add folder'
   String get addFolder => '+ Add folder';
@@ -1329,35 +1330,31 @@ class AppMessages$canvas$en {
   String get addFolderRoot =>
       'With the first folder the bucket root stops being a connection point: the configs that write to it are disconnected.';
 
-  late final AppMessages$canvas$keys$en keys = AppMessages$canvas$keys$en._(
+  late final AppTexts$canvas$keys$en keys = AppTexts$canvas$keys$en._(_root);
+  late final AppTexts$canvas$shortcuts$en shortcuts =
+      AppTexts$canvas$shortcuts$en._(_root);
+  late final AppTexts$canvas$view$en view = AppTexts$canvas$view$en._(_root);
+  late final AppTexts$canvas$inspector$en inspector =
+      AppTexts$canvas$inspector$en._(_root);
+  late final AppTexts$canvas$columns$en columns = AppTexts$canvas$columns$en._(
     _root,
   );
-  late final AppMessages$canvas$shortcuts$en shortcuts =
-      AppMessages$canvas$shortcuts$en._(_root);
-  late final AppMessages$canvas$view$en view = AppMessages$canvas$view$en._(
-    _root,
-  );
-  late final AppMessages$canvas$inspector$en inspector =
-      AppMessages$canvas$inspector$en._(_root);
-  late final AppMessages$canvas$columns$en columns =
-      AppMessages$canvas$columns$en._(_root);
 
   /// en: 'Folder'
   String get folder => 'Folder';
 
-  late final AppMessages$canvas$testRun$en testRun =
-      AppMessages$canvas$testRun$en._(_root);
-  late final AppMessages$canvas$run$en run = AppMessages$canvas$run$en._(_root);
-  late final AppMessages$canvas$guide$en guide = AppMessages$canvas$guide$en._(
+  late final AppTexts$canvas$testRun$en testRun = AppTexts$canvas$testRun$en._(
     _root,
   );
+  late final AppTexts$canvas$run$en run = AppTexts$canvas$run$en._(_root);
+  late final AppTexts$canvas$guide$en guide = AppTexts$canvas$guide$en._(_root);
 }
 
 // Path: runs
-class AppMessages$runs$en {
-  AppMessages$runs$en._(this._root);
+class AppTexts$runs$en {
+  AppTexts$runs$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -1520,10 +1517,10 @@ class AppMessages$runs$en {
 }
 
 // Path: backups
-class AppMessages$backups$en {
-  AppMessages$backups$en._(this._root);
+class AppTexts$backups$en {
+  AppTexts$backups$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -1736,10 +1733,10 @@ class AppMessages$backups$en {
 }
 
 // Path: apiKeys
-class AppMessages$apiKeys$en {
-  AppMessages$apiKeys$en._(this._root);
+class AppTexts$apiKeys$en {
+  AppTexts$apiKeys$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -1934,20 +1931,20 @@ class AppMessages$apiKeys$en {
   /// en: 'Key {name: String} saved'
   String saved({required String name}) => 'Key ${name} saved';
 
-  late final AppMessages$apiKeys$group$en group =
-      AppMessages$apiKeys$group$en._(_root);
-  late final AppMessages$apiKeys$action$en action =
-      AppMessages$apiKeys$action$en._(_root);
-  late final AppMessages$apiKeys$perm$en perm = AppMessages$apiKeys$perm$en._(
+  late final AppTexts$apiKeys$group$en group = AppTexts$apiKeys$group$en._(
     _root,
   );
+  late final AppTexts$apiKeys$action$en action = AppTexts$apiKeys$action$en._(
+    _root,
+  );
+  late final AppTexts$apiKeys$perm$en perm = AppTexts$apiKeys$perm$en._(_root);
 }
 
 // Path: workspaces.transfer
-class AppMessages$workspaces$transfer$en {
-  AppMessages$workspaces$transfer$en._(this._root);
+class AppTexts$workspaces$transfer$en {
+  AppTexts$workspaces$transfer$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2033,10 +2030,10 @@ class AppMessages$workspaces$transfer$en {
 }
 
 // Path: workspaces.settings
-class AppMessages$workspaces$settings$en {
-  AppMessages$workspaces$settings$en._(this._root);
+class AppTexts$workspaces$settings$en {
+  AppTexts$workspaces$settings$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2157,10 +2154,10 @@ class AppMessages$workspaces$settings$en {
 }
 
 // Path: destinations.typeSub
-class AppMessages$destinations$typeSub$en {
-  AppMessages$destinations$typeSub$en._(this._root);
+class AppTexts$destinations$typeSub$en {
+  AppTexts$destinations$typeSub$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2181,10 +2178,10 @@ class AppMessages$destinations$typeSub$en {
 }
 
 // Path: canvas.runStatus
-class AppMessages$canvas$runStatus$en {
-  AppMessages$canvas$runStatus$en._(this._root);
+class AppTexts$canvas$runStatus$en {
+  AppTexts$canvas$runStatus$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2202,10 +2199,10 @@ class AppMessages$canvas$runStatus$en {
 }
 
 // Path: canvas.frequency
-class AppMessages$canvas$frequency$en {
-  AppMessages$canvas$frequency$en._(this._root);
+class AppTexts$canvas$frequency$en {
+  AppTexts$canvas$frequency$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2223,10 +2220,10 @@ class AppMessages$canvas$frequency$en {
 }
 
 // Path: canvas.keys
-class AppMessages$canvas$keys$en {
-  AppMessages$canvas$keys$en._(this._root);
+class AppTexts$canvas$keys$en {
+  AppTexts$canvas$keys$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2244,10 +2241,10 @@ class AppMessages$canvas$keys$en {
 }
 
 // Path: canvas.shortcuts
-class AppMessages$canvas$shortcuts$en {
-  AppMessages$canvas$shortcuts$en._(this._root);
+class AppTexts$canvas$shortcuts$en {
+  AppTexts$canvas$shortcuts$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2304,10 +2301,10 @@ class AppMessages$canvas$shortcuts$en {
 }
 
 // Path: canvas.view
-class AppMessages$canvas$view$en {
-  AppMessages$canvas$view$en._(this._root);
+class AppTexts$canvas$view$en {
+  AppTexts$canvas$view$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2346,10 +2343,10 @@ class AppMessages$canvas$view$en {
 }
 
 // Path: canvas.inspector
-class AppMessages$canvas$inspector$en {
-  AppMessages$canvas$inspector$en._(this._root);
+class AppTexts$canvas$inspector$en {
+  AppTexts$canvas$inspector$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2433,8 +2430,8 @@ class AppMessages$canvas$inspector$en {
   String get placeholdersIntro =>
       'Each placeholder is replaced when the backup starts. Dates and times are in UTC.';
 
-  late final AppMessages$canvas$inspector$placeholderHelp$en placeholderHelp =
-      AppMessages$canvas$inspector$placeholderHelp$en._(_root);
+  late final AppTexts$canvas$inspector$placeholderHelp$en placeholderHelp =
+      AppTexts$canvas$inspector$placeholderHelp$en._(_root);
 
   /// en: 'Any other text in braces is written as it is.'
   String get placeholdersOther =>
@@ -2446,10 +2443,10 @@ class AppMessages$canvas$inspector$en {
   /// en: 'Five fields separated by spaces, always in UTC.'
   String get cronInfoIntro => 'Five fields separated by spaces, always in UTC.';
 
-  late final AppMessages$canvas$inspector$cronField$en cronField =
-      AppMessages$canvas$inspector$cronField$en._(_root);
-  late final AppMessages$canvas$inspector$cronExample$en cronExample =
-      AppMessages$canvas$inspector$cronExample$en._(_root);
+  late final AppTexts$canvas$inspector$cronField$en cronField =
+      AppTexts$canvas$inspector$cronField$en._(_root);
+  late final AppTexts$canvas$inspector$cronExample$en cronExample =
+      AppTexts$canvas$inspector$cronExample$en._(_root);
 
   /// en: '* means every value, */n every n, a-b a range and a,b a list.'
   String get cronInfoSyntax =>
@@ -2490,10 +2487,10 @@ class AppMessages$canvas$inspector$en {
 }
 
 // Path: canvas.columns
-class AppMessages$canvas$columns$en {
-  AppMessages$canvas$columns$en._(this._root);
+class AppTexts$canvas$columns$en {
+  AppTexts$canvas$columns$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2508,10 +2505,10 @@ class AppMessages$canvas$columns$en {
 }
 
 // Path: canvas.testRun
-class AppMessages$canvas$testRun$en {
-  AppMessages$canvas$testRun$en._(this._root);
+class AppTexts$canvas$testRun$en {
+  AppTexts$canvas$testRun$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2534,10 +2531,10 @@ class AppMessages$canvas$testRun$en {
 }
 
 // Path: canvas.run
-class AppMessages$canvas$run$en {
-  AppMessages$canvas$run$en._(this._root);
+class AppTexts$canvas$run$en {
+  AppTexts$canvas$run$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2561,10 +2558,10 @@ class AppMessages$canvas$run$en {
 }
 
 // Path: canvas.guide
-class AppMessages$canvas$guide$en {
-  AppMessages$canvas$guide$en._(this._root);
+class AppTexts$canvas$guide$en {
+  AppTexts$canvas$guide$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2598,10 +2595,10 @@ class AppMessages$canvas$guide$en {
 }
 
 // Path: apiKeys.group
-class AppMessages$apiKeys$group$en {
-  AppMessages$apiKeys$group$en._(this._root);
+class AppTexts$apiKeys$group$en {
+  AppTexts$apiKeys$group$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2625,10 +2622,10 @@ class AppMessages$apiKeys$group$en {
 }
 
 // Path: apiKeys.action
-class AppMessages$apiKeys$action$en {
-  AppMessages$apiKeys$action$en._(this._root);
+class AppTexts$apiKeys$action$en {
+  AppTexts$apiKeys$action$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2658,10 +2655,10 @@ class AppMessages$apiKeys$action$en {
 }
 
 // Path: apiKeys.perm
-class AppMessages$apiKeys$perm$en {
-  AppMessages$apiKeys$perm$en._(this._root);
+class AppTexts$apiKeys$perm$en {
+  AppTexts$apiKeys$perm$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2748,10 +2745,10 @@ class AppMessages$apiKeys$perm$en {
 }
 
 // Path: canvas.inspector.placeholderHelp
-class AppMessages$canvas$inspector$placeholderHelp$en {
-  AppMessages$canvas$inspector$placeholderHelp$en._(this._root);
+class AppTexts$canvas$inspector$placeholderHelp$en {
+  AppTexts$canvas$inspector$placeholderHelp$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2779,10 +2776,10 @@ class AppMessages$canvas$inspector$placeholderHelp$en {
 }
 
 // Path: canvas.inspector.cronField
-class AppMessages$canvas$inspector$cronField$en {
-  AppMessages$canvas$inspector$cronField$en._(this._root);
+class AppTexts$canvas$inspector$cronField$en {
+  AppTexts$canvas$inspector$cronField$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2803,10 +2800,10 @@ class AppMessages$canvas$inspector$cronField$en {
 }
 
 // Path: canvas.inspector.cronExample
-class AppMessages$canvas$inspector$cronExample$en {
-  AppMessages$canvas$inspector$cronExample$en._(this._root);
+class AppTexts$canvas$inspector$cronExample$en {
+  AppTexts$canvas$inspector$cronExample$en._(this._root);
 
-  final AppMessages _root; // ignore: unused_field
+  final AppTexts _root; // ignore: unused_field
 
   // Translations
 
@@ -2831,7 +2828,7 @@ class AppMessages$canvas$inspector$cronExample$en {
 ///
 /// The Dart AOT compiler has issues with very large switch statements,
 /// so the map is split into smaller functions (512 entries each).
-extension on AppMessages {
+extension on AppTexts {
   dynamic _flatMapFunction(String path) {
     return switch (path) {
           'app.name' => 'Dumpling',

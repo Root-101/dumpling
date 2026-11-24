@@ -30,6 +30,7 @@ class LanguageCubit extends Cubit<LanguageState> {
   Future init() async {
     String? key = await repo.loadKey();
     currentSelectedLanguage = _resolve(key: key);
+    AppIntl.current = AppIntl.resolve(currentSelectedLanguage.key);
 
     emit(
       LanguageChangedState(
@@ -51,6 +52,7 @@ class LanguageCubit extends Cubit<LanguageState> {
       return;
     }
     currentSelectedLanguage = language;
+    AppIntl.current = AppIntl.resolve(language.key);
     repo.save(model: currentSelectedLanguage);
 
     emit(

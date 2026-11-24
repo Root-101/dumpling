@@ -1,5 +1,4 @@
 import 'package:console/app_exporter.dart';
-import 'package:console/l10n/messages.g.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -116,10 +115,10 @@ void main() {
   });
 
   test('the summary of the form counts one config in singular', () {
-    final en = AppMessagesLocale.en.buildSync().apiKeys;
+    final en = AppLocale.en.buildSync().apiKeys;
     expect(en.summarySome(configs: 1, n: 4), '1 config · 4 permissions');
     expect(en.summarySome(configs: 0, n: 4), '0 configs · 4 permissions');
-    final es = AppMessagesLocale.es.buildSync().apiKeys;
+    final es = AppLocale.es.buildSync().apiKeys;
     expect(es.summarySome(configs: 1, n: 4), '1 config · 4 permisos');
     expect(es.summarySome(configs: 2, n: 4), '2 configs · 4 permisos');
   });

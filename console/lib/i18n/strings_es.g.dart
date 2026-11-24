@@ -4,22 +4,22 @@
 // coverage:ignore-file
 // ignore_for_file: type=lint, unused_import
 
-import 'messages.g.dart';
-
 import 'package:intl/intl.dart';
 import 'package:slang/generated.dart';
 
+import 'strings.g.dart';
+
 // Path: <root>
-class AppMessagesEs
-    with BaseTranslations<AppMessagesLocale, AppMessages>
-    implements AppMessages {
+class AppTextsEs
+    with BaseTranslations<AppLocale, AppTexts>
+    implements AppTexts {
   /// You can call this constructor and build your own translation instance of this locale.
-  /// Constructing via the enum [AppMessagesLocale.build] is preferred.
-  AppMessagesEs({
+  /// Constructing via the enum [AppLocale.build] is preferred.
+  AppTextsEs({
     Map<String, Node>? overrides,
     PluralResolver? cardinalResolver,
     PluralResolver? ordinalResolver,
-    TranslationMetadata<AppMessagesLocale, AppMessages>? meta,
+    TranslationMetadata<AppLocale, AppTexts>? meta,
   }) : assert(
          overrides == null,
          'Set "translation_overrides: true" in order to enable this feature.',
@@ -27,7 +27,7 @@ class AppMessagesEs
        _meta =
            meta ??
            TranslationMetadata(
-             locale: AppMessagesLocale.es,
+             locale: AppLocale.es,
              overrides: overrides ?? {},
              cardinalResolver: cardinalResolver,
              ordinalResolver: ordinalResolver,
@@ -36,63 +36,64 @@ class AppMessagesEs
   }
 
   /// Metadata for the translations of <es>.
-  final TranslationMetadata<AppMessagesLocale, AppMessages> _meta;
+  final TranslationMetadata<AppLocale, AppTexts> _meta;
   @override
-  TranslationMetadata<AppMessagesLocale, AppMessages> get $meta => _meta;
+  TranslationMetadata<AppLocale, AppTexts> get $meta => _meta;
 
   /// Access flat map
   @override
   dynamic operator [](String key) => _meta.getTranslation(key);
 
-  late final AppMessagesEs _root = this; // ignore: unused_field
+  late final AppTextsEs _root = this; // ignore: unused_field
 
   @override
-  AppMessagesEs $copyWith({
-    TranslationMetadata<AppMessagesLocale, AppMessages>? meta,
-  }) => AppMessagesEs(meta: meta ?? this.$meta);
+  AppTextsEs $copyWith({TranslationMetadata<AppLocale, AppTexts>? meta}) =>
+      AppTextsEs(meta: meta ?? this.$meta);
 
   // Translations
   @override
-  late final AppMessages$app$es app = AppMessages$app$es._(_root);
+  late final AppTexts$app$es app = AppTexts$app$es._(_root);
   @override
-  late final AppMessages$common$es common = AppMessages$common$es._(_root);
+  late final AppTexts$common$es common = AppTexts$common$es._(_root);
   @override
-  late final AppMessages$time$es time = AppMessages$time$es._(_root);
+  late final AppTexts$time$es time = AppTexts$time$es._(_root);
   @override
-  late final AppMessages$errors$es errors = AppMessages$errors$es._(_root);
+  late final AppTexts$errors$es errors = AppTexts$errors$es._(_root);
   @override
-  late final AppMessages$nav$es nav = AppMessages$nav$es._(_root);
+  late final AppTexts$nav$es nav = AppTexts$nav$es._(_root);
   @override
-  late final AppMessages$login$es login = AppMessages$login$es._(_root);
+  late final AppTexts$login$es login = AppTexts$login$es._(_root);
   @override
-  late final AppMessages$colors$es colors = AppMessages$colors$es._(_root);
+  late final AppTexts$colors$es colors = AppTexts$colors$es._(_root);
   @override
-  late final AppMessages$workspaces$es workspaces = AppMessages$workspaces$es._(
+  late final AppTexts$workspaces$es workspaces = AppTexts$workspaces$es._(
     _root,
   );
   @override
-  late final AppMessages$connections$es connections =
-      AppMessages$connections$es._(_root);
+  late final AppTexts$connections$es connections = AppTexts$connections$es._(
+    _root,
+  );
   @override
-  late final AppMessages$sources$es sources = AppMessages$sources$es._(_root);
+  late final AppTexts$sources$es sources = AppTexts$sources$es._(_root);
   @override
-  late final AppMessages$destinations$es destinations =
-      AppMessages$destinations$es._(_root);
+  late final AppTexts$destinations$es destinations = AppTexts$destinations$es._(
+    _root,
+  );
   @override
-  late final AppMessages$canvas$es canvas = AppMessages$canvas$es._(_root);
+  late final AppTexts$canvas$es canvas = AppTexts$canvas$es._(_root);
   @override
-  late final AppMessages$runs$es runs = AppMessages$runs$es._(_root);
+  late final AppTexts$runs$es runs = AppTexts$runs$es._(_root);
   @override
-  late final AppMessages$backups$es backups = AppMessages$backups$es._(_root);
+  late final AppTexts$backups$es backups = AppTexts$backups$es._(_root);
   @override
-  late final AppMessages$apiKeys$es apiKeys = AppMessages$apiKeys$es._(_root);
+  late final AppTexts$apiKeys$es apiKeys = AppTexts$apiKeys$es._(_root);
 }
 
 // Path: app
-class AppMessages$app$es implements AppMessages$app$en {
-  AppMessages$app$es._(this._root);
+class AppTexts$app$es implements AppTexts$app$en {
+  AppTexts$app$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -106,10 +107,10 @@ class AppMessages$app$es implements AppMessages$app$en {
 }
 
 // Path: common
-class AppMessages$common$es implements AppMessages$common$en {
-  AppMessages$common$es._(this._root);
+class AppTexts$common$es implements AppTexts$common$en {
+  AppTexts$common$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -195,10 +196,10 @@ class AppMessages$common$es implements AppMessages$common$en {
 }
 
 // Path: time
-class AppMessages$time$es implements AppMessages$time$en {
-  AppMessages$time$es._(this._root);
+class AppTexts$time$es implements AppTexts$time$en {
+  AppTexts$time$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -208,10 +209,10 @@ class AppMessages$time$es implements AppMessages$time$en {
 }
 
 // Path: errors
-class AppMessages$errors$es implements AppMessages$errors$en {
-  AppMessages$errors$es._(this._root);
+class AppTexts$errors$es implements AppTexts$errors$en {
+  AppTexts$errors$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -262,10 +263,10 @@ class AppMessages$errors$es implements AppMessages$errors$en {
 }
 
 // Path: nav
-class AppMessages$nav$es implements AppMessages$nav$en {
-  AppMessages$nav$es._(this._root);
+class AppTexts$nav$es implements AppTexts$nav$en {
+  AppTexts$nav$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -298,10 +299,10 @@ class AppMessages$nav$es implements AppMessages$nav$en {
 }
 
 // Path: login
-class AppMessages$login$es implements AppMessages$login$en {
-  AppMessages$login$es._(this._root);
+class AppTexts$login$es implements AppTexts$login$en {
+  AppTexts$login$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -358,10 +359,10 @@ class AppMessages$login$es implements AppMessages$login$en {
 }
 
 // Path: colors
-class AppMessages$colors$es implements AppMessages$colors$en {
-  AppMessages$colors$es._(this._root);
+class AppTexts$colors$es implements AppTexts$colors$en {
+  AppTexts$colors$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -402,10 +403,10 @@ class AppMessages$colors$es implements AppMessages$colors$en {
 }
 
 // Path: workspaces
-class AppMessages$workspaces$es implements AppMessages$workspaces$en {
-  AppMessages$workspaces$es._(this._root);
+class AppTexts$workspaces$es implements AppTexts$workspaces$en {
+  AppTexts$workspaces$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -471,18 +472,18 @@ class AppMessages$workspaces$es implements AppMessages$workspaces$en {
   @override
   String settingsOf({required Object name}) => 'Ajustes de ${name}';
   @override
-  late final AppMessages$workspaces$transfer$es transfer =
-      AppMessages$workspaces$transfer$es._(_root);
+  late final AppTexts$workspaces$transfer$es transfer =
+      AppTexts$workspaces$transfer$es._(_root);
   @override
-  late final AppMessages$workspaces$settings$es settings =
-      AppMessages$workspaces$settings$es._(_root);
+  late final AppTexts$workspaces$settings$es settings =
+      AppTexts$workspaces$settings$es._(_root);
 }
 
 // Path: connections
-class AppMessages$connections$es implements AppMessages$connections$en {
-  AppMessages$connections$es._(this._root);
+class AppTexts$connections$es implements AppTexts$connections$en {
+  AppTexts$connections$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -529,10 +530,10 @@ class AppMessages$connections$es implements AppMessages$connections$en {
 }
 
 // Path: sources
-class AppMessages$sources$es implements AppMessages$sources$en {
-  AppMessages$sources$es._(this._root);
+class AppTexts$sources$es implements AppTexts$sources$en {
+  AppTexts$sources$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -707,10 +708,10 @@ class AppMessages$sources$es implements AppMessages$sources$en {
 }
 
 // Path: destinations
-class AppMessages$destinations$es implements AppMessages$destinations$en {
-  AppMessages$destinations$es._(this._root);
+class AppTexts$destinations$es implements AppTexts$destinations$en {
+  AppTexts$destinations$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -919,15 +920,15 @@ class AppMessages$destinations$es implements AppMessages$destinations$en {
   @override
   String get off => 'No';
   @override
-  late final AppMessages$destinations$typeSub$es typeSub =
-      AppMessages$destinations$typeSub$es._(_root);
+  late final AppTexts$destinations$typeSub$es typeSub =
+      AppTexts$destinations$typeSub$es._(_root);
 }
 
 // Path: canvas
-class AppMessages$canvas$es implements AppMessages$canvas$en {
-  AppMessages$canvas$es._(this._root);
+class AppTexts$canvas$es implements AppTexts$canvas$en {
+  AppTexts$canvas$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -994,11 +995,11 @@ class AppMessages$canvas$es implements AppMessages$canvas$en {
   @override
   String get next => 'Próxima';
   @override
-  late final AppMessages$canvas$runStatus$es runStatus =
-      AppMessages$canvas$runStatus$es._(_root);
+  late final AppTexts$canvas$runStatus$es runStatus =
+      AppTexts$canvas$runStatus$es._(_root);
   @override
-  late final AppMessages$canvas$frequency$es frequency =
-      AppMessages$canvas$frequency$es._(_root);
+  late final AppTexts$canvas$frequency$es frequency =
+      AppTexts$canvas$frequency$es._(_root);
   @override
   String get addFolder => '+ Agregar carpeta';
   @override
@@ -1011,40 +1012,36 @@ class AppMessages$canvas$es implements AppMessages$canvas$en {
   String get addFolderRoot =>
       'Con la primera carpeta, la raíz del bucket deja de ser un punto de conexión: las configs que escriben ahí se desconectan.';
   @override
-  late final AppMessages$canvas$keys$es keys = AppMessages$canvas$keys$es._(
+  late final AppTexts$canvas$keys$es keys = AppTexts$canvas$keys$es._(_root);
+  @override
+  late final AppTexts$canvas$shortcuts$es shortcuts =
+      AppTexts$canvas$shortcuts$es._(_root);
+  @override
+  late final AppTexts$canvas$view$es view = AppTexts$canvas$view$es._(_root);
+  @override
+  late final AppTexts$canvas$inspector$es inspector =
+      AppTexts$canvas$inspector$es._(_root);
+  @override
+  late final AppTexts$canvas$columns$es columns = AppTexts$canvas$columns$es._(
     _root,
   );
-  @override
-  late final AppMessages$canvas$shortcuts$es shortcuts =
-      AppMessages$canvas$shortcuts$es._(_root);
-  @override
-  late final AppMessages$canvas$view$es view = AppMessages$canvas$view$es._(
-    _root,
-  );
-  @override
-  late final AppMessages$canvas$inspector$es inspector =
-      AppMessages$canvas$inspector$es._(_root);
-  @override
-  late final AppMessages$canvas$columns$es columns =
-      AppMessages$canvas$columns$es._(_root);
   @override
   String get folder => 'Carpeta';
   @override
-  late final AppMessages$canvas$testRun$es testRun =
-      AppMessages$canvas$testRun$es._(_root);
-  @override
-  late final AppMessages$canvas$run$es run = AppMessages$canvas$run$es._(_root);
-  @override
-  late final AppMessages$canvas$guide$es guide = AppMessages$canvas$guide$es._(
+  late final AppTexts$canvas$testRun$es testRun = AppTexts$canvas$testRun$es._(
     _root,
   );
+  @override
+  late final AppTexts$canvas$run$es run = AppTexts$canvas$run$es._(_root);
+  @override
+  late final AppTexts$canvas$guide$es guide = AppTexts$canvas$guide$es._(_root);
 }
 
 // Path: runs
-class AppMessages$runs$es implements AppMessages$runs$en {
-  AppMessages$runs$es._(this._root);
+class AppTexts$runs$es implements AppTexts$runs$en {
+  AppTexts$runs$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1161,10 +1158,10 @@ class AppMessages$runs$es implements AppMessages$runs$en {
 }
 
 // Path: backups
-class AppMessages$backups$es implements AppMessages$backups$en {
-  AppMessages$backups$es._(this._root);
+class AppTexts$backups$es implements AppTexts$backups$en {
+  AppTexts$backups$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1310,10 +1307,10 @@ class AppMessages$backups$es implements AppMessages$backups$en {
 }
 
 // Path: apiKeys
-class AppMessages$apiKeys$es implements AppMessages$apiKeys$en {
-  AppMessages$apiKeys$es._(this._root);
+class AppTexts$apiKeys$es implements AppTexts$apiKeys$en {
+  AppTexts$apiKeys$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1451,23 +1448,23 @@ class AppMessages$apiKeys$es implements AppMessages$apiKeys$en {
   @override
   String saved({required Object name}) => 'Key ${name} guardada';
   @override
-  late final AppMessages$apiKeys$group$es group =
-      AppMessages$apiKeys$group$es._(_root);
-  @override
-  late final AppMessages$apiKeys$action$es action =
-      AppMessages$apiKeys$action$es._(_root);
-  @override
-  late final AppMessages$apiKeys$perm$es perm = AppMessages$apiKeys$perm$es._(
+  late final AppTexts$apiKeys$group$es group = AppTexts$apiKeys$group$es._(
     _root,
   );
+  @override
+  late final AppTexts$apiKeys$action$es action = AppTexts$apiKeys$action$es._(
+    _root,
+  );
+  @override
+  late final AppTexts$apiKeys$perm$es perm = AppTexts$apiKeys$perm$es._(_root);
 }
 
 // Path: workspaces.transfer
-class AppMessages$workspaces$transfer$es
-    implements AppMessages$workspaces$transfer$en {
-  AppMessages$workspaces$transfer$es._(this._root);
+class AppTexts$workspaces$transfer$es
+    implements AppTexts$workspaces$transfer$en {
+  AppTexts$workspaces$transfer$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1534,11 +1531,11 @@ class AppMessages$workspaces$transfer$es
 }
 
 // Path: workspaces.settings
-class AppMessages$workspaces$settings$es
-    implements AppMessages$workspaces$settings$en {
-  AppMessages$workspaces$settings$es._(this._root);
+class AppTexts$workspaces$settings$es
+    implements AppTexts$workspaces$settings$en {
+  AppTexts$workspaces$settings$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1627,11 +1624,11 @@ class AppMessages$workspaces$settings$es
 }
 
 // Path: destinations.typeSub
-class AppMessages$destinations$typeSub$es
-    implements AppMessages$destinations$typeSub$en {
-  AppMessages$destinations$typeSub$es._(this._root);
+class AppTexts$destinations$typeSub$es
+    implements AppTexts$destinations$typeSub$en {
+  AppTexts$destinations$typeSub$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1647,11 +1644,10 @@ class AppMessages$destinations$typeSub$es
 }
 
 // Path: canvas.runStatus
-class AppMessages$canvas$runStatus$es
-    implements AppMessages$canvas$runStatus$en {
-  AppMessages$canvas$runStatus$es._(this._root);
+class AppTexts$canvas$runStatus$es implements AppTexts$canvas$runStatus$en {
+  AppTexts$canvas$runStatus$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1665,11 +1661,10 @@ class AppMessages$canvas$runStatus$es
 }
 
 // Path: canvas.frequency
-class AppMessages$canvas$frequency$es
-    implements AppMessages$canvas$frequency$en {
-  AppMessages$canvas$frequency$es._(this._root);
+class AppTexts$canvas$frequency$es implements AppTexts$canvas$frequency$en {
+  AppTexts$canvas$frequency$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1683,10 +1678,10 @@ class AppMessages$canvas$frequency$es
 }
 
 // Path: canvas.keys
-class AppMessages$canvas$keys$es implements AppMessages$canvas$keys$en {
-  AppMessages$canvas$keys$es._(this._root);
+class AppTexts$canvas$keys$es implements AppTexts$canvas$keys$en {
+  AppTexts$canvas$keys$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1700,11 +1695,10 @@ class AppMessages$canvas$keys$es implements AppMessages$canvas$keys$en {
 }
 
 // Path: canvas.shortcuts
-class AppMessages$canvas$shortcuts$es
-    implements AppMessages$canvas$shortcuts$en {
-  AppMessages$canvas$shortcuts$es._(this._root);
+class AppTexts$canvas$shortcuts$es implements AppTexts$canvas$shortcuts$en {
+  AppTexts$canvas$shortcuts$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1744,10 +1738,10 @@ class AppMessages$canvas$shortcuts$es
 }
 
 // Path: canvas.view
-class AppMessages$canvas$view$es implements AppMessages$canvas$view$en {
-  AppMessages$canvas$view$es._(this._root);
+class AppTexts$canvas$view$es implements AppTexts$canvas$view$en {
+  AppTexts$canvas$view$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1775,11 +1769,10 @@ class AppMessages$canvas$view$es implements AppMessages$canvas$view$en {
 }
 
 // Path: canvas.inspector
-class AppMessages$canvas$inspector$es
-    implements AppMessages$canvas$inspector$en {
-  AppMessages$canvas$inspector$es._(this._root);
+class AppTexts$canvas$inspector$es implements AppTexts$canvas$inspector$en {
+  AppTexts$canvas$inspector$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1840,8 +1833,8 @@ class AppMessages$canvas$inspector$es
   String get placeholdersIntro =>
       'Cada placeholder se reemplaza cuando empieza el backup. Las fechas y horas van en UTC.';
   @override
-  late final AppMessages$canvas$inspector$placeholderHelp$es placeholderHelp =
-      AppMessages$canvas$inspector$placeholderHelp$es._(_root);
+  late final AppTexts$canvas$inspector$placeholderHelp$es placeholderHelp =
+      AppTexts$canvas$inspector$placeholderHelp$es._(_root);
   @override
   String get placeholdersOther =>
       'Cualquier otro texto entre llaves se escribe tal cual.';
@@ -1851,11 +1844,11 @@ class AppMessages$canvas$inspector$es
   String get cronInfoIntro =>
       'Cinco campos separados por espacios, siempre en UTC.';
   @override
-  late final AppMessages$canvas$inspector$cronField$es cronField =
-      AppMessages$canvas$inspector$cronField$es._(_root);
+  late final AppTexts$canvas$inspector$cronField$es cronField =
+      AppTexts$canvas$inspector$cronField$es._(_root);
   @override
-  late final AppMessages$canvas$inspector$cronExample$es cronExample =
-      AppMessages$canvas$inspector$cronExample$es._(_root);
+  late final AppTexts$canvas$inspector$cronExample$es cronExample =
+      AppTexts$canvas$inspector$cronExample$es._(_root);
   @override
   String get cronInfoSyntax =>
       '* es cualquier valor, */n cada n, a-b un rango y a,b una lista.';
@@ -1885,10 +1878,10 @@ class AppMessages$canvas$inspector$es
 }
 
 // Path: canvas.columns
-class AppMessages$canvas$columns$es implements AppMessages$canvas$columns$en {
-  AppMessages$canvas$columns$es._(this._root);
+class AppTexts$canvas$columns$es implements AppTexts$canvas$columns$en {
+  AppTexts$canvas$columns$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1900,10 +1893,10 @@ class AppMessages$canvas$columns$es implements AppMessages$canvas$columns$en {
 }
 
 // Path: canvas.testRun
-class AppMessages$canvas$testRun$es implements AppMessages$canvas$testRun$en {
-  AppMessages$canvas$testRun$es._(this._root);
+class AppTexts$canvas$testRun$es implements AppTexts$canvas$testRun$en {
+  AppTexts$canvas$testRun$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1922,10 +1915,10 @@ class AppMessages$canvas$testRun$es implements AppMessages$canvas$testRun$en {
 }
 
 // Path: canvas.run
-class AppMessages$canvas$run$es implements AppMessages$canvas$run$en {
-  AppMessages$canvas$run$es._(this._root);
+class AppTexts$canvas$run$es implements AppTexts$canvas$run$en {
+  AppTexts$canvas$run$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1945,10 +1938,10 @@ class AppMessages$canvas$run$es implements AppMessages$canvas$run$en {
 }
 
 // Path: canvas.guide
-class AppMessages$canvas$guide$es implements AppMessages$canvas$guide$en {
-  AppMessages$canvas$guide$es._(this._root);
+class AppTexts$canvas$guide$es implements AppTexts$canvas$guide$en {
+  AppTexts$canvas$guide$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1973,10 +1966,10 @@ class AppMessages$canvas$guide$es implements AppMessages$canvas$guide$en {
 }
 
 // Path: apiKeys.group
-class AppMessages$apiKeys$group$es implements AppMessages$apiKeys$group$en {
-  AppMessages$apiKeys$group$es._(this._root);
+class AppTexts$apiKeys$group$es implements AppTexts$apiKeys$group$en {
+  AppTexts$apiKeys$group$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -1994,10 +1987,10 @@ class AppMessages$apiKeys$group$es implements AppMessages$apiKeys$group$en {
 }
 
 // Path: apiKeys.action
-class AppMessages$apiKeys$action$es implements AppMessages$apiKeys$action$en {
-  AppMessages$apiKeys$action$es._(this._root);
+class AppTexts$apiKeys$action$es implements AppTexts$apiKeys$action$en {
+  AppTexts$apiKeys$action$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -2019,10 +2012,10 @@ class AppMessages$apiKeys$action$es implements AppMessages$apiKeys$action$en {
 }
 
 // Path: apiKeys.perm
-class AppMessages$apiKeys$perm$es implements AppMessages$apiKeys$perm$en {
-  AppMessages$apiKeys$perm$es._(this._root);
+class AppTexts$apiKeys$perm$es implements AppTexts$apiKeys$perm$en {
+  AppTexts$apiKeys$perm$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -2088,11 +2081,11 @@ class AppMessages$apiKeys$perm$es implements AppMessages$apiKeys$perm$en {
 }
 
 // Path: canvas.inspector.placeholderHelp
-class AppMessages$canvas$inspector$placeholderHelp$es
-    implements AppMessages$canvas$inspector$placeholderHelp$en {
-  AppMessages$canvas$inspector$placeholderHelp$es._(this._root);
+class AppTexts$canvas$inspector$placeholderHelp$es
+    implements AppTexts$canvas$inspector$placeholderHelp$en {
+  AppTexts$canvas$inspector$placeholderHelp$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -2113,11 +2106,11 @@ class AppMessages$canvas$inspector$placeholderHelp$es
 }
 
 // Path: canvas.inspector.cronField
-class AppMessages$canvas$inspector$cronField$es
-    implements AppMessages$canvas$inspector$cronField$en {
-  AppMessages$canvas$inspector$cronField$es._(this._root);
+class AppTexts$canvas$inspector$cronField$es
+    implements AppTexts$canvas$inspector$cronField$en {
+  AppTexts$canvas$inspector$cronField$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -2133,11 +2126,11 @@ class AppMessages$canvas$inspector$cronField$es
 }
 
 // Path: canvas.inspector.cronExample
-class AppMessages$canvas$inspector$cronExample$es
-    implements AppMessages$canvas$inspector$cronExample$en {
-  AppMessages$canvas$inspector$cronExample$es._(this._root);
+class AppTexts$canvas$inspector$cronExample$es
+    implements AppTexts$canvas$inspector$cronExample$en {
+  AppTexts$canvas$inspector$cronExample$es._(this._root);
 
-  final AppMessagesEs _root; // ignore: unused_field
+  final AppTextsEs _root; // ignore: unused_field
 
   // Translations
   @override
@@ -2157,7 +2150,7 @@ class AppMessages$canvas$inspector$cronExample$es
 ///
 /// The Dart AOT compiler has issues with very large switch statements,
 /// so the map is split into smaller functions (512 entries each).
-extension on AppMessagesEs {
+extension on AppTextsEs {
   dynamic _flatMapFunction(String path) {
     return switch (path) {
           'app.name' => 'Dumpling',

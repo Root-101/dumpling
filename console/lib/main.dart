@@ -11,12 +11,6 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 final String loadingOverlayGlobalId = 'app-global-loading';
 
-/// The Material texts that `material_ui` widgets read; the app's own come from
-/// `context.intl` (slang). Every MaterialApp uses these (app and splash)
-const List<LocalizationsDelegate<dynamic>> appLocalizationsDelegates = [
-  ...GlobalMaterialLocalizations.delegates,
-];
-
 // generate code
 // fvm dart run slang
 
@@ -38,6 +32,10 @@ void main() {
   GoRouter.optionURLReflectsImperativeAPIs = true;
 
   WidgetsFlutterBinding.ensureInitialized();
+  // Until the saved one loads: the browser's language, if it is one of ours
+  AppIntl.current = AppIntl.resolve(
+    WidgetsBinding.instance.platformDispatcher.locale.languageCode,
+  );
   // the right click is the canvas's own menu, not the browser's
   if (kIsWeb) BrowserContextMenu.disableContextMenu();
 
@@ -71,10 +69,10 @@ class App extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: ThemeConfig.theme,
             locale: locale,
-            localizationsDelegates: appLocalizationsDelegates,
-            supportedLocales: appSupportedLocales,
+            localizationsDelegates: AppIntl.delegates,
+            supportedLocales: AppIntl.supportedLocales,
             builder: (context, child) => Scaffold(
-              body: Center(child: Text(context.intl.app.needMoreSpace)),
+              body: Center(child: Text(app.intl.app.needMoreSpace)),
             ),
           );
         } else {
@@ -95,12 +93,12 @@ class App extends StatelessWidget {
               );
             },
             debugShowCheckedModeBanner: false,
-            onGenerateTitle: (context) => context.intl.app.name,
+            onGenerateTitle: (context) => app.intl.app.name,
             theme: ThemeConfig.theme,
             locale: locale,
             routerConfig: RouteConfig.router,
-            localizationsDelegates: appLocalizationsDelegates,
-            supportedLocales: appSupportedLocales,
+            localizationsDelegates: AppIntl.delegates,
+            supportedLocales: AppIntl.supportedLocales,
           );
         }
       },
@@ -126,13 +124,8 @@ class AppGlobal {
 
   TextTheme get textTheme => theme.textTheme;
 
-  /// Texts of the app's language; without a navigator yet (or in tests), those
-  /// of `Intl.defaultLocale`, English by default
-  AppMessages get intl {
-    final context = navigatorKey.currentContext;
-    if (context != null) return context.intl;
-    return messagesOf(Locale(Intl.defaultLocale ?? 'en'));
-  }
+  /// Texts of the current language (`AppIntl.current`, set by `LanguageCubit`)
+  AppTexts get intl => AppIntl.texts;
 
   LoadingOverlayController loading = LoadingOverlayController();
 
