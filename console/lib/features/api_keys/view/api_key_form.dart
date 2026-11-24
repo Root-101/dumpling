@@ -6,7 +6,7 @@ import 'package:material_ui/material_ui.dart';
 /// optionally the only configs it reaches. Creating it shows the key once
 class ApiKeyForm extends StatefulWidget {
   /// Opens the form of [key], or of a new one
-  static Future<void> open(ApiKeyCubit cubit, {ApiKeyModel? key}) {
+  static Future<void> open(ApiKeysCubit cubit, {ApiKeyModel? key}) {
     return showGeneralDialog(
       context: app.context,
       barrierDismissible: true,
@@ -20,7 +20,7 @@ class ApiKeyForm extends StatefulWidget {
     );
   }
 
-  final ApiKeyCubit cubit;
+  final ApiKeysCubit cubit;
 
   /// Null for a new one
   final ApiKeyModel? apiKey;

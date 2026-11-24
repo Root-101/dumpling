@@ -1,8 +1,8 @@
 import 'package:console/app_exporter.dart';
 import 'package:dio/dio.dart';
 
-class ConfigClient extends BaseClient {
-  ConfigClient(super.dio);
+class ConfigsClient extends BaseClient {
+  ConfigsClient(super.dio);
 
   String _configsUrl(String workspace) =>
       '$baseUrl/workspaces/$workspace/configs';

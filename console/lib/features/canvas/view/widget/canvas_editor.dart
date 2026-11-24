@@ -466,7 +466,7 @@ class _CanvasEditorState extends State<CanvasEditor>
                 link.id,
                 target,
                 defaults: app.di
-                    .find<WorkspaceCubit>()
+                    .find<WorkspacesCubit>()
                     .state
                     .data
                     .current

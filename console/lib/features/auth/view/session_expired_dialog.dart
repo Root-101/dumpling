@@ -86,7 +86,7 @@ class _SessionExpiredDialogState extends State<SessionExpiredDialog> {
           TextInput.finishAutofillContext();
           Navigator.of(context).pop();
           // the rail's workspaces may have failed with the old token
-          app.di.find<WorkspaceCubit>().load();
+          app.di.find<WorkspacesCubit>().load();
         }
       },
       builder: (context, state) {

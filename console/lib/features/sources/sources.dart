@@ -1,6 +1,6 @@
-export 'data/repo/source_repo.dart';
-export 'data/rest/source_client.dart';
-export 'logic/cubit/source_cubit.dart';
+export 'data/repo/sources_repo.dart';
+export 'data/rest/sources_client.dart';
+export 'logic/cubit/sources_cubit.dart';
 export 'logic/cubit/source_form_cubit.dart';
 export 'logic/model/source_model.dart';
 export 'sources_init.dart';

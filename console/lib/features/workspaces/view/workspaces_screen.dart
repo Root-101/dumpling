@@ -26,13 +26,13 @@ class WorkspacesScreen extends StatefulWidget {
 }
 
 class _WorkspacesScreenState extends State<WorkspacesScreen> {
-  late final WorkspaceCubit cubit;
+  late final WorkspacesCubit cubit;
 
   @override
   void initState() {
     super.initState();
     // the counts of the cards change while away from here
-    cubit = context.read<WorkspaceCubit>()..load();
+    cubit = context.read<WorkspacesCubit>()..load();
   }
 
   @override
@@ -74,10 +74,10 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
           ),
           Expanded(
             child: PagePanel(
-              child: BlocBuilder<WorkspaceCubit, WorkspaceState>(
+              child: BlocBuilder<WorkspacesCubit, WorkspacesState>(
                 builder: (context, state) {
                   if (!state.data.loaded) {
-                    return state is WorkspaceLoadingErrorState
+                    return state is WorkspacesLoadingErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.load)
                         : AppShimmer(
                             child: _grid(
@@ -100,7 +100,7 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
     );
   }
 
-  Widget _buildGrid(WorkspaceData data) => _grid(
+  Widget _buildGrid(WorkspacesData data) => _grid(
     (width) => [
       for (final workspace in data.workspaces)
         SizedBox(

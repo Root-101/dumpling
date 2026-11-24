@@ -87,7 +87,7 @@ nav:
   collapse: 'Collapse menu'
   logout: 'Sign out'
 
-login:
+auth:
   title: 'Sign in'
   description: 'Manage your database backups.'
   username: 'Username'

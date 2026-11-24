@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// The run log of the open workspace: the 200 newest runs, the search and the
 /// filters over them, and the detail (with its log) of the runs opened
-class RunCubit extends Cubit<RunState> {
-  final RunRepo _repo;
+class RunsCubit extends Cubit<RunsState> {
+  final RunsRepo _repo;
   final AuthCubit _auth;
 
-  RunCubit(this._repo, this._auth) : super(const RunInitialState());
+  RunsCubit(this._repo, this._auth) : super(const RunsInitialState());
 
   String? get _token => _auth.auth?.accessToken;
 
@@ -15,16 +15,16 @@ class RunCubit extends Cubit<RunState> {
   Future<void> load(String workspace) async {
     final data = state.data.workspace == workspace
         ? state.data
-        : RunData.empty(workspace);
-    emit(RunLoadingInProgressState(data: data));
+        : RunsData.empty(workspace);
+    emit(RunsLoadingInProgressState(data: data));
     try {
       final runs = await _repo.list(workspace: workspace, token: _token);
       // the answer of a workspace already left behind is dropped
       if (state.data.workspace != workspace) return;
-      emit(RunLoadingSuccessState(data: state.data.withRuns(runs)));
+      emit(RunsLoadingSuccessState(data: state.data.withRuns(runs)));
     } catch (e) {
       if (state.data.workspace != workspace) return;
-      emit(RunLoadingErrorState(ExceptionConverter.parse(e), data: state.data));
+      emit(RunsLoadingErrorState(ExceptionConverter.parse(e), data: state.data));
     }
   }
 
@@ -49,7 +49,7 @@ class RunCubit extends Cubit<RunState> {
       return true;
     } catch (e) {
       emit(
-        RunProcessingErrorState(
+        RunsProcessingErrorState(
           ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
@@ -65,7 +65,7 @@ class RunCubit extends Cubit<RunState> {
   Future<void> detail(RunModel run, {String? workspace}) async {
     workspace ??= state.data.workspace!;
     if (state.data.workspace != workspace) {
-      emit(RunLoadingSuccessState(data: RunData.empty(workspace)));
+      emit(RunsLoadingSuccessState(data: RunsData.empty(workspace)));
     }
     try {
       final detail = await _repo.get(
@@ -74,11 +74,11 @@ class RunCubit extends Cubit<RunState> {
         token: _token,
       );
       if (state.data.workspace != workspace) return;
-      emit(RunLoadingSuccessState(data: state.data.withDetail(detail)));
+      emit(RunsLoadingSuccessState(data: state.data.withDetail(detail)));
     } catch (e) {
       if (state.data.workspace != workspace) return;
       emit(
-        RunProcessingErrorState(
+        RunsProcessingErrorState(
           ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
@@ -105,28 +105,28 @@ class RunCubit extends Cubit<RunState> {
 
   /// By config, source or destination name, over the runs already loaded
   void search(String query) =>
-      emit(RunLoadingSuccessState(data: state.data.withQuery(query)));
+      emit(RunsLoadingSuccessState(data: state.data.withQuery(query)));
 
   /// Null: every status
   void filterStatus(RunStatus? status) => emit(
-    RunLoadingSuccessState(data: state.data._copy(status: () => status)),
+    RunsLoadingSuccessState(data: state.data._copy(status: () => status)),
   );
 
   void filterSourceType(String? type) => emit(
-    RunLoadingSuccessState(data: state.data._copy(sourceType: () => type)),
+    RunsLoadingSuccessState(data: state.data._copy(sourceType: () => type)),
   );
 
   void filterDestinationType(String? type) => emit(
-    RunLoadingSuccessState(data: state.data._copy(destinationType: () => type)),
+    RunsLoadingSuccessState(data: state.data._copy(destinationType: () => type)),
   );
 
   /// `schedule`, `manual` or `api`; null: all of them
   void filterTrigger(String? trigger) => emit(
-    RunLoadingSuccessState(data: state.data._copy(trigger: () => trigger)),
+    RunsLoadingSuccessState(data: state.data._copy(trigger: () => trigger)),
   );
 
   void clearFilters() => emit(
-    RunLoadingSuccessState(
+    RunsLoadingSuccessState(
       data: state.data._copy(
         query: '',
         status: () => null,
@@ -138,13 +138,13 @@ class RunCubit extends Cubit<RunState> {
   );
 
   /// After signing out
-  void reset() => emit(const RunInitialState());
+  void reset() => emit(const RunsInitialState());
 }
 
 /// The loaded runs, newest first, and what the search and the filters leave
 /// ([visibleRuns], filled on every change). [details]: the runs opened, with
 /// their log, by id
-class RunData {
+class RunsData {
   final String? workspace;
   final bool loaded;
   final List<RunModel> runs;
@@ -158,7 +158,7 @@ class RunData {
   final String? trigger;
   final List<RunModel> visibleRuns;
 
-  const RunData._({
+  const RunsData._({
     required this.workspace,
     required this.loaded,
     required this.runs,
@@ -171,7 +171,7 @@ class RunData {
     required this.visibleRuns,
   });
 
-  const RunData.empty([String? workspace])
+  const RunsData.empty([String? workspace])
     : this._(
         workspace: workspace,
         loaded: false,
@@ -185,7 +185,7 @@ class RunData {
         visibleRuns: const [],
       );
 
-  RunData _copy({
+  RunsData _copy({
     bool? loaded,
     List<RunModel>? runs,
     Map<String, RunModel>? details,
@@ -217,7 +217,7 @@ class RunData {
               ?r.label,
               ?r.keyName,
             ].join(' ').toLowerCase().contains(needle));
-    return RunData._(
+    return RunsData._(
       workspace: workspace,
       loaded: loaded ?? this.loaded,
       runs: runs_,
@@ -232,7 +232,7 @@ class RunData {
   }
 
   /// A detail of a run that has changed since (it was running) is dropped
-  RunData withRuns(List<RunModel> runs) => _copy(
+  RunsData withRuns(List<RunModel> runs) => _copy(
     loaded: true,
     runs: runs,
     details: {
@@ -241,12 +241,12 @@ class RunData {
     },
   );
 
-  RunData withDetail(RunModel run) => _copy(
+  RunsData withDetail(RunModel run) => _copy(
     runs: [for (final r in runs) r.id == run.id ? run : r],
     details: {...details, run.id: run},
   );
 
-  RunData withQuery(String query) => _copy(query: query);
+  RunsData withQuery(String query) => _copy(query: query);
 
   /// How many filters are on (the search box apart)
   int get activeFilters => [
@@ -257,34 +257,34 @@ class RunData {
   ].where((f) => f != null).length;
 }
 
-abstract class RunState {
-  final RunData data;
+abstract class RunsState {
+  final RunsData data;
 
-  const RunState({this.data = const RunData.empty()});
+  const RunsState({this.data = const RunsData.empty()});
 }
 
-class RunInitialState extends RunState {
-  const RunInitialState();
+class RunsInitialState extends RunsState {
+  const RunsInitialState();
 }
 
 //------------------------- LOADING -------------------------\
-class RunLoadingInProgressState extends RunState {
-  const RunLoadingInProgressState({required super.data});
+class RunsLoadingInProgressState extends RunsState {
+  const RunsLoadingInProgressState({required super.data});
 }
 
-class RunLoadingSuccessState extends RunState {
-  const RunLoadingSuccessState({required super.data});
+class RunsLoadingSuccessState extends RunsState {
+  const RunsLoadingSuccessState({required super.data});
 }
 
-class RunLoadingErrorState extends RunState {
+class RunsLoadingErrorState extends RunsState {
   final GlobalException exception;
 
-  const RunLoadingErrorState(this.exception, {required super.data});
+  const RunsLoadingErrorState(this.exception, {required super.data});
 }
 
 //------------------------- PROCESSING -------------------------\
-class RunProcessingErrorState extends RunState {
+class RunsProcessingErrorState extends RunsState {
   final String message;
 
-  const RunProcessingErrorState(this.message, {required super.data});
+  const RunsProcessingErrorState(this.message, {required super.data});
 }

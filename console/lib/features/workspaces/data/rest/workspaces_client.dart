@@ -1,8 +1,8 @@
 import 'package:console/app_exporter.dart';
 import 'package:dio/dio.dart';
 
-class WorkspaceClient extends BaseClient {
-  WorkspaceClient(super.dio);
+class WorkspacesClient extends BaseClient {
+  WorkspacesClient(super.dio);
 
   String get _workspacesUrl => '$baseUrl/workspaces';
 

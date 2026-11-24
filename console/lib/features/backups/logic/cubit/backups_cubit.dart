@@ -5,25 +5,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// run, from the canvas: one request brings them with the names of their
 /// source and destination. Search, filters, sort, the recent runs of a row,
 /// Run now, and editing or deleting a config out of the canvas
-class BackupCubit extends Cubit<BackupState> {
+class BackupsCubit extends Cubit<BackupsState> {
   /// How many runs a row shows when it opens
   static const int recentRuns = 5;
 
   final CanvasRepo _repo;
-  final ConfigRepo _configs;
-  final RunRepo _runs;
+  final ConfigsRepo _configs;
+  final RunsRepo _runs;
   final AuthCubit _auth;
 
   /// How often a run started here is asked how it goes
   final Duration pollEvery;
 
-  BackupCubit(
+  BackupsCubit(
     this._repo,
     this._configs,
     this._runs,
     this._auth, {
     this.pollEvery = const Duration(seconds: 2),
-  }) : super(const BackupInitialState());
+  }) : super(const BackupsInitialState());
 
   String? get _token => _auth.auth?.accessToken;
 
@@ -31,17 +31,17 @@ class BackupCubit extends Cubit<BackupState> {
   Future<void> load(String workspace) async {
     final data = state.data.workspace == workspace
         ? state.data
-        : BackupData.empty(workspace);
-    emit(BackupLoadingInProgressState(data: data));
+        : BackupsData.empty(workspace);
+    emit(BackupsLoadingInProgressState(data: data));
     try {
       final canvas = await _repo.get(workspace: workspace, token: _token);
       // the answer of a workspace already left behind is dropped
       if (state.data.workspace != workspace) return;
-      emit(BackupLoadingSuccessState(data: state.data.withCanvas(canvas)));
+      emit(BackupsLoadingSuccessState(data: state.data.withCanvas(canvas)));
     } catch (e) {
       if (state.data.workspace != workspace) return;
       emit(
-        BackupLoadingErrorState(ExceptionConverter.parse(e), data: state.data),
+        BackupsLoadingErrorState(ExceptionConverter.parse(e), data: state.data),
       );
     }
   }
@@ -53,28 +53,28 @@ class BackupCubit extends Cubit<BackupState> {
 
   /// By backup, source or destination name
   void search(String query) =>
-      emit(BackupLoadingSuccessState(data: state.data._copy(query: query)));
+      emit(BackupsLoadingSuccessState(data: state.data._copy(query: query)));
 
   /// Null: every health
   void filterHealth(BackupHealth? health) => emit(
-    BackupLoadingSuccessState(data: state.data._copy(health: () => health)),
+    BackupsLoadingSuccessState(data: state.data._copy(health: () => health)),
   );
 
   /// Null: every source
   void filterSource(String? id) => emit(
-    BackupLoadingSuccessState(data: state.data._copy(sourceId: () => id)),
+    BackupsLoadingSuccessState(data: state.data._copy(sourceId: () => id)),
   );
 
   /// Null: every destination
   void filterDestination(String? id) => emit(
-    BackupLoadingSuccessState(data: state.data._copy(destinationId: () => id)),
+    BackupsLoadingSuccessState(data: state.data._copy(destinationId: () => id)),
   );
 
   void sort(BackupSort sort) =>
-      emit(BackupLoadingSuccessState(data: state.data._copy(sort: sort)));
+      emit(BackupsLoadingSuccessState(data: state.data._copy(sort: sort)));
 
   void clearFilters() => emit(
-    BackupLoadingSuccessState(
+    BackupsLoadingSuccessState(
       data: state.data._copy(
         query: '',
         health: () => null,
@@ -90,7 +90,7 @@ class BackupCubit extends Cubit<BackupState> {
   Future<void> reorder(int from, int to) async {
     final before = state.data;
     final backups = reordered(before.backups, from, to);
-    emit(BackupLoadingSuccessState(data: before._copy(backups: backups)));
+    emit(BackupsLoadingSuccessState(data: before._copy(backups: backups)));
     try {
       await _configs.reorder(
         workspace: before.workspace!,
@@ -100,7 +100,7 @@ class BackupCubit extends Cubit<BackupState> {
     } catch (e) {
       if (state.data.workspace != before.workspace) return;
       emit(
-        BackupProcessingErrorState(
+        BackupsProcessingErrorState(
           ExceptionConverter.parse(e).intlMessage,
           data: before,
         ),
@@ -120,7 +120,7 @@ class BackupCubit extends Cubit<BackupState> {
       );
       if (isClosed || state.data.workspace != workspace) return;
       emit(
-        BackupLoadingSuccessState(
+        BackupsLoadingSuccessState(
           data: state.data._copy(
             recent: {...state.data.recent, configId: runs},
           ),
@@ -129,7 +129,7 @@ class BackupCubit extends Cubit<BackupState> {
     } catch (e) {
       if (isClosed || state.data.workspace != workspace) return;
       emit(
-        BackupProcessingErrorState(
+        BackupsProcessingErrorState(
           ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
@@ -151,7 +151,7 @@ class BackupCubit extends Cubit<BackupState> {
       return ExceptionConverter.parse(e).intlMessage;
     }
     if (isClosed || state.data.workspace != workspace) return null;
-    emit(BackupSavedState(config.name, data: state.data));
+    emit(BackupsSavedState(config.name, data: state.data));
     await reload();
     return null;
   }
@@ -169,7 +169,7 @@ class BackupCubit extends Cubit<BackupState> {
 
   Future<void> _delete(BackupRow backup) async {
     final workspace = state.data.workspace!;
-    emit(BackupProcessInProgressState(data: state.data));
+    emit(BackupsProcessInProgressState(data: state.data));
     try {
       await _configs.delete(
         workspace: workspace,
@@ -177,11 +177,11 @@ class BackupCubit extends Cubit<BackupState> {
         token: _token,
       );
       if (isClosed || state.data.workspace != workspace) return;
-      emit(BackupDeletedState(backup.config.name, data: state.data));
+      emit(BackupsDeletedState(backup.config.name, data: state.data));
     } catch (e) {
       if (isClosed || state.data.workspace != workspace) return;
       emit(
-        BackupProcessingErrorState(
+        BackupsProcessingErrorState(
           ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
@@ -204,20 +204,20 @@ class BackupCubit extends Cubit<BackupState> {
       while (true) {
         await _deleting;
         if (isClosed || state.data.workspace != workspace) return;
-        emit(BackupLoadingSuccessState(data: state.data.withRun(id, run)));
+        emit(BackupsLoadingSuccessState(data: state.data.withRun(id, run)));
         if (!run.running) break;
         await Future.delayed(pollEvery);
         run = await _repo.run(workspace: workspace, id: run.id, token: _token);
       }
       await _deleting;
       if (isClosed || state.data.workspace != workspace) return;
-      emit(BackupRunFinishedState(backup.config.name, run, data: state.data));
+      emit(BackupsRunFinishedState(backup.config.name, run, data: state.data));
       // an open row shows the new run too
       if (state.data.recent.containsKey(id)) await loadRecent(id);
     } catch (e) {
       if (isClosed || state.data.workspace != workspace) return;
       emit(
-        BackupProcessingErrorState(
+        BackupsProcessingErrorState(
           ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
@@ -226,7 +226,7 @@ class BackupCubit extends Cubit<BackupState> {
   }
 
   /// After signing out
-  void reset() => emit(const BackupInitialState());
+  void reset() => emit(const BackupsInitialState());
 }
 
 /// How a backup is doing, from its last run
@@ -265,7 +265,7 @@ class BackupRow {
 
 /// The backups loaded and what the search and the filter leave, sorted
 /// ([visible], filled on every change)
-class BackupData {
+class BackupsData {
   final String? workspace;
   final bool loaded;
   final List<BackupRow> backups;
@@ -281,7 +281,7 @@ class BackupData {
   final Map<String, List<RunModel>> recent;
   final List<BackupRow> visible;
 
-  const BackupData._({
+  const BackupsData._({
     required this.workspace,
     required this.loaded,
     required this.backups,
@@ -294,7 +294,7 @@ class BackupData {
     required this.visible,
   });
 
-  const BackupData.empty([String? workspace])
+  const BackupsData.empty([String? workspace])
     : this._(
         workspace: workspace,
         loaded: false,
@@ -308,7 +308,7 @@ class BackupData {
         visible: const [],
       );
 
-  BackupData _copy({
+  BackupsData _copy({
     bool? loaded,
     List<BackupRow>? backups,
     String? query,
@@ -367,7 +367,7 @@ class BackupData {
           ),
         },
       );
-    return BackupData._(
+    return BackupsData._(
       workspace: workspace,
       loaded: loaded ?? this.loaded,
       backups: backups_,
@@ -383,7 +383,7 @@ class BackupData {
 
   /// The saved configs; one whose node is missing (it can't be saved so) is
   /// left out
-  BackupData withCanvas(CanvasModel canvas) {
+  BackupsData withCanvas(CanvasModel canvas) {
     final sources = {
       for (final s in [...canvas.sources, ...canvas.sourcePool]) s.id: s,
     };
@@ -404,7 +404,7 @@ class BackupData {
     );
   }
 
-  BackupData withRun(String configId, LastRun run) => _copy(
+  BackupsData withRun(String configId, LastRun run) => _copy(
     backups: [
       for (final b in backups)
         b.config.id == configId
@@ -440,59 +440,59 @@ class BackupData {
   bool get filtered => activeFilters > 0 || query.trim().isNotEmpty;
 }
 
-abstract class BackupState {
-  final BackupData data;
+abstract class BackupsState {
+  final BackupsData data;
 
-  const BackupState({this.data = const BackupData.empty()});
+  const BackupsState({this.data = const BackupsData.empty()});
 }
 
-class BackupInitialState extends BackupState {
-  const BackupInitialState();
+class BackupsInitialState extends BackupsState {
+  const BackupsInitialState();
 }
 
 //------------------------- LOADING -------------------------\
-class BackupLoadingInProgressState extends BackupState {
-  const BackupLoadingInProgressState({required super.data});
+class BackupsLoadingInProgressState extends BackupsState {
+  const BackupsLoadingInProgressState({required super.data});
 }
 
-class BackupLoadingSuccessState extends BackupState {
-  const BackupLoadingSuccessState({required super.data});
+class BackupsLoadingSuccessState extends BackupsState {
+  const BackupsLoadingSuccessState({required super.data});
 }
 
-class BackupLoadingErrorState extends BackupState {
+class BackupsLoadingErrorState extends BackupsState {
   final GlobalException exception;
 
-  const BackupLoadingErrorState(this.exception, {required super.data});
+  const BackupsLoadingErrorState(this.exception, {required super.data});
 }
 
 //------------------------- PROCESSING -------------------------\
 /// A Run now started here ended: [run] says how
-class BackupRunFinishedState extends BackupState {
+class BackupsRunFinishedState extends BackupsState {
   final String name;
   final LastRun run;
 
-  const BackupRunFinishedState(this.name, this.run, {required super.data});
+  const BackupsRunFinishedState(this.name, this.run, {required super.data});
 }
 
-class BackupProcessInProgressState extends BackupState {
-  const BackupProcessInProgressState({required super.data});
+class BackupsProcessInProgressState extends BackupsState {
+  const BackupsProcessInProgressState({required super.data});
 }
 
 /// [name] was saved from its dialog
-class BackupSavedState extends BackupState {
+class BackupsSavedState extends BackupsState {
   final String name;
 
-  const BackupSavedState(this.name, {required super.data});
+  const BackupsSavedState(this.name, {required super.data});
 }
 
-class BackupDeletedState extends BackupState {
+class BackupsDeletedState extends BackupsState {
   final String name;
 
-  const BackupDeletedState(this.name, {required super.data});
+  const BackupsDeletedState(this.name, {required super.data});
 }
 
-class BackupProcessingErrorState extends BackupState {
+class BackupsProcessingErrorState extends BackupsState {
   final String message;
 
-  const BackupProcessingErrorState(this.message, {required super.data});
+  const BackupsProcessingErrorState(this.message, {required super.data});
 }

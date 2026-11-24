@@ -234,7 +234,7 @@ class _SourceFormState extends State<SourceForm> {
         }
         if (state is SourceFormProcessingOKState) {
           Navigator.of(context).pop();
-          app.di.find<SourceCubit>().reload();
+          app.di.find<SourcesCubit>().reload();
           app.snack.showSuccess(
             message: _editing
                 ? app.intl.sources.saved(name: state.source.name)

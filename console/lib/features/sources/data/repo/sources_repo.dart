@@ -1,22 +1,22 @@
 import 'package:console/app_exporter.dart';
 
-class DestinationRepo {
-  final DestinationClient _client;
+class SourcesRepo {
+  final SourcesClient _client;
 
-  DestinationRepo(this._client);
+  SourcesRepo(this._client);
 
-  Future<List<DestinationTypeModel>> types({String? token}) async {
+  Future<List<SourceTypeModel>> types({String? token}) async {
     try {
       final response = await _client.types(token: token);
       return response
-          .map((e) => DestinationTypeModel(type: e.type, enabled: e.enabled))
+          .map((e) => SourceTypeModel(type: e.type, enabled: e.enabled))
           .toList();
     } catch (e) {
       throw ExceptionConverter.parse(e);
     }
   }
 
-  Future<List<DestinationModel>> list({
+  Future<List<SourceModel>> list({
     required String workspace,
     String? token,
   }) async {
@@ -28,10 +28,10 @@ class DestinationRepo {
     }
   }
 
-  /// Creates the destination, or replaces [id] when editing
-  Future<DestinationModel> save({
+  /// Creates the source, or replaces [id] when editing
+  Future<SourceModel> save({
     required String workspace,
-    required DestinationDraft draft,
+    required SourceDraft draft,
     String? id,
     String? token,
   }) async {
@@ -81,15 +81,15 @@ class DestinationRepo {
 
   Future<ConnectionCheckModel> testUnsaved({
     required String workspace,
-    required DestinationDraft draft,
-    String? destinationId,
+    required SourceDraft draft,
+    String? sourceId,
     String? token,
   }) async {
     try {
       final response = await _client.testUnsaved(
         workspace: workspace,
         request: draft.toRequest(),
-        destinationId: destinationId,
+        sourceId: sourceId,
         token: token,
       );
       return response.toModel();
@@ -116,43 +116,47 @@ class DestinationRepo {
   }
 }
 
-extension DestinationResponseMapping on DestinationResponse {
-  DestinationModel toModel() {
+extension SourceResponseMapping on SourceResponse {
+  SourceModel toModel() {
     final s = settings;
-    return DestinationModel(
+    return SourceModel(
       id: id,
       name: name,
       type: type,
-      s3: type == DestinationTypes.s3
-          ? S3SettingsModel(
-              endpoint: s['endpoint'],
-              region: s['region'],
-              bucket: s['bucket'],
-              accessKeyId: s['access_key_id'],
-              pathStyle: s['path_style'] ?? false,
+      postgres: type == SourceTypes.postgres
+          ? PostgresSettingsModel(
+              host: s['host'],
+              port: s['port'],
+              database: s['database'],
+              username: s['username'],
+              dumpFormat: s['dump_format'],
+              sslMode: s['ssl_mode'] ?? PostgresSettingsModel.sslRequire,
             )
           : null,
-      folders: folders,
       lastCheck: lastCheck?.toModel(),
     );
   }
 }
 
-extension DestinationDraftMapping on DestinationDraft {
-  DestinationRequest toRequest() {
-    return DestinationRequest(
+extension SourceDraftMapping on SourceDraft {
+  SourceRequest toRequest() {
+    final url = connectionUrl;
+    return SourceRequest(
       name: name,
       type: type,
       settings: {
-        'endpoint': endpoint,
-        if (region.isNotEmpty) 'region': region,
-        'bucket': bucket,
-        'access_key_id': accessKeyId,
-        if (secretKey != null && secretKey!.isNotEmpty)
-          'secret_access_key': secretKey,
-        'path_style': pathStyle,
+        if (url != null)
+          'connection_url': url
+        else ...{
+          'host': host,
+          'port': ?port,
+          'database': database,
+          'username': username,
+        },
+        if (password != null && password!.isNotEmpty) 'password': password,
+        'dump_format': dumpFormat,
+        'ssl_mode': sslMode,
       },
-      folders: folders,
     );
   }
 }

@@ -2,13 +2,13 @@ import 'package:console/app_exporter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:material_ui/material_ui.dart';
 
-class WorkspaceRepo {
+class WorkspacesRepo {
   static const String _lastKey = 'workspaces.last';
 
-  final WorkspaceClient _client;
+  final WorkspacesClient _client;
   final FlutterSecureStorage storage;
 
-  WorkspaceRepo(this._client, {required this.storage});
+  WorkspacesRepo(this._client, {required this.storage});
 
   Future<List<WorkspaceModel>> list({String? token}) async {
     try {

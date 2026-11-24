@@ -1,8 +1,8 @@
 import 'package:console/app_exporter.dart';
 import 'package:dio/dio.dart';
 
-class RunClient extends BaseClient {
-  RunClient(super.dio);
+class RunsClient extends BaseClient {
+  RunsClient(super.dio);
 
   String _runsUrl(String workspace) => '$baseUrl/workspaces/$workspace/runs';
 

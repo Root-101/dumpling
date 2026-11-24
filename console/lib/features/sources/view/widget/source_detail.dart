@@ -25,7 +25,7 @@ class SourceDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = app.intl.sources;
-    final data = context.select<SourceCubit, SourceData>((c) => c.state.data);
+    final data = context.select<SourcesCubit, SourcesData>((c) => c.state.data);
     final s =
         data.sources.where((e) => e.id == source.id).firstOrNull ?? source;
     final testing = data.testing.contains(s.id);
@@ -50,7 +50,7 @@ class SourceDialog extends StatelessWidget {
             : ConnectionStatusLabel.colorOf(check),
         description: t.detailDescription(type: SourceTypeLook.labelOf(s.type)),
         testing: testing,
-        onTest: () => context.read<SourceCubit>().test(s),
+        onTest: () => context.read<SourcesCubit>().test(s),
         onEdit: () => onEdit(s),
       ),
       stats: [
@@ -166,7 +166,7 @@ class _Uses extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).pop();
                 RouteNames.openWorkspace(
-                  app.di.find<SourceCubit>().state.data.workspace!,
+                  app.di.find<SourcesCubit>().state.data.workspace!,
                   section: RouteNames.canvas,
                 );
               },

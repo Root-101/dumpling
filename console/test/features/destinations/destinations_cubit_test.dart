@@ -5,9 +5,9 @@ import 'package:mocktail/mocktail.dart';
 
 import '../../support/fixtures.dart';
 
-class _MockRepo extends Mock implements DestinationRepo {}
+class _MockRepo extends Mock implements DestinationsRepo {}
 
-class _MockConfigs extends Mock implements ConfigRepo {}
+class _MockConfigs extends Mock implements ConfigsRepo {}
 
 class _MockAuth extends Mock implements AuthCubit {}
 
@@ -41,10 +41,10 @@ void main() {
     );
   });
 
-  group('DestinationCubit', () {
-    blocTest<DestinationCubit, DestinationState>(
+  group('DestinationsCubit', () {
+    blocTest<DestinationsCubit, DestinationsState>(
       'Counts the backups of each folder and of the root',
-      build: () => DestinationCubit(repo, configs, auth),
+      build: () => DestinationsCubit(repo, configs, auth),
       act: (cubit) => cubit.load('production'),
       verify: (cubit) {
         final data = cubit.state.data;
@@ -56,7 +56,7 @@ void main() {
       },
     );
 
-    blocTest<DestinationCubit, DestinationState>(
+    blocTest<DestinationsCubit, DestinationsState>(
       'Adding a folder sends the saved settings, its folders and no secret',
       setUp: () => when(
         () => repo.save(
@@ -66,7 +66,7 @@ void main() {
           token: 'jwt',
         ),
       ).thenAnswer((_) async => destination('bucket')),
-      build: () => DestinationCubit(repo, configs, auth),
+      build: () => DestinationsCubit(repo, configs, auth),
       act: (cubit) async {
         await cubit.load('production');
         await cubit.addFolder(cubit.state.data.destinations.single, 'users');
@@ -102,7 +102,7 @@ void main() {
     });
   });
 
-  group('DestinationCubit order', () {
+  group('DestinationsCubit order', () {
     test('Moves a folder at once and saves the destination with it', () async {
       when(() => repo.list(workspace: 'production', token: 'jwt')).thenAnswer(
         (_) async => [
@@ -127,7 +127,7 @@ void main() {
           token: 'jwt',
         ),
       ).thenAnswer((_) async {});
-      final cubit = DestinationCubit(repo, configs, auth);
+      final cubit = DestinationsCubit(repo, configs, auth);
       await cubit.load('production');
 
       await cubit.moveFolder(cubit.state.data.destinations.first, 1, 0);

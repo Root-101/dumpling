@@ -33,13 +33,13 @@ class ApiKeysScreen extends StatefulWidget {
 }
 
 class _ApiKeysScreenState extends State<ApiKeysScreen> {
-  late final ApiKeyCubit cubit;
+  late final ApiKeysCubit cubit;
   final _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    cubit = context.read<ApiKeyCubit>();
+    cubit = context.read<ApiKeysCubit>();
     _load();
   }
 
@@ -81,7 +81,7 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final workspaceName = context.select<WorkspaceCubit, String>(
+    final workspaceName = context.select<WorkspacesCubit, String>(
       (c) => c.state.data.current?.name ?? widget.workspace,
     );
     final t = app.intl.apiKeys;
@@ -99,15 +99,15 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
               () => BrowserWindow.openUrl(ApiKeysScreen.guideUrl),
             ),
             actions: [
-              BlocBuilder<ApiKeyCubit, ApiKeyState>(
+              BlocBuilder<ApiKeysCubit, ApiKeysState>(
                 builder: (context, state) => AppRefreshButton(
                   onPressed: cubit.reload,
                   loading:
-                      state is ApiKeyLoadingInProgressState &&
+                      state is ApiKeysLoadingInProgressState &&
                       state.data.loaded,
                 ),
               ),
-              BlocBuilder<ApiKeyCubit, ApiKeyState>(
+              BlocBuilder<ApiKeysCubit, ApiKeysState>(
                 builder: (context, state) => PrimaryButton.primary(
                   // the form needs the configs
                   onPressed: state.data.loaded ? () => _openForm() : null,
@@ -122,11 +122,11 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
           ),
           Expanded(
             child: PagePanel(
-              child: BlocConsumer<ApiKeyCubit, ApiKeyState>(
+              child: BlocConsumer<ApiKeysCubit, ApiKeysState>(
                 listener: _onState,
                 builder: (context, state) {
                   if (!state.data.loaded) {
-                    return state is ApiKeyLoadingErrorState
+                    return state is ApiKeysLoadingErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
                         : _buildSkeleton();
                   }
@@ -146,31 +146,31 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
     );
   }
 
-  void _onState(BuildContext context, ApiKeyState state) {
-    if (state is ApiKeyProcessInProgressState) {
+  void _onState(BuildContext context, ApiKeysState state) {
+    if (state is ApiKeysProcessInProgressState) {
       app.loading.show();
     } else {
       app.loading.hide();
     }
-    if (state is ApiKeyProcessingOKState) {
+    if (state is ApiKeysProcessingOKState) {
       final t = app.intl.apiKeys;
       switch (state.action) {
-        case ApiKeyAction.deleted:
+        case ApiKeysAction.deleted:
           app.snack.showSuccess(
             message: t.deleted(name: state.key.name),
             context: app.context,
           );
-        case ApiKeyAction.saved:
+        case ApiKeysAction.saved:
           app.snack.showSuccess(
             message: t.saved(name: state.key.name),
             context: app.context,
           );
         // the form shows the key itself
-        case ApiKeyAction.created:
+        case ApiKeysAction.created:
           break;
       }
     }
-    if (state is ApiKeyProcessingErrorState) {
+    if (state is ApiKeysProcessingErrorState) {
       app.snack.showError(message: state.message, context: app.context);
     }
   }
@@ -211,7 +211,7 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
     ),
   );
 
-  Widget _buildBody(ApiKeyData data) {
+  Widget _buildBody(ApiKeysData data) {
     final t = app.intl.apiKeys;
     final colors = app.colors;
     return Column(
@@ -264,7 +264,7 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
     );
   }
 
-  Widget _buildFilter(ApiKeyData data) {
+  Widget _buildFilter(ApiKeysData data) {
     final t = app.intl.apiKeys;
     final keys = data.keys;
     int count(String skip, bool Function(ApiKeyModel) where) =>
@@ -307,9 +307,9 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
             ),
             AppFilterOption(
               label: t.unlimited,
-              selected: data.config == ApiKeyData.unlimited,
+              selected: data.config == ApiKeysData.unlimited,
               count: count('config', (k) => !k.limited),
-              onTap: () => cubit.filterConfig(ApiKeyData.unlimited),
+              onTap: () => cubit.filterConfig(ApiKeysData.unlimited),
             ),
             for (final config in data.configs)
               AppFilterOption(
@@ -345,7 +345,7 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
     );
   }
 
-  List<Widget> _buildCells(ApiKeyData data, ApiKeyModel key) {
+  List<Widget> _buildCells(ApiKeysData data, ApiKeyModel key) {
     final t = app.intl.apiKeys;
     final colors = app.colors;
     final muted = TextStyle(fontSize: 13, color: colors.neutral.grey3);

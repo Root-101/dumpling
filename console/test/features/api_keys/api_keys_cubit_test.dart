@@ -4,13 +4,13 @@ import 'package:mocktail/mocktail.dart';
 
 import '../../support/fixtures.dart';
 
-class _MockRepo extends Mock implements ApiKeyRepo {}
+class _MockRepo extends Mock implements ApiKeysRepo {}
 
-class _MockConfigs extends Mock implements ConfigRepo {}
+class _MockConfigs extends Mock implements ConfigsRepo {}
 
-class _MockSources extends Mock implements SourceRepo {}
+class _MockSources extends Mock implements SourcesRepo {}
 
-class _MockDestinations extends Mock implements DestinationRepo {}
+class _MockDestinations extends Mock implements DestinationsRepo {}
 
 class _MockAuth extends Mock implements AuthCubit {}
 
@@ -67,13 +67,13 @@ void main() {
         .thenAnswer((_) async => [destination('bucket')]);
   });
 
-  Future<ApiKeyCubit> loaded() async {
-    final cubit = ApiKeyCubit(repo, configs, sources, destinations, auth);
+  Future<ApiKeysCubit> loaded() async {
+    final cubit = ApiKeysCubit(repo, configs, sources, destinations, auth);
     await cubit.load('production');
     return cubit;
   }
 
-  List<String> visible(ApiKeyCubit cubit) =>
+  List<String> visible(ApiKeysCubit cubit) =>
       cubit.state.data.visibleKeys.map((k) => k.name).toList();
 
   test('a key is named by the template its permissions match', () {
@@ -149,7 +149,7 @@ void main() {
       ..clearFilters()
       ..filterConfig('cfg_orders');
     expect(visible(cubit), ['deploy', 'grafana', 'provisioning']);
-    cubit.filterConfig(ApiKeyData.unlimited);
+    cubit.filterConfig(ApiKeysData.unlimited);
     expect(visible(cubit), ['grafana', 'provisioning']);
 
     cubit
@@ -201,7 +201,7 @@ void main() {
     ).thenThrow(apiError());
     final cubit = await loaded();
     await cubit.reorder(2, 0);
-    expect(cubit.state, isA<ApiKeyProcessingErrorState>());
+    expect(cubit.state, isA<ApiKeysProcessingErrorState>());
     expect(visible(cubit), ['deploy', 'grafana', 'provisioning']);
   });
 
@@ -212,7 +212,7 @@ void main() {
     ).thenAnswer((_) async {});
     final cubit = await loaded();
     await cubit.delete(cubit.state.data.keys.first);
-    expect(cubit.state, isA<ApiKeyProcessingOKState>());
+    expect(cubit.state, isA<ApiKeysProcessingOKState>());
     expect(visible(cubit), ['grafana', 'provisioning']);
   });
 }

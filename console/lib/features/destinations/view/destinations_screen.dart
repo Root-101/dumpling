@@ -38,7 +38,7 @@ class DestinationsScreen extends StatefulWidget {
 
 class _DestinationsScreenState extends State<DestinationsScreen>
     with UrlDialog {
-  late final DestinationCubit cubit;
+  late final DestinationsCubit cubit;
   final _searchController = TextEditingController();
 
   /// The ids of the rows with their folders open
@@ -49,7 +49,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
   @override
   void initState() {
     super.initState();
-    cubit = context.read<DestinationCubit>();
+    cubit = context.read<DestinationsCubit>();
     _load();
     // a list loaded already changes no state
     WidgetsBinding.instance.addPostFrameCallback((_) => _followUrl());
@@ -135,7 +135,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final workspaceName = context.select<WorkspaceCubit, String>(
+    final workspaceName = context.select<WorkspacesCubit, String>(
       (c) => c.state.data.current?.name ?? widget.workspace,
     );
     return Scaffold(
@@ -148,15 +148,15 @@ class _DestinationsScreenState extends State<DestinationsScreen>
             workspace: workspaceName,
             description: app.intl.destinations.description,
             actions: [
-              BlocBuilder<DestinationCubit, DestinationState>(
+              BlocBuilder<DestinationsCubit, DestinationsState>(
                 builder: (context, state) => AppRefreshButton(
                   onPressed: cubit.reload,
                   loading:
-                      state is DestinationLoadingInProgressState &&
+                      state is DestinationsLoadingInProgressState &&
                       state.data.loaded,
                 ),
               ),
-              BlocBuilder<DestinationCubit, DestinationState>(
+              BlocBuilder<DestinationsCubit, DestinationsState>(
                 builder: (context, state) => PrimaryButton.primary(
                   // the form needs the types
                   onPressed: state.data.loaded ? () => _openForm() : null,
@@ -171,11 +171,11 @@ class _DestinationsScreenState extends State<DestinationsScreen>
           ),
           Expanded(
             child: PagePanel(
-              child: BlocConsumer<DestinationCubit, DestinationState>(
+              child: BlocConsumer<DestinationsCubit, DestinationsState>(
                 listener: _onState,
                 builder: (context, state) {
                   if (!state.data.loaded) {
-                    return state is DestinationLoadingErrorState
+                    return state is DestinationsLoadingErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
                         : _buildSkeleton();
                   }
@@ -195,33 +195,33 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     );
   }
 
-  void _onState(BuildContext context, DestinationState state) {
+  void _onState(BuildContext context, DestinationsState state) {
     _followUrl();
-    if (state is DestinationProcessInProgressState) {
+    if (state is DestinationsProcessInProgressState) {
       app.loading.show();
     } else {
       app.loading.hide();
     }
-    if (state is DestinationProcessingOKState) {
+    if (state is DestinationsProcessingOKState) {
       final folder = FolderPath.show(state.folder ?? '');
       final message = switch (state.action) {
-        DestinationAction.deleted => app.intl.destinations.deleted(
+        DestinationsAction.deleted => app.intl.destinations.deleted(
           name: state.destination.name,
         ),
-        DestinationAction.folderAdded => app.intl.destinations.folderAdded(
+        DestinationsAction.folderAdded => app.intl.destinations.folderAdded(
           path: folder,
         ),
-        DestinationAction.folderDeleted => app.intl.destinations.folderDeleted(
+        DestinationsAction.folderDeleted => app.intl.destinations.folderDeleted(
           path: folder,
         ),
         // the row shows what the test found
-        DestinationAction.tested => null,
+        DestinationsAction.tested => null,
       };
       if (message != null) {
         app.snack.showSuccess(message: message, context: app.context);
       }
     }
-    if (state is DestinationProcessingErrorState) {
+    if (state is DestinationsProcessingErrorState) {
       app.snack.showError(message: state.message, context: app.context);
     }
   }
@@ -264,7 +264,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     ),
   );
 
-  Widget _buildTable(DestinationData data) {
+  Widget _buildTable(DestinationsData data) {
     return AppSimpleTable(
       toolbar: Row(
         children: [
@@ -328,7 +328,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     );
   }
 
-  Widget _buildFilter(DestinationData data) {
+  Widget _buildFilter(DestinationsData data) {
     // the types available, and any other one a destination still has
     final types = {
       for (final t in data.types)
@@ -371,7 +371,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     );
   }
 
-  List<Widget> _buildCells(DestinationData data, DestinationModel destination) {
+  List<Widget> _buildCells(DestinationsData data, DestinationModel destination) {
     final used = data.usageOf(destination);
     final testing = data.testing.contains(destination.id);
     final open = _open.contains(destination.id);
@@ -446,7 +446,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     ];
   }
 
-  Widget _buildMenu(DestinationData data, DestinationModel destination) {
+  Widget _buildMenu(DestinationsData data, DestinationModel destination) {
     final used = data.usageOf(destination);
     final testing = data.testing.contains(destination.id);
     return AppRowMenu(
@@ -487,7 +487,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
   }
 
   /// The same destinations as cards, three in a row when there is room
-  Widget _buildGrid(DestinationData data) {
+  Widget _buildGrid(DestinationsData data) {
     const gap = 12.0;
     return Padding(
       padding: EdgeInsets.all(app.dimensions.padding.l),
@@ -512,7 +512,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     );
   }
 
-  Widget _buildCard(DestinationData data, DestinationModel destination) {
+  Widget _buildCard(DestinationsData data, DestinationModel destination) {
     final colors = app.colors;
     final folders = destination.folders.length;
     final muted = TextStyle(fontSize: 12, color: colors.neutral.grey4);

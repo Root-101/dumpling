@@ -12,11 +12,11 @@ class _MockRepo extends Mock implements CanvasRepo {}
 
 class _MockAuth extends Mock implements AuthCubit {}
 
-class _MockSources extends Mock implements SourceRepo {}
+class _MockSources extends Mock implements SourcesRepo {}
 
-class _MockDestinations extends Mock implements DestinationRepo {}
+class _MockDestinations extends Mock implements DestinationsRepo {}
 
-class _MockWorkspaces extends Mock implements WorkspaceCubit {}
+class _MockWorkspaces extends Mock implements WorkspacesCubit {}
 
 void main() {
   // the real fonts, so text overflows are the ones of the browser
@@ -37,8 +37,8 @@ void main() {
     // the open workspace: a wire dropped on a bucket takes its defaults
     final workspaces = _MockWorkspaces();
     when(() => workspaces.state).thenReturn(
-      WorkspaceLoadingSuccessState(
-        data: const WorkspaceData.empty()
+      WorkspacesLoadingSuccessState(
+        data: const WorkspacesData.empty()
             .withList([
               const WorkspaceModel(
                 slug: 'production',
@@ -53,7 +53,7 @@ void main() {
             .withCurrent('production'),
       ),
     );
-    app.di.put<WorkspaceCubit>(workspaces);
+    app.di.put<WorkspacesCubit>(workspaces);
     final cubit = CanvasCubit(repo, sources, destinations, auth);
     await cubit.load('production');
     await tester.pumpWidget(

@@ -64,13 +64,13 @@ class FeaturesInit {
   }
 
   static Future<void> _resetCubits() async {
-    app.di.find<WorkspaceCubit>().reset();
-    app.di.find<SourceCubit>().reset();
-    app.di.find<DestinationCubit>().reset();
+    app.di.find<WorkspacesCubit>().reset();
+    app.di.find<SourcesCubit>().reset();
+    app.di.find<DestinationsCubit>().reset();
     app.di.find<CanvasCubit>().reset();
-    app.di.find<RunCubit>().reset();
-    app.di.find<BackupCubit>().reset();
-    app.di.find<ApiKeyCubit>().reset();
+    app.di.find<RunsCubit>().reset();
+    app.di.find<BackupsCubit>().reset();
+    app.di.find<ApiKeysCubit>().reset();
     app.di.find<AuthCubit>().reset();
   }
 
@@ -82,22 +82,22 @@ class FeaturesInit {
       create: (context) => app.di.find<LanguageCubit>(),
     ),
     // WORKSPACES: the rail shows the current one on every screen
-    BlocProvider<WorkspaceCubit>(
-      create: (context) => app.di.find<WorkspaceCubit>(),
+    BlocProvider<WorkspacesCubit>(
+      create: (context) => app.di.find<WorkspacesCubit>(),
     ),
     // SOURCES: of the open workspace
-    BlocProvider<SourceCubit>(create: (context) => app.di.find<SourceCubit>()),
+    BlocProvider<SourcesCubit>(create: (context) => app.di.find<SourcesCubit>()),
     // DESTINATIONS: of the open workspace
-    BlocProvider<DestinationCubit>(
-      create: (context) => app.di.find<DestinationCubit>(),
+    BlocProvider<DestinationsCubit>(
+      create: (context) => app.di.find<DestinationsCubit>(),
     ),
     // CANVAS: of the open workspace
     BlocProvider<CanvasCubit>(create: (context) => app.di.find<CanvasCubit>()),
     // RUNS: the run log of the open workspace
-    BlocProvider<RunCubit>(create: (context) => app.di.find<RunCubit>()),
+    BlocProvider<RunsCubit>(create: (context) => app.di.find<RunsCubit>()),
     // BACKUPS: the home of the open workspace
-    BlocProvider<BackupCubit>(create: (context) => app.di.find<BackupCubit>()),
+    BlocProvider<BackupsCubit>(create: (context) => app.di.find<BackupsCubit>()),
     // API KEYS: of the open workspace
-    BlocProvider<ApiKeyCubit>(create: (context) => app.di.find<ApiKeyCubit>()),
+    BlocProvider<ApiKeysCubit>(create: (context) => app.di.find<ApiKeysCubit>()),
   ];
 }

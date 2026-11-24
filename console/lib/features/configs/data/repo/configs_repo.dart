@@ -1,9 +1,9 @@
 import 'package:console/app_exporter.dart';
 
-class ConfigRepo {
-  final ConfigClient _client;
+class ConfigsRepo {
+  final ConfigsClient _client;
 
-  ConfigRepo(this._client);
+  ConfigsRepo(this._client);
 
   Future<List<ConfigModel>> list({
     required String workspace,

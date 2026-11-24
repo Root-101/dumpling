@@ -2,10 +2,10 @@ import 'package:console/app_exporter.dart';
 
 class ConfigsInit {
   static Future init() async {
-    ConfigClient client = ConfigClient(app.di.find());
+    ConfigsClient client = ConfigsClient(app.di.find());
     app.di.put(client);
 
-    ConfigRepo repo = ConfigRepo(client);
+    ConfigsRepo repo = ConfigsRepo(client);
     app.di.put(repo);
   }
 }

@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// State of the drawer of a destination (new or edited). It lives while the
 /// drawer is open, so the test, loading and errors show inside the form
 class DestinationFormCubit extends Cubit<DestinationFormState> {
-  final DestinationRepo _repo;
+  final DestinationsRepo _repo;
   final AuthCubit _auth;
   final String workspace;
 

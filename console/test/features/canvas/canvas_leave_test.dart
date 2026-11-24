@@ -11,12 +11,12 @@ class _MockAuth extends MockCubit<AuthState> implements AuthCubit {}
 
 class _MockLanguage extends MockCubit<LanguageState> implements LanguageCubit {}
 
-class _MockWorkspaces extends MockCubit<WorkspaceState>
-    implements WorkspaceCubit {}
+class _MockWorkspaces extends MockCubit<WorkspacesState>
+    implements WorkspacesCubit {}
 
 class _MockCanvas extends MockCubit<CanvasState> implements CanvasCubit {}
 
-class _MockBackups extends MockCubit<BackupState> implements BackupCubit {}
+class _MockBackups extends MockCubit<BackupsState> implements BackupsCubit {}
 
 /// Leaving the canvas with edits not saved, by the rail or by signing out:
 /// it asks first, and Discard drops the edits
@@ -48,9 +48,9 @@ void main() {
     );
     whenListen(
       workspaces,
-      const Stream<WorkspaceState>.empty(),
-      initialState: WorkspaceLoadingSuccessState(
-        data: const WorkspaceData.empty()
+      const Stream<WorkspacesState>.empty(),
+      initialState: WorkspacesLoadingSuccessState(
+        data: const WorkspacesData.empty()
             .withList([workspace('production', name: 'Production')])
             .withCurrent('production'),
       ),
@@ -62,9 +62,9 @@ void main() {
     );
     whenListen(
       backups,
-      const Stream<BackupState>.empty(),
-      initialState: BackupLoadingSuccessState(
-        data: const BackupData.empty('production').withCanvas(backupCanvas()),
+      const Stream<BackupsState>.empty(),
+      initialState: BackupsLoadingSuccessState(
+        data: const BackupsData.empty('production').withCanvas(backupCanvas()),
       ),
     );
     when(() => auth.auth).thenReturn(session());
@@ -78,9 +78,9 @@ void main() {
     when(() => backups.reload()).thenAnswer((_) async {});
     app.di.put<AuthCubit>(auth);
     app.di.put<LanguageCubit>(language);
-    app.di.put<WorkspaceCubit>(workspaces);
+    app.di.put<WorkspacesCubit>(workspaces);
     app.di.put<CanvasCubit>(canvas);
-    app.di.put<BackupCubit>(backups);
+    app.di.put<BackupsCubit>(backups);
   });
 
   setUp(() {
@@ -106,9 +106,9 @@ void main() {
         providers: [
           BlocProvider<AuthCubit>.value(value: auth),
           BlocProvider<LanguageCubit>.value(value: language),
-          BlocProvider<WorkspaceCubit>.value(value: workspaces),
+          BlocProvider<WorkspacesCubit>.value(value: workspaces),
           BlocProvider<CanvasCubit>.value(value: canvas),
-          BlocProvider<BackupCubit>.value(value: backups),
+          BlocProvider<BackupsCubit>.value(value: backups),
         ],
         child: const App(),
       ),

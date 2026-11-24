@@ -12,8 +12,8 @@ class CanvasCubit extends Cubit<CanvasState> {
   static const String newPrefix = 'new_';
 
   final CanvasRepo _repo;
-  final SourceRepo _sources;
-  final DestinationRepo _destinations;
+  final SourcesRepo _sources;
+  final DestinationsRepo _destinations;
   final AuthCubit _auth;
 
   /// How often a run started here is asked how it goes

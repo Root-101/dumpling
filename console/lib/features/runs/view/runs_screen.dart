@@ -57,13 +57,13 @@ class RunsScreen extends StatefulWidget {
 }
 
 class _RunsScreenState extends State<RunsScreen> with UrlDialog {
-  late final RunCubit cubit;
+  late final RunsCubit cubit;
   final _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    cubit = context.read<RunCubit>();
+    cubit = context.read<RunsCubit>();
     _load();
     // a list loaded already changes no state
     WidgetsBinding.instance.addPostFrameCallback((_) => _followUrl());
@@ -148,7 +148,7 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
 
   @override
   Widget build(BuildContext context) {
-    final workspaceName = context.select<WorkspaceCubit, String>(
+    final workspaceName = context.select<WorkspacesCubit, String>(
       (c) => c.state.data.current?.name ?? widget.workspace,
     );
     return Scaffold(
@@ -161,21 +161,21 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
             workspace: workspaceName,
             description: app.intl.runs.description,
             actions: [
-              BlocBuilder<RunCubit, RunState>(
+              BlocBuilder<RunsCubit, RunsState>(
                 builder: (context, state) => AppRefreshButton(
                   onPressed: cubit.reload,
                   loading:
-                      state is RunLoadingInProgressState && state.data.loaded,
+                      state is RunsLoadingInProgressState && state.data.loaded,
                 ),
               ),
             ],
           ),
           Expanded(
             child: PagePanel(
-              child: BlocConsumer<RunCubit, RunState>(
+              child: BlocConsumer<RunsCubit, RunsState>(
                 listener: (context, state) {
                   _followUrl();
-                  if (state is RunProcessingErrorState) {
+                  if (state is RunsProcessingErrorState) {
                     app.snack.showError(
                       message: state.message,
                       context: app.context,
@@ -184,7 +184,7 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
                 },
                 builder: (context, state) {
                   if (!state.data.loaded) {
-                    return state is RunLoadingErrorState
+                    return state is RunsLoadingErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
                         : _buildSkeleton();
                   }
@@ -204,7 +204,7 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
     );
   }
 
-  Widget _buildList(RunData data) {
+  Widget _buildList(RunsData data) {
     final t = app.intl.runs;
     final colors = app.colors;
     final divider = BorderSide(
@@ -371,7 +371,7 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
     return days;
   }
 
-  Widget _buildFilter(RunData data) {
+  Widget _buildFilter(RunsData data) {
     final t = app.intl.runs;
     final runs = data.runs;
     AppFilterOption all(bool selected, VoidCallback onTap) => AppFilterOption(

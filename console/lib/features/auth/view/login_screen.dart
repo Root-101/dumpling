@@ -195,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    app.intl.login.title,
+                    app.intl.auth.title,
                     style: const TextStyle(
                       fontSize: 22,
                       height: 28 / 22,
@@ -204,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   app.dimensions.padding.xs.gap(),
                   Text(
-                    app.intl.login.description,
+                    app.intl.auth.description,
                     style: TextStyle(
                       fontSize: 13,
                       color: app.colors.neutral.grey4,
@@ -220,8 +220,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   18.gap(),
                   AppFormInput(
                     controller: _userController,
-                    label: app.intl.login.username,
-                    hint: app.intl.login.usernameHint,
+                    label: app.intl.auth.username,
+                    hint: app.intl.auth.usernameHint,
                     autofocus: true,
                     validator: (v) =>
                         v?.isEmpty == true ? app.intl.common.required : null,
@@ -232,8 +232,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   18.gap(),
                   AppFormPasswordInput(
                     controller: _passwordController,
-                    label: app.intl.login.password,
-                    hint: app.intl.login.passwordHint,
+                    label: app.intl.auth.password,
+                    hint: app.intl.auth.passwordHint,
                     validator: (v) =>
                         v?.isEmpty == true ? app.intl.common.required : null,
                     autofillHints: const [AutofillHints.password],
@@ -242,7 +242,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   18.gap(),
                   PrimaryButton.primary(
                     onPressed: _onLogin,
-                    title: app.intl.login.button,
+                    title: app.intl.auth.button,
                     h: 48,
                   ),
                   18.gap(),
@@ -261,11 +261,11 @@ class _LoginScreenState extends State<LoginScreen> {
 /// (decided on the service's code, never on its text)
 String? loginErrorHint(GlobalException exception) {
   if (exception.hasCode(ApiErrorCode.authInvalidCredentials)) {
-    return app.intl.login.failedHint;
+    return app.intl.auth.failedHint;
   }
   if (exception.hasCode(ApiErrorCode.authTooManyLoginAttempts)) {
     return switch (exception.data) {
-      final Duration left => app.intl.login.retryIn(
+      final Duration left => app.intl.auth.retryIn(
         minutes: (left.inSeconds / 60).ceil(),
       ),
       _ => null,
@@ -297,9 +297,9 @@ class _EnvHint extends StatelessWidget {
       TextSpan(
         style: style,
         children: [
-          TextSpan(text: '${app.intl.login.envHint} '),
+          TextSpan(text: '${app.intl.auth.envHint} '),
           TextSpan(text: _user, style: mono),
-          TextSpan(text: ' ${app.intl.login.envHintAnd} '),
+          TextSpan(text: ' ${app.intl.auth.envHintAnd} '),
           TextSpan(text: _password, style: mono),
           const TextSpan(text: '.'),
         ],
@@ -374,9 +374,9 @@ class _Identity extends StatelessWidget {
                             child: Text.rich(
                               TextSpan(
                                 children: [
-                                  TextSpan(text: '${app.intl.login.tagline} '),
+                                  TextSpan(text: '${app.intl.auth.tagline} '),
                                   TextSpan(
-                                    text: app.intl.login.taglineAccent,
+                                    text: app.intl.auth.taglineAccent,
                                     style: TextStyle(
                                       color: app.colors.primary.secondary,
                                     ),
@@ -408,15 +408,15 @@ class _Identity extends StatelessWidget {
                   runSpacing: 10,
                   children: [
                     _Tag(
-                      label: app.intl.login.tagLightweight,
+                      label: app.intl.auth.tagLightweight,
                       color: app.colors.primary.secondary,
                     ),
                     _Tag(
-                      label: app.intl.login.tagCanvas,
+                      label: app.intl.auth.tagCanvas,
                       color: app.colors.primary.primaryFaded,
                     ),
                     _Tag(
-                      label: app.intl.login.tagWinter,
+                      label: app.intl.auth.tagWinter,
                       color: app.colors.primary.primaryFaded,
                     ),
                   ],

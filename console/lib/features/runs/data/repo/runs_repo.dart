@@ -1,9 +1,9 @@
 import 'package:console/app_exporter.dart';
 
-class RunRepo {
-  final RunClient _client;
+class RunsRepo {
+  final RunsClient _client;
 
-  RunRepo(this._client);
+  RunsRepo(this._client);
 
   Future<List<RunModel>> list({
     required String workspace,

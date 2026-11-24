@@ -5,13 +5,13 @@ import 'package:mocktail/mocktail.dart';
 
 import '../../support/fixtures.dart';
 
-class _MockRepo extends Mock implements ApiKeyRepo {}
+class _MockRepo extends Mock implements ApiKeysRepo {}
 
-class _MockConfigs extends Mock implements ConfigRepo {}
+class _MockConfigs extends Mock implements ConfigsRepo {}
 
-class _MockSources extends Mock implements SourceRepo {}
+class _MockSources extends Mock implements SourcesRepo {}
 
-class _MockDestinations extends Mock implements DestinationRepo {}
+class _MockDestinations extends Mock implements DestinationsRepo {}
 
 class _MockAuth extends Mock implements AuthCubit {}
 
@@ -33,7 +33,7 @@ void main() {
         .thenAnswer((_) async => [source('orders-database-01')]);
     when(() => destinations.list(workspace: 'production', token: 'jwt'))
         .thenAnswer((_) async => [destination('bucket')]);
-    final cubit = ApiKeyCubit(repo, configs, sources, destinations, auth);
+    final cubit = ApiKeysCubit(repo, configs, sources, destinations, auth);
     await cubit.load('production');
 
     tester.view

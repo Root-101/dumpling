@@ -1,8 +1,8 @@
 import 'package:console/app_exporter.dart';
 import 'package:dio/dio.dart';
 
-class ApiKeyClient extends BaseClient {
-  ApiKeyClient(super.dio);
+class ApiKeysClient extends BaseClient {
+  ApiKeysClient(super.dio);
 
   String _keysUrl(String workspace) => '$baseUrl/workspaces/$workspace/keys';
 

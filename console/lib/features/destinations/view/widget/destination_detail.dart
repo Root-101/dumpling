@@ -28,7 +28,7 @@ class DestinationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = app.intl.destinations;
-    final data = context.select<DestinationCubit, DestinationData>(
+    final data = context.select<DestinationsCubit, DestinationsData>(
       (c) => c.state.data,
     );
     final d =
@@ -50,7 +50,7 @@ class DestinationDialog extends StatelessWidget {
             : ConnectionStatusLabel.colorOf(check),
         description: t.detailDescription,
         testing: testing,
-        onTest: () => context.read<DestinationCubit>().test(d),
+        onTest: () => context.read<DestinationsCubit>().test(d),
         onEdit: () => onEdit(d),
       ),
       stats: [
@@ -103,7 +103,7 @@ class DestinationDialog extends StatelessWidget {
 /// Each folder (or the root, without folders) and the backups writing there
 class _Folders extends StatelessWidget {
   final DestinationModel destination;
-  final DestinationData data;
+  final DestinationsData data;
 
   const _Folders({required this.destination, required this.data});
 

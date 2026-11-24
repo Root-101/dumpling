@@ -31,7 +31,7 @@ class ErrorPage extends StatelessWidget {
           message: app.intl.errors.offline(url: Environment.serviceUrl),
           onRetry: () {
             // the rail lost its workspaces too when the service went away
-            final workspaces = app.di.find<WorkspaceCubit>();
+            final workspaces = app.di.find<WorkspacesCubit>();
             if (!workspaces.state.data.loaded) workspaces.load();
             onRetry?.call();
           },
@@ -108,7 +108,7 @@ class NotFoundPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = app.colors;
     final t = app.intl.errors;
-    final workspaces = app.di.find<WorkspaceCubit>().state.data;
+    final workspaces = app.di.find<WorkspacesCubit>().state.data;
     final slug = workspaces.currentSlug;
     final known = workspaces.workspaces.any((w) => w.slug == slug);
     final path =

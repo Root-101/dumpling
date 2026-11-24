@@ -4,13 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// The sources of the open workspace: list, search, the type filter and the
 /// row actions (test the connection, delete). The backups (configs) are loaded
 /// with them to say how many use each source
-class SourceCubit extends Cubit<SourceState> {
-  final SourceRepo _repo;
-  final ConfigRepo _configs;
+class SourcesCubit extends Cubit<SourcesState> {
+  final SourcesRepo _repo;
+  final ConfigsRepo _configs;
   final AuthCubit _auth;
 
-  SourceCubit(this._repo, this._configs, this._auth)
-    : super(const SourceInitialState());
+  SourcesCubit(this._repo, this._configs, this._auth)
+    : super(const SourcesInitialState());
 
   String? get _token => _auth.auth?.accessToken;
 
@@ -18,8 +18,8 @@ class SourceCubit extends Cubit<SourceState> {
   Future<void> load(String workspace) async {
     final data = state.data.workspace == workspace
         ? state.data
-        : SourceData.empty(workspace);
-    emit(SourceLoadingInProgressState(data: data));
+        : SourcesData.empty(workspace);
+    emit(SourcesLoadingInProgressState(data: data));
     try {
       final results = await Future.wait([
         _repo.types(token: _token),
@@ -29,7 +29,7 @@ class SourceCubit extends Cubit<SourceState> {
       // the answer of a workspace already left behind is dropped
       if (state.data.workspace != workspace) return;
       emit(
-        SourceLoadingSuccessState(
+        SourcesLoadingSuccessState(
           data: state.data.withList(
             results[0] as List<SourceTypeModel>,
             results[1] as List<SourceModel>,
@@ -40,7 +40,7 @@ class SourceCubit extends Cubit<SourceState> {
     } catch (e) {
       if (state.data.workspace != workspace) return;
       emit(
-        SourceLoadingErrorState(ExceptionConverter.parse(e), data: state.data),
+        SourcesLoadingErrorState(ExceptionConverter.parse(e), data: state.data),
       );
     }
   }
@@ -52,17 +52,17 @@ class SourceCubit extends Cubit<SourceState> {
 
   /// By name, type or host, over the sources already loaded
   void search(String query) {
-    emit(SourceLoadingSuccessState(data: state.data.withQuery(query)));
+    emit(SourcesLoadingSuccessState(data: state.data.withQuery(query)));
   }
 
   /// Only the sources of [type]; null: all of them
   void filterType(String? type) {
-    emit(SourceLoadingSuccessState(data: state.data.withType(type)));
+    emit(SourcesLoadingSuccessState(data: state.data.withType(type)));
   }
 
   void clearFilters() {
     emit(
-      SourceLoadingSuccessState(data: state.data.withQuery('').withType(null)),
+      SourcesLoadingSuccessState(data: state.data.withQuery('').withType(null)),
     );
   }
 
@@ -71,7 +71,7 @@ class SourceCubit extends Cubit<SourceState> {
   Future<void> test(SourceModel source) async {
     final workspace = state.data.workspace!;
     emit(
-      SourceLoadingSuccessState(data: state.data.withTesting(source.id, true)),
+      SourcesLoadingSuccessState(data: state.data.withTesting(source.id, true)),
     );
     try {
       final check = await _repo.testSaved(
@@ -81,8 +81,8 @@ class SourceCubit extends Cubit<SourceState> {
       );
       if (state.data.workspace != workspace) return;
       emit(
-        SourceProcessingOKState(
-          SourceAction.tested,
+        SourcesProcessingOKState(
+          SourcesAction.tested,
           source.withCheck(check),
           data: state.data
               .withTesting(source.id, false)
@@ -92,7 +92,7 @@ class SourceCubit extends Cubit<SourceState> {
     } catch (e) {
       if (state.data.workspace != workspace) return;
       emit(
-        SourceProcessingErrorState(
+        SourcesProcessingErrorState(
           ExceptionConverter.parse(e).intlMessage,
           data: state.data.withTesting(source.id, false),
         ),
@@ -101,7 +101,7 @@ class SourceCubit extends Cubit<SourceState> {
   }
 
   Future<void> delete(SourceModel source) async {
-    emit(SourceProcessInProgressState(data: state.data));
+    emit(SourcesProcessInProgressState(data: state.data));
     try {
       await _repo.delete(
         workspace: state.data.workspace!,
@@ -109,11 +109,11 @@ class SourceCubit extends Cubit<SourceState> {
         token: _token,
       );
       emit(
-        SourceProcessingOKState(SourceAction.deleted, source, data: state.data),
+        SourcesProcessingOKState(SourcesAction.deleted, source, data: state.data),
       );
     } catch (e) {
       emit(
-        SourceProcessingErrorState(
+        SourcesProcessingErrorState(
           ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
@@ -128,7 +128,7 @@ class SourceCubit extends Cubit<SourceState> {
   Future<void> reorder(int from, int to) async {
     final before = state.data;
     final sources = reordered(before.sources, from, to);
-    emit(SourceLoadingSuccessState(data: before._copy(sources: sources)));
+    emit(SourcesLoadingSuccessState(data: before._copy(sources: sources)));
     try {
       await _repo.reorder(
         workspace: before.workspace!,
@@ -138,7 +138,7 @@ class SourceCubit extends Cubit<SourceState> {
     } catch (e) {
       if (state.data.workspace != before.workspace) return;
       emit(
-        SourceProcessingErrorState(
+        SourcesProcessingErrorState(
           ExceptionConverter.parse(e).intlMessage,
           data: before,
         ),
@@ -147,16 +147,16 @@ class SourceCubit extends Cubit<SourceState> {
   }
 
   /// After signing out
-  void reset() => emit(const SourceInitialState());
+  void reset() => emit(const SourcesInitialState());
 }
 
 /// What a row action did, so the view can confirm it
-enum SourceAction { tested, deleted }
+enum SourcesAction { tested, deleted }
 
 /// The loaded sources and what the search and the filter leave
 /// ([visibleSources], filled on every change). [usage] counts the backups of
 /// each source by its id; [configs] are those backups, for the detail
-class SourceData {
+class SourcesData {
   final String? workspace;
   final bool loaded;
   final List<SourceTypeModel> types;
@@ -172,7 +172,7 @@ class SourceData {
   final Set<String> testing;
   final List<SourceModel> visibleSources;
 
-  const SourceData._({
+  const SourcesData._({
     required this.workspace,
     required this.loaded,
     required this.types,
@@ -185,7 +185,7 @@ class SourceData {
     required this.visibleSources,
   });
 
-  const SourceData.empty([String? workspace])
+  const SourcesData.empty([String? workspace])
     : this._(
         workspace: workspace,
         loaded: false,
@@ -199,7 +199,7 @@ class SourceData {
         visibleSources: const [],
       );
 
-  factory SourceData._of({
+  factory SourcesData._of({
     required String? workspace,
     required bool loaded,
     required List<SourceTypeModel> types,
@@ -221,7 +221,7 @@ class SourceData {
           (needle.isEmpty || text.contains(needle));
     }
 
-    return SourceData._(
+    return SourcesData._(
       workspace: workspace,
       loaded: loaded,
       types: types,
@@ -235,7 +235,7 @@ class SourceData {
     );
   }
 
-  SourceData _copy({
+  SourcesData _copy({
     bool? loaded,
     List<SourceTypeModel>? types,
     List<SourceModel>? sources,
@@ -244,7 +244,7 @@ class SourceData {
     String? query,
     String? Function()? type,
     Set<String>? testing,
-  }) => SourceData._of(
+  }) => SourcesData._of(
     workspace: workspace,
     loaded: loaded ?? this.loaded,
     types: types ?? this.types,
@@ -256,7 +256,7 @@ class SourceData {
     testing: testing ?? this.testing,
   );
 
-  SourceData withList(
+  SourcesData withList(
     List<SourceTypeModel> types,
     List<SourceModel> sources,
     List<ConfigModel> configs,
@@ -274,15 +274,15 @@ class SourceData {
     );
   }
 
-  SourceData withQuery(String query) => _copy(query: query);
+  SourcesData withQuery(String query) => _copy(query: query);
 
-  SourceData withType(String? type) => _copy(type: () => type);
+  SourcesData withType(String? type) => _copy(type: () => type);
 
-  SourceData withTesting(String id, bool testing) => _copy(
+  SourcesData withTesting(String id, bool testing) => _copy(
     testing: testing ? {...this.testing, id} : ({...this.testing}..remove(id)),
   );
 
-  SourceData withCheck(String id, ConnectionCheckModel check) => _copy(
+  SourcesData withCheck(String id, ConnectionCheckModel check) => _copy(
     sources: [for (final s in sources) s.id == id ? s.withCheck(check) : s],
   );
 
@@ -300,51 +300,51 @@ class SourceData {
   bool get filtered => activeFilters > 0 || query.trim().isNotEmpty;
 }
 
-abstract class SourceState {
-  final SourceData data;
+abstract class SourcesState {
+  final SourcesData data;
 
-  const SourceState({this.data = const SourceData.empty()});
+  const SourcesState({this.data = const SourcesData.empty()});
 }
 
-class SourceInitialState extends SourceState {
-  const SourceInitialState();
+class SourcesInitialState extends SourcesState {
+  const SourcesInitialState();
 }
 
 //------------------------- LOADING -------------------------\
-class SourceLoadingInProgressState extends SourceState {
-  const SourceLoadingInProgressState({required super.data});
+class SourcesLoadingInProgressState extends SourcesState {
+  const SourcesLoadingInProgressState({required super.data});
 }
 
-class SourceLoadingSuccessState extends SourceState {
-  const SourceLoadingSuccessState({required super.data});
+class SourcesLoadingSuccessState extends SourcesState {
+  const SourcesLoadingSuccessState({required super.data});
 }
 
-class SourceLoadingErrorState extends SourceState {
+class SourcesLoadingErrorState extends SourcesState {
   final GlobalException exception;
 
-  const SourceLoadingErrorState(this.exception, {required super.data});
+  const SourcesLoadingErrorState(this.exception, {required super.data});
 }
 
 //------------------------- PROCESSING -------------------------\
-class SourceProcessInProgressState extends SourceState {
-  const SourceProcessInProgressState({required super.data});
+class SourcesProcessInProgressState extends SourcesState {
+  const SourcesProcessInProgressState({required super.data});
 }
 
-class SourceProcessingOKState extends SourceState {
-  final SourceAction action;
+class SourcesProcessingOKState extends SourcesState {
+  final SourcesAction action;
 
-  /// The source acted on; after [SourceAction.tested], with its new check
+  /// The source acted on; after [SourcesAction.tested], with its new check
   final SourceModel source;
 
-  const SourceProcessingOKState(
+  const SourcesProcessingOKState(
     this.action,
     this.source, {
     required super.data,
   });
 }
 
-class SourceProcessingErrorState extends SourceState {
+class SourcesProcessingErrorState extends SourcesState {
   final String message;
 
-  const SourceProcessingErrorState(this.message, {required super.data});
+  const SourcesProcessingErrorState(this.message, {required super.data});
 }

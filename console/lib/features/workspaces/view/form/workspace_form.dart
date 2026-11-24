@@ -109,7 +109,7 @@ class _WorkspaceFormState extends State<WorkspaceForm> {
         }
         if (state is WorkspaceFormProcessingOKState) {
           Navigator.of(context).pop();
-          app.di.find<WorkspaceCubit>().load();
+          app.di.find<WorkspacesCubit>().load();
           app.snack.showSuccess(
             message: app.intl.workspaces.created(name: state.workspace.name),
             context: app.context,

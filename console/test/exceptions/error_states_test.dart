@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockWorkspaces extends Mock implements WorkspaceCubit {}
+class _MockWorkspaces extends Mock implements WorkspacesCubit {}
 
 void main() {
   // the messages come from app.intl, which reads the navigator
@@ -13,10 +13,10 @@ void main() {
   // the workspaces of the rail, none loaded: one for every page here
   final workspaces = _MockWorkspaces();
   when(() => workspaces.state).thenReturn(
-    const WorkspaceLoadingInProgressState(data: WorkspaceData.empty()),
+    const WorkspacesLoadingInProgressState(data: WorkspacesData.empty()),
   );
   when(() => workspaces.load()).thenAnswer((_) async {});
-  app.di.put<WorkspaceCubit>(workspaces);
+  app.di.put<WorkspacesCubit>(workspaces);
 
   DioException response(int status, Object? data) {
     final request = RequestOptions(path: '/api/workspaces/gone/canvas');

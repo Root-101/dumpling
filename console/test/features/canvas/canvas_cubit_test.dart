@@ -10,9 +10,9 @@ class _MockRepo extends Mock implements CanvasRepo {}
 
 class _MockAuth extends Mock implements AuthCubit {}
 
-class _MockSources extends Mock implements SourceRepo {}
+class _MockSources extends Mock implements SourcesRepo {}
 
-class _MockDestinations extends Mock implements DestinationRepo {}
+class _MockDestinations extends Mock implements DestinationsRepo {}
 
 void main() {
   // the texts of a new config come from app.intl, which reads the navigator

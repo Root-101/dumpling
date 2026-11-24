@@ -1,9 +1,9 @@
 import 'package:console/app_exporter.dart';
 
-class ApiKeyRepo {
-  final ApiKeyClient _client;
+class ApiKeysRepo {
+  final ApiKeysClient _client;
 
-  ApiKeyRepo(this._client);
+  ApiKeysRepo(this._client);
 
   Future<List<ApiKeyModel>> list({
     required String workspace,

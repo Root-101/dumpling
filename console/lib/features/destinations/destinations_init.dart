@@ -2,13 +2,13 @@ import 'package:console/app_exporter.dart';
 
 class DestinationsInit {
   static Future init() async {
-    DestinationClient client = DestinationClient(app.di.find());
+    DestinationsClient client = DestinationsClient(app.di.find());
     app.di.put(client);
 
-    DestinationRepo repo = DestinationRepo(client);
+    DestinationsRepo repo = DestinationsRepo(client);
     app.di.put(repo);
 
-    DestinationCubit cubit = DestinationCubit(
+    DestinationsCubit cubit = DestinationsCubit(
       repo,
       app.di.find(),
       app.di.find(),

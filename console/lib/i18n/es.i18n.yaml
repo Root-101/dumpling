@@ -87,7 +87,7 @@ nav:
   collapse: 'Contraer menú'
   logout: 'Cerrar sesión'
 
-login:
+auth:
   title: 'Inicia sesión'
   description: 'Gestiona los backups de tus bases de datos.'
   username: 'Usuario'

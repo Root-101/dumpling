@@ -4,7 +4,7 @@ import 'package:mocktail/mocktail.dart';
 
 import '../../support/fixtures.dart';
 
-class _MockRepo extends Mock implements RunRepo {}
+class _MockRepo extends Mock implements RunsRepo {}
 
 class _MockAuth extends Mock implements AuthCubit {}
 
@@ -25,8 +25,8 @@ void main() {
     );
   });
 
-  Future<RunCubit> loaded() async {
-    final cubit = RunCubit(repo, auth);
+  Future<RunsCubit> loaded() async {
+    final cubit = RunsCubit(repo, auth);
     await cubit.load('production');
     return cubit;
   }
@@ -117,8 +117,8 @@ void main() {
         .thenThrow(apiError('Not found'));
     final cubit = await loaded();
     await cubit.detail(cubit.state.data.runs[2]);
-    expect(cubit.state, isA<RunProcessingErrorState>());
-    expect((cubit.state as RunProcessingErrorState).message, 'Not found');
+    expect(cubit.state, isA<RunsProcessingErrorState>());
+    expect((cubit.state as RunsProcessingErrorState).message, 'Not found');
     expect(cubit.state.data.runs, hasLength(3));
   });
 }

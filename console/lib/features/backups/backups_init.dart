@@ -2,7 +2,7 @@ import 'package:console/app_exporter.dart';
 
 class BackupsInit {
   static Future init() async {
-    BackupCubit cubit = BackupCubit(
+    BackupsCubit cubit = BackupsCubit(
       app.di.find(),
       app.di.find(),
       app.di.find(),

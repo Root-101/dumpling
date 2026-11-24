@@ -5,13 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// the row actions (test the connection, add or delete a folder, delete). The
 /// backups (configs) are loaded with them to say how many write to each
 /// destination and each folder
-class DestinationCubit extends Cubit<DestinationState> {
-  final DestinationRepo _repo;
-  final ConfigRepo _configs;
+class DestinationsCubit extends Cubit<DestinationsState> {
+  final DestinationsRepo _repo;
+  final ConfigsRepo _configs;
   final AuthCubit _auth;
 
-  DestinationCubit(this._repo, this._configs, this._auth)
-    : super(const DestinationInitialState());
+  DestinationsCubit(this._repo, this._configs, this._auth)
+    : super(const DestinationsInitialState());
 
   String? get _token => _auth.auth?.accessToken;
 
@@ -19,8 +19,8 @@ class DestinationCubit extends Cubit<DestinationState> {
   Future<void> load(String workspace) async {
     final data = state.data.workspace == workspace
         ? state.data
-        : DestinationData.empty(workspace);
-    emit(DestinationLoadingInProgressState(data: data));
+        : DestinationsData.empty(workspace);
+    emit(DestinationsLoadingInProgressState(data: data));
     try {
       final results = await Future.wait([
         _repo.types(token: _token),
@@ -30,7 +30,7 @@ class DestinationCubit extends Cubit<DestinationState> {
       // the answer of a workspace already left behind is dropped
       if (state.data.workspace != workspace) return;
       emit(
-        DestinationLoadingSuccessState(
+        DestinationsLoadingSuccessState(
           data: state.data.withList(
             results[0] as List<DestinationTypeModel>,
             results[1] as List<DestinationModel>,
@@ -41,7 +41,7 @@ class DestinationCubit extends Cubit<DestinationState> {
     } catch (e) {
       if (state.data.workspace != workspace) return;
       emit(
-        DestinationLoadingErrorState(
+        DestinationsLoadingErrorState(
           ExceptionConverter.parse(e),
           data: state.data,
         ),
@@ -56,17 +56,17 @@ class DestinationCubit extends Cubit<DestinationState> {
 
   /// By name, type or endpoint, over the destinations already loaded
   void search(String query) {
-    emit(DestinationLoadingSuccessState(data: state.data.withQuery(query)));
+    emit(DestinationsLoadingSuccessState(data: state.data.withQuery(query)));
   }
 
   /// Only the destinations of [type]; null: all of them
   void filterType(String? type) {
-    emit(DestinationLoadingSuccessState(data: state.data.withType(type)));
+    emit(DestinationsLoadingSuccessState(data: state.data.withType(type)));
   }
 
   void clearFilters() {
     emit(
-      DestinationLoadingSuccessState(
+      DestinationsLoadingSuccessState(
         data: state.data.withQuery('').withType(null),
       ),
     );
@@ -77,7 +77,7 @@ class DestinationCubit extends Cubit<DestinationState> {
   Future<void> test(DestinationModel destination) async {
     final workspace = state.data.workspace!;
     emit(
-      DestinationLoadingSuccessState(
+      DestinationsLoadingSuccessState(
         data: state.data.withTesting(destination.id, true),
       ),
     );
@@ -89,8 +89,8 @@ class DestinationCubit extends Cubit<DestinationState> {
       );
       if (state.data.workspace != workspace) return;
       emit(
-        DestinationProcessingOKState(
-          DestinationAction.tested,
+        DestinationsProcessingOKState(
+          DestinationsAction.tested,
           destination.withCheck(check),
           data: state.data
               .withTesting(destination.id, false)
@@ -100,7 +100,7 @@ class DestinationCubit extends Cubit<DestinationState> {
     } catch (e) {
       if (state.data.workspace != workspace) return;
       emit(
-        DestinationProcessingErrorState(
+        DestinationsProcessingErrorState(
           ExceptionConverter.parse(e).intlMessage,
           data: state.data.withTesting(destination.id, false),
         ),
@@ -110,7 +110,7 @@ class DestinationCubit extends Cubit<DestinationState> {
 
   /// Adds [path] (already clean) to the folders of [destination]
   Future<void> addFolder(DestinationModel destination, String path) =>
-      _saveFolders(DestinationAction.folderAdded, destination, [
+      _saveFolders(DestinationsAction.folderAdded, destination, [
         ...destination.folders,
         path,
       ], path);
@@ -118,7 +118,7 @@ class DestinationCubit extends Cubit<DestinationState> {
   /// The service refuses it (409) while a backup writes to it
   Future<void> deleteFolder(DestinationModel destination, String path) =>
       _saveFolders(
-        DestinationAction.folderDeleted,
+        DestinationsAction.folderDeleted,
         destination,
         destination.folders.where((f) => f != path).toList(),
         path,
@@ -161,17 +161,17 @@ class DestinationCubit extends Cubit<DestinationState> {
 
   /// Shows [change] at once and runs [save]; an error puts the list back
   Future<void> _saveOrder(
-    DestinationData Function(DestinationData) change,
+    DestinationsData Function(DestinationsData) change,
     Future<void> Function(String workspace) save,
   ) async {
     final before = state.data;
-    emit(DestinationLoadingSuccessState(data: change(before)));
+    emit(DestinationsLoadingSuccessState(data: change(before)));
     try {
       await save(before.workspace!);
     } catch (e) {
       if (state.data.workspace != before.workspace) return;
       emit(
-        DestinationProcessingErrorState(
+        DestinationsProcessingErrorState(
           ExceptionConverter.parse(e).intlMessage,
           data: before,
         ),
@@ -180,7 +180,7 @@ class DestinationCubit extends Cubit<DestinationState> {
   }
 
   Future<void> _saveFolders(
-    DestinationAction action,
+    DestinationsAction action,
     DestinationModel destination,
     List<String> folders,
     String path,
@@ -198,7 +198,7 @@ class DestinationCubit extends Cubit<DestinationState> {
   }
 
   Future<void> delete(DestinationModel destination) async {
-    await _process(DestinationAction.deleted, null, () async {
+    await _process(DestinationsAction.deleted, null, () async {
       await _repo.delete(
         workspace: state.data.workspace!,
         id: destination.id,
@@ -209,15 +209,15 @@ class DestinationCubit extends Cubit<DestinationState> {
   }
 
   Future<void> _process(
-    DestinationAction action,
+    DestinationsAction action,
     String? folder,
     Future<DestinationModel> Function() run,
   ) async {
-    emit(DestinationProcessInProgressState(data: state.data));
+    emit(DestinationsProcessInProgressState(data: state.data));
     try {
       final destination = await run();
       emit(
-        DestinationProcessingOKState(
+        DestinationsProcessingOKState(
           action,
           destination,
           folder: folder,
@@ -226,7 +226,7 @@ class DestinationCubit extends Cubit<DestinationState> {
       );
     } catch (e) {
       emit(
-        DestinationProcessingErrorState(
+        DestinationsProcessingErrorState(
           ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
@@ -237,17 +237,17 @@ class DestinationCubit extends Cubit<DestinationState> {
   }
 
   /// After signing out
-  void reset() => emit(const DestinationInitialState());
+  void reset() => emit(const DestinationsInitialState());
 }
 
 /// What a row action did, so the view can confirm it
-enum DestinationAction { tested, folderAdded, folderDeleted, deleted }
+enum DestinationsAction { tested, folderAdded, folderDeleted, deleted }
 
 /// The loaded destinations and what the search and the filter leave
 /// ([visibleDestinations], filled on every change). [usage] counts the
 /// backups of each destination by its id, and within it by folder (null: the
 /// bucket root); [configs] are those backups, for the detail
-class DestinationData {
+class DestinationsData {
   final String? workspace;
   final bool loaded;
   final List<DestinationTypeModel> types;
@@ -263,7 +263,7 @@ class DestinationData {
   final Set<String> testing;
   final List<DestinationModel> visibleDestinations;
 
-  const DestinationData._({
+  const DestinationsData._({
     required this.workspace,
     required this.loaded,
     required this.types,
@@ -276,7 +276,7 @@ class DestinationData {
     required this.visibleDestinations,
   });
 
-  const DestinationData.empty([String? workspace])
+  const DestinationsData.empty([String? workspace])
     : this._(
         workspace: workspace,
         loaded: false,
@@ -290,7 +290,7 @@ class DestinationData {
         visibleDestinations: const [],
       );
 
-  factory DestinationData._of({
+  factory DestinationsData._of({
     required String? workspace,
     required bool loaded,
     required List<DestinationTypeModel> types,
@@ -315,7 +315,7 @@ class DestinationData {
           (needle.isEmpty || text.contains(needle));
     }
 
-    return DestinationData._(
+    return DestinationsData._(
       workspace: workspace,
       loaded: loaded,
       types: types,
@@ -329,7 +329,7 @@ class DestinationData {
     );
   }
 
-  DestinationData _copy({
+  DestinationsData _copy({
     bool? loaded,
     List<DestinationTypeModel>? types,
     List<DestinationModel>? destinations,
@@ -338,7 +338,7 @@ class DestinationData {
     String? query,
     String? Function()? type,
     Set<String>? testing,
-  }) => DestinationData._of(
+  }) => DestinationsData._of(
     workspace: workspace,
     loaded: loaded ?? this.loaded,
     types: types ?? this.types,
@@ -350,7 +350,7 @@ class DestinationData {
     testing: testing ?? this.testing,
   );
 
-  DestinationData withList(
+  DestinationsData withList(
     List<DestinationTypeModel> types,
     List<DestinationModel> destinations,
     List<ConfigModel> configs,
@@ -370,15 +370,15 @@ class DestinationData {
     );
   }
 
-  DestinationData withQuery(String query) => _copy(query: query);
+  DestinationsData withQuery(String query) => _copy(query: query);
 
-  DestinationData withType(String? type) => _copy(type: () => type);
+  DestinationsData withType(String? type) => _copy(type: () => type);
 
-  DestinationData withTesting(String id, bool testing) => _copy(
+  DestinationsData withTesting(String id, bool testing) => _copy(
     testing: testing ? {...this.testing, id} : ({...this.testing}..remove(id)),
   );
 
-  DestinationData withCheck(String id, ConnectionCheckModel check) => _copy(
+  DestinationsData withCheck(String id, ConnectionCheckModel check) => _copy(
     destinations: [
       for (final d in destinations) d.id == id ? d.withCheck(check) : d,
     ],
@@ -405,47 +405,47 @@ class DestinationData {
   bool get filtered => activeFilters > 0 || query.trim().isNotEmpty;
 }
 
-abstract class DestinationState {
-  final DestinationData data;
+abstract class DestinationsState {
+  final DestinationsData data;
 
-  const DestinationState({this.data = const DestinationData.empty()});
+  const DestinationsState({this.data = const DestinationsData.empty()});
 }
 
-class DestinationInitialState extends DestinationState {
-  const DestinationInitialState();
+class DestinationsInitialState extends DestinationsState {
+  const DestinationsInitialState();
 }
 
 //------------------------- LOADING -------------------------\
-class DestinationLoadingInProgressState extends DestinationState {
-  const DestinationLoadingInProgressState({required super.data});
+class DestinationsLoadingInProgressState extends DestinationsState {
+  const DestinationsLoadingInProgressState({required super.data});
 }
 
-class DestinationLoadingSuccessState extends DestinationState {
-  const DestinationLoadingSuccessState({required super.data});
+class DestinationsLoadingSuccessState extends DestinationsState {
+  const DestinationsLoadingSuccessState({required super.data});
 }
 
-class DestinationLoadingErrorState extends DestinationState {
+class DestinationsLoadingErrorState extends DestinationsState {
   final GlobalException exception;
 
-  const DestinationLoadingErrorState(this.exception, {required super.data});
+  const DestinationsLoadingErrorState(this.exception, {required super.data});
 }
 
 //------------------------- PROCESSING -------------------------\
-class DestinationProcessInProgressState extends DestinationState {
-  const DestinationProcessInProgressState({required super.data});
+class DestinationsProcessInProgressState extends DestinationsState {
+  const DestinationsProcessInProgressState({required super.data});
 }
 
-class DestinationProcessingOKState extends DestinationState {
-  final DestinationAction action;
+class DestinationsProcessingOKState extends DestinationsState {
+  final DestinationsAction action;
 
-  /// The destination acted on; after [DestinationAction.tested], with its
+  /// The destination acted on; after [DestinationsAction.tested], with its
   /// new check
   final DestinationModel destination;
 
   /// The folder added or deleted
   final String? folder;
 
-  const DestinationProcessingOKState(
+  const DestinationsProcessingOKState(
     this.action,
     this.destination, {
     required super.data,
@@ -453,8 +453,8 @@ class DestinationProcessingOKState extends DestinationState {
   });
 }
 
-class DestinationProcessingErrorState extends DestinationState {
+class DestinationsProcessingErrorState extends DestinationsState {
   final String message;
 
-  const DestinationProcessingErrorState(this.message, {required super.data});
+  const DestinationsProcessingErrorState(this.message, {required super.data});
 }

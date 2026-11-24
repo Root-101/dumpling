@@ -1,75 +1,77 @@
 import 'package:console/app_exporter.dart';
 import 'package:dio/dio.dart';
 
-class SourceClient extends BaseClient {
-  /// A test waits for the database to answer: longer than other requests
+class DestinationsClient extends BaseClient {
+  /// A test starts and aborts an upload in every folder: longer than other
+  /// requests
   static const Duration testTimeout = Duration(seconds: 90);
 
-  SourceClient(super.dio);
+  DestinationsClient(super.dio);
 
-  String _sourcesUrl(String workspace) =>
-      '$baseUrl/workspaces/$workspace/sources';
+  String _destinationsUrl(String workspace) =>
+      '$baseUrl/workspaces/$workspace/destinations';
 
   /// Every type, the ones not available yet too
-  Future<List<SourceTypeResponse>> types({String? token}) async {
+  Future<List<DestinationTypeResponse>> types({String? token}) async {
     Response rawResponse = await dio.get(
-      '$baseUrl/source-types',
+      '$baseUrl/destination-types',
       options: options(token: token),
     );
     return (rawResponse.data as List)
-        .map((e) => SourceTypeResponse.fromJson(e))
+        .map((e) => DestinationTypeResponse.fromJson(e))
         .toList();
   }
 
-  Future<List<SourceResponse>> list({
+  Future<List<DestinationResponse>> list({
     required String workspace,
     String? token,
   }) async {
     Response rawResponse = await dio.get(
-      _sourcesUrl(workspace),
+      _destinationsUrl(workspace),
       options: options(token: token),
     );
     return (rawResponse.data as List)
-        .map((e) => SourceResponse.fromJson(e))
+        .map((e) => DestinationResponse.fromJson(e))
         .toList();
   }
 
-  Future<SourceResponse> create({
+  Future<DestinationResponse> create({
     required String workspace,
-    required SourceRequest request,
+    required DestinationRequest request,
     String? token,
   }) async {
     Response rawResponse = await dio.post(
-      _sourcesUrl(workspace),
+      _destinationsUrl(workspace),
       data: request.toJson(),
       options: options(token: token),
     );
-    return SourceResponse.fromJson(rawResponse.data);
+    return DestinationResponse.fromJson(rawResponse.data);
   }
 
-  /// Replaces the source; without a password it keeps the saved one
-  Future<SourceResponse> update({
+  /// Replaces the destination and its folders; without a secret key it keeps
+  /// the saved one
+  Future<DestinationResponse> update({
     required String workspace,
     required String id,
-    required SourceRequest request,
+    required DestinationRequest request,
     String? token,
   }) async {
     Response rawResponse = await dio.put(
-      '${_sourcesUrl(workspace)}/$id',
+      '${_destinationsUrl(workspace)}/$id',
       data: request.toJson(),
       options: options(token: token),
     );
-    return SourceResponse.fromJson(rawResponse.data);
+    return DestinationResponse.fromJson(rawResponse.data);
   }
 
-  /// Saves the order of every source of [workspace], as [ids] list them
+  /// Saves the order of every destination of [workspace], as [ids] list them
   Future<void> reorder({
     required String workspace,
     required List<String> ids,
     String? token,
   }) async {
     await dio.put(
-      '${_sourcesUrl(workspace)}/order',
+      '${_destinationsUrl(workspace)}/order',
       data: {'ids': ids},
       options: options(token: token),
     );
@@ -81,23 +83,23 @@ class SourceClient extends BaseClient {
     String? token,
   }) async {
     await dio.delete(
-      '${_sourcesUrl(workspace)}/$id',
+      '${_destinationsUrl(workspace)}/$id',
       options: options(token: token),
     );
   }
 
-  /// Tests the form before saving it; [sourceId] (editing) fills in the saved
-  /// password when the form has none
+  /// Tests the form before saving it; [destinationId] (editing) fills in the
+  /// saved secret key when the form has none
   Future<ConnectionCheckResponse> testUnsaved({
     required String workspace,
-    required SourceRequest request,
-    String? sourceId,
+    required DestinationRequest request,
+    String? destinationId,
     String? token,
   }) async {
     Response rawResponse = await dio.post(
-      '${_sourcesUrl(workspace)}/test',
+      '${_destinationsUrl(workspace)}/test',
       data: request.toJson(),
-      queryParameters: {'source': ?sourceId},
+      queryParameters: {'destination': ?destinationId},
       options: options(token: token).copyWith(receiveTimeout: testTimeout),
     );
     return ConnectionCheckResponse.fromJson(rawResponse.data);
@@ -110,57 +112,69 @@ class SourceClient extends BaseClient {
     String? token,
   }) async {
     Response rawResponse = await dio.post(
-      '${_sourcesUrl(workspace)}/$id/test',
+      '${_destinationsUrl(workspace)}/$id/test',
       options: options(token: token).copyWith(receiveTimeout: testTimeout),
     );
     return ConnectionCheckResponse.fromJson(rawResponse.data);
   }
 }
 
-//---------- SOURCE REQUEST ----------
-class SourceRequest {
+//---------- DESTINATION REQUEST ----------
+class DestinationRequest {
   final String name;
   final String type;
 
-  /// The fields of the type: for PostgreSQL `host`, `port`, `database`,
-  /// `username`, `password` and `dump_format`, or `connection_url`
+  /// The fields of the type: for S3 `endpoint`, `region`, `bucket`,
+  /// `access_key_id`, `secret_access_key` and `path_style`
   final Map<String, dynamic> settings;
 
-  SourceRequest({
+  /// None: the bucket root is the only connection point
+  final List<String> folders;
+
+  DestinationRequest({
     required this.name,
     required this.type,
     required this.settings,
+    required this.folders,
   });
 
   Map<String, dynamic> toJson() {
-    return {'name': name, 'type': type, 'settings': settings};
+    return {
+      'name': name,
+      'type': type,
+      'settings': settings,
+      'folders': folders,
+    };
   }
 }
 
-//---------- SOURCE RESPONSE ----------
-class SourceResponse {
+//---------- DESTINATION RESPONSE ----------
+class DestinationResponse {
   final String id;
   final String name;
   final String type;
 
-  /// Without the password: the API never returns it
+  /// Without the secret key: the API never returns it
   final Map<String, dynamic> settings;
+  final List<String> folders;
   final ConnectionCheckResponse? lastCheck;
 
-  SourceResponse({
+  DestinationResponse({
     required this.id,
     required this.name,
     required this.type,
     required this.settings,
+    required this.folders,
     required this.lastCheck,
   });
 
-  factory SourceResponse.fromJson(Map<String, dynamic> json) {
-    return SourceResponse(
+  factory DestinationResponse.fromJson(Map<String, dynamic> json) {
+    return DestinationResponse(
       id: json['id'],
       name: json['name'],
       type: json['type'],
       settings: json['settings'],
+      folders: (json['folders'] as List).cast<String>(),
       lastCheck: json['last_check'] == null
           ? null
           : ConnectionCheckResponse.fromJson(json['last_check']),
@@ -168,14 +182,17 @@ class SourceResponse {
   }
 }
 
-//---------- SOURCE TYPE RESPONSE ----------
-class SourceTypeResponse {
+//---------- DESTINATION TYPE RESPONSE ----------
+class DestinationTypeResponse {
   final String type;
   final bool enabled;
 
-  SourceTypeResponse({required this.type, required this.enabled});
+  DestinationTypeResponse({required this.type, required this.enabled});
 
-  factory SourceTypeResponse.fromJson(Map<String, dynamic> json) {
-    return SourceTypeResponse(type: json['type'], enabled: json['enabled']);
+  factory DestinationTypeResponse.fromJson(Map<String, dynamic> json) {
+    return DestinationTypeResponse(
+      type: json['type'],
+      enabled: json['enabled'],
+    );
   }
 }

@@ -17,7 +17,7 @@ class BaseScreen extends StatefulWidget {
 }
 
 class _BaseScreenState extends State<BaseScreen> {
-  late final WorkspaceCubit _workspaces;
+  late final WorkspacesCubit _workspaces;
 
   /// `/workspaces/{slug}/{section}`: the slug and the section, when inside a
   /// workspace
@@ -31,7 +31,7 @@ class _BaseScreenState extends State<BaseScreen> {
   @override
   void initState() {
     super.initState();
-    _workspaces = context.read<WorkspaceCubit>();
+    _workspaces = context.read<WorkspacesCubit>();
     if (!_workspaces.state.data.loaded) _workspaces.load();
     _follow();
   }
@@ -59,7 +59,7 @@ class _BaseScreenState extends State<BaseScreen> {
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BlocBuilder<WorkspaceCubit, WorkspaceState>(
+          BlocBuilder<WorkspacesCubit, WorkspacesState>(
             builder: (context, state) => _Rail(
               current: state.data.current,
               section: _section,

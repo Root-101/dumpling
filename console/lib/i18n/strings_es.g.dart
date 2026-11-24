@@ -62,7 +62,7 @@ class AppTextsEs
   @override
   late final AppTexts$nav$es nav = AppTexts$nav$es._(_root);
   @override
-  late final AppTexts$login$es login = AppTexts$login$es._(_root);
+  late final AppTexts$auth$es auth = AppTexts$auth$es._(_root);
   @override
   late final AppTexts$colors$es colors = AppTexts$colors$es._(_root);
   @override
@@ -303,9 +303,9 @@ class AppTexts$nav$es implements AppTexts$nav$en {
   String get logout => 'Cerrar sesión';
 }
 
-// Path: login
-class AppTexts$login$es implements AppTexts$login$en {
-  AppTexts$login$es._(this._root);
+// Path: auth
+class AppTexts$auth$es implements AppTexts$auth$en {
+  AppTexts$auth$es._(this._root);
 
   final AppTextsEs _root; // ignore: unused_field
 
@@ -2264,18 +2264,18 @@ extension on AppTextsEs {
           'nav.expand' => 'Expandir menú',
           'nav.collapse' => 'Contraer menú',
           'nav.logout' => 'Cerrar sesión',
-          'login.title' => 'Inicia sesión',
-          'login.description' => 'Gestiona los backups de tus bases de datos.',
-          'login.username' => 'Usuario',
-          'login.usernameHint' => 'Escribe tu usuario',
-          'login.password' => 'Contraseña',
-          'login.passwordHint' => 'Escribe tu contraseña',
-          'login.showPassword' => 'Mostrar contraseña',
-          'login.hidePassword' => 'Ocultar contraseña',
-          'login.button' => 'Iniciar sesión',
-          'login.signingIn' => 'Iniciando sesión…',
-          'login.failedHint' => 'Revisa ambos e inténtalo de nuevo.',
-          'login.retryIn' =>
+          'auth.title' => 'Inicia sesión',
+          'auth.description' => 'Gestiona los backups de tus bases de datos.',
+          'auth.username' => 'Usuario',
+          'auth.usernameHint' => 'Escribe tu usuario',
+          'auth.password' => 'Contraseña',
+          'auth.passwordHint' => 'Escribe tu contraseña',
+          'auth.showPassword' => 'Mostrar contraseña',
+          'auth.hidePassword' => 'Ocultar contraseña',
+          'auth.button' => 'Iniciar sesión',
+          'auth.signingIn' => 'Iniciando sesión…',
+          'auth.failedHint' => 'Revisa ambos e inténtalo de nuevo.',
+          'auth.retryIn' =>
             ({required num minutes}) =>
                 (_root.$meta.cardinalResolver ??
                 PluralResolvers.cardinal('es'))(
@@ -2283,17 +2283,17 @@ extension on AppTextsEs {
                   one: 'Vuelve a intentarlo en ${minutes} minuto.',
                   other: 'Vuelve a intentarlo en ${minutes} minutos.',
                 ),
-          'login.envHint' =>
+          'auth.envHint' =>
             'El usuario y la contraseña se definen en el servidor con',
-          'login.envHintAnd' => 'y',
-          'login.tagline' => 'Backups',
-          'login.taglineAccent' => 'sin esfuerzo',
-          'login.tagLightweight' => 'Ligero',
-          'login.tagCanvas' => 'Canvas drag & drop',
-          'login.tagWinter' => 'Hecho con Winter',
-          'login.expiredTitle' => 'Tu sesión expiró',
-          'login.expiredDescription' => 'Tu sesión terminó tras 12 horas. Inicia sesión de nuevo para seguir donde lo dejaste.',
-          'login.toSignInPage' => 'Ir a la página de inicio de sesión',
+          'auth.envHintAnd' => 'y',
+          'auth.tagline' => 'Backups',
+          'auth.taglineAccent' => 'sin esfuerzo',
+          'auth.tagLightweight' => 'Ligero',
+          'auth.tagCanvas' => 'Canvas drag & drop',
+          'auth.tagWinter' => 'Hecho con Winter',
+          'auth.expiredTitle' => 'Tu sesión expiró',
+          'auth.expiredDescription' => 'Tu sesión terminó tras 12 horas. Inicia sesión de nuevo para seguir donde lo dejaste.',
+          'auth.toSignInPage' => 'Ir a la página de inicio de sesión',
           'colors.none' => 'Sin color',
           'colors.custom' => 'Color personalizado',
           'colors.apply' => 'Aplicar',

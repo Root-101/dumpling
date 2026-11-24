@@ -394,7 +394,7 @@ class _ConfigDialogState extends State<ConfigDialog> {
         widget.source,
         _c.compression ??
             app.di
-                .find<WorkspaceCubit>()
+                .find<WorkspacesCubit>()
                 .state
                 .data
                 .current

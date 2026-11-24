@@ -324,7 +324,7 @@ class _DestinationFormState extends State<DestinationForm> {
         }
         if (state is DestinationFormProcessingOKState) {
           Navigator.of(context).pop();
-          app.di.find<DestinationCubit>().reload();
+          app.di.find<DestinationsCubit>().reload();
           final name = state.destination.name;
           app.snack.showSuccess(
             message: _editing

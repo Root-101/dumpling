@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// State of the drawer of a source (new or edited). It lives while the drawer
 /// is open, so the test, loading and errors show inside the form
 class SourceFormCubit extends Cubit<SourceFormState> {
-  final SourceRepo _repo;
+  final SourcesRepo _repo;
   final AuthCubit _auth;
   final String workspace;
 

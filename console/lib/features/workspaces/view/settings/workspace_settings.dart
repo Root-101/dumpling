@@ -184,7 +184,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
       });
     }
     if (state is WorkspaceFormProcessingOKState) {
-      app.di.find<WorkspaceCubit>().load();
+      app.di.find<WorkspacesCubit>().load();
       if (state.deleted) {
         Navigator.of(context).pop();
         app.snack.showSuccess(

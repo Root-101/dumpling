@@ -8,7 +8,7 @@ abstract final class WorkspaceExport {
   /// [workspace], or every one when null
   static Future<void> run({WorkspaceModel? workspace}) async {
     try {
-      final file = await app.di.find<WorkspaceRepo>().export(
+      final file = await app.di.find<WorkspacesRepo>().export(
         slug: workspace?.slug,
         token: app.di.find<AuthCubit>().auth?.accessToken,
       );
@@ -127,13 +127,13 @@ class WorkspaceImportDialog extends StatefulWidget {
     );
     app.loading.show(id: loadingId);
     try {
-      final created = await app.di.find<WorkspaceRepo>().import(
+      final created = await app.di.find<WorkspacesRepo>().import(
         file: s.file!,
         token: app.di.find<AuthCubit>().auth?.accessToken,
       );
       app.loading.hide(id: loadingId);
       if (context.mounted) Navigator.of(context).pop();
-      app.di.find<WorkspaceCubit>().load();
+      app.di.find<WorkspacesCubit>().load();
       final root = app.context;
       if (!root.mounted) return;
       app.snack.showSuccess(
@@ -217,7 +217,7 @@ class _WorkspaceImportDialogState extends State<WorkspaceImportDialog> {
     }
 
     final taken = {
-      for (final w in app.di.find<WorkspaceCubit>().state.data.workspaces)
+      for (final w in app.di.find<WorkspacesCubit>().state.data.workspaces)
         w.name,
     };
     int count(Object? list) => list is List ? list.length : 0;

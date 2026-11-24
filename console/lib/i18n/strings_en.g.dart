@@ -51,7 +51,7 @@ class AppTexts with BaseTranslations<AppLocale, AppTexts> {
   late final AppTexts$time$en time = AppTexts$time$en._(_root);
   late final AppTexts$errors$en errors = AppTexts$errors$en._(_root);
   late final AppTexts$nav$en nav = AppTexts$nav$en._(_root);
-  late final AppTexts$login$en login = AppTexts$login$en._(_root);
+  late final AppTexts$auth$en auth = AppTexts$auth$en._(_root);
   late final AppTexts$colors$en colors = AppTexts$colors$en._(_root);
   late final AppTexts$workspaces$en workspaces = AppTexts$workspaces$en._(
     _root,
@@ -358,9 +358,9 @@ class AppTexts$nav$en {
   String get logout => 'Sign out';
 }
 
-// Path: login
-class AppTexts$login$en {
-  AppTexts$login$en._(this._root);
+// Path: auth
+class AppTexts$auth$en {
+  AppTexts$auth$en._(this._root);
 
   final AppTexts _root; // ignore: unused_field
 
@@ -2940,18 +2940,18 @@ extension on AppTexts {
           'nav.expand' => 'Expand menu',
           'nav.collapse' => 'Collapse menu',
           'nav.logout' => 'Sign out',
-          'login.title' => 'Sign in',
-          'login.description' => 'Manage your database backups.',
-          'login.username' => 'Username',
-          'login.usernameHint' => 'Enter your username',
-          'login.password' => 'Password',
-          'login.passwordHint' => 'Enter your password',
-          'login.showPassword' => 'Show password',
-          'login.hidePassword' => 'Hide password',
-          'login.button' => 'Sign in',
-          'login.signingIn' => 'Signing in…',
-          'login.failedHint' => 'Check both and try again.',
-          'login.retryIn' =>
+          'auth.title' => 'Sign in',
+          'auth.description' => 'Manage your database backups.',
+          'auth.username' => 'Username',
+          'auth.usernameHint' => 'Enter your username',
+          'auth.password' => 'Password',
+          'auth.passwordHint' => 'Enter your password',
+          'auth.showPassword' => 'Show password',
+          'auth.hidePassword' => 'Hide password',
+          'auth.button' => 'Sign in',
+          'auth.signingIn' => 'Signing in…',
+          'auth.failedHint' => 'Check both and try again.',
+          'auth.retryIn' =>
             ({required num minutes}) =>
                 (_root.$meta.cardinalResolver ??
                 PluralResolvers.cardinal('en'))(
@@ -2959,17 +2959,17 @@ extension on AppTexts {
                   one: 'Try again in ${minutes} minute.',
                   other: 'Try again in ${minutes} minutes.',
                 ),
-          'login.envHint' =>
+          'auth.envHint' =>
             'The username and password are set on the server with',
-          'login.envHintAnd' => 'and',
-          'login.tagline' => 'Backups made',
-          'login.taglineAccent' => 'easy',
-          'login.tagLightweight' => 'Lightweight',
-          'login.tagCanvas' => 'Drag & Drop Canvas',
-          'login.tagWinter' => 'Powered by Winter',
-          'login.expiredTitle' => 'Your session expired',
-          'login.expiredDescription' => 'Your session ended after 12 hours. Sign in again to continue where you left off.',
-          'login.toSignInPage' => 'Go to the sign-in page',
+          'auth.envHintAnd' => 'and',
+          'auth.tagline' => 'Backups made',
+          'auth.taglineAccent' => 'easy',
+          'auth.tagLightweight' => 'Lightweight',
+          'auth.tagCanvas' => 'Drag & Drop Canvas',
+          'auth.tagWinter' => 'Powered by Winter',
+          'auth.expiredTitle' => 'Your session expired',
+          'auth.expiredDescription' => 'Your session ended after 12 hours. Sign in again to continue where you left off.',
+          'auth.toSignInPage' => 'Go to the sign-in page',
           'colors.none' => 'No color',
           'colors.custom' => 'Custom color',
           'colors.apply' => 'Apply',

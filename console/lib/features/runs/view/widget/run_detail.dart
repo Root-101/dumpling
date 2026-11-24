@@ -27,12 +27,12 @@ class _RunDialogState extends State<RunDialog> {
   @override
   void initState() {
     super.initState();
-    context.read<RunCubit>().detail(widget.run, workspace: widget.workspace);
+    context.read<RunsCubit>().detail(widget.run, workspace: widget.workspace);
   }
 
   @override
   Widget build(BuildContext context) {
-    final detail = context.select<RunCubit, RunModel?>(
+    final detail = context.select<RunsCubit, RunModel?>(
       (c) => c.state.data.details[widget.run.id],
     );
     final run = detail ?? widget.run;
@@ -105,7 +105,7 @@ class _Footer extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = app.colors;
     final t = app.intl.runs;
-    final slug = workspace ?? context.read<RunCubit>().state.data.workspace;
+    final slug = workspace ?? context.read<RunsCubit>().state.data.workspace;
     final ended =
         run.status == RunStatus.success || run.status == RunStatus.failed;
     return Container(
@@ -144,7 +144,7 @@ class _Footer extends StatelessWidget {
             AppButton(
               label: run.status == RunStatus.failed ? t.retryNow : t.runAgain,
               onPressed: () async {
-                final cubit = context.read<RunCubit>();
+                final cubit = context.read<RunsCubit>();
                 final root = app.context;
                 Navigator.of(context).pop();
                 final started = await cubit.runAgain(run, workspace: workspace);

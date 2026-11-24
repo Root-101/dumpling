@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// State of the dialog of a new workspace, or of the settings of one. It
 /// lives while the dialog is open, so loading and errors show inside it
 class WorkspaceFormCubit extends Cubit<WorkspaceFormState> {
-  final WorkspaceRepo _repo;
+  final WorkspacesRepo _repo;
   final AuthCubit _auth;
 
   WorkspaceFormCubit(this._repo, this._auth)

@@ -4,20 +4,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// The API keys of the open workspace: list, search, the filters, the order
 /// and the form's save. The configs (and the names of their ends) are
 /// loaded with them, for the form and the filter by config
-class ApiKeyCubit extends Cubit<ApiKeyState> {
-  final ApiKeyRepo _repo;
-  final ConfigRepo _configs;
-  final SourceRepo _sources;
-  final DestinationRepo _destinations;
+class ApiKeysCubit extends Cubit<ApiKeysState> {
+  final ApiKeysRepo _repo;
+  final ConfigsRepo _configs;
+  final SourcesRepo _sources;
+  final DestinationsRepo _destinations;
   final AuthCubit _auth;
 
-  ApiKeyCubit(
+  ApiKeysCubit(
     this._repo,
     this._configs,
     this._sources,
     this._destinations,
     this._auth,
-  ) : super(const ApiKeyInitialState());
+  ) : super(const ApiKeysInitialState());
 
   String? get _token => _auth.auth?.accessToken;
 
@@ -25,8 +25,8 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
   Future<void> load(String workspace) async {
     final data = state.data.workspace == workspace
         ? state.data
-        : ApiKeyData.empty(workspace);
-    emit(ApiKeyLoadingInProgressState(data: data));
+        : ApiKeysData.empty(workspace);
+    emit(ApiKeysLoadingInProgressState(data: data));
     try {
       final results = await Future.wait([
         _repo.list(workspace: workspace, token: _token),
@@ -44,7 +44,7 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
           d.id: d.s3?.bucket ?? d.name,
       };
       emit(
-        ApiKeyLoadingSuccessState(
+        ApiKeysLoadingSuccessState(
           data: state.data._copy(
             loaded: true,
             keys: results[0] as List<ApiKeyModel>,
@@ -57,7 +57,7 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
     } catch (e) {
       if (state.data.workspace != workspace) return;
       emit(
-        ApiKeyLoadingErrorState(ExceptionConverter.parse(e), data: state.data),
+        ApiKeysLoadingErrorState(ExceptionConverter.parse(e), data: state.data),
       );
     }
   }
@@ -74,7 +74,7 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
   void filterAccess(ApiKeyAccess? access) =>
       _show(state.data._copy(access: () => access));
 
-  /// A config id, [ApiKeyData.unlimited] or null for every key
+  /// A config id, [ApiKeysData.unlimited] or null for every key
   void filterConfig(String? config) =>
       _show(state.data._copy(config: () => config));
 
@@ -91,13 +91,13 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
     ),
   );
 
-  void _show(ApiKeyData data) => emit(ApiKeyLoadingSuccessState(data: data));
+  void _show(ApiKeysData data) => emit(ApiKeysLoadingSuccessState(data: data));
 
   /// Creates the key, or changes [id]; the new key comes with its text. Null
   /// when the service refuses it (the error goes to the state)
   Future<ApiKeyModel?> save(ApiKeyDraft draft, {String? id}) async {
     final workspace = state.data.workspace!;
-    emit(ApiKeyProcessInProgressState(data: state.data));
+    emit(ApiKeysProcessInProgressState(data: state.data));
     try {
       final key = await _repo.save(
         workspace: workspace,
@@ -110,8 +110,8 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
           ? [...state.data.keys, key]
           : [for (final k in state.data.keys) k.id == id ? key : k];
       emit(
-        ApiKeyProcessingOKState(
-          id == null ? ApiKeyAction.created : ApiKeyAction.saved,
+        ApiKeysProcessingOKState(
+          id == null ? ApiKeysAction.created : ApiKeysAction.saved,
           key,
           data: state.data._copy(keys: keys),
         ),
@@ -119,7 +119,7 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
       return key;
     } catch (e) {
       emit(
-        ApiKeyProcessingErrorState(
+        ApiKeysProcessingErrorState(
           ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
@@ -129,7 +129,7 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
   }
 
   Future<void> delete(ApiKeyModel key) async {
-    emit(ApiKeyProcessInProgressState(data: state.data));
+    emit(ApiKeysProcessInProgressState(data: state.data));
     try {
       await _repo.delete(
         workspace: state.data.workspace!,
@@ -137,8 +137,8 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
         token: _token,
       );
       emit(
-        ApiKeyProcessingOKState(
-          ApiKeyAction.deleted,
+        ApiKeysProcessingOKState(
+          ApiKeysAction.deleted,
           key,
           data: state.data._copy(
             keys: [
@@ -150,7 +150,7 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
       );
     } catch (e) {
       emit(
-        ApiKeyProcessingErrorState(
+        ApiKeysProcessingErrorState(
           ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
@@ -163,7 +163,7 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
   Future<void> reorder(int from, int to) async {
     final before = state.data;
     final keys = reordered(before.keys, from, to);
-    emit(ApiKeyLoadingSuccessState(data: before._copy(keys: keys)));
+    emit(ApiKeysLoadingSuccessState(data: before._copy(keys: keys)));
     try {
       await _repo.reorder(
         workspace: before.workspace!,
@@ -173,7 +173,7 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
     } catch (e) {
       if (state.data.workspace != before.workspace) return;
       emit(
-        ApiKeyProcessingErrorState(
+        ApiKeysProcessingErrorState(
           ExceptionConverter.parse(e).intlMessage,
           data: before,
         ),
@@ -182,15 +182,15 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
   }
 
   /// After signing out
-  void reset() => emit(const ApiKeyInitialState());
+  void reset() => emit(const ApiKeysInitialState());
 }
 
 /// What a key action did, so the view can confirm it
-enum ApiKeyAction { created, saved, deleted }
+enum ApiKeysAction { created, saved, deleted }
 
 /// The loaded keys and what the search and the filters leave ([visibleKeys],
 /// filled on every change)
-class ApiKeyData {
+class ApiKeysData {
   /// [config] of a key that reaches every config
   static const String unlimited = '*';
 
@@ -210,7 +210,7 @@ class ApiKeyData {
   final String? permission;
   final List<ApiKeyModel> visibleKeys;
 
-  const ApiKeyData._({
+  const ApiKeysData._({
     required this.workspace,
     required this.loaded,
     required this.keys,
@@ -224,7 +224,7 @@ class ApiKeyData {
     required this.visibleKeys,
   });
 
-  const ApiKeyData.empty([String? workspace])
+  const ApiKeysData.empty([String? workspace])
     : this._(
         workspace: workspace,
         loaded: false,
@@ -239,7 +239,7 @@ class ApiKeyData {
         visibleKeys: const [],
       );
 
-  ApiKeyData _copy({
+  ApiKeysData _copy({
     bool? loaded,
     List<ApiKeyModel>? keys,
     List<ConfigModel>? configs,
@@ -250,7 +250,7 @@ class ApiKeyData {
     String? Function()? config,
     String? Function()? permission,
   }) {
-    final next = ApiKeyData._(
+    final next = ApiKeysData._(
       workspace: workspace,
       loaded: loaded ?? this.loaded,
       keys: keys ?? this.keys,
@@ -263,7 +263,7 @@ class ApiKeyData {
       permission: permission == null ? this.permission : permission(),
       visibleKeys: const [],
     );
-    return ApiKeyData._(
+    return ApiKeysData._(
       workspace: next.workspace,
       loaded: next.loaded,
       keys: next.keys,
@@ -315,45 +315,45 @@ class ApiKeyData {
   bool get filtered => activeFilters > 0 || query.trim().isNotEmpty;
 }
 
-abstract class ApiKeyState {
-  final ApiKeyData data;
+abstract class ApiKeysState {
+  final ApiKeysData data;
 
-  const ApiKeyState({this.data = const ApiKeyData.empty()});
+  const ApiKeysState({this.data = const ApiKeysData.empty()});
 }
 
-class ApiKeyInitialState extends ApiKeyState {
-  const ApiKeyInitialState();
+class ApiKeysInitialState extends ApiKeysState {
+  const ApiKeysInitialState();
 }
 
 //------------------------- LOADING -------------------------\
-class ApiKeyLoadingInProgressState extends ApiKeyState {
-  const ApiKeyLoadingInProgressState({required super.data});
+class ApiKeysLoadingInProgressState extends ApiKeysState {
+  const ApiKeysLoadingInProgressState({required super.data});
 }
 
-class ApiKeyLoadingSuccessState extends ApiKeyState {
-  const ApiKeyLoadingSuccessState({required super.data});
+class ApiKeysLoadingSuccessState extends ApiKeysState {
+  const ApiKeysLoadingSuccessState({required super.data});
 }
 
-class ApiKeyLoadingErrorState extends ApiKeyState {
+class ApiKeysLoadingErrorState extends ApiKeysState {
   final GlobalException exception;
 
-  const ApiKeyLoadingErrorState(this.exception, {required super.data});
+  const ApiKeysLoadingErrorState(this.exception, {required super.data});
 }
 
 //------------------------- PROCESSING -------------------------\
-class ApiKeyProcessInProgressState extends ApiKeyState {
-  const ApiKeyProcessInProgressState({required super.data});
+class ApiKeysProcessInProgressState extends ApiKeysState {
+  const ApiKeysProcessInProgressState({required super.data});
 }
 
-class ApiKeyProcessingOKState extends ApiKeyState {
-  final ApiKeyAction action;
+class ApiKeysProcessingOKState extends ApiKeysState {
+  final ApiKeysAction action;
   final ApiKeyModel key;
 
-  const ApiKeyProcessingOKState(this.action, this.key, {required super.data});
+  const ApiKeysProcessingOKState(this.action, this.key, {required super.data});
 }
 
-class ApiKeyProcessingErrorState extends ApiKeyState {
+class ApiKeysProcessingErrorState extends ApiKeysState {
   final String message;
 
-  const ApiKeyProcessingErrorState(this.message, {required super.data});
+  const ApiKeysProcessingErrorState(this.message, {required super.data});
 }

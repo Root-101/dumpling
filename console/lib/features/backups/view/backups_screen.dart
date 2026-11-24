@@ -53,7 +53,7 @@ class BackupsScreen extends StatefulWidget {
 }
 
 class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
-  late final BackupCubit cubit;
+  late final BackupsCubit cubit;
   final _searchController = TextEditingController();
 
   /// The configs whose row is open
@@ -62,7 +62,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
   @override
   void initState() {
     super.initState();
-    cubit = context.read<BackupCubit>();
+    cubit = context.read<BackupsCubit>();
     _load();
     WidgetsBinding.instance.addPostFrameCallback((_) => _followUrl());
   }
@@ -148,7 +148,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
     followUrl(
       widget.openId,
       show: (id) async {
-        final run = await context.read<RunCubit>().find(widget.workspace, id);
+        final run = await context.read<RunsCubit>().find(widget.workspace, id);
         if (run == null) return false;
         await RunDialog.open(run, workspace: widget.workspace);
         return true;
@@ -160,7 +160,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
   @override
   Widget build(BuildContext context) {
     final t = app.intl.backups;
-    final workspaceName = context.select<WorkspaceCubit, String>(
+    final workspaceName = context.select<WorkspacesCubit, String>(
       (c) => c.state.data.current?.name ?? widget.workspace,
     );
     return Scaffold(
@@ -173,11 +173,11 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
             workspace: workspaceName,
             description: t.description,
             actions: [
-              BlocBuilder<BackupCubit, BackupState>(
+              BlocBuilder<BackupsCubit, BackupsState>(
                 builder: (context, state) => AppRefreshButton(
                   onPressed: _reload,
                   loading:
-                      state is BackupLoadingInProgressState &&
+                      state is BackupsLoadingInProgressState &&
                       state.data.loaded,
                 ),
               ),
@@ -193,11 +193,11 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
           ),
           Expanded(
             child: PagePanel(
-              child: BlocConsumer<BackupCubit, BackupState>(
+              child: BlocConsumer<BackupsCubit, BackupsState>(
                 listener: _onState,
                 builder: (context, state) {
                   if (!state.data.loaded) {
-                    return state is BackupLoadingErrorState
+                    return state is BackupsLoadingErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
                         : _buildSkeleton(state.data);
                   }
@@ -210,7 +210,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         // loaded, then the service stopped answering
-                        if (state is BackupLoadingErrorState &&
+                        if (state is BackupsLoadingErrorState &&
                             state.exception.type ==
                                 GlobalExceptionType.offline) ...[
                           OfflineBanner(onRetry: cubit.reload),
@@ -231,16 +231,16 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
     );
   }
 
-  void _onState(BuildContext context, BackupState state) {
-    if (state is BackupProcessInProgressState) {
+  void _onState(BuildContext context, BackupsState state) {
+    if (state is BackupsProcessInProgressState) {
       app.loading.show();
     } else {
       app.loading.hide();
     }
-    if (state is BackupRunFinishedState) {
+    if (state is BackupsRunFinishedState) {
       final run = state.run;
       // the failing count of the rail comes from the list of workspaces
-      app.di.find<WorkspaceCubit>().load();
+      app.di.find<WorkspacesCubit>().load();
       if (run.status == RunStatus.success) {
         app.snack.showSuccess(
           message: app.intl.canvas.run.done(
@@ -259,24 +259,24 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
         );
       }
     }
-    if (state is BackupSavedState) {
+    if (state is BackupsSavedState) {
       app.snack.showSuccess(
         message: app.intl.backups.saved(name: state.name),
         context: app.context,
       );
     }
-    if (state is BackupDeletedState) {
+    if (state is BackupsDeletedState) {
       app.snack.showSuccess(
         message: app.intl.backups.deleted(name: state.name),
         context: app.context,
       );
     }
-    if (state is BackupProcessingErrorState) {
+    if (state is BackupsProcessingErrorState) {
       app.snack.showError(message: state.message, context: app.context);
     }
   }
 
-  Widget _buildSummary(BackupData data) {
+  Widget _buildSummary(BackupsData data) {
     final t = app.intl.backups;
     final next = data.next;
     final at = next?.config.nextRun;
@@ -347,7 +347,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
   /// shows it, the rest reload without a sign
   bool _updating(DateTime? at) =>
       at != null &&
-      cubit.state is BackupLoadingInProgressState &&
+      cubit.state is BackupsLoadingInProgressState &&
       !DateTime.now().isBefore(at);
 
   /// Once [at] is due: `Updating in 3…`, `2…`, `1…` until the list reloads,
@@ -369,7 +369,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
     return RunsScreen.durationOf(d);
   }
 
-  List<AppTableColumn> _columns(BackupData data) {
+  List<AppTableColumn> _columns(BackupsData data) {
     final t = app.intl.backups;
     return [
       AppTableColumn(t.columnStatus, width: 68),
@@ -394,7 +394,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
   }
 
   /// While they load: the summary and the table as they will be, in blocks
-  Widget _buildSkeleton(BackupData data) => AppShimmer(
+  Widget _buildSkeleton(BackupsData data) => AppShimmer(
     child: SingleChildScrollView(
       padding: EdgeInsets.symmetric(
         horizontal: app.dimensions.padding.xxl,
@@ -442,7 +442,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
     ),
   );
 
-  Widget _buildTable(BackupData data) {
+  Widget _buildTable(BackupsData data) {
     final t = app.intl.backups;
     final format = app.dateFormatter.time;
     return AppSimpleTable(
@@ -521,7 +521,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
     );
   }
 
-  Widget _buildFilter(BackupData data) {
+  Widget _buildFilter(BackupsData data) {
     final t = app.intl.backups;
     final sources = {for (final b in data.backups) b.source.id: b.source};
     final destinations = {

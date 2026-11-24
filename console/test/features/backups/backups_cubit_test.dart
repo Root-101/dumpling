@@ -2,13 +2,13 @@ import 'package:console/app_exporter.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../support/fixtures.dart';
+import '../../support/fixtures.dart';
 
 class _MockRepo extends Mock implements CanvasRepo {}
 
-class _MockConfigs extends Mock implements ConfigRepo {}
+class _MockConfigs extends Mock implements ConfigsRepo {}
 
-class _MockRuns extends Mock implements RunRepo {}
+class _MockRuns extends Mock implements RunsRepo {}
 
 class _MockAuth extends Mock implements AuthCubit {}
 
@@ -30,8 +30,8 @@ void main() {
         .thenAnswer((_) async => backupCanvas());
   });
 
-  Future<BackupCubit> loaded() async {
-    final cubit = BackupCubit(
+  Future<BackupsCubit> loaded() async {
+    final cubit = BackupsCubit(
       repo,
       configs,
       runs,
@@ -42,7 +42,7 @@ void main() {
     return cubit;
   }
 
-  List<String> visible(BackupCubit cubit) =>
+  List<String> visible(BackupsCubit cubit) =>
       cubit.state.data.visible.map((b) => b.config.id).toList();
 
   test('the summary counts each health and finds the next run', () async {
@@ -114,7 +114,7 @@ void main() {
       () => runs.list(
         workspace: 'production',
         configId: 'j1',
-        limit: BackupCubit.recentRuns,
+        limit: BackupsCubit.recentRuns,
         token: 'jwt',
       ),
     ).thenAnswer((_) async => [run('r1')]);
@@ -160,13 +160,13 @@ void main() {
           ),
         );
     final cubit = await loaded();
-    final states = <BackupState>[];
+    final states = <BackupsState>[];
     final sub = cubit.stream.listen(states.add);
     await cubit.runNow(cubit.state.data.backups[1]);
     await sub.cancel();
 
     expect(states.first.data.backups[1].health, BackupHealth.running);
-    expect(cubit.state, isA<BackupRunFinishedState>());
+    expect(cubit.state, isA<BackupsRunFinishedState>());
     expect(cubit.state.data.backups[1].health, BackupHealth.healthy);
   });
 }
