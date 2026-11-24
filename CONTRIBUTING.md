@@ -34,9 +34,11 @@ differs on purpose, it says so in [Exceptions to the standards](#exceptions-to-t
   `dump` as a byte stream) and a new storage a `DestinationDriver` (`testConnection`, `upload` from
   a stream), registered by type. Nothing else should need to change.
 - **Console**: a feature is `data/rest` (client and DTOs) → `data/repo` → `logic/cubit` and
-  `logic/model` → `view`, wired in its `<name>_init.dart`; views only call cubit methods. No
-  user-visible text is hardcoded (`lib/i18n/*.i18n.yaml`, both languages, then
-  `fvm dart run slang`).
+  `logic/model` → `view`, wired in its `<name>_init.dart`; views only call cubit methods, and open
+  screens and dialogs through their `navigator`. The OK states of writes travel on the
+  `GlobalEventBus`; what depends on them reloads there. No user-visible text is hardcoded
+  (`lib/i18n/*.i18n.yaml`, both languages, then `fvm dart run slang`), and no size or color either
+  where `app.styles` or `app.colors` has it.
 - **Both**: JSON keys are `snake_case`, times are UTC. A field renamed in the service changes the
   console's DTO in the same change.
 - Don't add a dependency for something Dart, Flutter or Winter already does.
@@ -61,6 +63,14 @@ differs on purpose, it says so in [Exceptions to the standards](#exceptions-to-t
 | Service | Repos are `XTableRepo`, one per table       | `CanvasRepo` keeps the positions of the nodes of three tables: the canvas is one document (DECISIONS) |
 | Service | Migrations once released                    | None in 0.x: a schema change edits the tables and the file is created again (🔴 in the README)        |
 | Service | `HEALTHCHECK` in the image                  | The slim image has no HTTP client: the orchestrator or compose checks `/api/health`                 |
+| Console | Web, mobile and desktop                     | Web only, on the origin of the service: no CORS, no base URL to configure in the release            |
+| Console | Refresh token, `await auth.accessToken`     | The service gives one token per login: an expired session opens *Your session expired* over the screen, not the login |
+| Console | `XInitialState` with no data                | Every state carries the `data` snapshot of its cubit: a reload or an error keeps the list on screen |
+| Console | `on Exception catch` in repos               | Repos catch everything: a `TypeError` of a malformed answer becomes a `GlobalException` too        |
+| Console | Forms in `AppDrawer` / `AppFormDialog`      | Dialogs of the Claude Design canvas (steps, detail); the form cubit is still created by the navigator |
+| Console | Paddings from `app.space`                   | Paddings and the geometry of the canvas are the numbers of the Claude Design canvas, matched in the browser |
+| Console | `GlobalExceptionType` of the standard       | Adds `conflict`, `notFound`, `offline` and `tooManyRequests`: the screens act on each (the 404 page, the offline banner, the sign-in lock) |
+| Console | Version bump and CHANGELOG with each change | One version for both packages, set when it is released (`Version X.Y.Z` commit)                   |
 
 ## Tests
 
