@@ -9,10 +9,10 @@ class CanvasInit {
     app.di.put(repo);
 
     CanvasCubit cubit = CanvasCubit(
-      repo,
-      app.di.find(),
-      app.di.find(),
-      app.di.find(),
+      auth: app.di.find(),
+      repo: repo,
+      sources: app.di.find(),
+      destinations: app.di.find(),
     );
     app.di.put(cubit);
   }

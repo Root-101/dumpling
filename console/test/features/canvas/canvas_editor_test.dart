@@ -54,7 +54,12 @@ void main() {
       ),
     );
     app.di.put<WorkspacesCubit>(workspaces);
-    final cubit = CanvasCubit(repo, sources, destinations, auth);
+    final cubit = CanvasCubit(
+      auth: auth,
+      repo: repo,
+      sources: sources,
+      destinations: destinations,
+    );
     await cubit.load('production');
     await tester.pumpWidget(
       MaterialApp(

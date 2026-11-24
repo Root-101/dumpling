@@ -12,6 +12,7 @@ class SourcesCubit extends Cubit<SourcesState>
 
   SourcesCubit({required this.auth, required this.repo, required this.configs})
     : super(const SourcesInitialState()) {
+    onBus<CanvasSavedOkState>((_) => reload());
     // a source saved in its form, or the canvas saved: the list again
     onBus<SourceFormProcessingOKState>((_) => reload());
   }

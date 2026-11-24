@@ -27,13 +27,15 @@ void main() {
       ).thenAnswer((_) async => [workspace('production')]);
       final cubit = WorkspacesCubit(auth: auth, repo: repo);
       addTearDown(cubit.close);
-      // saved, deleted or imported in their dialogs, a run ended in Backups
+      // saved, deleted or imported in their dialogs
       GlobalEventBus()
         ..fire(WorkspaceFormProcessingOKState(workspace('production')))
         ..fire(WorkspaceFormDeletedOkState(workspace('staging')))
-        ..fire(const WorkspaceTransferImportedOkState([]));
+        ..fire(const WorkspaceTransferImportedOkState([]))
+        // the canvas saved: its counts may have changed
+        ..fire(const CanvasSavedOkState(data: CanvasData.empty()));
       await Future<void>.delayed(Duration.zero);
-      verify(() => repo.list(token: 'jwt')).called(3);
+      verify(() => repo.list(token: 'jwt')).called(4);
     });
 
     blocTest<WorkspacesCubit, WorkspacesState>(

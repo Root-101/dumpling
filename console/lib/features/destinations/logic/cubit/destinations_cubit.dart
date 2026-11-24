@@ -16,6 +16,7 @@ class DestinationsCubit extends Cubit<DestinationsState>
     required this.repo,
     required this.configs,
   }) : super(const DestinationsInitialState()) {
+    onBus<CanvasSavedOkState>((_) => reload());
     // a destination saved in its form: the list again
     onBus<DestinationFormProcessingOKState>((_) => reload());
   }

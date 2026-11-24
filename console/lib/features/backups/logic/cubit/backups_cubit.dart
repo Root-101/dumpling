@@ -24,7 +24,9 @@ class BackupsCubit extends Cubit<BackupsState>
     required this.configs,
     required this.runs,
     this.pollEvery = const Duration(seconds: 2),
-  }) : super(const BackupsInitialState());
+  }) : super(const BackupsInitialState()) {
+    onBus<CanvasSavedOkState>((_) => reload());
+  }
 
   /// The service gives no refresh token: the one of the session, or none
   String? get _token => auth.auth?.accessToken;

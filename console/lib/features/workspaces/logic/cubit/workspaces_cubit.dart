@@ -18,6 +18,8 @@ class WorkspacesCubit extends Cubit<WorkspacesState>
     onBus<WorkspaceFormDeletedOkState>((_) => load());
     onBus<WorkspaceTransferImportedOkState>((_) => load());
     onBus<BackupsRanNowOkState>((_) => load());
+    onBus<CanvasRanNowOkState>((_) => load());
+    onBus<CanvasSavedOkState>((_) => load());
   }
 
   /// The workspace opened last, before the first screen

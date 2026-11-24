@@ -117,62 +117,110 @@ class CanvasData {
 }
 
 abstract class CanvasState {
+  /// The graph of the open workspace, kept in every state
   final CanvasData data;
 
   const CanvasState({this.data = const CanvasData.empty()});
 }
 
-class CanvasInitialState extends CanvasState {
+final class CanvasInitialState extends CanvasState {
   const CanvasInitialState();
 }
 
-//------------------------- LOADING -------------------------\
-class CanvasLoadingInProgressState extends CanvasState {
-  const CanvasLoadingInProgressState({required super.data});
+//----------------- load -----------------\\
+abstract class CanvasLoadState extends CanvasState {
+  const CanvasLoadState({required super.data});
 }
 
-/// Loaded, and every edit after it
-class CanvasLoadingSuccessState extends CanvasState {
-  const CanvasLoadingSuccessState({required super.data});
+final class CanvasLoadingState extends CanvasLoadState {
+  const CanvasLoadingState({required super.data});
 }
 
-class CanvasLoadingErrorState extends CanvasState {
+final class CanvasLoadedOkState extends CanvasLoadState {
+  const CanvasLoadedOkState({required super.data});
+}
+
+final class CanvasLoadingErrorState extends CanvasLoadState {
   final GlobalException exception;
 
   const CanvasLoadingErrorState(this.exception, {required super.data});
 }
 
-//------------------------- PROCESSING -------------------------\
-class CanvasProcessInProgressState extends CanvasState {
-  const CanvasProcessInProgressState({required super.data});
+//----------------- edit -----------------\\
+/// Every edit, and the selection: not saved until [CanvasSavedOkState]
+final class CanvasEditedState extends CanvasState {
+  const CanvasEditedState({required super.data});
 }
 
-class CanvasProcessingOKState extends CanvasState {
-  const CanvasProcessingOKState({required super.data});
+//----------------- save -----------------\\
+abstract class CanvasSaveState extends CanvasState {
+  const CanvasSaveState({required super.data});
 }
 
-/// A test run is over: [checks] says how each source and destination did;
-/// empty when there was no complete flow to test
-class CanvasTestedState extends CanvasState {
-  final List<CanvasCheck> checks;
-
-  const CanvasTestedState(this.checks, {required super.data});
+final class CanvasSavingState extends CanvasSaveState {
+  const CanvasSavingState({required super.data});
 }
 
-/// A run started with Run now is over, well or not
-class CanvasRunFinishedState extends CanvasState {
-  final String configName;
-  final LastRun run;
+/// Public contract: sources, destinations, backups and workspaces may have
+/// changed (the bus)
+final class CanvasSavedOkState extends CanvasSaveState {
+  const CanvasSavedOkState({required super.data});
+}
 
-  const CanvasRunFinishedState(
-    this.configName,
-    this.run, {
+final class CanvasSavingErrorState extends CanvasSaveState {
+  final GlobalException exception;
+
+  /// What to show: a refused field says the name of its node
+  final String message;
+
+  const CanvasSavingErrorState(
+    this.exception, {
+    required this.message,
     required super.data,
   });
 }
 
-class CanvasProcessingErrorState extends CanvasState {
-  final String message;
+//----------------- test run -----------------\\
+abstract class CanvasTestState extends CanvasState {
+  const CanvasTestState({required super.data});
+}
 
-  const CanvasProcessingErrorState(this.message, {required super.data});
+final class CanvasTestingState extends CanvasTestState {
+  const CanvasTestingState({required super.data});
+}
+
+/// [checks] says how each source and destination did (a failure is a check
+/// with its error); empty when there was no complete flow to test
+final class CanvasTestedOkState extends CanvasTestState {
+  final List<CanvasCheck> checks;
+
+  const CanvasTestedOkState(this.checks, {required super.data});
+}
+
+//----------------- Run now -----------------\\
+abstract class CanvasRunNowState extends CanvasState {
+  const CanvasRunNowState({required super.data});
+}
+
+/// Each answer while it runs: its node shows how it goes
+final class CanvasRunningNowState extends CanvasRunNowState {
+  final String configName;
+  final LastRun run;
+
+  const CanvasRunningNowState(this.configName, this.run, {required super.data});
+}
+
+/// Public contract: it ended, [run] says how (the rail counts failures from
+/// the workspaces, which reload on it)
+final class CanvasRanNowOkState extends CanvasRunNowState {
+  final String configName;
+  final LastRun run;
+
+  const CanvasRanNowOkState(this.configName, this.run, {required super.data});
+}
+
+final class CanvasRunningNowErrorState extends CanvasRunNowState {
+  final GlobalException exception;
+
+  const CanvasRunningNowErrorState(this.exception, {required super.data});
 }
