@@ -192,7 +192,9 @@ class _DestinationsScreenState extends State<DestinationsScreen>
   }
 
   void _onState(BuildContext context, DestinationsState state) {
-    _followUrl();
+    // only a search: an action starts while its dialog closes, and the URL
+    // still has its id
+    if (state is DestinationsSearchState) _followUrl();
     if (state is DestinationsDeletingState ||
         state is DestinationsAddingFolderState ||
         state is DestinationsDeletingFolderState) {

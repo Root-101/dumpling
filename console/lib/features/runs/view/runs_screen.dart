@@ -173,7 +173,9 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
             child: PagePanel(
               child: BlocConsumer<RunsCubit, RunsState>(
                 listener: (context, state) {
-                  _followUrl();
+                  // only a search: Run again starts while its dialog closes,
+                  // and the URL still has its id
+                  if (state is RunsSearchState) _followUrl();
                   final failed = switch (state) {
                     RunsLoadingDetailErrorState(:final exception) ||
                     RunsRunningAgainErrorState(:final exception) => exception,

@@ -168,7 +168,9 @@ void main() {
     app.di.put<WorkspacesRepo>(workspaceRepo);
     registerFallbackValue(const WorkspaceFormModel(name: 'fallback'));
     registerFallbackValue(const SourceFormModel(name: 'fallback', type: 'pg'));
-    registerFallbackValue(const DestinationFormModel(name: 'fallback', type: 's3'));
+    registerFallbackValue(
+      const DestinationFormModel(name: 'fallback', type: 's3'),
+    );
     // every test of a form connects
     final sourceRepo = _MockSourceRepo();
     when(
@@ -823,6 +825,28 @@ void main() {
     expect(find.text('Edit config'), findsOneWidget);
     expect(find.text('Retry now'), findsOneWidget);
     await tester.tap(find.text('Close'));
+    await settle(tester);
+    expect(find.text('The backup failed'), findsNothing);
+  });
+
+  testWidgets('Run again closes the run, and it stays closed', (tester) async {
+    when(() => auth.auth).thenReturn(session());
+    final states = StreamController<RunsState>.broadcast();
+    addTearDown(states.close);
+    final loaded = runs.state;
+    whenListen(runs, states.stream, initialState: loaded);
+    when(() => runs.runAgain(any(), workspace: any(named: 'workspace')))
+        .thenAnswer((_) async {
+          // the state of the action, while the URL still names the run
+          states.add(RunsRunningAgainState(run('r2'), data: loaded.data));
+          return true;
+        });
+    await pumpApp(tester);
+    RouteConfig.router.go('/workspaces/production/runs/r2');
+    await settle(tester);
+    expect(find.text('The backup failed'), findsOneWidget);
+
+    await tester.tap(find.text('Retry now'));
     await settle(tester);
     expect(find.text('The backup failed'), findsNothing);
   });
