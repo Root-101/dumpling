@@ -5,7 +5,10 @@ class WorkspacesInit {
     WorkspacesClient client = WorkspacesClient(app.di.find());
     app.di.put(client);
 
-    WorkspacesRepo repo = WorkspacesRepo(client, storage: app.di.find());
+    WorkspacesRepo repo = WorkspacesRepo(
+      client: client,
+      storage: app.di.find(),
+    );
     app.di.put(repo);
 
     // App-wide: the rail shows the current workspace on every screen

@@ -1,13 +1,13 @@
 import 'package:console/app_exporter.dart';
 
 class DestinationsRepo {
-  final DestinationsClient _client;
+  final DestinationsClient client;
 
-  DestinationsRepo(this._client);
+  DestinationsRepo({required this.client});
 
   Future<List<DestinationTypeModel>> types({String? token}) async {
     try {
-      final response = await _client.types(token: token);
+      final response = await client.types(token: token);
       return response
           .map((e) => DestinationTypeModel(type: e.type, enabled: e.enabled))
           .toList();
@@ -21,7 +21,7 @@ class DestinationsRepo {
     String? token,
   }) async {
     try {
-      final response = await _client.list(workspace: workspace, token: token);
+      final response = await client.list(workspace: workspace, token: token);
       return response.map((e) => e.toModel()).toList();
     } catch (e) {
       throw ExceptionConverter.parse(e);
@@ -31,19 +31,19 @@ class DestinationsRepo {
   /// Creates the destination, or replaces [id] when editing
   Future<DestinationModel> save({
     required String workspace,
-    required DestinationDraft draft,
+    required DestinationFormModel draft,
     String? id,
     String? token,
   }) async {
     try {
       final request = draft.toRequest();
       final response = id == null
-          ? await _client.create(
+          ? await client.create(
               workspace: workspace,
               request: request,
               token: token,
             )
-          : await _client.update(
+          : await client.update(
               workspace: workspace,
               id: id,
               request: request,
@@ -61,7 +61,7 @@ class DestinationsRepo {
     String? token,
   }) async {
     try {
-      await _client.reorder(workspace: workspace, ids: ids, token: token);
+      await client.reorder(workspace: workspace, ids: ids, token: token);
     } catch (e) {
       throw ExceptionConverter.parse(e);
     }
@@ -73,7 +73,7 @@ class DestinationsRepo {
     String? token,
   }) async {
     try {
-      await _client.delete(workspace: workspace, id: id, token: token);
+      await client.delete(workspace: workspace, id: id, token: token);
     } catch (e) {
       throw ExceptionConverter.parse(e);
     }
@@ -81,12 +81,12 @@ class DestinationsRepo {
 
   Future<ConnectionCheckModel> testUnsaved({
     required String workspace,
-    required DestinationDraft draft,
+    required DestinationFormModel draft,
     String? destinationId,
     String? token,
   }) async {
     try {
-      final response = await _client.testUnsaved(
+      final response = await client.testUnsaved(
         workspace: workspace,
         request: draft.toRequest(),
         destinationId: destinationId,
@@ -104,7 +104,7 @@ class DestinationsRepo {
     String? token,
   }) async {
     try {
-      final response = await _client.testSaved(
+      final response = await client.testSaved(
         workspace: workspace,
         id: id,
         token: token,
@@ -138,7 +138,7 @@ extension DestinationResponseMapping on DestinationResponse {
   }
 }
 
-extension DestinationDraftMapping on DestinationDraft {
+extension DestinationDraftMapping on DestinationFormModel {
   DestinationRequest toRequest() {
     return DestinationRequest(
       name: name,

@@ -17,7 +17,7 @@ void main() {
   late _MockAuth auth;
 
   setUpAll(
-    () => registerFallbackValue(const DestinationDraft(name: '', type: '')),
+    () => registerFallbackValue(const DestinationFormModel(name: '', type: '')),
   );
 
   setUp(() {
@@ -81,7 +81,7 @@ void main() {
                     token: 'jwt',
                   ),
                 ).captured.single
-                as DestinationDraft;
+                as DestinationFormModel;
         expect(draft.folders, ['orders', 'users']);
         expect(draft.bucket, 'bucket');
         expect(
@@ -141,7 +141,7 @@ void main() {
                   token: 'jwt',
                 ),
               ).captured.single
-              as DestinationDraft;
+              as DestinationFormModel;
       expect(draft.folders, ['users', 'orders']);
 
       await cubit.reorder(1, 0);

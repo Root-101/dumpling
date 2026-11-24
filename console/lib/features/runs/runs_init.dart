@@ -5,7 +5,7 @@ class RunsInit {
     RunsClient client = RunsClient(app.di.find());
     app.di.put(client);
 
-    RunsRepo repo = RunsRepo(client);
+    RunsRepo repo = RunsRepo(client: client);
     app.di.put(repo);
 
     RunsCubit cubit = RunsCubit(auth: app.di.find(), repo: repo);

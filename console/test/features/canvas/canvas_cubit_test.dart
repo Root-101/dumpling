@@ -24,7 +24,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(const CanvasData.empty());
-    registerFallbackValue(const DestinationDraft(name: '', type: ''));
+    registerFallbackValue(const DestinationFormModel(name: '', type: ''));
   });
 
   setUp(() {
@@ -418,7 +418,7 @@ void main() {
         token: 'jwt',
       ),
     ).thenAnswer((i) async {
-      final draft = i.namedArguments[#draft] as DestinationDraft;
+      final draft = i.namedArguments[#draft] as DestinationFormModel;
       if (draft.bucket == 'ca') throw apiError('AccessDenied');
       return ConnectionCheckModel(
         status: CheckStatus.connected,
@@ -449,7 +449,7 @@ void main() {
                 token: 'jwt',
               ),
             ).captured.single
-            as DestinationDraft;
+            as DestinationFormModel;
     expect(bb.folders, ['orders', 'users', 'billing']);
     expect(bb.secretKey, isNull);
   });

@@ -178,7 +178,7 @@ class CanvasCubit extends Cubit<CanvasState>
           d.name,
           () => destinations.testUnsaved(
             workspace: workspace,
-            draft: d.toDraft(),
+            draft: d.toFormModel(),
             destinationId: d.id,
             token: _token,
           ),

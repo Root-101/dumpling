@@ -11,10 +11,10 @@ class WorkspaceFormCubit extends Cubit<WorkspaceFormState>
   WorkspaceFormCubit({required this.auth, required this.repo})
     : super(const WorkspaceFormInitialState());
 
-  Future<void> create(WorkspaceDraft draft) =>
+  Future<void> create(WorkspaceFormModel draft) =>
       _save(() => repo.create(draft: draft, token: auth.auth?.accessToken));
 
-  Future<void> update(String slug, WorkspaceDraft draft) => _save(
+  Future<void> update(String slug, WorkspaceFormModel draft) => _save(
     () => repo.update(slug: slug, draft: draft, token: auth.auth?.accessToken),
   );
 

@@ -166,9 +166,9 @@ void main() {
     app.di.put<BackupsCubit>(backups);
     // the dialogs and drawers make their own cubit with them
     app.di.put<WorkspacesRepo>(workspaceRepo);
-    registerFallbackValue(const WorkspaceDraft(name: 'fallback'));
-    registerFallbackValue(const SourceDraft(name: 'fallback', type: 'pg'));
-    registerFallbackValue(const DestinationDraft(name: 'fallback', type: 's3'));
+    registerFallbackValue(const WorkspaceFormModel(name: 'fallback'));
+    registerFallbackValue(const SourceFormModel(name: 'fallback', type: 'pg'));
+    registerFallbackValue(const DestinationFormModel(name: 'fallback', type: 's3'));
     // every test of a form connects
     final sourceRepo = _MockSourceRepo();
     when(
@@ -356,7 +356,7 @@ void main() {
                 token: any(named: 'token'),
               ),
             ).captured.single
-            as WorkspaceDraft;
+            as WorkspaceFormModel;
     expect(draft.name, 'QA');
     expect(draft.description, 'About staging');
     expect(draft.defaults, WorkspaceSettings.fallbackDefaults);
@@ -747,7 +747,7 @@ void main() {
         token: any(named: 'token'),
       ),
     ).thenAnswer((call) async {
-      tested.add((call.namedArguments[#draft] as DestinationDraft).folders);
+      tested.add((call.namedArguments[#draft] as DestinationFormModel).folders);
       return check(CheckStatus.connected);
     });
     await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));

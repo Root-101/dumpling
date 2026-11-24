@@ -131,7 +131,7 @@ void main() {
   });
 
   group('SourceFormCubit', () {
-    const draft = SourceDraft(
+    const draft = SourceFormModel(
       name: 'orders',
       type: SourceTypes.postgres,
       connectionUrl: 'postgresql://u:p@h/db',
@@ -170,10 +170,10 @@ void main() {
     );
   });
 
-  group('SourceDraft', () {
+  group('SourceFormModel', () {
     test('By URL it sends the URL; editing without a password keeps it', () {
       expect(
-        const SourceDraft(
+        const SourceFormModel(
           name: 'orders',
           type: SourceTypes.postgres,
           connectionUrl: 'postgresql://u:p@h/db',
@@ -186,7 +186,7 @@ void main() {
         },
       );
       expect(
-        const SourceDraft(
+        const SourceFormModel(
           name: 'orders',
           type: SourceTypes.postgres,
           host: 'h',

@@ -141,7 +141,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
     final description = _description.text.trim();
     cubit.update(
       _saved.slug,
-      WorkspaceDraft(
+      WorkspaceFormModel(
         name: _name.text.trim(),
         description: description.isEmpty ? null : description,
         color: _color,

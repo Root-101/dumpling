@@ -1,26 +1,5 @@
 import 'package:console/app_exporter.dart';
 
-/// A line of the log of a run: technical, in English, like the tools it runs
-class RunLogLine {
-  final DateTime at;
-  final String message;
-
-  const RunLogLine(this.at, this.message);
-
-  factory RunLogLine.fromJson(Map<String, dynamic> json) =>
-      RunLogLine(DateTime.parse(json['at']), json['message']);
-}
-
-enum RunStepState { done, failed, running, waiting, skipped }
-
-/// A step of a run ([RunModel.steps]) and how long it took, when known
-class RunStep {
-  final RunStepState state;
-  final Duration? duration;
-
-  const RunStep(this.state, [this.duration]);
-}
-
 /// A backup that ran (or runs): the names of its config, source and
 /// destination are those it had then
 class RunModel {

@@ -1,9 +1,9 @@
 import 'package:console/app_exporter.dart';
 
 class RunsRepo {
-  final RunsClient _client;
+  final RunsClient client;
 
-  RunsRepo(this._client);
+  RunsRepo({required this.client});
 
   Future<List<RunModel>> list({
     required String workspace,
@@ -12,7 +12,7 @@ class RunsRepo {
     String? token,
   }) async {
     try {
-      final response = await _client.list(
+      final response = await client.list(
         workspace: workspace,
         configId: configId,
         limit: limit,
@@ -30,7 +30,7 @@ class RunsRepo {
     String? token,
   }) async {
     try {
-      final response = await _client.runAgain(
+      final response = await client.runAgain(
         workspace: workspace,
         configId: configId,
         token: token,
@@ -47,7 +47,7 @@ class RunsRepo {
     String? token,
   }) async {
     try {
-      final response = await _client.get(
+      final response = await client.get(
         workspace: workspace,
         id: id,
         token: token,

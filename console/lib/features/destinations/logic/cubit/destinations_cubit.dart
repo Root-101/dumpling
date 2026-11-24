@@ -171,7 +171,7 @@ class DestinationsCubit extends Cubit<DestinationsState>
       (workspace) => repo.save(
         workspace: workspace,
         id: destination.id,
-        draft: DestinationDraft.of(destination, folders: folders),
+        draft: DestinationFormModel.of(destination, folders: folders),
         token: _token,
       ),
     );
@@ -220,7 +220,7 @@ class DestinationsCubit extends Cubit<DestinationsState>
   ) => repo.save(
     workspace: state.data.workspace!,
     id: destination.id,
-    draft: DestinationDraft.of(destination, folders: folders),
+    draft: DestinationFormModel.of(destination, folders: folders),
     token: _token,
   );
 

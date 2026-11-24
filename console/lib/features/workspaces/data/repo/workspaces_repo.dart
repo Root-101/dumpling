@@ -5,14 +5,14 @@ import 'package:material_ui/material_ui.dart';
 class WorkspacesRepo {
   static const String _lastKey = 'workspaces.last';
 
-  final WorkspacesClient _client;
+  final WorkspacesClient client;
   final FlutterSecureStorage storage;
 
-  WorkspacesRepo(this._client, {required this.storage});
+  WorkspacesRepo({required this.client, required this.storage});
 
   Future<List<WorkspaceModel>> list({String? token}) async {
     try {
-      final response = await _client.list(token: token);
+      final response = await client.list(token: token);
       return response.map((e) => e.toModel()).toList();
     } catch (e) {
       throw ExceptionConverter.parse(e);
@@ -20,11 +20,11 @@ class WorkspacesRepo {
   }
 
   Future<WorkspaceModel> create({
-    required WorkspaceDraft draft,
+    required WorkspaceFormModel draft,
     String? token,
   }) async {
     try {
-      final response = await _client.create(
+      final response = await client.create(
         request: draft.toRequest(),
         token: token,
       );
@@ -36,11 +36,11 @@ class WorkspacesRepo {
 
   Future<WorkspaceModel> update({
     required String slug,
-    required WorkspaceDraft draft,
+    required WorkspaceFormModel draft,
     String? token,
   }) async {
     try {
-      final response = await _client.update(
+      final response = await client.update(
         slug: slug,
         request: draft.toRequest(),
         token: token,
@@ -53,7 +53,7 @@ class WorkspacesRepo {
 
   Future<void> delete({required String slug, String? token}) async {
     try {
-      await _client.delete(slug: slug, token: token);
+      await client.delete(slug: slug, token: token);
     } catch (e) {
       throw ExceptionConverter.parse(e);
     }
@@ -61,7 +61,7 @@ class WorkspacesRepo {
 
   Future<Map<String, dynamic>> export({String? slug, String? token}) async {
     try {
-      return await _client.export(slug: slug, token: token);
+      return await client.export(slug: slug, token: token);
     } catch (e) {
       throw ExceptionConverter.parse(e);
     }
@@ -72,7 +72,7 @@ class WorkspacesRepo {
     String? token,
   }) async {
     try {
-      final response = await _client.import(file: file, token: token);
+      final response = await client.import(file: file, token: token);
       return response.map((e) => e.toModel()).toList();
     } catch (e) {
       throw ExceptionConverter.parse(e);
@@ -126,7 +126,7 @@ extension WorkspaceResponseMapping on WorkspaceResponse {
   }
 }
 
-extension WorkspaceDraftMapping on WorkspaceDraft {
+extension WorkspaceDraftMapping on WorkspaceFormModel {
   WorkspaceRequest toRequest() {
     return WorkspaceRequest(
       name: name,

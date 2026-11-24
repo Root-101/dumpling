@@ -151,7 +151,7 @@ class _DestinationFormState extends State<DestinationForm> {
   }
 
   /// With [folders] it tests only those (none: the bucket root)
-  DestinationDraft _draft({List<String>? folders}) => DestinationDraft(
+  DestinationFormModel _draft({List<String>? folders}) => DestinationFormModel(
     name: _nameController.text.trim(),
     type: _type,
     endpoint: _endpointController.text.trim(),

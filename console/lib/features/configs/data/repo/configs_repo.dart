@@ -1,16 +1,16 @@
 import 'package:console/app_exporter.dart';
 
 class ConfigsRepo {
-  final ConfigsClient _client;
+  final ConfigsClient client;
 
-  ConfigsRepo(this._client);
+  ConfigsRepo({required this.client});
 
   Future<List<ConfigModel>> list({
     required String workspace,
     String? token,
   }) async {
     try {
-      final response = await _client.list(workspace: workspace, token: token);
+      final response = await client.list(workspace: workspace, token: token);
       return response.map((e) => e.toModel()).toList();
     } catch (e) {
       throw ExceptionConverter.parse(e);
@@ -25,7 +25,7 @@ class ConfigsRepo {
     String? token,
   }) async {
     try {
-      await _client.update(
+      await client.update(
         workspace: workspace,
         id: config.id,
         body: {
@@ -51,7 +51,7 @@ class ConfigsRepo {
     String? token,
   }) async {
     try {
-      await _client.reorder(workspace: workspace, ids: ids, token: token);
+      await client.reorder(workspace: workspace, ids: ids, token: token);
     } catch (e) {
       throw ExceptionConverter.parse(e);
     }
@@ -63,7 +63,7 @@ class ConfigsRepo {
     String? token,
   }) async {
     try {
-      await _client.delete(workspace: workspace, id: id, token: token);
+      await client.delete(workspace: workspace, id: id, token: token);
     } catch (e) {
       throw ExceptionConverter.parse(e);
     }

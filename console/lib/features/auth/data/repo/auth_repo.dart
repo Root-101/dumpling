@@ -8,7 +8,7 @@ class AuthRepo {
   final AuthClient client;
   final FlutterSecureStorage storage;
 
-  AuthRepo(this.client, {required this.storage});
+  AuthRepo({required this.client, required this.storage});
 
   Future<AuthModel> login({
     required String username,

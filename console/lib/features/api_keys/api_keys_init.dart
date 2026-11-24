@@ -5,7 +5,7 @@ class ApiKeysInit {
     ApiKeysClient client = ApiKeysClient(app.di.find());
     app.di.put(client);
 
-    ApiKeysRepo repo = ApiKeysRepo(client);
+    ApiKeysRepo repo = ApiKeysRepo(client: client);
     app.di.put(repo);
 
     ApiKeysCubit cubit = ApiKeysCubit(

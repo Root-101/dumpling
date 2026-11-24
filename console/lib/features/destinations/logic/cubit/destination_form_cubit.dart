@@ -20,7 +20,7 @@ class DestinationFormCubit extends Cubit<DestinationFormState>
   }) : super(const DestinationFormInitialState());
 
   /// Tests the connection of the form, before saving it (in the service)
-  Future<void> test(DestinationDraft draft) async {
+  Future<void> test(DestinationFormModel draft) async {
     emit(const DestinationFormTestingState());
     try {
       final check = await repo.testUnsaved(
@@ -37,7 +37,7 @@ class DestinationFormCubit extends Cubit<DestinationFormState>
 
   /// [tested]: the form was tested as it is saved. The service keeps only
   /// the tests of a saved destination, so it is tested again once saved
-  Future<void> save(DestinationDraft draft, {bool tested = false}) async {
+  Future<void> save(DestinationFormModel draft, {bool tested = false}) async {
     emit(const DestinationFormProcessInProgressState());
     try {
       var destination = await repo.save(

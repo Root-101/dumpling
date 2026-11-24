@@ -5,7 +5,7 @@ class DestinationsInit {
     DestinationsClient client = DestinationsClient(app.di.find());
     app.di.put(client);
 
-    DestinationsRepo repo = DestinationsRepo(client);
+    DestinationsRepo repo = DestinationsRepo(client: client);
     app.di.put(repo);
 
     DestinationsCubit cubit = DestinationsCubit(

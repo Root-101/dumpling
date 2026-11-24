@@ -1,16 +1,16 @@
 import 'package:console/app_exporter.dart';
 
 class ApiKeysRepo {
-  final ApiKeysClient _client;
+  final ApiKeysClient client;
 
-  ApiKeysRepo(this._client);
+  ApiKeysRepo({required this.client});
 
   Future<List<ApiKeyModel>> list({
     required String workspace,
     String? token,
   }) async {
     try {
-      final response = await _client.list(workspace: workspace, token: token);
+      final response = await client.list(workspace: workspace, token: token);
       return response.map(apiKeyOf).toList();
     } catch (e) {
       throw ExceptionConverter.parse(e);
@@ -20,7 +20,7 @@ class ApiKeysRepo {
   /// Creates the key (its text comes in [ApiKeyModel.key]), or changes [id]
   Future<ApiKeyModel> save({
     required String workspace,
-    required ApiKeyDraft draft,
+    required ApiKeyFormModel draft,
     String? id,
     String? token,
   }) async {
@@ -31,12 +31,12 @@ class ApiKeysRepo {
     };
     try {
       final response = id == null
-          ? await _client.create(
+          ? await client.create(
               workspace: workspace,
               request: request,
               token: token,
             )
-          : await _client.update(
+          : await client.update(
               workspace: workspace,
               id: id,
               request: request,
@@ -54,7 +54,7 @@ class ApiKeysRepo {
     String? token,
   }) async {
     try {
-      await _client.reorder(workspace: workspace, ids: ids, token: token);
+      await client.reorder(workspace: workspace, ids: ids, token: token);
     } catch (e) {
       throw ExceptionConverter.parse(e);
     }
@@ -66,7 +66,7 @@ class ApiKeysRepo {
     String? token,
   }) async {
     try {
-      await _client.delete(workspace: workspace, id: id, token: token);
+      await client.delete(workspace: workspace, id: id, token: token);
     } catch (e) {
       throw ExceptionConverter.parse(e);
     }

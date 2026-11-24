@@ -5,7 +5,7 @@ class SourcesInit {
     SourcesClient client = SourcesClient(app.di.find());
     app.di.put(client);
 
-    SourcesRepo repo = SourcesRepo(client);
+    SourcesRepo repo = SourcesRepo(client: client);
     app.di.put(repo);
 
     SourcesCubit cubit = SourcesCubit(

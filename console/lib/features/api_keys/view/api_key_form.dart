@@ -73,7 +73,7 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
       (!_limit || _configs.isNotEmpty);
 
   Future<void> _save() async {
-    final draft = ApiKeyDraft(
+    final draft = ApiKeyFormModel(
       name: _name.text.trim(),
       // in the order the service lists them
       permissions: [

@@ -129,7 +129,7 @@ class _SourceFormState extends State<SourceForm> {
     super.dispose();
   }
 
-  SourceDraft _draft() => SourceDraft(
+  SourceFormModel _draft() => SourceFormModel(
     name: _nameController.text.trim(),
     type: _type,
     connectionUrl: _byUrl ? _urlController.text.trim() : null,

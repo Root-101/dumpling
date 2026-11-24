@@ -21,7 +21,7 @@ class ApiKeyFormCubit extends Cubit<ApiKeyFormState>
 
   /// Creates the key, or changes [keyId]; a new one comes with its text, shown
   /// once
-  Future<void> save(ApiKeyDraft draft) async {
+  Future<void> save(ApiKeyFormModel draft) async {
     emit(const ApiKeyFormProcessInProgressState());
     try {
       final key = await repo.save(

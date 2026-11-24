@@ -5,7 +5,7 @@ class ConfigsInit {
     ConfigsClient client = ConfigsClient(app.di.find());
     app.di.put(client);
 
-    ConfigsRepo repo = ConfigsRepo(client);
+    ConfigsRepo repo = ConfigsRepo(client: client);
     app.di.put(repo);
   }
 }

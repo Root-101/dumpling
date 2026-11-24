@@ -5,7 +5,7 @@ class CanvasInit {
     CanvasClient client = CanvasClient(app.di.find());
     app.di.put(client);
 
-    CanvasRepo repo = CanvasRepo(client);
+    CanvasRepo repo = CanvasRepo(client: client);
     app.di.put(repo);
 
     CanvasCubit cubit = CanvasCubit(

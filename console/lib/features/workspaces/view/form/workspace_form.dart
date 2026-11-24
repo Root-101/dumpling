@@ -80,7 +80,7 @@ class _WorkspaceFormState extends State<WorkspaceForm> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final description = _descriptionController.text.trim();
     cubit.create(
-      WorkspaceDraft(
+      WorkspaceFormModel(
         name: _nameController.text.trim(),
         description: description.isEmpty ? null : description,
         color: _color,

@@ -38,7 +38,7 @@ void main() {
   setUpAll(() {
     TestWidgetsFlutterBinding.ensureInitialized();
     registerFallbackValue(
-      const ApiKeyDraft(name: '', permissions: [], configIds: []),
+      const ApiKeyFormModel(name: '', permissions: [], configIds: []),
     );
   });
 
@@ -185,7 +185,7 @@ void main() {
     );
     final create = form();
     await create.save(
-      const ApiKeyDraft(name: 'new', permissions: ['run.list'], configIds: []),
+      const ApiKeyFormModel(name: 'new', permissions: ['run.list'], configIds: []),
     );
     await Future<void>.delayed(Duration.zero);
     expect(
@@ -212,7 +212,7 @@ void main() {
       ),
     );
     await form(id: 'key_grafana').save(
-      const ApiKeyDraft(name: 'grafana-ro', permissions: [], configIds: []),
+      const ApiKeyFormModel(name: 'grafana-ro', permissions: [], configIds: []),
     );
     await Future<void>.delayed(Duration.zero);
     expect(visible(cubit), ['deploy', 'grafana-ro', 'provisioning', 'new']);
