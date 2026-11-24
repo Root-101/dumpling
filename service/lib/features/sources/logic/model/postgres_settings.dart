@@ -128,6 +128,10 @@ class PostgresSettings implements SourceSettings {
     'ssl_mode': ssl.name,
   };
 
+  /// The server, the database and the role the password is sent to, and how
+  @override
+  Map<String, Object?> get target => {...toJson()}..remove('dump_format');
+
   @override
   Map<String, String> get secrets => {passwordKey: ?password};
 

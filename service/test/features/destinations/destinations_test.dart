@@ -161,6 +161,30 @@ void main() {
       expect(jsonDecode(tested.body)['status'], 'connected');
     });
 
+    test('Should never sign for another endpoint with the stored secret: an '
+        'update or a test that moves it asks for it again', () async {
+      final id = (await created(bucket(name: 'moved-bucket')))['id'];
+      final elsewhere = bucket(
+        name: 'moved-bucket',
+        secret: null,
+        endpoint: 'http://attacker.example',
+      );
+      final updated = await server.put(
+        path('production', '/$id'),
+        headers: jsonHeaders(),
+        body: jsonEncode(elsewhere),
+      );
+      expect(updated.statusCode, 422, reason: updated.body);
+      expect(updated.body, contains('settings.secret_access_key'));
+
+      final tested = await server.post(
+        path('production', '/test?destination=$id'),
+        headers: jsonHeaders(),
+        body: jsonEncode(elsewhere),
+      );
+      expect(tested.statusCode, 422, reason: tested.body);
+    });
+
     test('Should reject invalid data (422) naming each field', () async {
       final response = await create({
         'name': 'x',

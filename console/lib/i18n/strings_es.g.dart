@@ -618,7 +618,8 @@ class AppTexts$sources$es implements AppTexts$sources$en {
   @override
   String get password => 'Contraseña';
   @override
-  String get passwordKeepHint => 'Déjala vacía para mantener la guardada';
+  String get passwordKeepHint =>
+      'Vacía mantiene la guardada (mismo servidor y usuario)';
   @override
   String get passwordHelp =>
       'Usa un rol de solo lectura. Se guarda cifrada y no se vuelve a mostrar.';
@@ -629,7 +630,7 @@ class AppTexts$sources$es implements AppTexts$sources$en {
       'La contraseña de la URL se guarda cifrada y no se vuelve a mostrar.';
   @override
   String get urlHelpEditing =>
-      'Si la URL no trae contraseña, se mantiene la guardada.';
+      'Si la URL no trae contraseña, se mantiene la guardada mientras no cambien el host, la base y el usuario.';
   @override
   String get urlInvalid =>
       'Usa el formato postgresql://usuario:contraseña@host:5432/base';
@@ -835,7 +836,8 @@ class AppTexts$destinations$es implements AppTexts$destinations$en {
   @override
   String get secretKey => 'Secret key';
   @override
-  String get secretKeepHint => 'Déjala vacía para mantener la guardada';
+  String get secretKeepHint =>
+      'Vacía mantiene la guardada (mismo endpoint y bucket)';
   @override
   String get secretHelp => 'Se guarda cifrada y no se vuelve a mostrar.';
   @override
@@ -2522,12 +2524,11 @@ extension on AppTextsEs {
           'sources.username' => 'Usuario',
           'sources.password' => 'Contraseña',
           'sources.passwordKeepHint' =>
-            'Déjala vacía para mantener la guardada',
+            'Vacía mantiene la guardada (mismo servidor y usuario)',
           'sources.passwordHelp' => 'Usa un rol de solo lectura. Se guarda cifrada y no se vuelve a mostrar.',
           'sources.connectionUrl' => 'URL de conexión',
           'sources.urlHelp' => 'La contraseña de la URL se guarda cifrada y no se vuelve a mostrar.',
-          'sources.urlHelpEditing' =>
-            'Si la URL no trae contraseña, se mantiene la guardada.',
+          'sources.urlHelpEditing' => 'Si la URL no trae contraseña, se mantiene la guardada mientras no cambien el host, la base y el usuario.',
           'sources.urlInvalid' =>
             'Usa el formato postgresql://usuario:contraseña@host:5432/base',
           'sources.dumpFormat' => 'Formato del dump',
@@ -2670,7 +2671,7 @@ extension on AppTextsEs {
           'destinations.accessKeyId' => 'Access key ID',
           'destinations.secretKey' => 'Secret key',
           'destinations.secretKeepHint' =>
-            'Déjala vacía para mantener la guardada',
+            'Vacía mantiene la guardada (mismo endpoint y bucket)',
           'destinations.secretHelp' =>
             'Se guarda cifrada y no se vuelve a mostrar.',
           'destinations.pathStyle' => 'Direcciones path-style',

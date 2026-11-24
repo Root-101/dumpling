@@ -44,6 +44,25 @@ class Secrets {
     }
   }
 
+  /// The stored secrets of row [id], to fill the ones a request leaves out,
+  /// only while they would go where they were saved for: [saved] is the
+  /// stored settings (their JSON) and [target] the `target` of the request's.
+  /// Another host, database, user or bucket gets none, so a [require] asks
+  /// for them again (422): a stored password never goes to a server the
+  /// request picks.
+  Map<String, String> storedFor(
+    String id,
+    String encrypted, {
+    required String saved,
+    required Map<String, Object?> target,
+  }) {
+    final before = jsonDecode(saved) as Map<String, dynamic>;
+    final same = target.entries.every(
+      (e) => jsonEncode(before[e.key]) == jsonEncode(e.value),
+    );
+    return same ? decryptOrNone(id, encrypted) : const {};
+  }
+
   /// [secrets], or a 422 naming each of [required] that is missing
   /// (`settings.password`, under [field]).
   static Map<String, String> require(

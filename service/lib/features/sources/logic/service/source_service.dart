@@ -59,7 +59,7 @@ class SourceService {
   }
 
   /// Replaces the source. A secret missing in [request] keeps the stored one,
-  /// unless the type changes.
+  /// unless the type or where it connects changes ([Secrets.storedFor]).
   Future<SourceModel> update(
     String workspace,
     String id,
@@ -68,7 +68,12 @@ class SourceService {
     final row = await _row(workspace, id);
     final settings = request.settings!;
     final stored = row.type == request.sourceType
-        ? secrets.decryptOrNone(row.id, row.secretsEncrypted)
+        ? secrets.storedFor(
+            row.id,
+            row.secretsEncrypted,
+            saved: row.settings,
+            target: settings.target,
+          )
         : const <String, String>{};
     final values = Secrets.require(settings.requiredSecrets, {
       ...stored,
@@ -111,7 +116,8 @@ class SourceService {
   }
 
   /// Tests the connection of the form before it is saved. With [sourceId]
-  /// (editing a saved source) its stored secrets fill the missing ones.
+  /// (editing a saved source) its stored secrets fill the missing ones, while
+  /// it connects where it was saved for.
   Future<ConnectionCheck> testUnsaved(
     String workspace,
     SourceRequest request, {
@@ -123,7 +129,12 @@ class SourceService {
     if (sourceId != null) {
       final row = await _row(workspace, sourceId);
       if (row.type == request.sourceType) {
-        stored = secrets.decryptOrNone(row.id, row.secretsEncrypted);
+        stored = secrets.storedFor(
+          row.id,
+          row.secretsEncrypted,
+          saved: row.settings,
+          target: settings.target,
+        );
       }
     }
     final values = Secrets.require(settings.requiredSecrets, {

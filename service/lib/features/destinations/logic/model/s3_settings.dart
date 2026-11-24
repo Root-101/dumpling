@@ -80,6 +80,10 @@ class S3Settings implements DestinationSettings {
     'path_style': pathStyle ?? false,
   };
 
+  /// Everything the requests signed with the secret key go to
+  @override
+  Map<String, Object?> get target => toJson();
+
   @override
   Map<String, String> get secrets => {secretKey: ?secretAccessKey};
 

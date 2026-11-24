@@ -154,7 +154,12 @@ class CanvasService {
         final settings = source.settings!;
         final saved = savedSources[id];
         final stored = saved != null && saved.type == source.sourceType
-            ? secrets.decryptOrNone(id, saved.secretsEncrypted)
+            ? secrets.storedFor(
+                id,
+                saved.secretsEncrypted,
+                saved: saved.settings,
+                target: settings.target,
+              )
             : const <String, String>{};
         final values = Secrets.require(settings.requiredSecrets, {
           ...stored,
@@ -192,7 +197,12 @@ class CanvasService {
         final saved = savedRow?.destination;
         final stored =
             saved != null && saved.type == destination.destinationType
-            ? secrets.decryptOrNone(id, saved.secretsEncrypted)
+            ? secrets.storedFor(
+                id,
+                saved.secretsEncrypted,
+                saved: saved.settings,
+                target: settings.target,
+              )
             : const <String, String>{};
         final values = Secrets.require(settings.requiredSecrets, {
           ...stored,

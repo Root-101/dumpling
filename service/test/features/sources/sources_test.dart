@@ -141,6 +141,51 @@ void main() {
       },
     );
 
+    test('Should never send the stored password to another server: an update, '
+        'a test or a canvas save that moves it asks for it again', () async {
+      final id = (await created(postgres(name: 'moved-db')))['id'] as String;
+      final elsewhere = postgres(
+        name: 'moved-db',
+        password: null,
+        host: 'attacker.example',
+      );
+
+      final updated = await server.put(
+        path('production', '/$id'),
+        headers: jsonHeaders(),
+        body: jsonEncode(elsewhere),
+      );
+      expect(updated.statusCode, 422, reason: updated.body);
+      expect(updated.body, contains('settings.password'));
+
+      final tested = await server.post(
+        path('production', '/test?source=$id'),
+        headers: jsonHeaders(),
+        body: jsonEncode(elsewhere),
+      );
+      expect(tested.statusCode, 422, reason: tested.body);
+      expect(tested.body, contains('settings.password'));
+
+      final canvas = jsonDecode(
+        (await server.get(
+          '/api/workspaces/production/canvas',
+          headers: server.auth(),
+        )).body,
+      ) as Map<String, dynamic>;
+      final node = (canvas['sources'] as List).firstWhere((s) => s['id'] == id);
+      (node['settings'] as Map)['host'] = 'attacker.example';
+      final saved = await server.put(
+        '/api/workspaces/production/canvas',
+        headers: jsonHeaders(),
+        body: jsonEncode(canvas),
+      );
+      expect(saved.statusCode, 422, reason: saved.body);
+      expect(saved.body, contains('.settings.password'));
+
+      // still where it was, with its password
+      expect(await storedSecrets(id), {'password': 's3cr3t-pass'});
+    });
+
     test(
       'Should ask for the password again after SECRETS_ENCRYPTION_KEY changed',
       () async {

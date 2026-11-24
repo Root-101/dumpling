@@ -790,8 +790,9 @@ class AppTexts$sources$en {
   /// en: 'Password'
   String get password => 'Password';
 
-  /// en: 'Leave empty to keep the saved one'
-  String get passwordKeepHint => 'Leave empty to keep the saved one';
+  /// en: 'Leave empty to keep it (same server and user)'
+  String get passwordKeepHint =>
+      'Leave empty to keep it (same server and user)';
 
   /// en: 'Use a read-only role. Stored encrypted; never shown again after saving.'
   String get passwordHelp =>
@@ -804,9 +805,9 @@ class AppTexts$sources$en {
   String get urlHelp =>
       'The password in the URL is stored encrypted and never shown again.';
 
-  /// en: 'Without a password in the URL, the saved one is kept.'
+  /// en: 'Without a password in the URL, the saved one is kept while the host, database and user stay the same.'
   String get urlHelpEditing =>
-      'Without a password in the URL, the saved one is kept.';
+      'Without a password in the URL, the saved one is kept while the host, database and user stay the same.';
 
   /// en: 'Use the format postgresql://user:password@host:5432/database'
   String get urlInvalid =>
@@ -1092,8 +1093,9 @@ class AppTexts$destinations$en {
   /// en: 'Secret key'
   String get secretKey => 'Secret key';
 
-  /// en: 'Leave empty to keep the saved one'
-  String get secretKeepHint => 'Leave empty to keep the saved one';
+  /// en: 'Leave empty to keep it (same endpoint and bucket)'
+  String get secretKeepHint =>
+      'Leave empty to keep it (same endpoint and bucket)';
 
   /// en: 'Stored encrypted; never shown again after saving.'
   String get secretHelp => 'Stored encrypted; never shown again after saving.';
@@ -3187,12 +3189,12 @@ extension on AppTexts {
           'sources.database' => 'Database',
           'sources.username' => 'User',
           'sources.password' => 'Password',
-          'sources.passwordKeepHint' => 'Leave empty to keep the saved one',
+          'sources.passwordKeepHint' =>
+            'Leave empty to keep it (same server and user)',
           'sources.passwordHelp' => 'Use a read-only role. Stored encrypted; never shown again after saving.',
           'sources.connectionUrl' => 'Connection URL',
           'sources.urlHelp' => 'The password in the URL is stored encrypted and never shown again.',
-          'sources.urlHelpEditing' =>
-            'Without a password in the URL, the saved one is kept.',
+          'sources.urlHelpEditing' => 'Without a password in the URL, the saved one is kept while the host, database and user stay the same.',
           'sources.urlInvalid' =>
             'Use the format postgresql://user:password@host:5432/database',
           'sources.dumpFormat' => 'Dump format',
@@ -3330,7 +3332,8 @@ extension on AppTexts {
           'destinations.region' => 'Region',
           'destinations.accessKeyId' => 'Access key ID',
           'destinations.secretKey' => 'Secret key',
-          'destinations.secretKeepHint' => 'Leave empty to keep the saved one',
+          'destinations.secretKeepHint' =>
+            'Leave empty to keep it (same endpoint and bucket)',
           'destinations.secretHelp' =>
             'Stored encrypted; never shown again after saving.',
           'destinations.pathStyle' => 'Path-style addressing',

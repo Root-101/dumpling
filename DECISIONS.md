@@ -32,6 +32,7 @@ associated data.
 | Encrypted, not hashed         | They are needed back in plain text to connect                                                        |
 | The row id as associated data | A value copied onto another row (by hand in SQLite, or a bug) fails to decrypt instead of being used |
 | Never returned by the API     | The console only needs to know there is one; an edit without a new password keeps the saved one      |
+| Kept only for the same place  | An edit or a test that changes where it connects (host, user, bucket…) gets the secret typed again: whoever may edit or test (an API key) can't send the stored one to its own server |
 
 ## 4. `pg_dump` gets its connection in the environment
 

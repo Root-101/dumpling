@@ -82,7 +82,7 @@ class DestinationService {
   ) async {
     final row = await _row(workspace, id);
     final settings = request.settings!;
-    final stored = _storedFor(row, request.destinationType);
+    final stored = _storedFor(row, request.destinationType, settings);
     final values = Secrets.require(settings.requiredSecrets, {
       ...stored,
       ...settings.secrets,
@@ -145,6 +145,7 @@ class DestinationService {
         : _storedFor(
             await _row(workspace, destinationId),
             request.destinationType,
+            settings,
           );
     final values = Secrets.require(settings.requiredSecrets, {
       ...stored,
@@ -203,12 +204,18 @@ class DestinationService {
     }
   }
 
-  /// The stored secrets of [row], if it is still of [type].
-  Map<String, String> _storedFor(DestinationRow row, DestinationType? type) =>
-      row.destination.type == type
-      ? secrets.decryptOrNone(
+  /// The stored secrets of [row], if it is still of [type] and [settings]
+  /// still go where it was saved for ([Secrets.storedFor]).
+  Map<String, String> _storedFor(
+    DestinationRow row,
+    DestinationType? type,
+    DestinationSettings settings,
+  ) => row.destination.type == type
+      ? secrets.storedFor(
           row.destination.id,
           row.destination.secretsEncrypted,
+          saved: row.destination.settings,
+          target: settings.target,
         )
       : const {};
 

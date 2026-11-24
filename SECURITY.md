@@ -48,7 +48,9 @@ reasons behind each decision are in [`DECISIONS.md`](DECISIONS.md).
 - Database passwords and S3 secret keys are stored encrypted with AES-256-GCM (key derived from
   `SECRETS_ENCRYPTION_KEY`), each with its own random nonce and bound to its row: a value copied
   to another source doesn't decrypt. They are never returned by the API nor shown again in the
-  console; an edit without a new password keeps the saved one. An export
+  console; an edit without a new password keeps the saved one only while it connects to the same
+  place (host, port, database, user and TLS; endpoint, region, bucket and access key), so a stored
+  password or secret key is never sent to a server an edit or a test points to. An export
   (`GET /api/export`) carries them only as stored, encrypted: the file is useless without
   `SECRETS_ENCRYPTION_KEY`, but keep it like a backup of the database.
 - The connection to PostgreSQL uses TLS by default (`ssl_mode` `require`, which doesn't check the

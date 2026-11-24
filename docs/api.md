@@ -412,7 +412,10 @@ would refuse it), `toolMissing` (no `pg_dump` where the service runs) or `failed
 up to 90 seconds for an answer.
 
 When editing a saved source, `?source=src_…` uses its stored password if the form sends none
-(`POST /api/workspaces/docs-tour/sources/test?source=src_qnr4bf2dwuxtg3uz`).
+(`POST /api/workspaces/docs-tour/sources/test?source=src_qnr4bf2dwuxtg3uz`), only while the host,
+port, database, user and `ssl_mode` are the saved ones; otherwise a `422` asks for it
+(`settings.password`). The same goes for an update, a destination (its endpoint, region, bucket,
+access key and path style) and the canvas save.
 
 ### Create a source
 
@@ -726,7 +729,7 @@ The order of each list is the order the workspace keeps ([Reorder sources](#reor
 the console sends them back in the order it got them.
 
 - A node with a saved id replaces it, with the same body as its own `PUT` (a missing secret keeps
-  the stored one).
+  the stored one while it connects to the same place).
 - A node whose id starts with `new_` is created. The console makes those ids up, so a config can
   point at a source or destination that isn't saved yet (`"source_id": "new_1"`).
 - What the body leaves out is deleted.

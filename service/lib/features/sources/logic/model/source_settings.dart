@@ -18,4 +18,8 @@ abstract class SourceSettings implements Validatable {
 
   /// The names of the write-only values a source of this type needs.
   List<String> get requiredSecrets;
+
+  /// Where its secrets go (a subset of [toJson]): the stored ones are only
+  /// reused while it stays the same.
+  Map<String, Object?> get target;
 }
