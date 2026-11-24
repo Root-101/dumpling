@@ -1,10 +1,11 @@
 import 'package:console/app_exporter.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show PlatformDispatcher, kIsWeb;
 import 'package:flutter/material.dart' as old;
 import 'package:flutter/services.dart' show BrowserContextMenu;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 import 'package:material_ui/material_ui.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -22,8 +23,12 @@ class Init {
 
   static final instance = Init._();
 
-  Future initialize() async {
-    await FeaturesInit.init();
+  /// The features, with the splash shown for at least a second meanwhile
+  Future<void> initialize() async {
+    await Future.wait([
+      FeaturesInit.init(),
+      Future<void>.delayed(const Duration(seconds: 1)),
+    ]);
   }
 }
 
@@ -32,6 +37,13 @@ void main() {
   GoRouter.optionURLReflectsImperativeAPIs = true;
 
   WidgetsFlutterBinding.ensureInitialized();
+  // Nothing unexpected goes unseen: to the browser console
+  FlutterError.onError = (details) =>
+      app.logger.e(details.exceptionAsString(), stackTrace: details.stack);
+  PlatformDispatcher.instance.onError = (error, stackTrace) {
+    app.logger.e('Unhandled error', error: error, stackTrace: stackTrace);
+    return true;
+  };
   // Until the saved one loads: the browser's language, if it is one of ours
   AppIntl.current = AppIntl.resolve(
     WidgetsBinding.instance.platformDispatcher.locale.languageCode,
@@ -39,20 +51,43 @@ void main() {
   // the right click is the canvas's own menu, not the browser's
   if (kIsWeb) BrowserContextMenu.disableContextMenu();
 
-  runApp(
-    FutureBuilder(
-      future: Init.instance.initialize(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return MultiBlocProvider(
-            providers: [...FeaturesInit.blocProviders],
-            child: const App(),
-          );
-        } else {
-          return const SplashScreen();
-        }
-      },
-    ),
+  runApp(const Startup());
+}
+
+/// The splash while [Init] runs; the console once it is done, or what failed
+/// with «Try again»
+class Startup extends StatefulWidget {
+  const Startup({super.key});
+
+  @override
+  State<Startup> createState() => _StartupState();
+}
+
+class _StartupState extends State<Startup> {
+  late Future<void> _init = Init.instance.initialize();
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder(
+    future: _init,
+    builder: (context, snapshot) {
+      if (snapshot.connectionState != ConnectionState.done) {
+        return const SplashScreen();
+      }
+      if (snapshot.hasError) {
+        app.logger.e(
+          'The console could not start',
+          error: snapshot.error,
+          stackTrace: snapshot.stackTrace,
+        );
+        return InitErrorScreen(
+          onRetry: () => setState(() => _init = Init.instance.initialize()),
+        );
+      }
+      return MultiBlocProvider(
+        providers: [...FeaturesInit.blocProviders],
+        child: const App(),
+      );
+    },
   );
 }
 
@@ -67,13 +102,12 @@ class App extends StatelessWidget {
         if (size.width < 800 || size.height < 400) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            theme: ThemeConfig.theme,
+            theme: AppTheme.dark,
             locale: locale,
             localizationsDelegates: AppIntl.delegates,
             supportedLocales: AppIntl.supportedLocales,
-            builder: (context, child) => Scaffold(
-              body: Center(child: Text(app.intl.app.needMoreSpace)),
-            ),
+            builder: (context, child) =>
+                Scaffold(body: Center(child: Text(app.intl.app.needMoreSpace))),
           );
         } else {
           return MaterialApp.router(
@@ -94,7 +128,7 @@ class App extends StatelessWidget {
             },
             debugShowCheckedModeBanner: false,
             onGenerateTitle: (context) => app.intl.app.name,
-            theme: ThemeConfig.theme,
+            theme: AppTheme.dark,
             locale: locale,
             routerConfig: RouteConfig.router,
             localizationsDelegates: AppIntl.delegates,
@@ -148,4 +182,7 @@ class AppGlobal {
   DialogHelper dialog = DialogHelper();
 
   MediaQueryData get mediaQuery => MediaQuery.of(context);
+
+  /// Unexpected errors and warnings, to the browser console
+  Logger logger = Logger(printer: SimplePrinter(printTime: true));
 }

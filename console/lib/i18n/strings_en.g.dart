@@ -83,6 +83,13 @@ class AppTexts$app$en {
   /// en: 'Need more space'
   String get needMoreSpace => 'Need more space';
 
+  /// en: 'The console could not start'
+  String get initErrorTitle => 'The console could not start';
+
+  /// en: 'Check that the service is running and can be reached, then try again.'
+  String get initErrorHint =>
+      'Check that the service is running and can be reached, then try again.';
+
   /// en: 'Connecting to the backup service…'
   String get splashText => 'Connecting to the backup service…';
 
@@ -2833,6 +2840,8 @@ extension on AppTexts {
     return switch (path) {
           'app.name' => 'Dumpling',
           'app.needMoreSpace' => 'Need more space',
+          'app.initErrorTitle' => 'The console could not start',
+          'app.initErrorHint' => 'Check that the service is running and can be reached, then try again.',
           'app.splashText' => 'Connecting to the backup service…',
           'app.version' => ({
             required String version,
@@ -3589,12 +3598,12 @@ extension on AppTexts {
           'canvas.testRun.nothing' =>
             'Nothing to test: connect a source to a destination first.',
           'canvas.run.button' => 'Run now',
-          'canvas.run.help' => 'Runs this backup now, for real, as it is saved: the edits not saved yet are not used.',
-          'canvas.run.needsSave' =>
-            'Save the canvas first: a run uses the saved config.',
           _ => null,
         } ??
         switch (path) {
+          'canvas.run.help' => 'Runs this backup now, for real, as it is saved: the edits not saved yet are not used.',
+          'canvas.run.needsSave' =>
+            'Save the canvas first: a run uses the saved config.',
           'canvas.run.done' => ({
             required String name,
             required String size,

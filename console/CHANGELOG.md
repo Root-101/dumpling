@@ -22,6 +22,7 @@
   1.11, flutter_svg 2.5, flutter_secure_storage 11.2…).
 - A run that wrote nothing (it failed connecting) shows its size as *—*, not *0 B*.
 - Reads `expire_at` of the sign-in as ISO 8601, as the service now writes it.
+- When the console can't start, it says so with «Try again» instead of staying on the splash.
 
 ## 0.1.7
 

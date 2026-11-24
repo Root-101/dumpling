@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Shows and hides the mounted [LoadingOverlay]s.
@@ -40,7 +41,7 @@ class LoadingOverlayController {
         ? _mounted.where((s) => s.widget.id == id).lastOrNull
         : _mounted.lastOrNull;
     if (found == null) {
-      debugPrint(
+      app.logger.w(
         'LoadingOverlayController.$action: no LoadingOverlay found (id: $id)',
       );
     }

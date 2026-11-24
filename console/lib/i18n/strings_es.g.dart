@@ -101,6 +101,11 @@ class AppTexts$app$es implements AppTexts$app$en {
   @override
   String get needMoreSpace => 'Se necesita más espacio';
   @override
+  String get initErrorTitle => 'La consola no pudo arrancar';
+  @override
+  String get initErrorHint =>
+      'Comprueba que el servicio está en marcha y se puede alcanzar, y vuelve a intentarlo.';
+  @override
   String get splashText => 'Conectando con el servicio de backups…';
   @override
   String version({required Object version}) => 'Dumpling v${version}';
@@ -2155,6 +2160,8 @@ extension on AppTextsEs {
     return switch (path) {
           'app.name' => 'Dumpling',
           'app.needMoreSpace' => 'Se necesita más espacio',
+          'app.initErrorTitle' => 'La consola no pudo arrancar',
+          'app.initErrorHint' => 'Comprueba que el servicio está en marcha y se puede alcanzar, y vuelve a intentarlo.',
           'app.splashText' => 'Conectando con el servicio de backups…',
           'app.version' => ({
             required Object version,
@@ -2926,12 +2933,12 @@ extension on AppTextsEs {
           'canvas.testRun.nothing' =>
             'Nada que probar: primero conecta un origen a un destino.',
           'canvas.run.button' => 'Ejecutar ahora',
-          'canvas.run.help' => 'Ejecuta este backup ahora, de verdad, tal como está guardado: los cambios sin guardar no se usan.',
-          'canvas.run.needsSave' =>
-            'Guarda el canvas primero: una ejecución usa la config guardada.',
           _ => null,
         } ??
         switch (path) {
+          'canvas.run.help' => 'Ejecuta este backup ahora, de verdad, tal como está guardado: los cambios sin guardar no se usan.',
+          'canvas.run.needsSave' =>
+            'Guarda el canvas primero: una ejecución usa la config guardada.',
           'canvas.run.done' => ({
             required String name,
             required String size,

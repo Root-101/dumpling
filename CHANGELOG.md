@@ -24,6 +24,7 @@ have the release candidates before 0.1.0 one by one.
   milliseconds); the console reads it so.
 - Service: `/api/health` answers `application/health+json` (`pass` / `fail`) instead of `up` / `down`.
 - Service: creates answer with `Location`; a `limit` out of range in the run log is a `422`.
+- Console: a start that fails shows what happened and «Try again», not an endless splash.
 
 ## 0.1.7
 

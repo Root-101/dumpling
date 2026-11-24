@@ -13,7 +13,7 @@ class SplashScreen extends StatelessWidget {
     final colors = app.colors;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeConfig.theme,
+      theme: AppTheme.dark,
       localizationsDelegates: AppIntl.delegates,
       supportedLocales: AppIntl.supportedLocales,
       builder: (context, child) => Scaffold(

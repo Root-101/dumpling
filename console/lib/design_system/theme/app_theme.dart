@@ -1,12 +1,12 @@
 import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
-class ThemeConfig {
-  ThemeConfig._();
+class AppTheme {
+  AppTheme._();
 
   /// Material widgets without their own style take the palette, not the
   /// Material 3 default colors
-  static ThemeData get theme {
+  static ThemeData get dark {
     final colors = app.colors;
     return ThemeData(
       brightness: Brightness.dark,

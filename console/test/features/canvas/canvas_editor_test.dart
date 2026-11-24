@@ -60,7 +60,7 @@ void main() {
       MaterialApp(
         // the dialogs and buttons of the app read it
         navigatorKey: navigatorKey,
-        theme: ThemeConfig.theme,
+        theme: AppTheme.dark,
         home: BlocProvider.value(
           value: cubit,
           // a config opens in its dialog, over the editor

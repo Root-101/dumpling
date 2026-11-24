@@ -1,6 +1,8 @@
 app:
   name: 'Dumpling'
   needMoreSpace: 'Se necesita más espacio'
+  initErrorTitle: 'La consola no pudo arrancar'
+  initErrorHint: 'Comprueba que el servicio está en marcha y se puede alcanzar, y vuelve a intentarlo.'
   splashText: 'Conectando con el servicio de backups…'
   version: 'Dumpling v{version}'
 

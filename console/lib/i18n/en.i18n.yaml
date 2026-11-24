@@ -1,6 +1,8 @@
 app:
   name: 'Dumpling'
   needMoreSpace: 'Need more space'
+  initErrorTitle: 'The console could not start'
+  initErrorHint: 'Check that the service is running and can be reached, then try again.'
   splashText: 'Connecting to the backup service…'
   version: 'Dumpling v{version: String}'
 

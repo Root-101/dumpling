@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:console/app_exporter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:intl/intl.dart';
 
 class FeaturesInit {
   static Future<void> init() async {
@@ -13,55 +10,47 @@ class FeaturesInit {
     );
     app.di.put(storage);
 
-    Dio dio = Dio();
-    dio
+    Dio dio = Dio()
       ..options.connectTimeout = const Duration(seconds: 10)
       ..options.receiveTimeout = const Duration(seconds: 10)
-      ..options.headers = {
-        HttpHeaders.contentTypeHeader: ContentType.json.mimeType,
-      };
+      ..options.headers = {Headers.contentTypeHeader: Headers.jsonContentType};
     useBrowserHttpAdapter(dio);
-    dio.interceptors.add(
-      InterceptorsWrapper(
-        // The service translates its error messages to the app's language
-        onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
-          final language = Intl.defaultLocale;
-          if (language != null) {
-            options.headers[HttpHeaders.acceptLanguageHeader] = language;
-          }
-          // In the browser the connect timer runs until the answer starts: a
-          // request that waits longer for it (a connection test, its own
-          // checks take up to 10 s each) must not be cut as "offline" first
-          final receive = options.receiveTimeout;
-          if (receive != null &&
-              receive > (options.connectTimeout ?? receive)) {
-            options.connectTimeout = receive;
-          }
-          return handler.next(options);
-        },
-        onError: (DioException e, ErrorInterceptorHandler handler) async {
-          // A wrong password at login is a 401 too, but there is no session
-          // to expire then
-          final auth = app.di.find<AuthCubit>();
-          if (e.response?.statusCode == 401 && auth.auth != null) {
-            auth.expire();
-          }
-          return handler.next(e);
-        },
-      ),
-    );
+    dio.interceptors
+      // The service answers its errors in the console's language
+      ..add(
+        LanguageHeaderInterceptor(
+          languageCode: () => AppIntl.current.languageCode,
+        ),
+      )
+      ..add(BrowserTimeoutInterceptor())
+      ..add(
+        InterceptorsWrapper(
+          onError: (DioException e, ErrorInterceptorHandler handler) async {
+            // A wrong password at login is a 401 too, but there is no session
+            // to expire then
+            final auth = app.di.find<AuthCubit>();
+            if (e.response?.statusCode == 401 && auth.auth != null) {
+              auth.expire();
+            }
+            return handler.next(e);
+          },
+        ),
+      );
     app.di.put(dio);
 
     await AuthInit.init();
     await LanguageInit.init();
-    await WorkspacesInit.init();
-    await ConfigsInit.init();
-    await SourcesInit.init();
-    await DestinationsInit.init();
-    await CanvasInit.init();
-    await RunsInit.init();
-    await BackupsInit.init();
-    await ApiKeysInit.init();
+    // Each feature only builds its client, repo and cubits: in parallel
+    await Future.wait([
+      WorkspacesInit.init(),
+      ConfigsInit.init(),
+      SourcesInit.init(),
+      DestinationsInit.init(),
+      CanvasInit.init(),
+      RunsInit.init(),
+      BackupsInit.init(),
+      ApiKeysInit.init(),
+    ]);
 
     // Listen for logout to reset other cubits
     app.di.find<AuthCubit>().stream.listen((state) async {

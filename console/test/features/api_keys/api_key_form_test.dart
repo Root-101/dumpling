@@ -43,7 +43,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         navigatorKey: navigatorKey,
-        theme: ThemeConfig.theme,
+        theme: AppTheme.dark,
         home: const Scaffold(),
       ),
     );
