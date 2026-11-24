@@ -27,6 +27,16 @@ class FakeS3 {
 
   /// How many of the next parts get `503 SlowDown`.
   int failingParts = 0;
+
+  /// How many of the next single PUTs, and of the next completions, get
+  /// `503 SlowDown`.
+  int failingPuts = 0;
+  int failingCompletes = 0;
+
+  /// What the next upload gets as its id, and its parts as their ETag,
+  /// instead of the usual ones.
+  String? uploadIdGiven;
+  String? etagGiven;
   var _next = 0;
 
   FakeS3({this.deniedPrefix = 'denied/'});
@@ -49,6 +59,10 @@ class FakeS3 {
     openUploads.clear();
     _parts.clear();
     failingParts = 0;
+    failingPuts = 0;
+    failingCompletes = 0;
+    uploadIdGiven = null;
+    etagGiven = null;
   }
 
   Future<void> _handle(HttpRequest request) async {
@@ -70,7 +84,7 @@ class FakeS3 {
     final uploadId = query['uploadId'];
     switch (request.method) {
       case 'POST' when query.containsKey('uploads'):
-        final id = 'upload-${_next++}';
+        final id = uploadIdGiven ?? 'upload-${_next++}';
         openUploads[id] = object;
         _parts[id] = {};
         response.write(
@@ -83,7 +97,10 @@ class FakeS3 {
       case 'PUT' when uploadId != null:
         final number = int.parse(query['partNumber']!);
         _parts[uploadId]![number] = body;
-        response.headers.set('etag', '"etag-$number"');
+        response.headers.set('etag', etagGiven ?? '"etag-$number"');
+      case 'POST' when uploadId != null && failingCompletes > 0:
+        failingCompletes--;
+        return _error(response, 503, 'SlowDown');
       case 'POST' when uploadId != null:
         final parts = _parts.remove(uploadId)!;
         openUploads.remove(uploadId);
@@ -95,6 +112,9 @@ class FakeS3 {
         openUploads.remove(uploadId);
         _parts.remove(uploadId);
         response.statusCode = 204;
+      case 'PUT' when failingPuts > 0:
+        failingPuts--;
+        return _error(response, 503, 'SlowDown');
       case 'PUT':
         objects[object] = body;
         response.headers.set('etag', '"etag"');

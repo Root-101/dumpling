@@ -28,6 +28,8 @@
   or a run started from it ends, without leaving the screen.
 - Loads four weights of DM Sans instead of eighteen files: a lighter first load.
 - *Run again* closes the dialog of the run for good: it could open again over the run log.
+- The hint of a saved password or secret key says it is kept only while the server and user
+  (endpoint and bucket) stay the same.
 
 ## 0.1.7
 

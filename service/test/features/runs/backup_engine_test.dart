@@ -48,6 +48,15 @@ class FakeSourceDriver extends PostgresSourceDriver {
   }
 }
 
+/// A database that fails when a queued run starts (a full disk).
+class _FailingStart extends RunTableRepo {
+  _FailingStart(super.db);
+
+  @override
+  Future<void> start(String id, DateTime at) =>
+      Future.error(Exception('database or disk is full'));
+}
+
 void main() {
   final server = TestApp();
   final s3 = FakeS3();
@@ -411,6 +420,32 @@ void main() {
       },
     );
 
+    test('Should free a config whose queued run could not start', () async {
+      final id = await config(name: 'Queue that breaks');
+      final real = di.find<RunTableRepo>();
+      di.put<RunTableRepo>(_FailingStart(di.find<AppDatabase>()));
+      final engine = BackupEngine();
+      di.put<RunTableRepo>(real);
+      final saved = (await di.find<ConfigTableRepo>().byId(id))!;
+
+      fake.hold = Completer<void>();
+      final first = await engine.runNow(saved);
+      final queued = await engine.runNow(saved);
+      expect(queued.status, RunStatus.queued);
+      fake.hold!.complete();
+      fake.hold = null;
+      await engine.idle();
+
+      expect((await getJson('$base/runs/${first.id}'))['status'], 'success');
+      final failed = await getJson('$base/runs/${queued.id}');
+      expect(failed['status'], 'failed');
+      expect(failed['error'], contains('disk is full'));
+      // the config is free: a new run starts at once
+      final again = await engine.runNow(saved);
+      expect(again.status, RunStatus.running);
+      await engine.idle();
+    });
+
     test('Should fail the runs a stop left half done', () async {
       final db = di.find<AppDatabase>();
       // the multipart upload it had started
@@ -453,6 +488,10 @@ void main() {
       final run = await getJson('$base/runs/run_interrupted');
       expect(run['status'], 'failed');
       expect(run['error'], contains('Interrupted'));
+      final row = await (db.select(
+        db.runTable,
+      )..where((t) => t.id.equals('run_interrupted'))).getSingle();
+      expect(row.pendingUpload, isNull);
       // A queued one too: nothing would start it any more
       await db
           .into(db.runTable)

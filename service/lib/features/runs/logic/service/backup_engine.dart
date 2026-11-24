@@ -150,17 +150,38 @@ class BackupEngine {
       // Its row was never written: the request got the error
       return _next(configId);
     }
-    final config = await configs.byId(configId);
     final now = utcNow();
-    if (config == null) {
-      await runs.failBeforeStart(
-        queued.id,
-        'The config was deleted before the run started',
-        now,
+    final ConfigTableData? config;
+    try {
+      config = await configs.byId(configId);
+      if (config == null) {
+        await runs.failBeforeStart(
+          queued.id,
+          'The config was deleted before the run started',
+          now,
+        );
+        return _next(configId);
+      }
+      await runs.start(queued.id, now);
+    } on Exception catch (e, stackTrace) {
+      // the database failed (a full disk): the config must not stay taken,
+      // or no later run of it would ever start
+      logger.error(
+        'A queued run could not start',
+        error: e,
+        stackTrace: stackTrace,
       );
+      try {
+        await runs.failBeforeStart(
+          queued.id,
+          'Could not start: ${clipText('$e')}',
+          now,
+        );
+      } on Exception {
+        // the row stays queued: the next start of the service fails it
+      }
       return _next(configId);
     }
-    await runs.start(queued.id, now);
     logger.info(
       'Queued run started',
       fields: {'config': configId, 'run': queued.id},

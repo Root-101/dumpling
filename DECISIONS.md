@@ -71,7 +71,7 @@ fits in one part is a single `PutObject`.
 | The extension comes from the engine      | `.dump` or `.sql` by the dump format, plus `.gz` by the compression: an object key with its own extension could lie about the file  |
 | No compression by default                | The default dump (`-Fc`) is compressed already: gzip on top costs CPU for almost nothing. A plain SQL dump can still ask for gzip     |
 | No `.` or `..` folders in an object key  | The URL drops them after signing, so S3 would reject every upload; `{db}` always renders as one folder                              |
-| A part that fails for a moment is retried | Three tries on a 5xx, a 429 or a network error: one `SlowDown` shouldn't throw away the parts already sent                         |
+| A call that fails for a moment is retried | Three tries on a 5xx, a 429 or a network error, for the single upload, the start, each part and the completion: one `SlowDown` shouldn't throw away a backup nor the parts already sent |
 
 ## 7. Tests that leave nothing behind
 
@@ -169,6 +169,8 @@ A PostgreSQL or S3 server is chosen by the admin, but it is still another machin
 | The connection test talks to PostgreSQL in its own isolate, killed after 35 s | The server picks how many times the client hashes the password (SCRAM); that loop would freeze every request and run of the service |
 | Errors, versions and messages cut to 2000 characters                  | They are kept in every check and failed run, and the run log is never pruned                                                     |
 | S3 answers read up to 1 MiB, never compressed                         | S3 answers with a few hundred bytes of XML; a small gzip could grow to gigabytes in memory                                       |
+| An UploadId over 2000 characters or an ETag over 1024 refused        | S3 sends tens of characters; a server could send 1 MiB each, kept in the run and, per part, in memory                            |
+| The connection test bounded by time, not by bytes                     | package:postgres has no public hook on the bytes it reads: a server can make one test hold a big message for up to 35 s. Known limit, until the package has one |
 | Only the end of `pg_dump`'s stderr is kept, decoded leniently         | A server can make it write without end, and in the encoding of the database (a non-UTF-8 byte used to end the service)          |
 
 ## 16. The service runs as `dumpling`, `/data` is given to it at start

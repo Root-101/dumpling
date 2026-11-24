@@ -2,6 +2,16 @@
 
 ## 0.1.8
 
+- A stored password or secret key is only reused for the place it was saved for: an edit, a
+  test or a canvas save that changes the host, port, database, user or TLS of a source (the
+  endpoint, region, bucket, access key or path style of a destination) without the secret is a
+  `422` that asks for it. An API key allowed to test or edit could send it to its own server.
+- A single upload (a dump under 16 MiB), the start and the completion of a multipart upload are
+  tried again like its parts: one `503 SlowDown` no longer fails the backup.
+- A queued run that can't start because the database fails (a full disk) is marked failed and
+  frees its config; the config used to stop running until a restart.
+- An UploadId over 2000 characters or an ETag over 1024 is refused, and a run that ends clears
+  the upload id it kept.
 - Built with Dart 3.14 (Flutter 3.50.1, like the console) and the latest version of every
   dependency (winter 1.0.1, postgres 3.7, sqlite3 3.9.2, drift 2.35.4…).
 - CORS exposes `Retry-After`, so the console (on another origin in development) can say how long

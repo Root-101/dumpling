@@ -18,7 +18,8 @@ class S3ClientException implements Exception {
     : message = clipText(message),
       code = code == null ? null : clipText(code);
 
-  /// The network failed, or S3 asked to try again later (5xx, 429)
+  /// The network failed, or S3 asked to try again later (5xx, 429); an
+  /// answer that can't be used (no ETag, an UploadId too long) has its 200
   bool get transient => status == null || status == 429 || status! >= 500;
 
   @override
@@ -39,9 +40,15 @@ class S3Client {
   /// a server could send gigabytes (compressed, even) within the timeout.
   static const int maxAnswer = 1024 * 1024;
 
-  /// Tries of a part, and the wait before the second (doubled for the third).
-  static const int partTries = 3;
+  /// Tries of each call of an upload, and the wait before the second
+  /// (doubled for the third).
+  static const int tries = 3;
   static Duration retryDelay = const Duration(seconds: 2);
+
+  /// The longest UploadId and ETag taken: S3 sends tens of characters, and a
+  /// server could send up to [maxAnswer], kept in the run and in memory.
+  static const int maxUploadId = 2000;
+  static const int maxEtag = 1024;
 
   /// `https://s3.us-east-1.amazonaws.com`, `http://minio.internal:9000`.
   final Uri endpoint;
@@ -64,49 +71,79 @@ class S3Client {
   });
 
   /// Uploads [key] in one request (up to 5 GiB; Dumpling sends one part).
-  Future<void> putObject(String key, Uint8List body) async {
-    await _send('PUT', key, body: body);
-  }
+  Future<void> putObject(String key, Uint8List body) => _retrying(
+    'An upload failed, trying again',
+    {'key': key},
+    () => _send('PUT', key, body: body),
+  );
 
   /// Starts a multipart upload of [key] and returns its upload id.
-  Future<String> createMultipartUpload(String key) async {
-    final (body: body, etag: _) = await _send(
-      'POST',
-      key,
-      query: {'uploads': ''},
-    );
-    final uploadId = _tag(body, 'UploadId');
-    if (uploadId == null) {
-      throw S3ClientException('The answer has no UploadId');
-    }
-    return uploadId;
-  }
+  Future<String> createMultipartUpload(String key) => _retrying(
+    'Starting an upload failed, trying again',
+    {'key': key},
+    () async {
+      final (body: body, etag: _) = await _send(
+        'POST',
+        key,
+        query: {'uploads': ''},
+      );
+      final uploadId = _tag(body, 'UploadId');
+      if (uploadId == null) {
+        throw S3ClientException('The answer has no UploadId', status: 200);
+      }
+      if (uploadId.length > maxUploadId) {
+        throw S3ClientException(
+          'The UploadId is longer than $maxUploadId characters',
+          status: 200,
+        );
+      }
+      return uploadId;
+    },
+  );
 
-  /// Uploads part [number] (from 1) and returns its ETag. A [transient]
-  /// failure is tried again, up to [partTries] in all: one 503 must not throw
-  /// away the parts already sent.
+  /// Uploads part [number] (from 1) and returns its ETag.
   Future<String> uploadPart(
     String key,
     String uploadId,
     int number,
     Uint8List body,
+  ) => _retrying(
+    'A part failed, trying again',
+    {'key': key, 'part': '$number'},
+    () async {
+      final (body: _, etag: etag) = await _send(
+        'PUT',
+        key,
+        query: {'partNumber': '$number', 'uploadId': uploadId},
+        body: body,
+      );
+      if (etag == null) {
+        throw S3ClientException('The answer has no ETag', status: 200);
+      }
+      if (etag.length > maxEtag) {
+        throw S3ClientException(
+          'The ETag is longer than $maxEtag characters',
+          status: 200,
+        );
+      }
+      return etag;
+    },
+  );
+
+  /// [call], tried again on a [S3ClientException.transient] failure, up to
+  /// [tries] in all: one 503 must not throw away a backup, nor the parts
+  /// already sent of a big one.
+  static Future<T> _retrying<T>(
+    String warning,
+    Map<String, String> fields,
+    Future<T> Function() call,
   ) async {
     for (var attempt = 1; ; attempt++) {
       try {
-        final (body: _, etag: etag) = await _send(
-          'PUT',
-          key,
-          query: {'partNumber': '$number', 'uploadId': uploadId},
-          body: body,
-        );
-        if (etag == null) throw S3ClientException('The answer has no ETag');
-        return etag;
+        return await call();
       } on S3ClientException catch (e) {
-        if (attempt == partTries || !e.transient) rethrow;
-        logger.warning(
-          'A part failed, trying again',
-          fields: {'key': key, 'part': '$number', 'error': '$e'},
-        );
+        if (attempt == tries || !e.transient) rethrow;
+        logger.warning(warning, fields: {...fields, 'error': '$e'});
         await Future<void>.delayed(retryDelay * attempt);
       }
     }
@@ -114,6 +151,14 @@ class S3Client {
 
   /// Joins the parts (their ETags, in order) into the object.
   Future<void> completeMultipartUpload(
+    String key,
+    String uploadId,
+    List<String> etags,
+  ) => _retrying('Completing an upload failed, trying again', {
+    'key': key,
+  }, () => _complete(key, uploadId, etags));
+
+  Future<void> _complete(
     String key,
     String uploadId,
     List<String> etags,
@@ -132,11 +177,14 @@ class S3Client {
       query: {'uploadId': uploadId},
       body: Uint8List.fromList(utf8.encode(xml.toString())),
     );
-    // S3 may answer 200 and still fail, with the error in the body
+    // S3 may answer 200 and still fail, with the error in the body: an
+    // InternalError or a SlowDown there is as transient as a 500 or a 503
     if (body.contains('<Error>')) {
+      final code = _tag(body, 'Code');
       throw S3ClientException(
         _tag(body, 'Message') ?? 'The upload could not be completed',
-        code: _tag(body, 'Code'),
+        code: code,
+        status: const {'InternalError', 'SlowDown'}.contains(code) ? 500 : 200,
       );
     }
   }

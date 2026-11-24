@@ -6,6 +6,10 @@ have the release candidates before 0.1.0 one by one.
 
 ## 0.1.8
 
+- Service: a stored password or secret key only goes where it was saved for; an edit, test or
+  canvas save that points a source or destination elsewhere asks for it again (`422`).
+- Service: a small backup, and the start and end of a big one, are tried again on a `503`
+  like its parts; a queued run the database can't start no longer blocks its config.
 - Console: when the service can't be reached, the errors say so with its URL (*Can't reach the
   Dumpling service at …*) instead of blaming the internet connection.
 - Console: a sign-in locked after too many failures says how many minutes are left.

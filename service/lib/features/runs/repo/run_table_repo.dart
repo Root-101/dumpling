@@ -166,6 +166,8 @@ class RunTableRepo {
       log: Value(log),
       finishedAt: Value(finishedAt),
       durationMs: Value.absentIfNull(durationMs),
+      // completed or aborted: nothing left to abort on a restart
+      pendingUpload: const Value(null),
     ),
   );
 
@@ -200,6 +202,7 @@ class RunTableRepo {
               status: const Value(RunStatus.failed),
               error: Value(error),
               finishedAt: Value(utcNow()),
+              pendingUpload: const Value(null),
             ),
           );
 }
