@@ -76,7 +76,7 @@ class _SessionExpiredDialogState extends State<SessionExpiredDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final t = app.intl.login;
+    final t = app.intl.auth;
     // the username is known after a login in this tab, not after a reload
     final knownUser = _auth.username != null;
     return BlocConsumer<AuthCubit, AuthState>(
