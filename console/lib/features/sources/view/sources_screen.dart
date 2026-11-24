@@ -328,7 +328,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
   List<Widget> _buildCells(SourcesData data, SourceModel source) {
     final used = data.usageOf(source);
     final testing = data.testing.contains(source.id);
-    final muted = TextStyle(fontSize: 14, color: app.colors.neutral.grey3);
+    final muted = app.styles.l.copyWith(color: app.colors.neutral.grey3);
     return [
       Row(
         children: [
@@ -472,10 +472,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
                     ),
                     Text(
                       _typeLabel(source),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: colors.neutral.grey4,
-                      ),
+                      style: app.styles.s.copyWith(color: colors.neutral.grey4),
                     ),
                   ],
                 ),
@@ -506,7 +503,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
                 Expanded(
                   child: Text(
                     app.intl.common.backupCount(n: data.usageOf(source)),
-                    style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+                    style: app.styles.s.copyWith(color: colors.neutral.grey3),
                   ),
                 ),
                 Flexible(

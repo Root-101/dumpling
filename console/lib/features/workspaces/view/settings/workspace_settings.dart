@@ -304,8 +304,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                   children: [
                     Text(
                       t.title.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 11,
+                      style: app.styles.xs.copyWith(
                         letterSpacing: 1.2,
                         fontWeight: FontWeight.w700,
                         color: colors.primary.primaryFaded,
@@ -315,8 +314,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                       _name.text.trim(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 22,
+                      style: app.styles.h2.copyWith(
                         height: 28 / 22,
                         fontWeight: FontWeight.w700,
                       ),
@@ -326,8 +324,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                         description,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 13,
+                        style: app.styles.m.copyWith(
                           color: colors.neutral.grey3,
                         ),
                       ),
@@ -393,10 +390,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
               label: app.intl.workspaces.name,
               child: Text(
                 _saved.name,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: app.styles.l.copyWith(fontWeight: FontWeight.w600),
               ),
             ),
             _InfoRow(
@@ -405,8 +399,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                 description == null || description.isEmpty
                     ? t.noDescription
                     : description,
-                style: TextStyle(
-                  fontSize: 14,
+                style: app.styles.l.copyWith(
                   color: description == null || description.isEmpty
                       ? app.colors.neutral.grey4
                       : null,
@@ -499,7 +492,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
     return [
       Text(
         t.defaultsHint,
-        style: TextStyle(fontSize: 13, color: app.colors.neutral.grey3),
+        style: app.styles.m.copyWith(color: app.colors.neutral.grey3),
       ),
       Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -583,17 +576,11 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
               children: [
                 Text(
                   t.deleteTitle,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: app.styles.l.copyWith(fontWeight: FontWeight.w600),
                 ),
                 Text(
                   t.deleteDescription,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: app.colors.neutral.grey3,
-                  ),
+                  style: app.styles.m.copyWith(color: app.colors.neutral.grey3),
                 ),
               ],
             ),
@@ -636,9 +623,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                     shape: BoxShape.circle,
                   ),
                 ),
-                Expanded(
-                  child: Text(t.unsaved, style: const TextStyle(fontSize: 13)),
-                ),
+                Expanded(child: Text(t.unsaved, style: app.styles.m)),
                 PrimaryButton.secondary(
                   onPressed: () => setState(_reset),
                   title: t.discard,
@@ -658,7 +643,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                 Expanded(
                   child: Text(
                     t.description,
-                    style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+                    style: app.styles.s.copyWith(color: colors.neutral.grey4),
                   ),
                 ),
                 if (_justSaved)
@@ -671,8 +656,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                       ),
                       Text(
                         t.saved,
-                        style: TextStyle(
-                          fontSize: 13,
+                        style: app.styles.m.copyWith(
                           color: colors.status.success,
                         ),
                       ),
@@ -722,8 +706,7 @@ class _TabButton extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: TextStyle(
-              fontSize: 14,
+            style: app.styles.l.copyWith(
               fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
               color: selected
                   ? colors.neutral.white
@@ -766,7 +749,7 @@ class _InfoRow extends StatelessWidget {
             width: 160,
             child: Text(
               label,
-              style: TextStyle(fontSize: 13, color: app.colors.neutral.grey3),
+              style: app.styles.m.copyWith(color: app.colors.neutral.grey3),
             ),
           ),
           16.gap(),
@@ -831,8 +814,7 @@ class _Label extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
     text,
-    style: TextStyle(
-      fontSize: 13,
+    style: app.styles.m.copyWith(
       fontWeight: FontWeight.w600,
       color: app.colors.neutral.grey2,
     ),
@@ -933,8 +915,7 @@ class _DeleteDialogState extends State<_DeleteDialog> {
                         children: [
                           Text(
                             t.deleteConfirmTitle(name: widget.workspace.name),
-                            style: const TextStyle(
-                              fontSize: 18,
+                            style: app.styles.h4.copyWith(
                               height: 26 / 18,
                               fontWeight: FontWeight.w700,
                             ),
@@ -947,8 +928,7 @@ class _DeleteDialogState extends State<_DeleteDialog> {
                                 t.nConfigs(n: stats?.configs ?? 0),
                               ].join(', '),
                             ),
-                            style: TextStyle(
-                              fontSize: 13,
+                            style: app.styles.m.copyWith(
                               color: colors.neutral.grey3,
                             ),
                           ),
@@ -963,7 +943,7 @@ class _DeleteDialogState extends State<_DeleteDialog> {
                   children: [
                     Text.rich(
                       TextSpan(
-                        style: const TextStyle(fontSize: 13),
+                        style: app.styles.m,
                         children: [
                           TextSpan(text: '${t.typeBefore} '),
                           WidgetSpan(

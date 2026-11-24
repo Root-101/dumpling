@@ -137,16 +137,13 @@ class NotFoundPage extends StatelessWidget {
                 Text(
                   t.pageMissing,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: app.styles.h2.copyWith(fontWeight: FontWeight.w700),
                 ),
                 10.gap(),
                 Text(
                   t.pageMissingHint,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: colors.neutral.grey3),
+                  style: app.styles.l.copyWith(color: colors.neutral.grey3),
                 ),
                 if (path != null) ...[
                   14.gap(),

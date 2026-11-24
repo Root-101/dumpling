@@ -71,8 +71,7 @@ class FormDialogTemplate extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        fontSize: 20,
+                      style: app.styles.h3.copyWith(
                         height: 28 / 20,
                         fontWeight: FontWeight.w700,
                       ),
@@ -81,8 +80,7 @@ class FormDialogTemplate extends StatelessWidget {
                       2.gap(),
                       Text(
                         description!,
-                        style: TextStyle(
-                          fontSize: 13,
+                        style: app.styles.m.copyWith(
                           color: app.colors.neutral.grey4,
                         ),
                       ),

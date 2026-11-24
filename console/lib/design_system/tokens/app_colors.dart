@@ -154,6 +154,12 @@ class SurfaceColor {
   /// 1f1c29 for what is secondary (labels, meta)
   Color get skeleton => const Color(0xFF24212F);
   Color get skeletonDim => const Color(0xFF1F1C29);
+
+  /// Shadow of what floats over the canvas (menus, the dragged node): black 35%
+  Color get shadow => const Color(0x59000000);
+
+  /// Shadow of a node at rest: black 28%
+  Color get shadowSoft => const Color(0x47000000);
 }
 
 class BrandColor {
@@ -174,8 +180,20 @@ class BrandColor {
   /// Amber accent: free ports, drop targets, hints: e6b77e
   Color get accent => const Color(0xFFE6B77E);
 
-  /// Postgres blue: 8aa8ff
+  /// Postgres blue: 8aa8ff (also Dropbox and Azure)
   Color get postgres => const Color(0xFF8AA8FF);
+
+  /// MySQL and MariaDB teal: 5cc8bd
+  Color get mysql => const Color(0xFF5CC8BD);
+
+  /// MongoDB and Google Drive green: 5fd17f
+  Color get mongodb => const Color(0xFF5FD17F);
+
+  /// Redis red: ec8a86
+  Color get redis => const Color(0xFFEC8A86);
+
+  /// SFTP grey: d0cfd6
+  Color get sftp => const Color(0xFFD0CFD6);
 }
 
 class TextColor {

@@ -24,11 +24,11 @@ BoxDecoration _nodeDecoration({List<BoxShadow>? shadow}) => BoxDecoration(
   borderRadius: app.dimensions.radius.l,
   boxShadow:
       shadow ??
-      const [
+      [
         BoxShadow(
-          color: Color(0x47000000),
+          color: app.colors.surface.shadowSoft,
           blurRadius: 18,
-          offset: Offset(0, 6),
+          offset: const Offset(0, 6),
         ),
       ],
 );
@@ -214,7 +214,7 @@ class SourceNodeView extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   source.detail,
-                  style: TextStyle(fontSize: 11, color: colors.text.muted),
+                  style: app.styles.xs.copyWith(color: colors.text.muted),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -287,8 +287,7 @@ class ConfigNodeView extends StatelessWidget {
       null => '',
     };
     final schedule = config.schedule;
-    final rowStyle = TextStyle(
-      fontSize: 11,
+    final rowStyle = app.styles.xs.copyWith(
       height: 16 / 11,
       color: colors.text.secondary,
     );
@@ -297,8 +296,7 @@ class ConfigNodeView extends StatelessWidget {
       padding: const EdgeInsets.only(left: 14),
       child: Text(
         app.intl.time.local(time: time.format(at.toLocal())),
-        style: TextStyle(
-          fontSize: 10,
+        style: app.styles.xxs.copyWith(
           height: 14 / 10,
           color: colors.text.subtle,
         ),
@@ -323,10 +321,10 @@ class ConfigNodeView extends StatelessWidget {
                         color: colors.brand.primary.withValues(alpha: 0.14),
                         spreadRadius: 4,
                       ),
-                      const BoxShadow(
-                        color: Color(0x59000000),
+                      BoxShadow(
+                        color: app.colors.surface.shadow,
                         blurRadius: 24,
-                        offset: Offset(0, 8),
+                        offset: const Offset(0, 8),
                       ),
                     ]
                   : null,
@@ -391,8 +389,7 @@ class ConfigNodeView extends StatelessWidget {
                                           )
                                         : Text(
                                             app.intl.canvas.disabled,
-                                            style: TextStyle(
-                                              fontSize: 11,
+                                            style: app.styles.xs.copyWith(
                                               fontWeight: FontWeight.w600,
                                               color: colors.text.secondary,
                                             ),
@@ -766,9 +763,8 @@ class DestinationNodeView extends StatelessWidget {
                           onPressed: onAddFolder,
                           style: TextButton.styleFrom(
                             foregroundColor: colors.text.muted,
-                            textStyle: const TextStyle(
+                            textStyle: app.styles.s.copyWith(
                               fontFamily: AppText.sans,
-                              fontSize: 12,
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: app.dimensions.radius.s,

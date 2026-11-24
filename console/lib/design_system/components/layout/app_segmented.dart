@@ -48,9 +48,8 @@ class AppSegmented<T> extends StatelessWidget {
                         foregroundColor: f == value
                             ? colors.text.primary
                             : colors.text.muted,
-                        textStyle: TextStyle(
+                        textStyle: app.styles.s.copyWith(
                           fontFamily: AppText.sans,
-                          fontSize: 12,
                           fontWeight: f == value
                               ? FontWeight.w600
                               : FontWeight.w400,

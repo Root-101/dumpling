@@ -36,14 +36,11 @@ class AppSwitchTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: app.styles.m.copyWith(fontWeight: FontWeight.w600),
                     ),
                     Text(
                       subtitle,
-                      style: TextStyle(fontSize: 11, color: colors.text.subtle),
+                      style: app.styles.xs.copyWith(color: colors.text.subtle),
                     ),
                   ],
                 ),

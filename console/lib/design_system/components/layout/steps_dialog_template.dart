@@ -109,8 +109,7 @@ class StepsDialogTemplate extends StatelessWidget {
                             title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 20,
+                            style: app.styles.h3.copyWith(
                               height: 28 / 20,
                               fontWeight: FontWeight.w700,
                             ),
@@ -121,10 +120,7 @@ class StepsDialogTemplate extends StatelessWidget {
                     ),
                     Text(
                       description,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: colors.neutral.grey4,
-                      ),
+                      style: app.styles.m.copyWith(color: colors.neutral.grey4),
                     ),
                   ],
                 ),
@@ -169,8 +165,7 @@ class StepsDialogTemplate extends StatelessWidget {
                   textAlign: footerLeading == null
                       ? TextAlign.start
                       : TextAlign.end,
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: app.styles.s.copyWith(
                     color: blockedNote == null
                         ? colors.neutral.grey4
                         : app.colors.status.warning,
@@ -239,8 +234,7 @@ class StepsDialogTemplate extends StatelessWidget {
                 )
               : Text(
                   '${i + 1}',
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: app.styles.s.copyWith(
                     fontWeight: FontWeight.w700,
                     color: on ? colors.neutral.white : colors.neutral.grey4,
                   ),
@@ -252,8 +246,7 @@ class StepsDialogTemplate extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 13,
+            style: app.styles.m.copyWith(
               fontWeight: on ? FontWeight.w600 : FontWeight.w500,
               color: on
                   ? colors.neutral.white
@@ -342,15 +335,14 @@ class SummaryCell extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(fontSize: 11, color: app.colors.neutral.grey4),
+            style: app.styles.xs.copyWith(color: app.colors.neutral.grey4),
           ),
           Text(
             value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
+            style: app.styles.s.copyWith(
               fontFamily: AppText.monoFamily,
-              fontSize: 12,
               color: color ?? app.colors.neutral.grey2,
             ),
           ),
@@ -395,7 +387,7 @@ class StepTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+      style: app.styles.ml.copyWith(fontWeight: FontWeight.w600),
     );
   }
 }

@@ -378,7 +378,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     final used = data.usageOf(destination);
     final testing = data.testing.contains(destination.id);
     final open = _open.contains(destination.id);
-    final muted = TextStyle(fontSize: 14, color: app.colors.neutral.grey3);
+    final muted = app.styles.l.copyWith(color: app.colors.neutral.grey3);
     final folders = destination.folders.length;
     return [
       IconButton(
@@ -418,10 +418,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
                   folders == 0
                       ? app.intl.destinations.bucketRoot
                       : app.intl.destinations.folderCount(n: folders),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: app.colors.neutral.grey4,
-                  ),
+                  style: app.styles.s.copyWith(color: app.colors.neutral.grey4),
                 ),
               ],
             ),
@@ -518,7 +515,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
   Widget _buildCard(DestinationsData data, DestinationModel destination) {
     final colors = app.colors;
     final folders = destination.folders.length;
-    final muted = TextStyle(fontSize: 12, color: colors.neutral.grey4);
+    final muted = app.styles.s.copyWith(color: colors.neutral.grey4);
     return Container(
       padding: EdgeInsets.all(app.dimensions.padding.l),
       decoration: BoxDecoration(
@@ -604,7 +601,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
                 Expanded(
                   child: Text(
                     app.intl.common.backupCount(n: data.usageOf(destination)),
-                    style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+                    style: app.styles.s.copyWith(color: colors.neutral.grey3),
                   ),
                 ),
                 Flexible(

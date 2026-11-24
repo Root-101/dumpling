@@ -169,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
           app.dimensions.padding.xxl.gap(),
           Text(
             app.intl.app.version(version: AppGlobal.version),
-            style: TextStyle(fontSize: 12, color: app.colors.neutral.grey4),
+            style: app.styles.s.copyWith(color: app.colors.neutral.grey4),
           ),
         ],
       ),
@@ -200,8 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   Text(
                     app.intl.auth.title,
-                    style: const TextStyle(
-                      fontSize: 22,
+                    style: app.styles.h2.copyWith(
                       height: 28 / 22,
                       fontWeight: FontWeight.w700,
                     ),
@@ -209,8 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   app.dimensions.padding.xs.gap(),
                   Text(
                     app.intl.auth.description,
-                    style: TextStyle(
-                      fontSize: 13,
+                    style: app.styles.m.copyWith(
                       color: app.colors.neutral.grey4,
                     ),
                   ),
@@ -287,8 +285,7 @@ class _EnvHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = TextStyle(
-      fontSize: 12,
+    final style = app.styles.s.copyWith(
       height: 18 / 12,
       color: app.colors.neutral.grey4,
     );
@@ -387,8 +384,7 @@ class _Identity extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              style: TextStyle(
-                                fontSize: 32,
+                              style: app.styles.h1.copyWith(
                                 height: 1,
                                 fontWeight: FontWeight.w500,
                                 letterSpacing: -0.6,
@@ -464,8 +460,7 @@ class _Tag extends StatelessWidget {
           8.gap(),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 15,
+            style: app.styles.ml.copyWith(
               fontWeight: FontWeight.w500,
               color: app.colors.text.brand,
             ),

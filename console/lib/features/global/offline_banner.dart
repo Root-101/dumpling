@@ -53,7 +53,7 @@ class _OfflineBannerState extends State<OfflineBanner> {
           Expanded(
             child: Text.rich(
               TextSpan(
-                style: TextStyle(fontSize: 13, color: app.colors.neutral.grey2),
+                style: app.styles.m.copyWith(color: app.colors.neutral.grey2),
                 children: [
                   TextSpan(
                     text: '${t.offlineBanner} ',

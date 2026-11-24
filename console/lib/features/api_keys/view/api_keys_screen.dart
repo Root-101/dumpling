@@ -250,7 +250,7 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
         12.gap(),
         Text(
           t.footer,
-          style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+          style: app.styles.s.copyWith(color: colors.neutral.grey4),
         ),
       ],
     );
@@ -340,8 +340,8 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
   List<Widget> _buildCells(ApiKeysData data, ApiKeyModel key) {
     final t = app.intl.apiKeys;
     final colors = app.colors;
-    final muted = TextStyle(fontSize: 13, color: colors.neutral.grey3);
-    final small = TextStyle(fontSize: 11, color: colors.neutral.grey4);
+    final muted = app.styles.m.copyWith(color: colors.neutral.grey3);
+    final small = app.styles.xs.copyWith(color: colors.neutral.grey4);
     final custom = key.access == ApiKeyAccess.custom;
     final names = data.configNamesOf(key);
     final last = key.lastRun;
@@ -403,8 +403,7 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
             ),
             child: Text(
               key.access.label,
-              style: TextStyle(
-                fontSize: 12,
+              style: app.styles.s.copyWith(
                 fontWeight: FontWeight.w600,
                 color: custom
                     ? colors.primary.secondary
@@ -447,8 +446,7 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
                   ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 13,
+            style: app.styles.m.copyWith(
               color: key.lastUsedAt == null
                   ? colors.neutral.grey4
                   : colors.neutral.grey2,

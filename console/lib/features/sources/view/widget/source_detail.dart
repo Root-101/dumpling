@@ -143,7 +143,7 @@ class _Uses extends StatelessWidget {
     final divider = BorderSide(
       color: colors.neutral.white.withValues(alpha: 0.06),
     );
-    final muted = TextStyle(fontSize: 12, color: colors.neutral.grey4);
+    final muted = app.styles.s.copyWith(color: colors.neutral.grey4);
     Widget row(List<Widget> cells, {double height = 58, TextStyle? style}) =>
         Container(
           constraints: BoxConstraints(minHeight: height),
@@ -175,8 +175,7 @@ class _Uses extends StatelessWidget {
               },
               child: Text(
                 t.openEditor,
-                style: TextStyle(
-                  fontSize: 13,
+                style: app.styles.m.copyWith(
                   color: colors.primary.primaryFaded,
                 ),
               ),
@@ -196,7 +195,7 @@ class _Uses extends StatelessWidget {
                 Text(t.columnNextRun),
               ],
               height: 38,
-              style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+              style: app.styles.s.copyWith(color: colors.neutral.grey3),
             ),
             for (final config in configs)
               row([

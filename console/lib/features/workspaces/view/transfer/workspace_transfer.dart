@@ -323,14 +323,11 @@ class _WorkspaceImportDialogState extends State<WorkspaceImportDialog> {
               children: [
                 Text(
                   t.drop,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: app.styles.xl.copyWith(fontWeight: FontWeight.w600),
                 ),
                 Text(
                   t.dropHint,
-                  style: TextStyle(fontSize: 13, color: colors.neutral.grey4),
+                  style: app.styles.m.copyWith(color: colors.neutral.grey4),
                 ),
               ],
             ),
@@ -392,7 +389,7 @@ class _WorkspaceImportDialogState extends State<WorkspaceImportDialog> {
                   s.exportedAt == null
                       ? '$kb KB'
                       : '$kb KB · ${t.exportedAt(time: '${app.dateFormatter.time.format(s.exportedAt!.toUtc())} UTC')}',
-                  style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+                  style: app.styles.s.copyWith(color: colors.neutral.grey4),
                 ),
               ],
             ),
@@ -420,7 +417,7 @@ class _WorkspaceImportDialogState extends State<WorkspaceImportDialog> {
       children: [
         Text(
           t.toAdd(n: s.rows.length),
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          style: app.styles.l.copyWith(fontWeight: FontWeight.w600),
         ),
         Container(
           clipBehavior: Clip.antiAlias,
@@ -459,23 +456,20 @@ class _WorkspaceImportDialogState extends State<WorkspaceImportDialog> {
                               children: [
                                 Text(
                                   r.name,
-                                  style: const TextStyle(
-                                    fontSize: 14,
+                                  style: app.styles.l.copyWith(
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 if (r.as != r.name) ...[
                                   Text(
                                     t.as,
-                                    style: TextStyle(
-                                      fontSize: 13,
+                                    style: app.styles.m.copyWith(
                                       color: colors.neutral.grey4,
                                     ),
                                   ),
                                   Text(
                                     r.as,
-                                    style: TextStyle(
-                                      fontSize: 14,
+                                    style: app.styles.l.copyWith(
                                       fontWeight: FontWeight.w600,
                                       color: colors.primary.primaryLight,
                                     ),
@@ -496,8 +490,7 @@ class _WorkspaceImportDialogState extends State<WorkspaceImportDialog> {
                                 app.intl.common.backupCount(n: r.configs),
                                 t.nRuns(n: r.runs),
                               ].join(' · '),
-                              style: TextStyle(
-                                fontSize: 12,
+                              style: app.styles.s.copyWith(
                                 color: colors.neutral.grey4,
                               ),
                             ),
@@ -536,7 +529,7 @@ class _WorkspaceImportDialogState extends State<WorkspaceImportDialog> {
           Expanded(
             child: Text(
               app.intl.workspaces.transfer.keyNote,
-              style: TextStyle(fontSize: 13, color: colors.neutral.grey3),
+              style: app.styles.m.copyWith(color: colors.neutral.grey3),
             ),
           ),
         ],
@@ -565,8 +558,7 @@ class _NameTakenBadge extends StatelessWidget {
         widthFactor: 1,
         child: Text(
           label,
-          style: TextStyle(
-            fontSize: 11,
+          style: app.styles.xs.copyWith(
             fontWeight: FontWeight.w600,
             color: color,
           ),

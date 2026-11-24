@@ -171,6 +171,8 @@ class AppGlobal {
 
   AppColors colors = AppColors();
 
+  AppTextStyles styles = AppTextStyles();
+
   AppAssets assets = AppAssets();
 
   DateFormatter dateFormatter = DateFormatter();

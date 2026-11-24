@@ -136,8 +136,7 @@ class _SessionExpiredDialogState extends State<SessionExpiredDialog> {
                     16.gap(),
                     Text(
                       t.expiredTitle,
-                      style: const TextStyle(
-                        fontSize: 20,
+                      style: app.styles.h3.copyWith(
                         height: 28 / 20,
                         fontWeight: FontWeight.w700,
                       ),
@@ -145,8 +144,7 @@ class _SessionExpiredDialogState extends State<SessionExpiredDialog> {
                     6.gap(),
                     Text(
                       t.expiredDescription,
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: app.styles.l.copyWith(
                         color: app.colors.neutral.grey3,
                       ),
                     ),
@@ -190,8 +188,7 @@ class _SessionExpiredDialogState extends State<SessionExpiredDialog> {
                       onPressed: loading ? null : _toSignInPage,
                       style: TextButton.styleFrom(
                         foregroundColor: app.colors.primary.primaryFaded,
-                        textStyle: TextStyle(
-                          fontSize: 13,
+                        textStyle: app.styles.m.copyWith(
                           decoration: TextDecoration.underline,
                           decorationColor: app.colors.primary.primaryFaded,
                         ),

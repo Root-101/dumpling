@@ -63,7 +63,7 @@ class RunStatusLabel extends StatelessWidget {
             labelOf(status),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 12, color: color),
+            style: app.styles.s.copyWith(color: color),
           ),
         ),
       ],

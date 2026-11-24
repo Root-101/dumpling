@@ -630,7 +630,7 @@ class _DestinationFormState extends State<DestinationForm> {
       app.dimensions.padding.m.gap(),
       Text(
         app.intl.destinations.permissions,
-        style: TextStyle(fontSize: 12, color: app.colors.neutral.grey4),
+        style: app.styles.s.copyWith(color: app.colors.neutral.grey4),
       ),
     ];
   }
@@ -647,7 +647,7 @@ class _DestinationFormState extends State<DestinationForm> {
     return [
       Text(
         app.intl.destinations.foldersHelp,
-        style: TextStyle(fontSize: 12, color: app.colors.neutral.grey3),
+        style: app.styles.s.copyWith(color: app.colors.neutral.grey3),
       ),
       app.dimensions.padding.m.gap(),
       Container(
@@ -708,8 +708,7 @@ class _DestinationFormState extends State<DestinationForm> {
                         Expanded(
                           child: Text(
                             app.intl.destinations.foldersRootChecked,
-                            style: TextStyle(
-                              fontSize: 13,
+                            style: app.styles.m.copyWith(
                               color: app.colors.neutral.grey3,
                             ),
                           ),
@@ -769,7 +768,7 @@ class _DestinationFormState extends State<DestinationForm> {
     return Row(
       children: [
         Expanded(
-          child: Text(note, style: TextStyle(fontSize: 12, color: color)),
+          child: Text(note, style: app.styles.s.copyWith(color: color)),
         ),
         if (_folders.isNotEmpty) ...[
           app.dimensions.padding.s.gap(),
@@ -847,10 +846,7 @@ class _FolderRow extends StatelessWidget {
               shown,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: AppText.monoFamily,
-                fontSize: 13,
-              ),
+              style: app.styles.m.copyWith(fontFamily: AppText.monoFamily),
             ),
           ),
           if (state == _FolderState.checking)
@@ -864,7 +860,7 @@ class _FolderRow extends StatelessWidget {
                     : app.assets.icons.actions.warning)
                 .build(size: 14, color: color),
           const SizedBox(width: 6),
-          Text(label, style: TextStyle(fontSize: 12, color: color)),
+          Text(label, style: app.styles.s.copyWith(color: color)),
           const SizedBox(width: 10),
           Tooltip(
             message: locked ? t.folderLocked : t.deleteFolder(path: shown),

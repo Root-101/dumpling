@@ -968,10 +968,7 @@ class _CanvasEditorState extends State<CanvasEditor>
                         target != null
                             ? app.intl.canvas.releaseToCreate
                             : app.intl.canvas.configHere,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colors.text.muted,
-                        ),
+                        style: app.styles.s.copyWith(color: colors.text.muted),
                       ),
                     ],
                   ),

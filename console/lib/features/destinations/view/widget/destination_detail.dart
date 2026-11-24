@@ -146,7 +146,7 @@ class _Folders extends StatelessWidget {
           row(
             [Text(t.columnFolder), Text(t.columnWrittenBy)],
             height: 38,
-            style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+            style: app.styles.s.copyWith(color: colors.neutral.grey3),
           ),
           for (final folder in folders)
             row([
@@ -176,12 +176,9 @@ class _Folders extends StatelessWidget {
     if (configs.isEmpty) {
       return Text(
         app.intl.destinations.notUsedYet,
-        style: TextStyle(fontSize: 13, color: app.colors.neutral.grey4),
+        style: app.styles.m.copyWith(color: app.colors.neutral.grey4),
       );
     }
-    return Text(
-      configs.map((c) => c.name).join(', '),
-      style: const TextStyle(fontSize: 14),
-    );
+    return Text(configs.map((c) => c.name).join(', '), style: app.styles.l);
   }
 }

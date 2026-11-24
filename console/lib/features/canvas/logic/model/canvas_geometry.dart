@@ -17,14 +17,12 @@ class CanvasGeometry {
   static double configNameRoom(String? tag) =>
       240 - 2 * 14 - 30 - 10 - (tag == null ? 0 : 6 + 12 + _width(tag, _tag));
 
-  static const TextStyle _title = TextStyle(
+  static final TextStyle _title = app.styles.l.copyWith(
     fontFamily: AppText.sans,
-    fontSize: 14,
     fontWeight: FontWeight.w600,
   );
-  static const TextStyle _tag = TextStyle(
+  static final TextStyle _tag = app.styles.xs.copyWith(
     fontFamily: AppText.monoFamily,
-    fontSize: 11,
   );
 
   static double _width(String text, TextStyle style) {

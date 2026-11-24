@@ -53,8 +53,7 @@ class ConnectionCheckPanel extends StatelessWidget {
                     testing
                         ? app.intl.connections.testing
                         : ConnectionStatusLabel.labelOf(check),
-                    style: TextStyle(
-                      fontSize: 13,
+                    style: app.styles.m.copyWith(
                       fontWeight: FontWeight.w600,
                       color: color,
                     ),
@@ -65,10 +64,7 @@ class ConnectionCheckPanel extends StatelessWidget {
                   child: SelectionArea(
                     child: Text(
                       detail,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: colors.neutral.grey3,
-                      ),
+                      style: app.styles.m.copyWith(color: colors.neutral.grey3),
                     ),
                   ),
                 ),

@@ -33,16 +33,13 @@ class InitErrorScreen extends StatelessWidget {
                   Text(
                     app.intl.app.initErrorTitle,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: app.styles.h2.copyWith(fontWeight: FontWeight.w700),
                   ),
                   10.gap(),
                   Text(
                     app.intl.app.initErrorHint,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14, color: colors.neutral.grey3),
+                    style: app.styles.l.copyWith(color: colors.neutral.grey3),
                   ),
                   28.gap(),
                   PrimaryButton.primary(

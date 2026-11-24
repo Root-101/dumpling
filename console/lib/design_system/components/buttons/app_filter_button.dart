@@ -126,10 +126,7 @@ class _AppFilterButtonState extends State<AppFilterButton> {
                     app.dimensions.padding.s.gap(),
                     Text(
                       app.intl.common.filters,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: app.styles.l.copyWith(fontWeight: FontWeight.w500),
                     ),
                     if (active) ...[
                       app.dimensions.padding.s.gap(),
@@ -144,8 +141,7 @@ class _AppFilterButtonState extends State<AppFilterButton> {
                         ),
                         child: Text(
                           '${widget.activeCount}',
-                          style: TextStyle(
-                            fontSize: 12,
+                          style: app.styles.s.copyWith(
                             fontWeight: FontWeight.w700,
                             color: app.colors.primary.background1,
                           ),
@@ -294,8 +290,7 @@ class _AppFilterPanel extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(8, 4, 8, 6),
           child: Text(
             group.title.toUpperCase(),
-            style: TextStyle(
-              fontSize: 11,
+            style: app.styles.xs.copyWith(
               letterSpacing: 1.2,
               fontWeight: FontWeight.w700,
               color: app.colors.primary.primaryFaded,
@@ -324,8 +319,7 @@ class _AppFilterPanel extends StatelessWidget {
             onPressed: active ? onClear : null,
             child: Text(
               app.intl.common.clearAll,
-              style: TextStyle(
-                fontSize: 13,
+              style: app.styles.m.copyWith(
                 color: active
                     ? app.colors.primary.primaryFaded
                     : app.colors.neutral.grey5,
@@ -336,7 +330,7 @@ class _AppFilterPanel extends StatelessWidget {
             child: Text(
               note ?? '',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: app.colors.neutral.grey4),
+              style: app.styles.s.copyWith(color: app.colors.neutral.grey4),
             ),
           ),
           PrimaryButton.primary(
@@ -394,8 +388,7 @@ class _FilterOptionTile extends StatelessWidget {
                     option.label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 13,
+                    style: app.styles.m.copyWith(
                       color: selected
                           ? app.colors.neutral.white
                           : app.colors.neutral.grey2,
@@ -405,8 +398,7 @@ class _FilterOptionTile extends StatelessWidget {
                 if (option.count != null)
                   Text(
                     '${option.count}',
-                    style: TextStyle(
-                      fontSize: 12,
+                    style: app.styles.s.copyWith(
                       color: app.colors.neutral.grey4,
                       fontFeatures: const [FontFeature.tabularFigures()],
                     ),

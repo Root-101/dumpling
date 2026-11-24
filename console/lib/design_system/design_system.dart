@@ -38,6 +38,7 @@ export 'icons/app_assets.dart';
 export 'icons/app_icons.dart';
 export 'tokens/app_colors.dart';
 export 'tokens/app_dimensions.dart';
+export 'tokens/app_text_styles.dart';
 export 'tokens/color_hex_extension.dart';
 export 'tokens/darken_extension.dart';
 export 'tokens/theme_adapter.dart';

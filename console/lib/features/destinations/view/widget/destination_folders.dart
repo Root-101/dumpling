@@ -81,8 +81,7 @@ class _DestinationFoldersState extends State<DestinationFolders> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       app.intl.destinations.noFolders,
-                      style: TextStyle(
-                        fontSize: 12,
+                      style: app.styles.s.copyWith(
                         color: app.colors.neutral.grey4,
                       ),
                     ),
@@ -123,10 +122,7 @@ class _DestinationFoldersState extends State<DestinationFolders> {
               shown,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: AppText.monoFamily,
-                fontSize: 13,
-              ),
+              style: app.styles.m.copyWith(fontFamily: AppText.monoFamily),
             ),
           ),
           SizedBox(
@@ -135,7 +131,7 @@ class _DestinationFoldersState extends State<DestinationFolders> {
               used > 0
                   ? app.intl.destinations.folderUsed(n: used)
                   : app.intl.destinations.notUsedYet,
-              style: TextStyle(fontSize: 12, color: app.colors.neutral.grey3),
+              style: app.styles.s.copyWith(color: app.colors.neutral.grey3),
             ),
           ),
           PrimaryButton.svgIcon(
@@ -179,10 +175,7 @@ class _DestinationFoldersState extends State<DestinationFolders> {
                 const SizedBox(width: 6),
                 Text(
                   app.intl.destinations.addFolder,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: app.colors.neutral.grey3,
-                  ),
+                  style: app.styles.m.copyWith(color: app.colors.neutral.grey3),
                 ),
               ],
             ),

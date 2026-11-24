@@ -126,8 +126,7 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
     final colors = app.colors;
     final data = widget.data;
     final access = ApiKeyAccess.of(_permissions, limited: _limit);
-    final label = TextStyle(
-      fontSize: 13,
+    final label = app.styles.m.copyWith(
       fontWeight: FontWeight.w600,
       color: colors.text.primary,
     );
@@ -145,7 +144,7 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
                       n: _permissions.length,
                     )
                   : t.summaryAll(n: _permissions.length),
-              style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+              style: app.styles.s.copyWith(color: colors.neutral.grey4),
             ),
           ),
           PrimaryButton.secondary(
@@ -179,7 +178,7 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
                 ),
                 Text(
                   t.nameHint,
-                  style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+                  style: app.styles.s.copyWith(color: colors.neutral.grey4),
                 ),
               ],
             ),
@@ -251,8 +250,7 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
                   data.configs.isEmpty
                       ? Text(
                           t.noConfigs,
-                          style: TextStyle(
-                            fontSize: 12,
+                          style: app.styles.s.copyWith(
                             color: colors.neutral.grey4,
                           ),
                         )
@@ -296,8 +294,7 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
                 ),
                 child: Text(
                   t.renewNote,
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: app.styles.s.copyWith(
                     color: colors.primary.primaryLight,
                   ),
                 ),
@@ -352,14 +349,11 @@ class _TemplateCard extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: app.styles.l.copyWith(fontWeight: FontWeight.w600),
               ),
               Text(
                 subtitle,
-                style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+                style: app.styles.s.copyWith(color: colors.neutral.grey3),
               ),
             ],
           ),
@@ -410,7 +404,7 @@ class _PermissionGrid extends StatelessWidget {
                     n: selected.length,
                     total: ApiKeyPermissions.all.length,
                   ),
-                  style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+                  style: app.styles.s.copyWith(color: colors.neutral.grey3),
                 ),
               ),
               if (custom)
@@ -425,8 +419,7 @@ class _PermissionGrid extends StatelessWidget {
                   ),
                   child: Text(
                     t.custom,
-                    style: TextStyle(
-                      fontSize: 11,
+                    style: app.styles.xs.copyWith(
                       fontWeight: FontWeight.w600,
                       color: colors.primary.secondary,
                     ),
@@ -515,8 +508,7 @@ class _CheckLabel extends StatelessWidget {
                 _CheckBox(selected: selected),
                 Text(
                   label,
-                  style: TextStyle(
-                    fontSize: 13,
+                  style: app.styles.m.copyWith(
                     color: selected
                         ? colors.text.primary
                         : colors.neutral.grey3,
@@ -619,8 +611,7 @@ class _ConfigChip extends StatelessWidget {
                               name,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 15,
+                              style: app.styles.ml.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: colors.text.secondary,
                               ),
@@ -738,16 +729,14 @@ class _ApiKeyCreatedDialogState extends State<ApiKeyCreatedDialog> {
                         children: [
                           Text(
                             t.readyTitle(name: key.name),
-                            style: const TextStyle(
-                              fontSize: 18,
+                            style: app.styles.h4.copyWith(
                               height: 26 / 18,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
                           Text(
                             t.readyWarning,
-                            style: TextStyle(
-                              fontSize: 13,
+                            style: app.styles.m.copyWith(
                               color: colors.primary.secondary,
                             ),
                           ),
@@ -791,10 +780,7 @@ class _ApiKeyCreatedDialogState extends State<ApiKeyCreatedDialog> {
                   children: [
                     Text(
                       t.use,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: app.styles.m.copyWith(fontWeight: FontWeight.w600),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -817,10 +803,7 @@ class _ApiKeyCreatedDialogState extends State<ApiKeyCreatedDialog> {
                     ),
                     Text(
                       t.basicNote(id: key.id),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: colors.neutral.grey4,
-                      ),
+                      style: app.styles.s.copyWith(color: colors.neutral.grey4),
                     ),
                   ],
                 ),

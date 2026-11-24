@@ -332,7 +332,7 @@ class _ConfigDialogState extends State<ConfigDialog> {
             Text(
               // the service computes it on save
               _c.enabled ? t.nextRunOnSave : t.enabledOff,
-              style: TextStyle(fontSize: 12, color: colors.text.secondary),
+              style: app.styles.s.copyWith(color: colors.text.secondary),
             )
           else
             AppDateTime(time: next, alignment: CrossAxisAlignment.start),
@@ -440,7 +440,7 @@ class _ConfigDialogState extends State<ConfigDialog> {
                 : AppDateTime(
                     time: next,
                     alignment: CrossAxisAlignment.start,
-                    style: const TextStyle(fontSize: 13),
+                    style: app.styles.m,
                   ),
           ),
         ],
@@ -487,7 +487,7 @@ class _ConfigDialogState extends State<ConfigDialog> {
             Text(
               writes,
               style: missing
-                  ? TextStyle(fontSize: 12, color: colors.brand.accent)
+                  ? app.styles.s.copyWith(color: colors.brand.accent)
                   : AppText.mono.copyWith(
                       fontSize: 12,
                       color: colors.brand.accent,
@@ -526,14 +526,11 @@ class _Summary extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: app.styles.l.copyWith(fontWeight: FontWeight.w600),
                   ),
                   Text(
                     sub,
-                    style: TextStyle(fontSize: 12, color: colors.text.muted),
+                    style: app.styles.s.copyWith(color: colors.text.muted),
                   ),
                 ],
               ),
@@ -592,14 +589,12 @@ class _ReviewBlock extends StatelessWidget {
                     children: [
                       Text(
                         label,
-                        style: TextStyle(
-                          fontSize: 11,
+                        style: app.styles.xs.copyWith(
                           color: colors.text.subtle,
                         ),
                       ),
                       DefaultTextStyle.merge(
-                        style: TextStyle(
-                          fontSize: 13,
+                        style: app.styles.m.copyWith(
                           color: colors.text.primary,
                         ),
                         child: value,
@@ -724,8 +719,7 @@ class _Label extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
     text,
-    style: TextStyle(
-      fontSize: 13,
+    style: app.styles.m.copyWith(
       fontWeight: FontWeight.w600,
       color: app.colors.text.secondary,
     ),
@@ -875,7 +869,7 @@ class _Help extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      Text(text, style: TextStyle(fontSize: 12, color: app.colors.text.subtle));
+      Text(text, style: app.styles.s.copyWith(color: app.colors.text.subtle));
 }
 
 /// Read only value with its label
@@ -905,7 +899,7 @@ class _Field extends StatelessWidget {
           ),
           child: Text(
             value,
-            style: const TextStyle(fontSize: 13),
+            style: app.styles.m,
             overflow: TextOverflow.ellipsis,
           ),
         ),

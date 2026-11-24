@@ -1,23 +1,22 @@
 import 'package:console/app_exporter.dart';
-import 'package:material_ui/material_ui.dart';
 
 /// How each type of destination shows: product names, not translated
 abstract class DestinationTypeLook {
   static final Map<String, (String label, TypeLook look)> _types = {
     DestinationTypes.s3: (
       'S3',
-      TypeLook('S3', const Color(0xFFE6B77E), _logos.s3),
+      TypeLook('S3', app.colors.brand.accent, _logos.s3),
     ),
     'gdrive': (
       'Google Drive',
-      TypeLook('GD', const Color(0xFF5FD17F), _logos.gdrive),
+      TypeLook('GD', app.colors.brand.mongodb, _logos.gdrive),
     ),
     'dropbox': (
       'Dropbox',
-      TypeLook('DB', const Color(0xFF8AA8FF), _logos.dropbox),
+      TypeLook('DB', app.colors.brand.postgres, _logos.dropbox),
     ),
-    'azure': ('Azure Blob', const TypeLook('AZ', Color(0xFF8AA8FF))),
-    'sftp': ('SFTP', const TypeLook('FT', Color(0xFFD0CFD6))),
+    'azure': ('Azure Blob', TypeLook('AZ', app.colors.brand.postgres)),
+    'sftp': ('SFTP', TypeLook('FT', app.colors.brand.sftp)),
   };
 
   static const DestinationsIcons _logos = DestinationsIcons();
@@ -36,5 +35,5 @@ abstract class DestinationTypeLook {
 
   static TypeLook lookOf(String type) =>
       _types[type]?.$2 ??
-      TypeLook(type.substring(0, 2).toUpperCase(), const Color(0xFFB0AEB8));
+      TypeLook(type.substring(0, 2).toUpperCase(), app.colors.neutral.grey3);
 }

@@ -59,8 +59,7 @@ class PageHeader extends StatelessWidget {
                       TextSpan(text: title),
                     ],
                   ),
-                  style: const TextStyle(
-                    fontSize: 20,
+                  style: app.styles.h3.copyWith(
                     height: 28 / 20,
                     fontWeight: FontWeight.w700,
                   ),
@@ -79,8 +78,7 @@ class PageHeader extends StatelessWidget {
                               onTap: onTap,
                               child: Text(
                                 label,
-                                style: TextStyle(
-                                  fontSize: 13,
+                                style: app.styles.m.copyWith(
                                   color: app.colors.primary.primaryFaded,
                                   decoration: TextDecoration.underline,
                                   decorationColor:
@@ -92,8 +90,7 @@ class PageHeader extends StatelessWidget {
                         ],
                       ],
                     ),
-                    style: TextStyle(
-                      fontSize: 13,
+                    style: app.styles.m.copyWith(
                       color: app.colors.neutral.grey4,
                     ),
                   ),

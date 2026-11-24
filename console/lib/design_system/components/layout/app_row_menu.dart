@@ -101,15 +101,11 @@ class _AppRowMenuState extends State<AppRowMenu> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    item.label,
-                    style: TextStyle(fontSize: 13, color: color),
-                  ),
+                  Text(item.label, style: app.styles.m.copyWith(color: color)),
                   if (item.sub != null)
                     Text(
                       item.sub!,
-                      style: TextStyle(
-                        fontSize: 11,
+                      style: app.styles.xs.copyWith(
                         color: app.colors.neutral.grey4,
                       ),
                     ),

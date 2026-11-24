@@ -60,8 +60,7 @@ class SplashScreen extends StatelessWidget {
                   const SizedBox(height: 18),
                   Text(
                     app.intl.app.splashText,
-                    style: TextStyle(
-                      fontSize: 16,
+                    style: app.styles.xl.copyWith(
                       height: 24 / 16,
                       color: colors.neutral.grey4,
                     ),

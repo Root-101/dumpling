@@ -30,13 +30,13 @@ class AppDateTime extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style:
-              style ?? TextStyle(fontSize: 12, color: app.colors.neutral.grey3),
+              style ?? app.styles.s.copyWith(color: app.colors.neutral.grey3),
         ),
         Text(
           app.intl.time.local(time: format.format(time.toLocal())),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontSize: 11, color: app.colors.neutral.grey4),
+          style: app.styles.xs.copyWith(color: app.colors.neutral.grey4),
         ),
       ],
     );

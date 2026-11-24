@@ -620,8 +620,8 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
     final c = backup.config;
     final health = backup.health;
     final colors = app.colors;
-    final muted = TextStyle(fontSize: 12, color: colors.neutral.grey4);
-    final small = TextStyle(fontSize: 11, color: colors.neutral.grey4);
+    final muted = app.styles.s.copyWith(color: colors.neutral.grey4);
+    final small = app.styles.xs.copyWith(color: colors.neutral.grey4);
     final schedule = c.schedule;
     final last = c.lastRun;
     final next = c.nextRun;
@@ -724,9 +724,8 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
             AppDateTime(
               time: last.startedAt,
               alignment: CrossAxisAlignment.start,
-              style: const TextStyle(
-                fontSize: 13,
-                fontFeatures: [FontFeature.tabularFigures()],
+              style: app.styles.m.copyWith(
+                fontFeatures: [const FontFeature.tabularFigures()],
               ),
             ),
             Text(
@@ -745,8 +744,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
               },
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 12,
+              style: app.styles.s.copyWith(
                 color: last.status == RunStatus.failed
                     ? colors.status.error
                     : colors.neutral.grey4,
@@ -764,9 +762,8 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
             AppDateTime(
               time: next,
               alignment: CrossAxisAlignment.start,
-              style: const TextStyle(
-                fontSize: 13,
-                fontFeatures: [FontFeature.tabularFigures()],
+              style: app.styles.m.copyWith(
+                fontFeatures: [const FontFeature.tabularFigures()],
               ),
             ),
             _EverySecond(
@@ -981,8 +978,7 @@ class _SortButton extends StatelessWidget {
                     children: [
                       Text(
                         labelsOf(sort).$1,
-                        style: TextStyle(
-                          fontSize: 13,
+                        style: app.styles.m.copyWith(
                           color: sort == value
                               ? colors.neutral.white
                               : colors.neutral.grey2,
@@ -990,8 +986,7 @@ class _SortButton extends StatelessWidget {
                       ),
                       Text(
                         labelsOf(sort).$2,
-                        style: TextStyle(
-                          fontSize: 11,
+                        style: app.styles.xs.copyWith(
                           color: colors.neutral.grey4,
                         ),
                       ),
@@ -1028,7 +1023,7 @@ class _SortButton extends StatelessWidget {
                   TextSpan(text: labelsOf(value).$1),
                 ],
               ),
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              style: app.styles.l.copyWith(fontWeight: FontWeight.w500),
             ),
             Transform.rotate(
               angle: 1.5708,
@@ -1086,8 +1081,7 @@ class _RecentRuns extends StatelessWidget {
                   onPressed: onEdit,
                   child: Text(
                     t.editConfig,
-                    style: TextStyle(
-                      fontSize: 12,
+                    style: app.styles.s.copyWith(
                       color: colors.primary.primaryFaded,
                     ),
                   ),
@@ -1119,10 +1113,7 @@ class _RecentRuns extends StatelessWidget {
                     padding: const EdgeInsets.all(14),
                     child: Text(
                       t.noRuns,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: colors.neutral.grey4,
-                      ),
+                      style: app.styles.s.copyWith(color: colors.neutral.grey4),
                     ),
                   )
                 : Column(
@@ -1157,7 +1148,7 @@ class _RunLine extends StatelessWidget {
     final colors = app.colors;
     final color = RunStatusLabel.colorOf(run.status);
     final size = run.sizeBytes;
-    final text = TextStyle(fontSize: 12, color: colors.neutral.grey2);
+    final text = app.styles.s.copyWith(color: colors.neutral.grey2);
     void open() =>
         BackupsScreen.navigator.open(workspace: workspace, id: run.id);
     final location = run.location?.replaceFirst('s3://', '');
@@ -1173,8 +1164,7 @@ class _RunLine extends StatelessWidget {
               child: AppDateTime(
                 time: run.startedAt,
                 alignment: CrossAxisAlignment.start,
-                style: TextStyle(
-                  fontSize: 12,
+                style: app.styles.s.copyWith(
                   color: colors.neutral.grey1,
                   fontFeatures: const [FontFeature.tabularFigures()],
                 ),
@@ -1195,8 +1185,7 @@ class _RunLine extends StatelessWidget {
                   ),
                   Text(
                     RunStatusLabel.labelOf(run.status),
-                    style: TextStyle(
-                      fontSize: 12,
+                    style: app.styles.s.copyWith(
                       fontWeight: FontWeight.w600,
                       color: color,
                     ),
@@ -1258,7 +1247,7 @@ class _RunLine extends StatelessWidget {
                     fixedSize: const Size.fromHeight(28),
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     foregroundColor: colors.neutral.grey2,
-                    textStyle: const TextStyle(fontSize: 12),
+                    textStyle: app.styles.s,
                     side: BorderSide(color: colors.neutral.grey5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(6),

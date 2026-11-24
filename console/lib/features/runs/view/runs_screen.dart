@@ -263,7 +263,7 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
             padding: EdgeInsets.all(app.dimensions.padding.l),
             child: Text(
               t.newestOnly,
-              style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+              style: app.styles.s.copyWith(color: colors.neutral.grey4),
             ),
           ),
       ],
@@ -512,8 +512,7 @@ class _DayHeader extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(
-              fontSize: 12,
+            style: app.styles.s.copyWith(
               fontWeight: FontWeight.w600,
               color: colors.neutral.grey2,
             ),
@@ -527,7 +526,7 @@ class _DayHeader extends StatelessWidget {
               ].join(' · '),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+              style: app.styles.s.copyWith(color: colors.neutral.grey3),
             ),
           ),
         ],
@@ -610,8 +609,7 @@ class _RunRow extends StatelessWidget {
                   detail,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: app.styles.s.copyWith(
                     color: run.status == RunStatus.failed
                         ? colors.status.error
                         : colors.neutral.grey4,
@@ -631,7 +629,7 @@ class _RunRow extends StatelessWidget {
                   run.startedBy,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 11, color: colors.neutral.grey4),
+                  style: app.styles.xs.copyWith(color: colors.neutral.grey4),
                 ),
                 if (run.label case final label?) RunLabelChip(label),
               ],
@@ -641,8 +639,7 @@ class _RunRow extends StatelessWidget {
             width: 170,
             child: AppDateTime(
               time: run.startedAt,
-              style: TextStyle(
-                fontSize: 13,
+              style: app.styles.m.copyWith(
                 color: colors.neutral.grey3,
                 fontFeatures: const [FontFeature.tabularFigures()],
               ),
@@ -660,8 +657,7 @@ class _RunRow extends StatelessWidget {
                 ),
                 child: Text(
                   t.viewRun,
-                  style: TextStyle(
-                    fontSize: 13,
+                  style: app.styles.m.copyWith(
                     color: colors.primary.primaryFaded,
                     decoration: TextDecoration.underline,
                     decorationColor: colors.primary.primaryFaded,

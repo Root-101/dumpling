@@ -328,8 +328,7 @@ class _WorkspaceSwitcher extends StatelessWidget {
                           current.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 14,
+                          style: app.styles.l.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
                         ),

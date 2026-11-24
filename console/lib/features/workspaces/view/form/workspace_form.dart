@@ -207,7 +207,7 @@ class _WorkspaceFormState extends State<WorkspaceForm> {
             app.dimensions.padding.l.gap(),
             Text(
               app.intl.workspaces.color,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              style: app.styles.l.copyWith(fontWeight: FontWeight.w600),
             ),
             app.dimensions.padding.s.gap(),
             AppColorPicker(
@@ -219,7 +219,7 @@ class _WorkspaceFormState extends State<WorkspaceForm> {
             app.dimensions.padding.l.gap(),
             Text(
               app.intl.workspaces.emptyCanvas,
-              style: TextStyle(fontSize: 12, color: app.colors.neutral.grey4),
+              style: app.styles.s.copyWith(color: app.colors.neutral.grey4),
             ),
           ],
         ),

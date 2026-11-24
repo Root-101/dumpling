@@ -193,8 +193,7 @@ class _NewWorkspaceTile extends StatelessWidget {
                     app.dimensions.padding.sm.gap(),
                     Text(
                       app.intl.workspaces.create,
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: app.styles.l.copyWith(
                         color: app.colors.neutral.grey3,
                       ),
                     ),
@@ -204,8 +203,7 @@ class _NewWorkspaceTile extends StatelessWidget {
                       child: Text(
                         app.intl.workspaces.createHint,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12,
+                        style: app.styles.s.copyWith(
                           color: app.colors.neutral.grey4,
                         ),
                       ),

@@ -135,8 +135,7 @@ class DetailHeader extends StatelessWidget {
                             name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 20,
+                            style: app.styles.h3.copyWith(
                               height: 28 / 20,
                               fontWeight: FontWeight.w700,
                             ),
@@ -149,10 +148,7 @@ class DetailHeader extends StatelessWidget {
                     2.gap(),
                     Text(
                       description,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: colors.neutral.grey4,
-                      ),
+                      style: app.styles.m.copyWith(color: colors.neutral.grey4),
                     ),
                   ],
                 ),
@@ -223,8 +219,7 @@ class DetailHeader extends StatelessWidget {
           ),
           Text(
             status,
-            style: TextStyle(
-              fontSize: 12,
+            style: app.styles.s.copyWith(
               fontWeight: FontWeight.w600,
               color: statusColor,
             ),
@@ -269,15 +264,14 @@ class DetailStat extends StatelessWidget {
           children: [
             Text(
               label,
-              style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+              style: app.styles.s.copyWith(color: colors.neutral.grey3),
             ),
             Text.rich(
               TextSpan(
                 children: [
                   TextSpan(
                     text: value,
-                    style: TextStyle(
-                      fontSize: 22,
+                    style: app.styles.h2.copyWith(
                       height: 30 / 22,
                       fontWeight: FontWeight.w700,
                       fontFeatures: const [FontFeature.tabularFigures()],
@@ -287,8 +281,7 @@ class DetailStat extends StatelessWidget {
                   if (sub.isNotEmpty)
                     TextSpan(
                       text: '  $sub',
-                      style: TextStyle(
-                        fontSize: 12,
+                      style: app.styles.s.copyWith(
                         color: tone ?? colors.neutral.grey4,
                       ),
                     ),
@@ -338,8 +331,7 @@ class DetailPanel extends StatelessWidget {
 /// `FOLDERS` at the top of a [DetailPanel] and, on the right, a note or a
 /// [trailing] widget
 class DetailPanelTitle extends StatelessWidget {
-  static TextStyle get style => TextStyle(
-    fontSize: 12,
+  static TextStyle get style => app.styles.s.copyWith(
     letterSpacing: 1.2,
     fontWeight: FontWeight.w700,
     color: app.colors.primary.primaryFaded,
@@ -364,7 +356,7 @@ class DetailPanelTitle extends StatelessWidget {
           if (note != null)
             Text(
               note!,
-              style: TextStyle(fontSize: 12, color: app.colors.neutral.grey4),
+              style: app.styles.s.copyWith(color: app.colors.neutral.grey4),
             ),
           ?trailing,
         ],
@@ -410,10 +402,7 @@ class DetailFields extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: app.colors.neutral.grey4,
-                  ),
+                  style: app.styles.s.copyWith(color: app.colors.neutral.grey4),
                 ),
                 if (mono)
                   // a value of the connection (host, endpoint, bucket):
@@ -425,7 +414,7 @@ class DetailFields extends StatelessWidget {
                     ),
                   )
                 else
-                  Text(value, style: const TextStyle(fontSize: 13)),
+                  Text(value, style: app.styles.m),
               ],
             ),
           PrimaryButton.secondary(

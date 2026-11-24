@@ -133,8 +133,7 @@ class _WorkspaceCardState extends State<WorkspaceCard> {
                           _workspace.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: app.styles.xl.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -161,7 +160,7 @@ class _WorkspaceCardState extends State<WorkspaceCard> {
             description,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 12, color: app.colors.neutral.grey4),
+            style: app.styles.s.copyWith(color: app.colors.neutral.grey4),
           ),
       ],
     );
@@ -174,15 +173,14 @@ class _WorkspaceCardState extends State<WorkspaceCard> {
         children: [
           Text(
             '$value',
-            style: const TextStyle(
-              fontSize: 18,
+            style: app.styles.h4.copyWith(
               fontWeight: FontWeight.w700,
-              fontFeatures: [FontFeature.tabularFigures()],
+              fontFeatures: [const FontFeature.tabularFigures()],
             ),
           ),
           Text(
             label,
-            style: TextStyle(fontSize: 11, color: app.colors.neutral.grey4),
+            style: app.styles.xs.copyWith(color: app.colors.neutral.grey4),
           ),
         ],
       ),
@@ -207,7 +205,7 @@ class _WorkspaceCardState extends State<WorkspaceCard> {
           )
         : (app.intl.workspaces.healthy, colors.status.success);
     final lastRun = _stats.lastRunAt;
-    final activityStyle = TextStyle(fontSize: 12, color: colors.neutral.grey3);
+    final activityStyle = app.styles.s.copyWith(color: colors.neutral.grey3);
     return Row(
       children: [
         Container(
@@ -217,7 +215,7 @@ class _WorkspaceCardState extends State<WorkspaceCard> {
         ),
         app.dimensions.padding.s.gap(),
         // short (`2 failing`, `No backups yet`): whole, the time takes the rest
-        Text(text, style: TextStyle(fontSize: 12, color: color)),
+        Text(text, style: app.styles.s.copyWith(color: color)),
         app.dimensions.padding.m.gap(),
         Expanded(
           child: Align(
@@ -341,8 +339,7 @@ class _CurrentBadge extends StatelessWidget {
       ),
       child: Text(
         app.intl.workspaces.current,
-        style: TextStyle(
-          fontSize: 11,
+        style: app.styles.xs.copyWith(
           fontWeight: FontWeight.w600,
           color: app.colors.primary.primaryLight,
         ),

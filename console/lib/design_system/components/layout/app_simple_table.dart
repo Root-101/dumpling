@@ -119,7 +119,7 @@ class AppSimpleTable extends StatelessWidget {
             for (final column in columns)
               Text(
                 column.title,
-                style: TextStyle(fontSize: 12, color: app.colors.neutral.grey3),
+                style: app.styles.s.copyWith(color: app.colors.neutral.grey3),
               ),
           ]),
         ),
@@ -243,7 +243,7 @@ class AppSimpleTable extends StatelessWidget {
   }
 
   Widget _buildHint(String text) {
-    final style = TextStyle(fontSize: 12, color: app.colors.neutral.grey4);
+    final style = app.styles.s.copyWith(color: app.colors.neutral.grey4);
     return Padding(
       padding: EdgeInsets.all(app.dimensions.padding.l),
       child: Row(
@@ -278,13 +278,13 @@ class AppTablePlaceholder extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
       child: Column(
         children: [
-          Text(title, style: const TextStyle(fontSize: 16)),
+          Text(title, style: app.styles.xl),
           if (description != null) ...[
             app.dimensions.padding.s.gap(),
             Text(
               description!,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13, color: app.colors.neutral.grey4),
+              style: app.styles.m.copyWith(color: app.colors.neutral.grey4),
             ),
           ],
           app.dimensions.padding.m.gap(),

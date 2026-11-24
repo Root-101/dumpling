@@ -86,18 +86,14 @@ class ConfirmDialog extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        fontSize: 18,
+                      style: app.styles.h4.copyWith(
                         height: 26 / 18,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     Text(
                       description,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: colors.neutral.grey3,
-                      ),
+                      style: app.styles.l.copyWith(color: colors.neutral.grey3),
                     ),
                   ],
                 ),

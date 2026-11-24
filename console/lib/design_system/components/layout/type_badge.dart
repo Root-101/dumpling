@@ -115,17 +115,13 @@ class TypeTile extends StatelessWidget {
                       label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: app.styles.l.copyWith(fontWeight: FontWeight.w600),
                     ),
                     Text(
                       sub,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11,
+                      style: app.styles.xs.copyWith(
                         color: app.colors.neutral.grey4,
                       ),
                     ),
@@ -152,8 +148,7 @@ class TypeTile extends StatelessWidget {
       ),
       child: Text(
         enabled ? app.intl.common.selected : app.intl.common.soon,
-        style: TextStyle(
-          fontSize: 11,
+        style: app.styles.xs.copyWith(
           fontWeight: FontWeight.w600,
           color: enabled
               ? app.colors.primary.primaryLight

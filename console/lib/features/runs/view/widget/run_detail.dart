@@ -129,8 +129,7 @@ class _Footer extends StatelessWidget {
               },
               child: Text(
                 app.intl.backups.editConfig,
-                style: TextStyle(
-                  fontSize: 13,
+                style: app.styles.m.copyWith(
                   color: colors.primary.primaryFaded,
                   decoration: TextDecoration.underline,
                   decorationColor: colors.primary.primaryFaded,
@@ -217,8 +216,7 @@ class _Header extends StatelessWidget {
                   run.configName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 20,
+                  style: app.styles.h3.copyWith(
                     height: 28 / 20,
                     fontWeight: FontWeight.w700,
                   ),
@@ -286,7 +284,7 @@ class _Result extends StatelessWidget {
         RunStatusLabel.labelOf(run.status),
         Text(
           t.resultQueued,
-          style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+          style: app.styles.s.copyWith(color: colors.neutral.grey3),
         ),
       ),
       RunStatus.running => (
@@ -308,7 +306,7 @@ class _Result extends StatelessWidget {
             8.gap(),
             Text(
               t.resultRunning,
-              style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+              style: app.styles.s.copyWith(color: colors.neutral.grey3),
             ),
           ],
         ),
@@ -335,8 +333,7 @@ class _Result extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 13,
+                  style: app.styles.m.copyWith(
                     fontWeight: FontWeight.w600,
                     color: color,
                   ),
@@ -362,8 +359,7 @@ class _Meta extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = app.intl.runs;
     final colors = app.colors;
-    final value = TextStyle(
-      fontSize: 14,
+    final value = app.styles.l.copyWith(
       color: colors.text.primary,
       fontFeatures: const [FontFeature.tabularFigures()],
     );
@@ -374,7 +370,7 @@ class _Meta extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+            style: app.styles.s.copyWith(color: colors.neutral.grey4),
           ),
           2.gap(),
           child,
@@ -405,7 +401,7 @@ class _Meta extends StatelessWidget {
               if (run.byApi)
                 Text(
                   [?run.keyName, ?run.label].join(' · '),
-                  style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+                  style: app.styles.s.copyWith(color: colors.neutral.grey4),
                 ),
             ],
           ),
@@ -477,8 +473,7 @@ class _Steps extends StatelessWidget {
                       children: [
                         Text(
                           labels[i],
-                          style: TextStyle(
-                            fontSize: 14,
+                          style: app.styles.l.copyWith(
                             color: _pending(step.state)
                                 ? colors.neutral.grey4
                                 : colors.text.primary,
@@ -487,8 +482,7 @@ class _Steps extends StatelessWidget {
                         if (_subOf(step) case final sub?)
                           Text(
                             sub,
-                            style: TextStyle(
-                              fontSize: 12,
+                            style: app.styles.s.copyWith(
                               color: colors.neutral.grey4,
                               fontFeatures: const [
                                 FontFeature.tabularFigures(),
@@ -588,7 +582,7 @@ class _Log extends StatelessWidget {
                   ),
                   label: Text(
                     t.copyLog,
-                    style: TextStyle(fontSize: 12, color: colors.neutral.grey2),
+                    style: app.styles.s.copyWith(color: colors.neutral.grey2),
                   ),
                 ),
             ],
@@ -620,7 +614,7 @@ class _Log extends StatelessWidget {
                           run.status == RunStatus.queued
                       ? t.logWhenDone
                       : t.noLog,
-                  style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+                  style: app.styles.s.copyWith(color: colors.neutral.grey3),
                 )
               // selectable, to copy a few lines (the button copies it all)
               : SelectionArea(
@@ -667,8 +661,7 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text.toUpperCase(),
-      style: TextStyle(
-        fontSize: 12,
+      style: app.styles.s.copyWith(
         letterSpacing: 1.2,
         fontWeight: FontWeight.w700,
         color: app.colors.primary.primaryFaded,

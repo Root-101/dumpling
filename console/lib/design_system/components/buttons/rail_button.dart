@@ -58,8 +58,7 @@ class RailButton extends StatelessWidget {
                       label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: app.styles.l.copyWith(
                         fontWeight: selected
                             ? FontWeight.w600
                             : FontWeight.w500,
@@ -130,8 +129,7 @@ class RailBadge extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         '$count',
-        style: TextStyle(
-          fontSize: 10,
+        style: app.styles.xxs.copyWith(
           height: 1,
           fontWeight: FontWeight.w700,
           color: app.colors.primary.background1,

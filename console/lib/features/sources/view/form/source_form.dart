@@ -566,7 +566,7 @@ class _SourceFormState extends State<SourceForm> {
           padding: const EdgeInsets.only(top: 6),
           child: Text(
             error,
-            style: TextStyle(fontSize: 12, color: app.colors.primary.error),
+            style: app.styles.s.copyWith(color: app.colors.primary.error),
           ),
         ),
     ];
@@ -594,14 +594,14 @@ class _SourceFormState extends State<SourceForm> {
       if (_serverErrors[SourceFormField.sslMode] case final error?)
         Text(
           error,
-          style: TextStyle(fontSize: 12, color: app.colors.primary.error),
+          style: app.styles.s.copyWith(color: app.colors.primary.error),
         )
       else if (disabled)
         AppFieldWarning(t.sslDisableWarning)
       else
         Text(
           t.sslRequireHelp,
-          style: TextStyle(fontSize: 12, color: app.colors.text.secondary),
+          style: app.styles.s.copyWith(color: app.colors.text.secondary),
         ),
     ];
   }
@@ -677,10 +677,8 @@ class _SourceFormState extends State<SourceForm> {
     );
   }
 
-  Widget _label(String text) => Text(
-    text,
-    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-  );
+  Widget _label(String text) =>
+      Text(text, style: app.styles.l.copyWith(fontWeight: FontWeight.w600));
 }
 
 /// Two or more choices in one control, like *Fields · Connection URL*
@@ -727,8 +725,7 @@ class _Segmented extends StatelessWidget {
                           option,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 13,
+                          style: app.styles.m.copyWith(
                             fontWeight: index == selected
                                 ? FontWeight.w600
                                 : FontWeight.w400,
