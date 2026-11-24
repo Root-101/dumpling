@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.8
 
 - When the service can't be reached, the errors say *Can't reach the Dumpling service at …*
   with its URL, not that the internet connection failed.
@@ -23,6 +23,10 @@
 - A run that wrote nothing (it failed connecting) shows its size as *—*, not *0 B*.
 - Reads `expire_at` of the sign-in as ISO 8601, as the service now writes it.
 - When the console can't start, it says so with «Try again» instead of staying on the splash.
+- The button that shows the password says what it does to a screen reader.
+- The lists of sources, destinations, backups and workspaces reload when the canvas is saved
+  or a run started from it ends, without leaving the screen.
+- Loads four weights of DM Sans instead of eighteen files: a lighter first load.
 
 ## 0.1.7
 

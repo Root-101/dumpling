@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.8
 
 - CORS exposes `Retry-After`, so the console (on another origin in development) can say how long
   a locked sign-in waits.
