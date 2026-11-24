@@ -19,10 +19,17 @@ client) is needed to run backups locally, and Docker for the image and the end-t
 
 ## How the code is organized
 
+Each package follows a house standard, a skill that also serves other projects:
+`winter-service-standard` (the service) and `flutter-app-standard` (the console). Where Dumpling
+differs on purpose, it says so in [Exceptions to the standards](#exceptions-to-the-standards).
+
 - **Service**: a feature is `controller/` → `logic/service/` → `repo/` (drift), with its models in
-  `logic/model/`; only controllers know about HTTP. Errors are Problem Details (RFC 9457) with
-  translated messages (`lib/i18n/*.i18n.yaml`, both languages; `fvm dart run slang` after editing
-  them). Variables of the environment are read only in `lib/config/extended_env.dart`.
+  `logic/model/`, all registered in `lib/config/dependencies.dart`; only controllers know about
+  HTTP, and repos take named values (never drift companions from outside). Errors are Problem
+  Details (RFC 9457) with a stable `code` (`ErrorCode`, the i18n key without `errors.`) and a
+  translated `detail` (`lib/i18n/*.i18n.yaml`, both languages; `fvm dart run slang` after editing
+  them). Variables of the environment are read only in `lib/config/extended_env.dart`; times are
+  `utcNow()` and written with `toJsonDate()`.
 - **Sources and destinations are drivers**: a new database is a `SourceDriver` (`testConnection`,
   `dump` as a byte stream) and a new storage a `DestinationDriver` (`testConnection`, `upload` from
   a stream), registered by type. Nothing else should need to change.
@@ -46,6 +53,14 @@ client) is needed to run backups locally, and Docker for the image and the end-t
   then its export regenerated ([`docs/design/`](docs/design/README.md): the screens and the PDF),
   [`docs/console.md`](docs/console.md) updated, and what was built compared in the browser with
   the canvas, screen by screen (texts, steps, states), until they match.
+
+## Exceptions to the standards
+
+| Package | Rule of the standard                        | Here, and why                                                                                       |
+|---------|---------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| Service | Repos are `XTableRepo`, one per table       | `CanvasRepo` keeps the positions of the nodes of three tables: the canvas is one document (DECISIONS) |
+| Service | Migrations once released                    | None in 0.x: a schema change edits the tables and the file is created again (🔴 in the README)        |
+| Service | `HEALTHCHECK` in the image                  | The slim image has no HTTP client: the orchestrator or compose checks `/api/health`                 |
 
 ## Tests
 
