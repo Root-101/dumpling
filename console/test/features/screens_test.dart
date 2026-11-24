@@ -237,6 +237,8 @@ void main() {
         GlobalException(
           type: GlobalExceptionType.auth,
           message: 'Wrong username or password',
+          statusCode: 401,
+          errorCode: ApiErrorCode.authInvalidCredentials,
         ),
       ),
     );

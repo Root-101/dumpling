@@ -103,7 +103,7 @@ class _WorkspaceFormState extends State<WorkspaceForm> {
           setState(() {
             _serverErrors = state.fieldErrors;
             _formError = state.fieldErrors.isEmpty
-                ? state.exception.message
+                ? state.exception.intlMessage
                 : null;
           });
         }

@@ -311,7 +311,7 @@ class _DestinationFormState extends State<DestinationForm> {
           setState(() {
             _serverErrors = state.fieldErrors;
             _formError = state.fieldErrors.isEmpty
-                ? state.exception.message
+                ? state.exception.intlMessage
                 : null;
             final fields = state.fieldErrors.keys;
             if (fields.contains(DestinationFormField.type) ||

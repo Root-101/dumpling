@@ -150,7 +150,7 @@ class _SessionExpiredDialogState extends State<SessionExpiredDialog> {
                     if (state is AuthProcessingErrorState) ...[
                       16.gap(),
                       AppFormAlert(
-                        title: state.exception.message,
+                        title: state.exception.intlMessage,
                         message: loginErrorHint(state.exception),
                       ),
                     ],

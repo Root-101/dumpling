@@ -120,7 +120,7 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
     } catch (e) {
       emit(
         ApiKeyProcessingErrorState(
-          ExceptionConverter.parse(e).message,
+          ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
       );
@@ -151,7 +151,7 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
     } catch (e) {
       emit(
         ApiKeyProcessingErrorState(
-          ExceptionConverter.parse(e).message,
+          ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
       );
@@ -174,7 +174,7 @@ class ApiKeyCubit extends Cubit<ApiKeyState> {
       if (state.data.workspace != before.workspace) return;
       emit(
         ApiKeyProcessingErrorState(
-          ExceptionConverter.parse(e).message,
+          ExceptionConverter.parse(e).intlMessage,
           data: before,
         ),
       );

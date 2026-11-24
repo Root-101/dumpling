@@ -36,7 +36,7 @@ class ErrorPage extends StatelessWidget {
             onRetry?.call();
           },
         ),
-        _ => ErrorPage(message: exception.message, onRetry: onRetry),
+        _ => ErrorPage(message: exception.intlMessage, onRetry: onRetry),
       };
 
   @override

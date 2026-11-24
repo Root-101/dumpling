@@ -175,7 +175,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
     if (state is WorkspaceFormProcessingErrorState) {
       setState(() {
         _serverErrors = state.fieldErrors;
-        _formError = state.fieldErrors.isEmpty ? state.exception.message : null;
+        _formError = state.fieldErrors.isEmpty ? state.exception.intlMessage : null;
         if (_serverErrors.keys.any((k) => k.startsWith('defaults.'))) {
           _tab = _Tab.defaults;
         } else if (_serverErrors.isNotEmpty) {

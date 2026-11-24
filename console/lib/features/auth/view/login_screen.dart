@@ -213,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (state is AuthProcessingErrorState) ...[
                     18.gap(),
                     AppFormAlert(
-                      title: state.exception.message,
+                      title: state.exception.intlMessage,
                       message: loginErrorHint(state.exception),
                     ),
                   ],
@@ -258,16 +258,21 @@ class _LoginScreenState extends State<LoginScreen> {
 }
 
 /// Under the error of a sign-in: what to check, or how long a lock lasts
-String? loginErrorHint(GlobalException exception) => switch (exception.type) {
-  GlobalExceptionType.auth => app.intl.login.failedHint,
-  GlobalExceptionType.tooManyRequests => switch (exception.data) {
-    final Duration left => app.intl.login.retryIn(
-      minutes: (left.inSeconds / 60).ceil(),
-    ),
-    _ => null,
-  },
-  _ => null,
-};
+/// (decided on the service's code, never on its text)
+String? loginErrorHint(GlobalException exception) {
+  if (exception.hasCode(ApiErrorCode.authInvalidCredentials)) {
+    return app.intl.login.failedHint;
+  }
+  if (exception.hasCode(ApiErrorCode.authTooManyLoginAttempts)) {
+    return switch (exception.data) {
+      final Duration left => app.intl.login.retryIn(
+        minutes: (left.inSeconds / 60).ceil(),
+      ),
+      _ => null,
+    };
+  }
+  return null;
+}
 
 /// Where the user comes from: the names of the variables in monospace
 class _EnvHint extends StatelessWidget {

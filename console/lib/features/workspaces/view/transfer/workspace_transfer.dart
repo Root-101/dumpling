@@ -31,7 +31,7 @@ abstract final class WorkspaceExport {
       final context = app.context;
       if (!context.mounted) return;
       app.snack.showError(
-        message: ExceptionConverter.parse(e).message,
+        message: ExceptionConverter.parse(e).intlMessage,
         context: context,
       );
     }
@@ -153,7 +153,7 @@ class WorkspaceImportDialog extends StatefulWidget {
           final List<ValidationError> errors when errors.isNotEmpty => {
             for (final v in errors) v.message,
           }.join('\n'),
-          _ => exception.message,
+          _ => exception.intlMessage,
         },
       );
     }

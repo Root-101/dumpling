@@ -101,7 +101,7 @@ class BackupCubit extends Cubit<BackupState> {
       if (state.data.workspace != before.workspace) return;
       emit(
         BackupProcessingErrorState(
-          ExceptionConverter.parse(e).message,
+          ExceptionConverter.parse(e).intlMessage,
           data: before,
         ),
       );
@@ -130,7 +130,7 @@ class BackupCubit extends Cubit<BackupState> {
       if (isClosed || state.data.workspace != workspace) return;
       emit(
         BackupProcessingErrorState(
-          ExceptionConverter.parse(e).message,
+          ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
       );
@@ -148,7 +148,7 @@ class BackupCubit extends Cubit<BackupState> {
         token: _token,
       );
     } catch (e) {
-      return ExceptionConverter.parse(e).message;
+      return ExceptionConverter.parse(e).intlMessage;
     }
     if (isClosed || state.data.workspace != workspace) return null;
     emit(BackupSavedState(config.name, data: state.data));
@@ -182,7 +182,7 @@ class BackupCubit extends Cubit<BackupState> {
       if (isClosed || state.data.workspace != workspace) return;
       emit(
         BackupProcessingErrorState(
-          ExceptionConverter.parse(e).message,
+          ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
       );
@@ -218,7 +218,7 @@ class BackupCubit extends Cubit<BackupState> {
       if (isClosed || state.data.workspace != workspace) return;
       emit(
         BackupProcessingErrorState(
-          ExceptionConverter.parse(e).message,
+          ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
       );

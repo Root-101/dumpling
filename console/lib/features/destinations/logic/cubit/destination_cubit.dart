@@ -101,7 +101,7 @@ class DestinationCubit extends Cubit<DestinationState> {
       if (state.data.workspace != workspace) return;
       emit(
         DestinationProcessingErrorState(
-          ExceptionConverter.parse(e).message,
+          ExceptionConverter.parse(e).intlMessage,
           data: state.data.withTesting(destination.id, false),
         ),
       );
@@ -172,7 +172,7 @@ class DestinationCubit extends Cubit<DestinationState> {
       if (state.data.workspace != before.workspace) return;
       emit(
         DestinationProcessingErrorState(
-          ExceptionConverter.parse(e).message,
+          ExceptionConverter.parse(e).intlMessage,
           data: before,
         ),
       );
@@ -227,7 +227,7 @@ class DestinationCubit extends Cubit<DestinationState> {
     } catch (e) {
       emit(
         DestinationProcessingErrorState(
-          ExceptionConverter.parse(e).message,
+          ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
       );

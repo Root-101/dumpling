@@ -220,7 +220,7 @@ class _SourceFormState extends State<SourceForm> {
           setState(() {
             _serverErrors = state.fieldErrors;
             _formError = state.fieldErrors.isEmpty
-                ? state.exception.message
+                ? state.exception.intlMessage
                 : null;
             // back to the step of the field the service refused
             final fields = state.fieldErrors.keys;

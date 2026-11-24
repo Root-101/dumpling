@@ -50,7 +50,7 @@ class RunCubit extends Cubit<RunState> {
     } catch (e) {
       emit(
         RunProcessingErrorState(
-          ExceptionConverter.parse(e).message,
+          ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
       );
@@ -79,7 +79,7 @@ class RunCubit extends Cubit<RunState> {
       if (state.data.workspace != workspace) return;
       emit(
         RunProcessingErrorState(
-          ExceptionConverter.parse(e).message,
+          ExceptionConverter.parse(e).intlMessage,
           data: state.data,
         ),
       );

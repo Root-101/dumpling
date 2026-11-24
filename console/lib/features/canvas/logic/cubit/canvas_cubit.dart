@@ -112,7 +112,7 @@ class CanvasCubit extends Cubit<CanvasState> {
     if (exception.type != GlobalExceptionType.validation ||
         errors is! List<ValidationError> ||
         errors.isEmpty) {
-      return exception.message;
+      return exception.intlMessage;
     }
     final request = _data.toRequest().toJson();
     final node = RegExp(r'^(sources|destinations|configs)\[(\d+)\]');
@@ -150,7 +150,7 @@ class CanvasCubit extends Cubit<CanvasState> {
       try {
         return CanvasCheck(name, check: await test());
       } catch (e) {
-        return CanvasCheck(name, error: ExceptionConverter.parse(e).message);
+        return CanvasCheck(name, error: ExceptionConverter.parse(e).intlMessage);
       }
     }
 
@@ -206,7 +206,7 @@ class CanvasCubit extends Cubit<CanvasState> {
       if (isClosed || _data.workspace != workspace) return;
       emit(
         CanvasProcessingErrorState(
-          ExceptionConverter.parse(e).message,
+          ExceptionConverter.parse(e).intlMessage,
           data: _data,
         ),
       );
