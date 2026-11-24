@@ -128,8 +128,6 @@ class AppTexts$common$es implements AppTexts$common$en {
   @override
   String get tryAgain => 'Reintentar';
   @override
-  String get noData => 'Sin datos';
-  @override
   String get cancel => 'Cancelar';
   @override
   String get close => 'Cerrar';
@@ -231,15 +229,11 @@ class AppTexts$errors$es implements AppTexts$errors$en {
   @override
   String get badCertificate => 'Certificado inválido';
   @override
-  String get connection => 'Error de conexión';
-  @override
   String get validation => 'Error de validación';
   @override
   String get server => 'Error del servidor';
   @override
   String get unknown => 'Error desconocido';
-  @override
-  String get notFoundTitle => 'No encontrado';
   @override
   String get pageNotFound => 'Esta página no existe.';
   @override
@@ -1059,10 +1053,6 @@ class AppTexts$runs$es implements AppTexts$runs$en {
   @override
   String get columnStatus => 'Estado';
   @override
-  String get columnSource => 'Origen';
-  @override
-  String get columnDestination => 'Destino';
-  @override
   String get columnStarted => 'Inicio';
   @override
   String get columnDuration => 'Duración';
@@ -1188,8 +1178,6 @@ class AppTexts$backups$es implements AppTexts$backups$en {
   String get failingSub => 'requieren atención';
   @override
   String get paused => 'Pausado';
-  @override
-  String get nextBackup => 'Próximo backup';
   @override
   String get nextBackupIn => 'Próximo backup en';
   @override
@@ -1382,8 +1370,6 @@ class AppTexts$apiKeys$es implements AppTexts$apiKeys$en {
   String get filterPermission => 'Permiso';
   @override
   String get unlimited => 'Todas las configs';
-  @override
-  String get eyebrow => 'API KEY';
   @override
   String get newTitle => 'Nueva API key';
   @override
@@ -1929,12 +1915,6 @@ class AppTexts$canvas$run$es implements AppTexts$canvas$run$en {
   @override
   String get button => 'Ejecutar ahora';
   @override
-  String get help =>
-      'Ejecuta este backup ahora, de verdad, tal como está guardado: los cambios sin guardar no se usan.';
-  @override
-  String get needsSave =>
-      'Guarda el canvas primero: una ejecución usa la config guardada.';
-  @override
   String done({required String name, required String size}) =>
       'Backup ${name} terminado: ${size}';
   @override
@@ -2170,7 +2150,6 @@ extension on AppTextsEs {
           'common.loading' => 'Cargando',
           'common.error' => 'Error',
           'common.tryAgain' => 'Reintentar',
-          'common.noData' => 'Sin datos',
           'common.cancel' => 'Cancelar',
           'common.close' => 'Cerrar',
           'common.required' => 'Requerido',
@@ -2226,11 +2205,9 @@ extension on AppTextsEs {
           'errors.sendTimeout' =>
             'Tiempo de espera agotado al enviar datos al servidor',
           'errors.badCertificate' => 'Certificado inválido',
-          'errors.connection' => 'Error de conexión',
           'errors.validation' => 'Error de validación',
           'errors.server' => 'Error del servidor',
           'errors.unknown' => 'Error desconocido',
-          'errors.notFoundTitle' => 'No encontrado',
           'errors.pageNotFound' => 'Esta página no existe.',
           'errors.pageMissing' => 'Esta página no existe',
           'errors.pageMissingHint' => 'El backup, el origen o el workspace pueden haberse borrado, o el enlace está mal.',
@@ -2933,12 +2910,6 @@ extension on AppTextsEs {
           'canvas.testRun.nothing' =>
             'Nada que probar: primero conecta un origen a un destino.',
           'canvas.run.button' => 'Ejecutar ahora',
-          _ => null,
-        } ??
-        switch (path) {
-          'canvas.run.help' => 'Ejecuta este backup ahora, de verdad, tal como está guardado: los cambios sin guardar no se usan.',
-          'canvas.run.needsSave' =>
-            'Guarda el canvas primero: una ejecución usa la config guardada.',
           'canvas.run.done' => ({
             required String name,
             required String size,
@@ -2948,6 +2919,9 @@ extension on AppTextsEs {
             required String error,
           }) => 'Backup ${name} falló: ${error}',
           'canvas.guide.title' => 'Tu primer backup',
+          _ => null,
+        } ??
+        switch (path) {
           'canvas.guide.source' => 'Agrega un origen',
           'canvas.guide.sourceHelp' => 'La base de datos a respaldar.',
           'canvas.guide.destination' => 'Agrega un destino',
@@ -2960,8 +2934,6 @@ extension on AppTextsEs {
           'runs.description' => 'Cada ejecución de backup de este workspace: programada, manual o por la API. Horas en UTC, tu hora local debajo.',
           'runs.search' => 'Buscar por backup, origen o destino',
           'runs.columnStatus' => 'Estado',
-          'runs.columnSource' => 'Origen',
-          'runs.columnDestination' => 'Destino',
           'runs.columnStarted' => 'Inicio',
           'runs.columnDuration' => 'Duración',
           'runs.columnSize' => 'Tamaño',
@@ -3042,7 +3014,6 @@ extension on AppTextsEs {
           'backups.failing' => 'Con fallas',
           'backups.failingSub' => 'requieren atención',
           'backups.paused' => 'Pausado',
-          'backups.nextBackup' => 'Próximo backup',
           'backups.nextBackupIn' => 'Próximo backup en',
           'backups.nothingScheduled' => 'Nada programado',
           'backups.updatingIn' => ({
@@ -3161,7 +3132,6 @@ extension on AppTextsEs {
           'apiKeys.filterConfig' => 'Config',
           'apiKeys.filterPermission' => 'Permiso',
           'apiKeys.unlimited' => 'Todas las configs',
-          'apiKeys.eyebrow' => 'API KEY',
           'apiKeys.newTitle' => 'Nueva API key',
           'apiKeys.editTitle' => ({required Object name}) => 'Editar ${name}',
           'apiKeys.name' => 'Nombre',

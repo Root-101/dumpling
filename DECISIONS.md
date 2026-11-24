@@ -117,6 +117,7 @@ for all of them and has no daylight-saving jumps (a local 02:30 can happen twice
 | Their multipart upload is aborted at start-up             | The run keeps its upload id (`pending_upload`): parts left behind are billed until aborted                 |
 | The log of a run is written when it ends                  | One write per run instead of one per line; while it runs, its size and location already show the progress |
 | The run log lists the 200 newest runs                     | Enough for months of daily backups in a workspace, in one request; paging when someone needs more         |
+| The error of a run is kept as the tool said it, in English | A run has no request to take a language from, and `pg_dump` or the S3 server answer in their own words   |
 
 ## 12. Authentication: one admin, a 12 h token
 

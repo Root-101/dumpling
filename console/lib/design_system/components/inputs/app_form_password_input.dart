@@ -58,6 +58,10 @@ class _AppFormPasswordInputState extends State<AppFormPasswordInput> {
               : Icons.visibility_outlined,
           color: app.colors.neutral.grey3,
           size: 20,
+          // what the button does, for a screen reader
+          semanticLabel: _obscureText
+              ? app.intl.auth.showPassword
+              : app.intl.auth.hidePassword,
         ),
       ),
     );

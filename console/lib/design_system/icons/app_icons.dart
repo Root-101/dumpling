@@ -58,8 +58,6 @@ class NavigationIcons {
 
   static const String _navigation = 'assets/icons/navigation';
 
-  SvgAsset get backups => const SvgAsset('$_navigation/backups.svg');
-
   SvgAsset get pipeline => const SvgAsset('$_navigation/pipeline.svg');
 
   SvgAsset get events => const SvgAsset('$_navigation/events.svg');

@@ -118,9 +118,6 @@ class AppTexts$common$en {
   /// en: 'Try again'
   String get tryAgain => 'Try again';
 
-  /// en: 'No data'
-  String get noData => 'No data';
-
   /// en: 'Cancel'
   String get cancel => 'Cancel';
 
@@ -257,9 +254,6 @@ class AppTexts$errors$en {
   /// en: 'Bad certificate'
   String get badCertificate => 'Bad certificate';
 
-  /// en: 'Connection error'
-  String get connection => 'Connection error';
-
   /// en: 'Validation error'
   String get validation => 'Validation error';
 
@@ -268,9 +262,6 @@ class AppTexts$errors$en {
 
   /// en: 'Unknown error'
   String get unknown => 'Unknown error';
-
-  /// en: 'Not found'
-  String get notFoundTitle => 'Not found';
 
   /// en: 'This page does not exist.'
   String get pageNotFound => 'This page does not exist.';
@@ -1378,12 +1369,6 @@ class AppTexts$runs$en {
   /// en: 'Status'
   String get columnStatus => 'Status';
 
-  /// en: 'Source'
-  String get columnSource => 'Source';
-
-  /// en: 'Destination'
-  String get columnDestination => 'Destination';
-
   /// en: 'Started'
   String get columnStarted => 'Started';
 
@@ -1558,9 +1543,6 @@ class AppTexts$backups$en {
 
   /// en: 'Paused'
   String get paused => 'Paused';
-
-  /// en: 'Next backup'
-  String get nextBackup => 'Next backup';
 
   /// en: 'Next backup in'
   String get nextBackupIn => 'Next backup in';
@@ -1839,9 +1821,6 @@ class AppTexts$apiKeys$en {
 
   /// en: 'Every config'
   String get unlimited => 'Every config';
-
-  /// en: 'API KEY'
-  String get eyebrow => 'API KEY';
 
   /// en: 'New API key'
   String get newTitle => 'New API key';
@@ -2548,13 +2527,6 @@ class AppTexts$canvas$run$en {
   /// en: 'Run now'
   String get button => 'Run now';
 
-  /// en: 'Runs this backup now, for real, as it is saved: the edits not saved yet are not used.'
-  String get help =>
-      'Runs this backup now, for real, as it is saved: the edits not saved yet are not used.';
-
-  /// en: 'Save the canvas first: a run uses the saved config.'
-  String get needsSave => 'Save the canvas first: a run uses the saved config.';
-
   /// en: 'Backup {name: String} done: {size: String}'
   String done({required String name, required String size}) =>
       'Backup ${name} done: ${size}';
@@ -2851,7 +2823,6 @@ extension on AppTexts {
           'common.loading' => 'Loading',
           'common.error' => 'Error',
           'common.tryAgain' => 'Try again',
-          'common.noData' => 'No data',
           'common.cancel' => 'Cancel',
           'common.close' => 'Close',
           'common.required' => 'Required',
@@ -2905,11 +2876,9 @@ extension on AppTexts {
             'Receive timeout in connection with API server',
           'errors.sendTimeout' => 'Send timeout with API server',
           'errors.badCertificate' => 'Bad certificate',
-          'errors.connection' => 'Connection error',
           'errors.validation' => 'Validation error',
           'errors.server' => 'Server error',
           'errors.unknown' => 'Unknown error',
-          'errors.notFoundTitle' => 'Not found',
           'errors.pageNotFound' => 'This page does not exist.',
           'errors.pageMissing' => 'This page doesn’t exist',
           'errors.pageMissingHint' => 'The backup, source or workspace may have been deleted, or the link is wrong.',
@@ -3598,12 +3567,6 @@ extension on AppTexts {
           'canvas.testRun.nothing' =>
             'Nothing to test: connect a source to a destination first.',
           'canvas.run.button' => 'Run now',
-          _ => null,
-        } ??
-        switch (path) {
-          'canvas.run.help' => 'Runs this backup now, for real, as it is saved: the edits not saved yet are not used.',
-          'canvas.run.needsSave' =>
-            'Save the canvas first: a run uses the saved config.',
           'canvas.run.done' => ({
             required String name,
             required String size,
@@ -3613,6 +3576,9 @@ extension on AppTexts {
             required String error,
           }) => 'Backup ${name} failed: ${error}',
           'canvas.guide.title' => 'Your first backup',
+          _ => null,
+        } ??
+        switch (path) {
           'canvas.guide.source' => 'Add a source',
           'canvas.guide.sourceHelp' => 'The database to back up.',
           'canvas.guide.destination' => 'Add a destination',
@@ -3625,8 +3591,6 @@ extension on AppTexts {
           'runs.description' => 'Every backup run in this workspace: scheduled, manual or through the API. Times in UTC, your local time below.',
           'runs.search' => 'Search by backup, source or destination',
           'runs.columnStatus' => 'Status',
-          'runs.columnSource' => 'Source',
-          'runs.columnDestination' => 'Destination',
           'runs.columnStarted' => 'Started',
           'runs.columnDuration' => 'Duration',
           'runs.columnSize' => 'Size',
@@ -3707,7 +3671,6 @@ extension on AppTexts {
           'backups.failing' => 'Failing',
           'backups.failingSub' => 'need attention',
           'backups.paused' => 'Paused',
-          'backups.nextBackup' => 'Next backup',
           'backups.nextBackupIn' => 'Next backup in',
           'backups.nothingScheduled' => 'Nothing scheduled',
           'backups.updatingIn' => ({
@@ -3819,7 +3782,6 @@ extension on AppTexts {
           'apiKeys.filterConfig' => 'Config',
           'apiKeys.filterPermission' => 'Permission',
           'apiKeys.unlimited' => 'Every config',
-          'apiKeys.eyebrow' => 'API KEY',
           'apiKeys.newTitle' => 'New API key',
           'apiKeys.editTitle' => ({required String name}) => 'Edit ${name}',
           'apiKeys.name' => 'Name',
