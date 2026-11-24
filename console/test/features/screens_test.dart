@@ -837,8 +837,12 @@ void main() {
     whenListen(runs, states.stream, initialState: loaded);
     when(() => runs.runAgain(any(), workspace: any(named: 'workspace')))
         .thenAnswer((_) async {
-          // the state of the action, while the URL still names the run
-          states.add(RunsRunningAgainState(run('r2'), data: loaded.data));
+          // the action and the search after it, while the URL still names
+          // the run
+          states
+            ..add(RunsRunningAgainState(run('r2'), data: loaded.data))
+            ..add(RunsSearchingState(data: loaded.data))
+            ..add(RunsSearchOkState(data: loaded.data));
           return true;
         });
     await pumpApp(tester);

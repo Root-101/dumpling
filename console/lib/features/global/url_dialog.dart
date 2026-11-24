@@ -7,6 +7,10 @@ import 'package:material_ui/material_ui.dart';
 mixin UrlDialog<T extends StatefulWidget> on State<T> {
   String? _shown;
 
+  /// The dialog that just closed, while the URL still names it: what it
+  /// started (Run again, a delete) may change the state before the URL does
+  String? _closed;
+
   /// The URL of the screen while its dialog is open (`…/sources`)
   String? _screen;
 
@@ -47,6 +51,8 @@ mixin UrlDialog<T extends StatefulWidget> on State<T> {
     required Future<bool> Function(String id) show,
     required VoidCallback leave,
   }) {
+    if (id != null && id == _closed) return;
+    _closed = null;
     if (id == _shown) return;
     // another id by hand in the URL: its dialog replaces the one open
     final replacing = _shown != null && id != null;
@@ -73,6 +79,7 @@ mixin UrlDialog<T extends StatefulWidget> on State<T> {
       if (_shown != id || !mounted) return;
       _shown = null;
       _screen = null;
+      _closed = id;
       if (!found) {
         app.snack.showError(
           message: app.intl.errors.pageNotFound,
