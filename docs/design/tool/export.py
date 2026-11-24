@@ -70,6 +70,7 @@ SCREENS = [
     ('Navigation', 'rail-expanded', 'Proposal-A', 'The rail, expanded', 'menu=Expanded'),
     ('Loading', 'loading', 'Backups', 'A screen while it loads: a skeleton of itself', 'state=Loading'),
     ('Loading', 'splash', 'Splash', 'The console while it starts'),
+    ('Loading', 'init-error', 'Splash', 'The console when it could not start', 'state=Couldn’t start'),
 ]
 
 # (file name, artboard): the brand images, at their size on the canvas
