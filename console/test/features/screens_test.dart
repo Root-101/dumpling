@@ -67,7 +67,7 @@ void main() {
     whenListen(
       workspaces,
       const Stream<WorkspacesState>.empty(),
-      initialState: WorkspacesLoadingSuccessState(
+      initialState: WorkspacesSearchOkState(
         data: const WorkspacesData.empty()
             .withList([
               workspace(
@@ -135,7 +135,7 @@ void main() {
     whenListen(
       backups,
       const Stream<BackupsState>.empty(),
-      initialState: BackupsLoadingSuccessState(
+      initialState: BackupsSearchOkState(
         data: const BackupsData.empty('production').withCanvas(backupCanvas()),
       ),
     );
@@ -462,7 +462,7 @@ void main() {
       whenListen(
         backups,
         const Stream<BackupsState>.empty(),
-        initialState: BackupsLoadingErrorState(
+        initialState: BackupsSearchErrorState(
           GlobalException(type: GlobalExceptionType.offline, message: ''),
           data: const BackupsData.empty('production').withCanvas(backupCanvas()),
         ),
@@ -490,7 +490,7 @@ void main() {
     whenListen(
       backups,
       const Stream<BackupsState>.empty(),
-      initialState: BackupsLoadingInProgressState(
+      initialState: BackupsSearchingState(
         data: const BackupsData.empty('production').withCanvas(backupCanvas()),
       ),
     );
@@ -853,7 +853,7 @@ void main() {
     whenListen(
       backups,
       const Stream<BackupsState>.empty(),
-      initialState: const BackupsLoadingInProgressState(
+      initialState: const BackupsSearchingState(
         data: BackupsData.empty('production'),
       ),
     );
@@ -867,7 +867,7 @@ void main() {
     whenListen(
       workspaces,
       const Stream<WorkspacesState>.empty(),
-      initialState: const WorkspacesLoadingInProgressState(
+      initialState: const WorkspacesSearchingState(
         data: WorkspacesData.empty(),
       ),
     );

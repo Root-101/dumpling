@@ -32,10 +32,10 @@ void main() {
 
   Future<BackupsCubit> loaded() async {
     final cubit = BackupsCubit(
-      repo,
-      configs,
-      runs,
-      auth,
+      auth: auth,
+      repo: repo,
+      configs: configs,
+      runs: runs,
       pollEvery: Duration.zero,
     );
     await cubit.load('production');
@@ -166,7 +166,7 @@ void main() {
     await sub.cancel();
 
     expect(states.first.data.backups[1].health, BackupHealth.running);
-    expect(cubit.state, isA<BackupsRunFinishedState>());
+    expect(cubit.state, isA<BackupsRanNowOkState>());
     expect(cubit.state.data.backups[1].health, BackupHealth.healthy);
   });
 }

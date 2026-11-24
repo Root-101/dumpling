@@ -13,7 +13,7 @@ enum _Tab { general, defaults, danger }
 class WorkspaceSettings extends StatefulWidget {
   /// Opens the dialog with its own [WorkspaceFormCubit]
   static Future<void> open(BuildContext context, WorkspaceModel workspace) {
-    final cubit = WorkspaceFormCubit(app.di.find(), app.di.find());
+    final cubit = WorkspaceFormCubit(auth: app.di.find(), repo: app.di.find());
     return showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -167,15 +167,29 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
   }
 
   void _onState(BuildContext context, WorkspaceFormState state) {
-    if (state is WorkspaceFormProcessInProgressState) {
+    if (state is WorkspaceFormProcessInProgressState ||
+        state is WorkspaceFormDeletingState) {
       app.loading.show(id: WorkspaceSettings.loadingId);
     } else {
       app.loading.hide(id: WorkspaceSettings.loadingId);
     }
-    if (state is WorkspaceFormProcessingErrorState) {
+    if (state is WorkspaceFormProcessingErrorState ||
+        state is WorkspaceFormDeletingErrorState) {
       setState(() {
-        _serverErrors = state.fieldErrors;
-        _formError = state.fieldErrors.isEmpty ? state.exception.intlMessage : null;
+        _serverErrors = const {};
+        _formError = switch (state) {
+          WorkspaceFormProcessingErrorState(:final exception) ||
+          WorkspaceFormDeletingErrorState(
+            :final exception,
+          ) => exception.intlMessage,
+          _ => null,
+        };
+      });
+    }
+    if (state is WorkspaceFormValidationErrorState) {
+      setState(() {
+        _serverErrors = state.failValidations;
+        _formError = null;
         if (_serverErrors.keys.any((k) => k.startsWith('defaults.'))) {
           _tab = _Tab.defaults;
         } else if (_serverErrors.isNotEmpty) {
@@ -183,16 +197,15 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
         }
       });
     }
+    if (state is WorkspaceFormDeletedOkState) {
+      Navigator.of(context).pop();
+      app.snack.showSuccess(
+        message: app.intl.workspaces.settings.deleted(name: _saved.name),
+        context: app.context,
+      );
+      return;
+    }
     if (state is WorkspaceFormProcessingOKState) {
-      app.di.find<WorkspacesCubit>().load();
-      if (state.deleted) {
-        Navigator.of(context).pop();
-        app.snack.showSuccess(
-          message: app.intl.workspaces.settings.deleted(name: _saved.name),
-          context: app.context,
-        );
-        return;
-      }
       _savedTimer?.cancel();
       _savedTimer = Timer(const Duration(milliseconds: 2500), () {
         if (mounted) setState(() => _justSaved = false);

@@ -7,11 +7,15 @@ import 'package:material_ui/material_ui.dart';
 abstract final class WorkspaceExport {
   /// [workspace], or every one when null
   static Future<void> run({WorkspaceModel? workspace}) async {
-    try {
-      final file = await app.di.find<WorkspacesRepo>().export(
-        slug: workspace?.slug,
-        token: app.di.find<AuthCubit>().auth?.accessToken,
-      );
+    final cubit = WorkspaceTransferCubit(
+      auth: app.di.find(),
+      repo: app.di.find(),
+    );
+    await cubit.export(workspace: workspace);
+    final state = cubit.state;
+    await cubit.close();
+    if (state is WorkspaceTransferExportedOkState) {
+      final file = state.file;
       final day = DateTime.now().toIso8601String().substring(0, 10);
       final name = workspace == null
           ? 'dumpling-export-$day.json'
@@ -27,11 +31,11 @@ abstract final class WorkspaceExport {
         message: app.intl.workspaces.transfer.exported(file: name),
         context: context,
       );
-    } catch (e) {
+    } else if (state is WorkspaceTransferExportingErrorState) {
       final context = app.context;
       if (!context.mounted) return;
       app.snack.showError(
-        message: ExceptionConverter.parse(e).intlMessage,
+        message: state.exception.intlMessage,
         context: context,
       );
     }
@@ -126,23 +130,25 @@ class WorkspaceImportDialog extends StatefulWidget {
       importing: true,
     );
     app.loading.show(id: loadingId);
-    try {
-      final created = await app.di.find<WorkspacesRepo>().import(
-        file: s.file!,
-        token: app.di.find<AuthCubit>().auth?.accessToken,
-      );
-      app.loading.hide(id: loadingId);
+    final cubit = WorkspaceTransferCubit(
+      auth: app.di.find(),
+      repo: app.di.find(),
+    );
+    await cubit.import(s.file!);
+    final done = cubit.state;
+    await cubit.close();
+    app.loading.hide(id: loadingId);
+    if (done is WorkspaceTransferImportedOkState) {
+      final created = done.created;
       if (context.mounted) Navigator.of(context).pop();
-      app.di.find<WorkspacesCubit>().load();
       final root = app.context;
       if (!root.mounted) return;
       app.snack.showSuccess(
         message: app.intl.workspaces.transfer.imported(n: created.length),
         context: root,
       );
-    } catch (e) {
-      app.loading.hide(id: loadingId);
-      final exception = ExceptionConverter.parse(e);
+    } else if (done is WorkspaceTransferImportingErrorState) {
+      final exception = done.exception;
       state.value = _ImportState(
         fileName: s.fileName,
         size: s.size,

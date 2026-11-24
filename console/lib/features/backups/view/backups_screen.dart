@@ -176,9 +176,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
               BlocBuilder<BackupsCubit, BackupsState>(
                 builder: (context, state) => AppRefreshButton(
                   onPressed: _reload,
-                  loading:
-                      state is BackupsLoadingInProgressState &&
-                      state.data.loaded,
+                  loading: state is BackupsSearchingState && state.data.loaded,
                 ),
               ),
               PrimaryButton.primary(
@@ -197,7 +195,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
                 listener: _onState,
                 builder: (context, state) {
                   if (!state.data.loaded) {
-                    return state is BackupsLoadingErrorState
+                    return state is BackupsSearchErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
                         : _buildSkeleton(state.data);
                   }
@@ -210,7 +208,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         // loaded, then the service stopped answering
-                        if (state is BackupsLoadingErrorState &&
+                        if (state is BackupsSearchErrorState &&
                             state.exception.type ==
                                 GlobalExceptionType.offline) ...[
                           OfflineBanner(onRetry: cubit.reload),
@@ -232,15 +230,13 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
   }
 
   void _onState(BuildContext context, BackupsState state) {
-    if (state is BackupsProcessInProgressState) {
+    if (state is BackupsDeletingState) {
       app.loading.show();
     } else {
       app.loading.hide();
     }
-    if (state is BackupsRunFinishedState) {
+    if (state is BackupsRanNowOkState) {
       final run = state.run;
-      // the failing count of the rail comes from the list of workspaces
-      app.di.find<WorkspacesCubit>().load();
       if (run.status == RunStatus.success) {
         app.snack.showSuccess(
           message: app.intl.canvas.run.done(
@@ -259,20 +255,28 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
         );
       }
     }
-    if (state is BackupsSavedState) {
+    if (state is BackupsSavedOkState) {
       app.snack.showSuccess(
         message: app.intl.backups.saved(name: state.name),
         context: app.context,
       );
     }
-    if (state is BackupsDeletedState) {
+    if (state is BackupsDeletedOkState) {
       app.snack.showSuccess(
         message: app.intl.backups.deleted(name: state.name),
         context: app.context,
       );
     }
-    if (state is BackupsProcessingErrorState) {
-      app.snack.showError(message: state.message, context: app.context);
+    // a failed save stays in its dialog, which shows it
+    final failed = switch (state) {
+      BackupsLoadingRecentErrorState(:final exception) ||
+      BackupsDeletingErrorState(:final exception) ||
+      BackupsRunningNowErrorState(:final exception) ||
+      BackupsReorderingErrorState(:final exception) => exception,
+      _ => null,
+    };
+    if (failed != null) {
+      app.snack.showError(message: failed.intlMessage, context: app.context);
     }
   }
 
@@ -347,7 +351,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
   /// shows it, the rest reload without a sign
   bool _updating(DateTime? at) =>
       at != null &&
-      cubit.state is BackupsLoadingInProgressState &&
+      cubit.state is BackupsSearchingState &&
       !DateTime.now().isBefore(at);
 
   /// Once [at] is due: `Updating in 3…`, `2…`, `1…` until the list reloads,

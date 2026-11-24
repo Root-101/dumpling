@@ -13,7 +13,7 @@ void main() {
   // the workspaces of the rail, none loaded: one for every page here
   final workspaces = _MockWorkspaces();
   when(() => workspaces.state).thenReturn(
-    const WorkspacesLoadingInProgressState(data: WorkspacesData.empty()),
+    const WorkspacesSearchingState(data: WorkspacesData.empty()),
   );
   when(() => workspaces.load()).thenAnswer((_) async {});
   app.di.put<WorkspacesCubit>(workspaces);

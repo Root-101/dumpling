@@ -49,7 +49,7 @@ void main() {
     whenListen(
       workspaces,
       const Stream<WorkspacesState>.empty(),
-      initialState: WorkspacesLoadingSuccessState(
+      initialState: WorkspacesSearchOkState(
         data: const WorkspacesData.empty()
             .withList([workspace('production', name: 'Production')])
             .withCurrent('production'),
@@ -63,7 +63,7 @@ void main() {
     whenListen(
       backups,
       const Stream<BackupsState>.empty(),
-      initialState: BackupsLoadingSuccessState(
+      initialState: BackupsSearchOkState(
         data: const BackupsData.empty('production').withCanvas(backupCanvas()),
       ),
     );

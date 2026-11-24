@@ -37,7 +37,7 @@ void main() {
     // the open workspace: a wire dropped on a bucket takes its defaults
     final workspaces = _MockWorkspaces();
     when(() => workspaces.state).thenReturn(
-      WorkspacesLoadingSuccessState(
+      WorkspacesSearchOkState(
         data: const WorkspacesData.empty()
             .withList([
               const WorkspaceModel(

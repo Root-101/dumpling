@@ -21,6 +21,21 @@ void main() {
   });
 
   group('WorkspacesCubit', () {
+    test('Loads the list again when a workspace changes elsewhere', () async {
+      when(
+        () => repo.list(token: 'jwt'),
+      ).thenAnswer((_) async => [workspace('production')]);
+      final cubit = WorkspacesCubit(auth: auth, repo: repo);
+      addTearDown(cubit.close);
+      // saved, deleted or imported in their dialogs, a run ended in Backups
+      GlobalEventBus()
+        ..fire(WorkspaceFormProcessingOKState(workspace('production')))
+        ..fire(WorkspaceFormDeletedOkState(workspace('staging')))
+        ..fire(const WorkspaceTransferImportedOkState([]));
+      await Future<void>.delayed(Duration.zero);
+      verify(() => repo.list(token: 'jwt')).called(3);
+    });
+
     blocTest<WorkspacesCubit, WorkspacesState>(
       'Loads the list with the token and finds the current one in it',
       setUp: () {
@@ -29,14 +44,14 @@ void main() {
           (_) async => [workspace('production'), workspace('staging')],
         );
       },
-      build: () => WorkspacesCubit(repo, auth),
+      build: () => WorkspacesCubit(auth: auth, repo: repo),
       act: (cubit) async {
         await cubit.restore();
         await cubit.load();
       },
       skip: 2,
       expect: () => [
-        isA<WorkspacesLoadingSuccessState>()
+        isA<WorkspacesSearchOkState>()
             .having((s) => s.data.loaded, 'loaded', true)
             .having((s) => s.data.current?.slug, 'current', 'staging'),
       ],
@@ -44,13 +59,13 @@ void main() {
 
     blocTest<WorkspacesCubit, WorkspacesState>(
       'Remembers the workspace the URL opens',
-      build: () => WorkspacesCubit(repo, auth),
+      build: () => WorkspacesCubit(auth: auth, repo: repo),
       act: (cubit) => cubit
         ..select('production')
         // the same one again changes nothing
         ..select('production'),
       expect: () => [
-        isA<WorkspacesLoadingSuccessState>().having(
+        isA<WorkspacesSearchOkState>().having(
           (s) => s.data.currentSlug,
           'slug',
           'production',
@@ -63,11 +78,11 @@ void main() {
       'Keeps what it had when the list fails',
       setUp: () =>
           when(() => repo.list(token: 'jwt')).thenThrow(apiError('down')),
-      build: () => WorkspacesCubit(repo, auth),
+      build: () => WorkspacesCubit(auth: auth, repo: repo),
       act: (cubit) => cubit.load(),
       expect: () => [
-        isA<WorkspacesLoadingInProgressState>(),
-        isA<WorkspacesLoadingErrorState>()
+        isA<WorkspacesSearchingState>(),
+        isA<WorkspacesSearchErrorState>()
             .having((s) => s.exception.message, 'message', 'down')
             .having((s) => s.data.loaded, 'loaded', false),
       ],

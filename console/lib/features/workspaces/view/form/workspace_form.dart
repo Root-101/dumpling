@@ -8,7 +8,10 @@ class WorkspaceForm extends StatefulWidget {
   /// Opens the dialog with its own [WorkspaceFormCubit]
   static Future<void> open(BuildContext context) async {
     final formKey = GlobalKey<_WorkspaceFormState>();
-    final formCubit = WorkspaceFormCubit(app.di.find(), app.di.find());
+    final formCubit = WorkspaceFormCubit(
+      auth: app.di.find(),
+      repo: app.di.find(),
+    );
 
     await FormDialogTemplate.show(
       context: context,
@@ -101,15 +104,18 @@ class _WorkspaceFormState extends State<WorkspaceForm> {
         }
         if (state is WorkspaceFormProcessingErrorState) {
           setState(() {
-            _serverErrors = state.fieldErrors;
-            _formError = state.fieldErrors.isEmpty
-                ? state.exception.intlMessage
-                : null;
+            _serverErrors = const {};
+            _formError = state.exception.intlMessage;
+          });
+        }
+        if (state is WorkspaceFormValidationErrorState) {
+          setState(() {
+            _serverErrors = state.failValidations;
+            _formError = null;
           });
         }
         if (state is WorkspaceFormProcessingOKState) {
           Navigator.of(context).pop();
-          app.di.find<WorkspacesCubit>().load();
           app.snack.showSuccess(
             message: app.intl.workspaces.created(name: state.workspace.name),
             context: app.context,

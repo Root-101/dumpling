@@ -77,7 +77,7 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
               child: BlocBuilder<WorkspacesCubit, WorkspacesState>(
                 builder: (context, state) {
                   if (!state.data.loaded) {
-                    return state is WorkspacesLoadingErrorState
+                    return state is WorkspacesSearchErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.load)
                         : AppShimmer(
                             child: _grid(

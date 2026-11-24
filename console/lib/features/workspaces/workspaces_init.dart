@@ -9,7 +9,7 @@ class WorkspacesInit {
     app.di.put(repo);
 
     // App-wide: the rail shows the current workspace on every screen
-    WorkspacesCubit cubit = WorkspacesCubit(repo, app.di.find());
+    WorkspacesCubit cubit = WorkspacesCubit(auth: app.di.find(), repo: repo);
     await cubit.restore();
     app.di.put(cubit);
   }
