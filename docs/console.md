@@ -416,8 +416,8 @@ with the flag, else the browser's):
 
 ![Starting](design/screens/42-splash.png)
 
-If it cannot start (the service can't be reached for what it needs first), it says so in place of
-the splash, with **Try again**, which starts it over:
+If something it needs before the first screen fails (what it keeps in the browser, for example),
+it says so in place of the splash, with **Try again**, which starts it over:
 
 ![Could not start](design/screens/43-init-error.png)
 
