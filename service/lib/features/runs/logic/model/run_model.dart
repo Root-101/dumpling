@@ -20,10 +20,7 @@ class RunLogLine {
     json['message'] as String,
   );
 
-  Map<String, Object?> toJson() => {
-    'at': at.toUtc().toIso8601String(),
-    'message': message,
-  };
+  Map<String, Object?> toJson() => {'at': at.toJsonDate(), 'message': message};
 }
 
 class RunModel {
@@ -51,8 +48,8 @@ class RunModel {
     'location': row.location,
     'size_bytes': row.sizeBytes,
     'error': row.error,
-    'started_at': row.startedAt.toUtc().toIso8601String(),
-    'finished_at': row.finishedAt?.toUtc().toIso8601String(),
+    'started_at': row.startedAt.toJsonDate(),
+    'finished_at': row.finishedAt?.toJsonDate(),
     // A run cut by a stop has no measure: the times give it to the second
     'duration_ms':
         row.durationMs ??

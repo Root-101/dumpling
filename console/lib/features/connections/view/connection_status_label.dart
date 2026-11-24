@@ -42,7 +42,7 @@ class ConnectionStatusLabel extends StatelessWidget {
             testing ? app.intl.connections.testing : labelOf(check),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 12, color: color),
+            style: app.styles.s.copyWith(color: color),
           ),
         ),
       ],

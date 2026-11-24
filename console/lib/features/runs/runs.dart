@@ -1,6 +1,9 @@
-export 'data/repo/run_repo.dart';
-export 'data/rest/run_client.dart';
-export 'logic/cubit/run_cubit.dart';
+export 'data/repo/runs_repo.dart';
+export 'data/rest/runs_client.dart';
+export 'logic/cubit/runs_cubit.dart';
+export 'logic/model/run_log_line.dart';
+export 'logic/model/run_step_state.dart';
+export 'logic/model/run_step.dart';
 export 'logic/model/run_model.dart';
 export 'runs_init.dart';
 export 'view/runs_screen.dart';

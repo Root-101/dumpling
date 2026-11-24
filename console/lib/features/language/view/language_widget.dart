@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Language selector of the rail (and the login): the flag of the current
 /// language in a [RailButton]; it opens a menu with the languages
-class LanguageWidget extends CubitView<LanguageCubit> {
+class LanguageWidget extends StatelessWidget {
   /// In the expanded rail: the flag with the name of the language
   final bool expanded;
 
@@ -76,7 +76,9 @@ class LanguageWidget extends CubitView<LanguageCubit> {
           ),
       ],
     ).then((key) {
-      if (key != null) cubit.changeLanguageKey(languageKey: key);
+      if (key != null) {
+        app.di.find<LanguageCubit>().changeLanguageKey(languageKey: key);
+      }
     });
   }
 }

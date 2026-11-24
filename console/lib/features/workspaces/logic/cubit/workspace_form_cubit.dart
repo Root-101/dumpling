@@ -3,48 +3,47 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// State of the dialog of a new workspace, or of the settings of one. It
 /// lives while the dialog is open, so loading and errors show inside it
-class WorkspaceFormCubit extends Cubit<WorkspaceFormState> {
-  final WorkspaceRepo _repo;
-  final AuthCubit _auth;
+class WorkspaceFormCubit extends Cubit<WorkspaceFormState>
+    with GlobalEventBusCommunication<WorkspaceFormState> {
+  final AuthCubit auth;
+  final WorkspacesRepo repo;
 
-  WorkspaceFormCubit(this._repo, this._auth)
+  WorkspaceFormCubit({required this.auth, required this.repo})
     : super(const WorkspaceFormInitialState());
 
-  Future<void> create(WorkspaceDraft draft) => _process(
-    () => _repo.create(draft: draft, token: _auth.auth?.accessToken),
+  Future<void> create(WorkspaceFormModel draft) =>
+      _save(() => repo.create(draft: draft, token: auth.auth?.accessToken));
+
+  Future<void> update(String slug, WorkspaceFormModel draft) => _save(
+    () => repo.update(slug: slug, draft: draft, token: auth.auth?.accessToken),
   );
 
-  Future<void> update(String slug, WorkspaceDraft draft) => _process(
-    () =>
-        _repo.update(slug: slug, draft: draft, token: _auth.auth?.accessToken),
-  );
+  Future<void> delete(WorkspaceModel workspace) async {
+    emit(const WorkspaceFormDeletingState());
+    try {
+      await repo.delete(slug: workspace.slug, token: auth.auth?.accessToken);
+      emit(WorkspaceFormDeletedOkState(workspace));
+    } on Exception catch (e) {
+      emit(WorkspaceFormDeletingErrorState(ExceptionConverter.parse(e)));
+    }
+  }
 
-  Future<void> delete(WorkspaceModel workspace) => _process(() async {
-    await _repo.delete(slug: workspace.slug, token: _auth.auth?.accessToken);
-    return workspace;
-  }, deleted: true);
-
-  Future<void> _process(
-    Future<WorkspaceModel> Function() run, {
-    bool deleted = false,
-  }) async {
+  Future<void> _save(Future<WorkspaceModel> Function() run) async {
     emit(const WorkspaceFormProcessInProgressState());
     try {
-      final workspace = await run();
-      emit(WorkspaceFormProcessingOKState(workspace, deleted: deleted));
-    } catch (e) {
+      emit(WorkspaceFormProcessingOKState(await run()));
+    } on Exception catch (e) {
       final exception = ExceptionConverter.parse(e);
-      emit(
-        WorkspaceFormProcessingErrorState(
-          exception,
-          fieldErrors: switch (exception.data) {
-            List<ValidationError> errors
-                when exception.type == GlobalExceptionType.validation =>
-              errors.asFailedValidations(),
-            _ => const {},
-          },
-        ),
-      );
+      if (exception.type == GlobalExceptionType.validation &&
+          exception.data is List<ValidationError>) {
+        emit(
+          WorkspaceFormValidationErrorState(
+            (exception.data as List<ValidationError>).asFailedValidations(),
+          ),
+        );
+      } else {
+        emit(WorkspaceFormProcessingErrorState(exception));
+      }
     }
   }
 }
@@ -62,32 +61,61 @@ abstract class WorkspaceFormState {
   const WorkspaceFormState();
 }
 
-class WorkspaceFormInitialState extends WorkspaceFormState {
+final class WorkspaceFormInitialState extends WorkspaceFormState {
   const WorkspaceFormInitialState();
 }
 
-//------------------------- PROCESSING -------------------------\
-class WorkspaceFormProcessInProgressState extends WorkspaceFormState {
+//----------------- validation -----------------\\
+/// The service refused fields (422): under each field
+final class WorkspaceFormValidationErrorState extends WorkspaceFormState {
+  /// The message of each `fieldName` ([WorkspaceFormField])
+  final Map<String, String> failValidations;
+
+  const WorkspaceFormValidationErrorState(this.failValidations);
+}
+
+//----------------- save -----------------\\
+abstract class WorkspaceFormProcessState extends WorkspaceFormState {
+  const WorkspaceFormProcessState();
+}
+
+final class WorkspaceFormProcessInProgressState
+    extends WorkspaceFormProcessState {
   const WorkspaceFormProcessInProgressState();
 }
 
-class WorkspaceFormProcessingOKState extends WorkspaceFormState {
+/// Public contract: the list of workspaces reloads on it (the bus)
+final class WorkspaceFormProcessingOKState extends WorkspaceFormProcessState {
   final WorkspaceModel workspace;
 
-  /// [workspace] was deleted, not saved
-  final bool deleted;
-
-  const WorkspaceFormProcessingOKState(this.workspace, {this.deleted = false});
+  const WorkspaceFormProcessingOKState(this.workspace);
 }
 
-class WorkspaceFormProcessingErrorState extends WorkspaceFormState {
+final class WorkspaceFormProcessingErrorState
+    extends WorkspaceFormProcessState {
   final GlobalException exception;
 
-  /// Errors per field; if empty, the error belongs to the whole form
-  final Map<String, String> fieldErrors;
+  const WorkspaceFormProcessingErrorState(this.exception);
+}
 
-  const WorkspaceFormProcessingErrorState(
-    this.exception, {
-    this.fieldErrors = const {},
-  });
+//----------------- delete -----------------\\
+abstract class WorkspaceFormDeleteState extends WorkspaceFormState {
+  const WorkspaceFormDeleteState();
+}
+
+final class WorkspaceFormDeletingState extends WorkspaceFormDeleteState {
+  const WorkspaceFormDeletingState();
+}
+
+/// Public contract: the list of workspaces reloads on it (the bus)
+final class WorkspaceFormDeletedOkState extends WorkspaceFormDeleteState {
+  final WorkspaceModel workspace;
+
+  const WorkspaceFormDeletedOkState(this.workspace);
+}
+
+final class WorkspaceFormDeletingErrorState extends WorkspaceFormDeleteState {
+  final GlobalException exception;
+
+  const WorkspaceFormDeletingErrorState(this.exception);
 }

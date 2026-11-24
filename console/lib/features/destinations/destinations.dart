@@ -1,9 +1,14 @@
-export 'data/repo/destination_repo.dart';
-export 'data/rest/destination_client.dart';
+export 'data/repo/destinations_repo.dart';
+export 'data/rest/destinations_client.dart';
 export 'destinations_init.dart';
-export 'logic/cubit/destination_cubit.dart';
+export 'logic/cubit/destinations_cubit.dart';
 export 'logic/cubit/destination_form_cubit.dart';
+export 'logic/model/destination_types.dart';
+export 'logic/model/s3_settings_model.dart';
 export 'logic/model/destination_model.dart';
+export 'logic/model/destination_type_model.dart';
+export 'logic/model/destination_form_model.dart';
+export 'logic/model/folder_path.dart';
 export 'view/destinations_screen.dart';
 export 'view/form/destination_form.dart';
 export 'view/widget/destination_detail.dart';

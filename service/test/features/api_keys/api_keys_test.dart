@@ -4,14 +4,13 @@ library;
 import 'dart:convert';
 
 import 'package:drift/drift.dart' show Value;
-import 'package:http/http.dart' as http;
 import 'package:service/dumpling.dart';
 import 'package:test/test.dart';
 
-import '../../support/test_server.dart';
+import '../../support/test_app.dart';
 
 void main() {
-  final server = TestServer(port: 8192);
+  final server = TestApp();
   const base = '/api/workspaces/production';
   late String nightly;
   late String hourly;
@@ -28,8 +27,8 @@ void main() {
   };
 
   Future<Map<String, dynamic>> post(String path, Object body) async {
-    final response = await http.post(
-      server.url(path),
+    final response = await server.post(
+      path,
       headers: jsonHeaders(),
       body: jsonEncode(body),
     );
@@ -37,11 +36,8 @@ void main() {
     return jsonDecode(response.body);
   }
 
-  Future<http.Response> createKey(Object body) => http.post(
-    server.url('$base/keys'),
-    headers: jsonHeaders(),
-    body: jsonEncode(body),
-  );
+  Future<TestResponse> createKey(Object body) =>
+      server.post('$base/keys', headers: jsonHeaders(), body: jsonEncode(body));
 
   Future<Map<String, dynamic>> key(
     List<String> permissions, {
@@ -114,7 +110,7 @@ void main() {
       expect(row.secretHash, ApiKeyToken.hash(secret));
 
       final listed = jsonDecode(
-        (await http.get(server.url('$base/keys'), headers: server.auth())).body,
+        (await server.get('$base/keys', headers: server.auth())).body,
       ) as List;
       final again = listed.firstWhere((k) => k['id'] == created['id']);
       expect(again.containsKey('key'), isFalse);
@@ -123,21 +119,18 @@ void main() {
     test('Should use a key as Bearer or as Basic auth', () async {
       final created = await key(['run.list']);
       final text = created['key'] as String;
-      final runs = await http.get(
-        server.url('$base/runs'),
-        headers: bearer(text),
-      );
+      final runs = await server.get('$base/runs', headers: bearer(text));
       expect(runs.statusCode, 200, reason: runs.body);
 
       final secret = text.substring(text.lastIndexOf('_') + 1);
-      final viaBasic = await http.get(
-        server.url('$base/runs'),
+      final viaBasic = await server.get(
+        '$base/runs',
         headers: basic(created['id'], secret),
       );
       expect(viaBasic.statusCode, 200, reason: viaBasic.body);
 
       final listed = jsonDecode(
-        (await http.get(server.url('$base/keys'), headers: server.auth())).body,
+        (await server.get('$base/keys', headers: server.auth())).body,
       ) as List;
       expect(
         listed.firstWhere((k) => k['id'] == created['id'])['last_used_at'],
@@ -148,13 +141,13 @@ void main() {
     test('Should answer 401 to a wrong or unknown key', () async {
       final created = await key(['run.list']);
       final text = created['key'] as String;
-      final wrong = await http.get(
-        server.url('$base/runs'),
+      final wrong = await server.get(
+        '$base/runs',
         headers: bearer('${text.substring(0, text.length - 1)}x'),
       );
       expect(wrong.statusCode, 401);
-      final unknown = await http.get(
-        server.url('$base/runs'),
+      final unknown = await server.get(
+        '$base/runs',
         headers: bearer('dmp_aaaaaaaaaaaaaaaa_${'x' * 32}'),
       );
       expect(unknown.statusCode, 401);
@@ -162,8 +155,8 @@ void main() {
 
     test('Should only reach its own workspace and permissions', () async {
       final text = (await key(['run.list', 'config.list']))['key'] as String;
-      final other = await http.get(
-        server.url('/api/workspaces/staging/runs'),
+      final other = await server.get(
+        '/api/workspaces/staging/runs',
         headers: bearer(text),
       );
       expect(other.statusCode, 403);
@@ -173,15 +166,12 @@ void main() {
         '$base/keys',
         '/api/export',
       ]) {
-        final response = await http.get(
-          server.url(path),
-          headers: bearer(text),
-        );
+        final response = await server.get(path, headers: bearer(text));
         expect(response.statusCode, 403, reason: path);
       }
       // A key can't make another
-      final another = await http.post(
-        server.url('$base/keys'),
+      final another = await server.post(
+        '$base/keys',
         headers: jsonHeaders(bearer(text)),
         body: jsonEncode({
           'name': 'x',
@@ -199,20 +189,17 @@ void main() {
               ))['key']
               as String;
       final configs = jsonDecode(
-        (await http.get(
-          server.url('$base/configs'),
-          headers: bearer(text),
-        )).body,
+        (await server.get('$base/configs', headers: bearer(text))).body,
       ) as List;
       expect(configs.map((c) => c['id']), [nightly]);
 
-      final outside = await http.get(
-        server.url('$base/configs/$hourly'),
+      final outside = await server.get(
+        '$base/configs/$hourly',
         headers: bearer(text),
       );
       expect(outside.statusCode, 404);
-      final run = await http.post(
-        server.url('$base/configs/$hourly/run'),
+      final run = await server.post(
+        '$base/configs/$hourly/run',
         headers: bearer(text),
       );
       expect(run.statusCode, 404);
@@ -223,8 +210,8 @@ void main() {
                 configs: [nightly],
               ))['key']
               as String;
-      final delete = await http.delete(
-        server.url('$base/configs/$hourly'),
+      final delete = await server.delete(
+        '$base/configs/$hourly',
         headers: bearer(editor),
       );
       expect(delete.statusCode, 404);
@@ -282,8 +269,8 @@ void main() {
           permissions: Value('["config.run","canvas.get"]'),
         ),
       );
-      final canvas = await http.get(
-        server.url('$base/canvas'),
+      final canvas = await server.get(
+        '$base/canvas',
         headers: bearer(created['key']),
       );
       expect(canvas.statusCode, 403);
@@ -292,8 +279,8 @@ void main() {
     test('Should change a key without changing its secret', () async {
       final created = await key(['run.list'], name: 'grafana');
       final text = created['key'] as String;
-      final changed = await http.put(
-        server.url('$base/keys/${created['id']}'),
+      final changed = await server.put(
+        '$base/keys/${created['id']}',
         headers: jsonHeaders(),
         body: jsonEncode({
           'name': 'grafana-ro',
@@ -306,46 +293,43 @@ void main() {
       expect(body['name'], 'grafana-ro');
       expect(body['config_ids'], [hourly]);
       expect(body.containsKey('key'), isFalse);
-      final still = await http.get(
-        server.url('$base/runs'),
-        headers: bearer(text),
-      );
+      final still = await server.get('$base/runs', headers: bearer(text));
       expect(still.statusCode, 200);
     });
 
     test('Should reorder the keys and delete one', () async {
       final keys = jsonDecode(
-        (await http.get(server.url('$base/keys'), headers: server.auth())).body,
+        (await server.get('$base/keys', headers: server.auth())).body,
       ) as List;
       final ids = [for (final k in keys) k['id'] as String].reversed.toList();
-      final reordered = await http.put(
-        server.url('$base/keys/order'),
+      final reordered = await server.put(
+        '$base/keys/order',
         headers: jsonHeaders(),
         body: jsonEncode({'ids': ids}),
       );
       expect(reordered.statusCode, 200, reason: reordered.body);
       expect([for (final k in jsonDecode(reordered.body)) k['id']], ids);
 
-      final partial = await http.put(
-        server.url('$base/keys/order'),
+      final partial = await server.put(
+        '$base/keys/order',
         headers: jsonHeaders(),
         body: jsonEncode({'ids': ids.skip(1).toList()}),
       );
       expect(partial.statusCode, 422);
 
       final created = await key(['run.list'], name: 'to-delete');
-      final deleted = await http.delete(
-        server.url('$base/keys/${created['id']}'),
+      final deleted = await server.delete(
+        '$base/keys/${created['id']}',
         headers: server.auth(),
       );
       expect(deleted.statusCode, 204);
-      final after = await http.get(
-        server.url('$base/runs'),
+      final after = await server.get(
+        '$base/runs',
         headers: bearer(created['key']),
       );
       expect(after.statusCode, 401);
-      final again = await http.delete(
-        server.url('$base/keys/${created['id']}'),
+      final again = await server.delete(
+        '$base/keys/${created['id']}',
         headers: server.auth(),
       );
       expect(again.statusCode, 404);

@@ -13,6 +13,10 @@ class LoginScreenNavigator {
   Widget builder(BuildContext context, GoRouterState state) {
     return const LoginScreen();
   }
+
+  List<RouteBase> routes() => [
+    GoRoute(name: name, path: path, builder: builder),
+  ];
 }
 
 /// The only user comes from the env (`DUMPLING_ADMIN_USER`,
@@ -47,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onLogin() {
     // Enter in a field still reaches here under the overlay
-    if (context.read<AuthCubit>().state is AuthProcessInProgressState) return;
+    if (context.read<AuthCubit>().state is AuthLoggingInState) return;
     if (!_submitted) setState(() => _submitted = true);
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthCubit>().login(
@@ -64,10 +68,10 @@ class _LoginScreenState extends State<LoginScreen> {
         // On success the router leaves the login by itself (it listens to
         // AuthCubit), to the page asked for before logging in. Closing the
         // autofill context first lets the browser offer to save the password
-        if (state is AuthProcessingOKState) {
+        if (state is AuthLoggedInOkState) {
           TextInput.finishAutofillContext();
         }
-        if (state is AuthProcessInProgressState) {
+        if (state is AuthLoggingInState) {
           app.loading.show(id: _loadingId);
         } else {
           app.loading.hide(id: _loadingId);
@@ -165,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
           app.dimensions.padding.xxl.gap(),
           Text(
             app.intl.app.version(version: AppGlobal.version),
-            style: TextStyle(fontSize: 12, color: app.colors.neutral.grey4),
+            style: app.styles.s.copyWith(color: app.colors.neutral.grey4),
           ),
         ],
       ),
@@ -195,35 +199,31 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    app.intl.login.title,
-                    style: const TextStyle(
-                      fontSize: 22,
+                    app.intl.auth.title,
+                    style: app.styles.h2.copyWith(
                       height: 28 / 22,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   app.dimensions.padding.xs.gap(),
                   Text(
-                    app.intl.login.description,
-                    style: TextStyle(
-                      fontSize: 13,
+                    app.intl.auth.description,
+                    style: app.styles.m.copyWith(
                       color: app.colors.neutral.grey4,
                     ),
                   ),
-                  if (state is AuthProcessingErrorState) ...[
+                  if (state is AuthLoggingInErrorState) ...[
                     18.gap(),
                     AppFormAlert(
-                      title: state.exception.message,
-                      message: state.exception.type == GlobalExceptionType.auth
-                          ? app.intl.login.failedHint
-                          : null,
+                      title: state.exception.intlMessage,
+                      message: loginErrorHint(state.exception),
                     ),
                   ],
                   18.gap(),
                   AppFormInput(
                     controller: _userController,
-                    label: app.intl.login.username,
-                    hint: app.intl.login.usernameHint,
+                    label: app.intl.auth.username,
+                    hint: app.intl.auth.usernameHint,
                     autofocus: true,
                     validator: (v) =>
                         v?.isEmpty == true ? app.intl.common.required : null,
@@ -234,8 +234,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   18.gap(),
                   AppFormPasswordInput(
                     controller: _passwordController,
-                    label: app.intl.login.password,
-                    hint: app.intl.login.passwordHint,
+                    label: app.intl.auth.password,
+                    hint: app.intl.auth.passwordHint,
                     validator: (v) =>
                         v?.isEmpty == true ? app.intl.common.required : null,
                     autofillHints: const [AutofillHints.password],
@@ -244,7 +244,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   18.gap(),
                   PrimaryButton.primary(
                     onPressed: _onLogin,
-                    title: app.intl.login.button,
+                    title: app.intl.auth.button,
                     h: 48,
                   ),
                   18.gap(),
@@ -259,6 +259,23 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
+/// Under the error of a sign-in: what to check, or how long a lock lasts
+/// (decided on the service's code, never on its text)
+String? loginErrorHint(GlobalException exception) {
+  if (exception.hasCode(ApiErrorCode.authInvalidCredentials)) {
+    return app.intl.auth.failedHint;
+  }
+  if (exception.hasCode(ApiErrorCode.authTooManyLoginAttempts)) {
+    return switch (exception.data) {
+      final Duration left => app.intl.auth.retryIn(
+        minutes: (left.inSeconds / 60).ceil(),
+      ),
+      _ => null,
+    };
+  }
+  return null;
+}
+
 /// Where the user comes from: the names of the variables in monospace
 class _EnvHint extends StatelessWidget {
   static const _user = 'DUMPLING_ADMIN_USER';
@@ -268,8 +285,7 @@ class _EnvHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = TextStyle(
-      fontSize: 12,
+    final style = app.styles.s.copyWith(
       height: 18 / 12,
       color: app.colors.neutral.grey4,
     );
@@ -282,9 +298,9 @@ class _EnvHint extends StatelessWidget {
       TextSpan(
         style: style,
         children: [
-          TextSpan(text: '${app.intl.login.envHint} '),
+          TextSpan(text: '${app.intl.auth.envHint} '),
           TextSpan(text: _user, style: mono),
-          TextSpan(text: ' ${app.intl.login.envHintAnd} '),
+          TextSpan(text: ' ${app.intl.auth.envHintAnd} '),
           TextSpan(text: _password, style: mono),
           const TextSpan(text: '.'),
         ],
@@ -359,17 +375,16 @@ class _Identity extends StatelessWidget {
                             child: Text.rich(
                               TextSpan(
                                 children: [
-                                  TextSpan(text: '${app.intl.login.tagline} '),
+                                  TextSpan(text: '${app.intl.auth.tagline} '),
                                   TextSpan(
-                                    text: app.intl.login.taglineAccent,
+                                    text: app.intl.auth.taglineAccent,
                                     style: TextStyle(
                                       color: app.colors.primary.secondary,
                                     ),
                                   ),
                                 ],
                               ),
-                              style: TextStyle(
-                                fontSize: 32,
+                              style: app.styles.h1.copyWith(
                                 height: 1,
                                 fontWeight: FontWeight.w500,
                                 letterSpacing: -0.6,
@@ -393,15 +408,15 @@ class _Identity extends StatelessWidget {
                   runSpacing: 10,
                   children: [
                     _Tag(
-                      label: app.intl.login.tagLightweight,
+                      label: app.intl.auth.tagLightweight,
                       color: app.colors.primary.secondary,
                     ),
                     _Tag(
-                      label: app.intl.login.tagCanvas,
+                      label: app.intl.auth.tagCanvas,
                       color: app.colors.primary.primaryFaded,
                     ),
                     _Tag(
-                      label: app.intl.login.tagWinter,
+                      label: app.intl.auth.tagWinter,
                       color: app.colors.primary.primaryFaded,
                     ),
                   ],
@@ -445,8 +460,7 @@ class _Tag extends StatelessWidget {
           8.gap(),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 15,
+            style: app.styles.ml.copyWith(
               fontWeight: FontWeight.w500,
               color: app.colors.text.brand,
             ),

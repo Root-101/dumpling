@@ -25,25 +25,24 @@ extension BackupRules on FieldValidator<String?> {
         (value) => value == null || !value.startsWith('/')
             ? null
             : intl.errors.validations.objectKey,
+        code: 'validations.objectKey',
       )
       .custom(
         (value) => value == null || !hasDotFolder(value)
             ? null
             : intl.errors.validations.objectKeyDots,
+        code: 'validations.objectKeyDots',
       )
       .custom(
         (value) => value == null || !_hasExtension(value)
             ? null
             : intl.errors.validations.objectKeyExtension,
+        code: 'validations.objectKeyExtension',
       );
 
   static bool isCron(String value) {
     try {
-      return CronSchedule.parse(
-            value,
-            utc: true,
-          ).next(DateTime.now().toUtc()) !=
-          null;
+      return CronSchedule.parse(value, utc: true).next(utcNow()) != null;
     } on FormatException {
       return false;
     }

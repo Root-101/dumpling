@@ -4,11 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
-class RunsScreenNavigator {
+class RunsScreenNavigator extends SectionNavigator {
+  @override
   String get name => RouteNames.runs;
 
-  String get path => RouteNames.runs;
+  @override
+  String get itemName => RouteNames.run;
 
+  @override
   Widget builder(BuildContext context, GoRouterState state) {
     return RunsScreen(
       workspace: state.pathParameters[RouteNames.slugParam]!,
@@ -57,13 +60,13 @@ class RunsScreen extends StatefulWidget {
 }
 
 class _RunsScreenState extends State<RunsScreen> with UrlDialog {
-  late final RunCubit cubit;
+  late final RunsCubit cubit;
   final _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    cubit = context.read<RunCubit>();
+    cubit = context.read<RunsCubit>();
     _load();
     // a list loaded already changes no state
     WidgetsBinding.instance.addPostFrameCallback((_) => _followUrl());
@@ -112,11 +115,8 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
       ..addAll({key: ?value}),
   );
 
-  void _go(Map<String, String> filters) => app.navigator.go(
-    RouteNames.runs,
-    pathParameters: {RouteNames.slugParam: widget.workspace},
-    queryParameters: filters,
-  );
+  void _go(Map<String, String> filters) =>
+      RunsScreen.navigator.go(workspace: widget.workspace, query: filters);
 
   /// An unknown value is no filter
   void _applyFilters() {
@@ -139,7 +139,7 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
       show: (id) async {
         final run = await cubit.find(widget.workspace, id);
         if (run == null) return false;
-        await RunDialog.open(run);
+        await RunDialog.navigator.open(run);
         return true;
       },
       leave: () => _go(widget.filters),
@@ -148,7 +148,7 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
 
   @override
   Widget build(BuildContext context) {
-    final workspaceName = context.select<WorkspaceCubit, String>(
+    final workspaceName = context.select<WorkspacesCubit, String>(
       (c) => c.state.data.current?.name ?? widget.workspace,
     );
     return Scaffold(
@@ -161,30 +161,34 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
             workspace: workspaceName,
             description: app.intl.runs.description,
             actions: [
-              BlocBuilder<RunCubit, RunState>(
+              BlocBuilder<RunsCubit, RunsState>(
                 builder: (context, state) => AppRefreshButton(
                   onPressed: cubit.reload,
-                  loading:
-                      state is RunLoadingInProgressState && state.data.loaded,
+                  loading: state is RunsSearchingState && state.data.loaded,
                 ),
               ),
             ],
           ),
           Expanded(
             child: PagePanel(
-              child: BlocConsumer<RunCubit, RunState>(
+              child: BlocConsumer<RunsCubit, RunsState>(
                 listener: (context, state) {
                   _followUrl();
-                  if (state is RunProcessingErrorState) {
+                  final failed = switch (state) {
+                    RunsLoadingDetailErrorState(:final exception) ||
+                    RunsRunningAgainErrorState(:final exception) => exception,
+                    _ => null,
+                  };
+                  if (failed != null) {
                     app.snack.showError(
-                      message: state.message,
+                      message: failed.intlMessage,
                       context: app.context,
                     );
                   }
                 },
                 builder: (context, state) {
                   if (!state.data.loaded) {
-                    return state is RunLoadingErrorState
+                    return state is RunsSearchErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
                         : _buildSkeleton();
                   }
@@ -204,7 +208,7 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
     );
   }
 
-  Widget _buildList(RunData data) {
+  Widget _buildList(RunsData data) {
     final t = app.intl.runs;
     final colors = app.colors;
     final divider = BorderSide(
@@ -215,10 +219,8 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
             title: t.emptyTitle,
             description: t.emptyDescription,
             action: app.intl.nav.canvas,
-            onPressed: () => RouteNames.openWorkspace(
-              widget.workspace,
-              section: RouteNames.canvas,
-            ),
+            onPressed: () =>
+                CanvasScreen.navigator.go(workspace: widget.workspace),
           )
         : data.visibleRuns.isEmpty
         ? AppTablePlaceholder(
@@ -261,7 +263,7 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
             padding: EdgeInsets.all(app.dimensions.padding.l),
             child: Text(
               t.newestOnly,
-              style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+              style: app.styles.s.copyWith(color: colors.neutral.grey4),
             ),
           ),
       ],
@@ -371,7 +373,7 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
     return days;
   }
 
-  Widget _buildFilter(RunData data) {
+  Widget _buildFilter(RunsData data) {
     final t = app.intl.runs;
     final runs = data.runs;
     AppFilterOption all(bool selected, VoidCallback onTap) => AppFilterOption(
@@ -510,8 +512,7 @@ class _DayHeader extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(
-              fontSize: 12,
+            style: app.styles.s.copyWith(
               fontWeight: FontWeight.w600,
               color: colors.neutral.grey2,
             ),
@@ -525,7 +526,7 @@ class _DayHeader extends StatelessWidget {
               ].join(' · '),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+              style: app.styles.s.copyWith(color: colors.neutral.grey3),
             ),
           ),
         ],
@@ -608,8 +609,7 @@ class _RunRow extends StatelessWidget {
                   detail,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: app.styles.s.copyWith(
                     color: run.status == RunStatus.failed
                         ? colors.status.error
                         : colors.neutral.grey4,
@@ -629,7 +629,7 @@ class _RunRow extends StatelessWidget {
                   run.startedBy,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 11, color: colors.neutral.grey4),
+                  style: app.styles.xs.copyWith(color: colors.neutral.grey4),
                 ),
                 if (run.label case final label?) RunLabelChip(label),
               ],
@@ -639,8 +639,7 @@ class _RunRow extends StatelessWidget {
             width: 170,
             child: AppDateTime(
               time: run.startedAt,
-              style: TextStyle(
-                fontSize: 13,
+              style: app.styles.m.copyWith(
                 color: colors.neutral.grey3,
                 fontFeatures: const [FontFeature.tabularFigures()],
               ),
@@ -651,16 +650,14 @@ class _RunRow extends StatelessWidget {
             child: Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () => RouteNames.openItem(
-                  workspace,
-                  RouteNames.run,
-                  run.id,
+                onPressed: () => RunsScreen.navigator.open(
+                  workspace: workspace,
+                  id: run.id,
                   query: filters,
                 ),
                 child: Text(
                   t.viewRun,
-                  style: TextStyle(
-                    fontSize: 13,
+                  style: app.styles.m.copyWith(
                     color: colors.primary.primaryFaded,
                     decoration: TextDecoration.underline,
                     decorationColor: colors.primary.primaryFaded,

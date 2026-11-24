@@ -1,14 +1,10 @@
 import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// A config in a dialog of three steps: its name and schedule, its output
-/// (object key and compression), and a review of everything with what the
-/// next run writes. It edits a copy; the canvas applies it to its draft (saved
-/// with the canvas) and Backups saves it right away
-class ConfigDialog extends StatefulWidget {
+class ConfigDialogNavigator {
   /// [onSave] gets the edited copy: null closes the dialog, a message stays
   /// in it. [onDelete], when given, is the *Delete config* of the footer
-  static Future<void> open({
+  Future<void> open({
     required BackupConfig config,
     required SourceNode? source,
     required DestinationNode? destination,
@@ -25,6 +21,14 @@ class ConfigDialog extends StatefulWidget {
       onDelete: onDelete,
     ),
   );
+}
+
+/// A config in a dialog of three steps: its name and schedule, its output
+/// (object key and compression), and a review of everything with what the
+/// next run writes. It edits a copy; the canvas applies it to its draft (saved
+/// with the canvas) and Backups saves it right away
+class ConfigDialog extends StatefulWidget {
+  static final ConfigDialogNavigator navigator = ConfigDialogNavigator();
 
   final BackupConfig config;
   final SourceNode? source;
@@ -229,7 +233,14 @@ class _ConfigDialogState extends State<ConfigDialog> {
         onChanged: (v) => _set(_c.copyWith(name: v)),
       ),
       const SizedBox(height: 6),
-      if (_nameError == null && CanvasGeometry.longName(_c.name))
+      if (_nameError == null &&
+          CanvasGeometry.longName(
+            _c.name,
+            // the tag the node shows next to the name
+            CanvasGeometry.configNameRoom(
+              _c.enabled ? _c.schedule : app.intl.canvas.disabled,
+            ),
+          ))
         AppFieldWarning(app.intl.common.longName)
       else
         _Help(t.nameHelp),
@@ -321,7 +332,7 @@ class _ConfigDialogState extends State<ConfigDialog> {
             Text(
               // the service computes it on save
               _c.enabled ? t.nextRunOnSave : t.enabledOff,
-              style: TextStyle(fontSize: 12, color: colors.text.secondary),
+              style: app.styles.s.copyWith(color: colors.text.secondary),
             )
           else
             AppDateTime(time: next, alignment: CrossAxisAlignment.start),
@@ -387,7 +398,7 @@ class _ConfigDialogState extends State<ConfigDialog> {
         widget.source,
         _c.compression ??
             app.di
-                .find<WorkspaceCubit>()
+                .find<WorkspacesCubit>()
                 .state
                 .data
                 .current
@@ -429,7 +440,7 @@ class _ConfigDialogState extends State<ConfigDialog> {
                 : AppDateTime(
                     time: next,
                     alignment: CrossAxisAlignment.start,
-                    style: const TextStyle(fontSize: 13),
+                    style: app.styles.m,
                   ),
           ),
         ],
@@ -476,7 +487,7 @@ class _ConfigDialogState extends State<ConfigDialog> {
             Text(
               writes,
               style: missing
-                  ? TextStyle(fontSize: 12, color: colors.brand.accent)
+                  ? app.styles.s.copyWith(color: colors.brand.accent)
                   : AppText.mono.copyWith(
                       fontSize: 12,
                       color: colors.brand.accent,
@@ -515,14 +526,11 @@ class _Summary extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: app.styles.l.copyWith(fontWeight: FontWeight.w600),
                   ),
                   Text(
                     sub,
-                    style: TextStyle(fontSize: 12, color: colors.text.muted),
+                    style: app.styles.s.copyWith(color: colors.text.muted),
                   ),
                 ],
               ),
@@ -581,14 +589,12 @@ class _ReviewBlock extends StatelessWidget {
                     children: [
                       Text(
                         label,
-                        style: TextStyle(
-                          fontSize: 11,
+                        style: app.styles.xs.copyWith(
                           color: colors.text.subtle,
                         ),
                       ),
                       DefaultTextStyle.merge(
-                        style: TextStyle(
-                          fontSize: 13,
+                        style: app.styles.m.copyWith(
                           color: colors.text.primary,
                         ),
                         child: value,
@@ -713,8 +719,7 @@ class _Label extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
     text,
-    style: TextStyle(
-      fontSize: 13,
+    style: app.styles.m.copyWith(
       fontWeight: FontWeight.w600,
       color: app.colors.text.secondary,
     ),
@@ -864,7 +869,7 @@ class _Help extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      Text(text, style: TextStyle(fontSize: 12, color: app.colors.text.subtle));
+      Text(text, style: app.styles.s.copyWith(color: app.colors.text.subtle));
 }
 
 /// Read only value with its label
@@ -894,7 +899,7 @@ class _Field extends StatelessWidget {
           ),
           child: Text(
             value,
-            style: const TextStyle(fontSize: 13),
+            style: app.styles.m,
             overflow: TextOverflow.ellipsis,
           ),
         ),

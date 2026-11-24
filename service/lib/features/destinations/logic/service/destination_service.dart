@@ -9,11 +9,13 @@ class DestinationService {
   final ConfigTableRepo configs;
   final WorkspaceService workspaces;
   final Secrets secrets;
+  final AppDatabase db;
 
   DestinationService()
-    : repo = DestinationTableRepo(di.find()),
-      configs = ConfigTableRepo(di.find()),
-      workspaces = WorkspaceService(),
+    : db = di.find(),
+      repo = di.find(),
+      configs = di.find(),
+      workspaces = di.find(),
       secrets = Secrets();
 
   Future<List<DestinationModel>> list(String workspace) async {
@@ -50,14 +52,17 @@ class DestinationService {
     final values = Secrets.require(settings.requiredSecrets, settings.secrets);
 
     final id = Secrets.newId(idPrefix);
-    await repo.insert(
-      id: id,
-      workspace: workspace,
-      name: request.trimmedName,
-      type: request.destinationType!,
-      settings: jsonEncode(settings),
-      secretsEncrypted: secrets.encrypt(id, values),
-      folders: request.cleanFolders,
+    // The destination and its folders, or nothing
+    await db.transaction(
+      () => repo.insert(
+        id: id,
+        workspace: workspace,
+        name: request.trimmedName,
+        type: request.destinationType!,
+        settings: jsonEncode(settings),
+        secretsEncrypted: secrets.encrypt(id, values),
+        folders: request.cleanFolders,
+      ),
     );
     logger.info(
       'Destination created',
@@ -77,26 +82,28 @@ class DestinationService {
   ) async {
     final row = await _row(workspace, id);
     final settings = request.settings!;
-    final stored = _storedFor(row, request.destinationType);
+    final stored = _storedFor(row, request.destinationType, settings);
     final values = Secrets.require(settings.requiredSecrets, {
       ...stored,
       ...settings.secrets,
     });
     await _checkTargets(id, request.cleanFolders);
 
-    await repo.update(
-      id: id,
-      name: request.trimmedName,
-      type: request.destinationType!,
-      settings: jsonEncode(settings),
-      secretsEncrypted: secrets.encrypt(id, values),
-      folders: request.cleanFolders,
-      connectionChanged: DestinationTableRepo.connectionChanged(
-        row,
+    await db.transaction(
+      () => repo.update(
+        id: id,
+        name: request.trimmedName,
         type: request.destinationType!,
         settings: jsonEncode(settings),
-        secrets: (stored, values),
+        secretsEncrypted: secrets.encrypt(id, values),
         folders: request.cleanFolders,
+        connectionChanged: DestinationTableRepo.connectionChanged(
+          row,
+          type: request.destinationType!,
+          settings: jsonEncode(settings),
+          secrets: (stored, values),
+          folders: request.cleanFolders,
+        ),
       ),
     );
     logger.info(
@@ -111,8 +118,9 @@ class DestinationService {
     await _row(workspace, id);
     final using = await configs.byDestination(id);
     if (using.isNotEmpty) {
-      throw ConflictException(
-        detail: intl.errors.destinations.inUse(configs: using.length),
+      throw AppException(
+        ErrorCode.destinationsInUse,
+        intl.errors.destinations.inUse(configs: using.length),
       );
     }
     await repo.delete(id);
@@ -137,6 +145,7 @@ class DestinationService {
         : _storedFor(
             await _row(workspace, destinationId),
             request.destinationType,
+            settings,
           );
     final values = Secrets.require(settings.requiredSecrets, {
       ...stored,
@@ -168,8 +177,9 @@ class DestinationService {
     await workspaces.get(workspace);
     final row = await repo.get(workspace, id);
     if (row == null) {
-      throw NotFoundException(
-        detail: intl.errors.destinations.notFound(id: id),
+      throw AppException(
+        ErrorCode.destinationsNotFound,
+        intl.errors.destinations.notFound(id: id),
       );
     }
     return row;
@@ -183,8 +193,9 @@ class DestinationService {
           ? config.folder == null
           : folders.contains(config.folder);
       if (!kept) {
-        throw ConflictException(
-          detail: intl.errors.destinations.folderInUse(
+        throw AppException(
+          ErrorCode.destinationsFolderInUse,
+          intl.errors.destinations.folderInUse(
             folder: config.folder ?? '/',
             config: config.name,
           ),
@@ -193,12 +204,18 @@ class DestinationService {
     }
   }
 
-  /// The stored secrets of [row], if it is still of [type].
-  Map<String, String> _storedFor(DestinationRow row, DestinationType? type) =>
-      row.destination.type == type
-      ? secrets.decryptOrNone(
+  /// The stored secrets of [row], if it is still of [type] and [settings]
+  /// still go where it was saved for ([Secrets.storedFor]).
+  Map<String, String> _storedFor(
+    DestinationRow row,
+    DestinationType? type,
+    DestinationSettings settings,
+  ) => row.destination.type == type
+      ? secrets.storedFor(
           row.destination.id,
           row.destination.secretsEncrypted,
+          saved: row.destination.settings,
+          target: settings.target,
         )
       : const {};
 

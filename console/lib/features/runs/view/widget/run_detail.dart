@@ -3,15 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
+class RunDialogNavigator {
+  /// [workspace]: out of the run log (Backups)
+  Future<void> open(RunModel run, {String? workspace}) => app.dialog.open(
+    dialog: RunDialog(run: run, workspace: workspace),
+  );
+}
+
 /// A run in a dialog: its status, config, source and destination; how it
 /// ended (or a generic progress while it runs); when, how long, why and how
 /// big; its steps and its log. It loads the detail (the log) when it opens
 class RunDialog extends StatefulWidget {
-  /// [workspace]: out of the run log (Backups)
-  static Future<void> open(RunModel run, {String? workspace}) =>
-      app.dialog.open(
-        dialog: RunDialog(run: run, workspace: workspace),
-      );
+  static final RunDialogNavigator navigator = RunDialogNavigator();
 
   /// The run of the list; the detail replaces it once loaded
   final RunModel run;
@@ -27,12 +30,12 @@ class _RunDialogState extends State<RunDialog> {
   @override
   void initState() {
     super.initState();
-    context.read<RunCubit>().detail(widget.run, workspace: widget.workspace);
+    context.read<RunsCubit>().detail(widget.run, workspace: widget.workspace);
   }
 
   @override
   Widget build(BuildContext context) {
-    final detail = context.select<RunCubit, RunModel?>(
+    final detail = context.select<RunsCubit, RunModel?>(
       (c) => c.state.data.details[widget.run.id],
     );
     final run = detail ?? widget.run;
@@ -105,7 +108,7 @@ class _Footer extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = app.colors;
     final t = app.intl.runs;
-    final slug = workspace ?? context.read<RunCubit>().state.data.workspace;
+    final slug = workspace ?? context.read<RunsCubit>().state.data.workspace;
     final ended =
         run.status == RunStatus.success || run.status == RunStatus.failed;
     return Container(
@@ -122,12 +125,11 @@ class _Footer extends StatelessWidget {
             InkWell(
               onTap: () {
                 Navigator.of(context).pop();
-                RouteNames.openWorkspace(slug, section: RouteNames.canvas);
+                CanvasScreen.navigator.go(workspace: slug);
               },
               child: Text(
                 app.intl.backups.editConfig,
-                style: TextStyle(
-                  fontSize: 13,
+                style: app.styles.m.copyWith(
                   color: colors.primary.primaryFaded,
                   decoration: TextDecoration.underline,
                   decorationColor: colors.primary.primaryFaded,
@@ -144,7 +146,7 @@ class _Footer extends StatelessWidget {
             AppButton(
               label: run.status == RunStatus.failed ? t.retryNow : t.runAgain,
               onPressed: () async {
-                final cubit = context.read<RunCubit>();
+                final cubit = context.read<RunsCubit>();
                 final root = app.context;
                 Navigator.of(context).pop();
                 final started = await cubit.runAgain(run, workspace: workspace);
@@ -214,8 +216,7 @@ class _Header extends StatelessWidget {
                   run.configName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 20,
+                  style: app.styles.h3.copyWith(
                     height: 28 / 20,
                     fontWeight: FontWeight.w700,
                   ),
@@ -283,7 +284,7 @@ class _Result extends StatelessWidget {
         RunStatusLabel.labelOf(run.status),
         Text(
           t.resultQueued,
-          style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+          style: app.styles.s.copyWith(color: colors.neutral.grey3),
         ),
       ),
       RunStatus.running => (
@@ -305,7 +306,7 @@ class _Result extends StatelessWidget {
             8.gap(),
             Text(
               t.resultRunning,
-              style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+              style: app.styles.s.copyWith(color: colors.neutral.grey3),
             ),
           ],
         ),
@@ -332,8 +333,7 @@ class _Result extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 13,
+                  style: app.styles.m.copyWith(
                     fontWeight: FontWeight.w600,
                     color: color,
                   ),
@@ -359,19 +359,18 @@ class _Meta extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = app.intl.runs;
     final colors = app.colors;
-    final value = TextStyle(
-      fontSize: 14,
+    final value = app.styles.l.copyWith(
       color: colors.text.primary,
       fontFeatures: const [FontFeature.tabularFigures()],
     );
-    final size = run.sizeBytes;
+    final size = run.written;
     Widget item(String label, Widget child) => Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
-            style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+            style: app.styles.s.copyWith(color: colors.neutral.grey4),
           ),
           2.gap(),
           child,
@@ -402,7 +401,7 @@ class _Meta extends StatelessWidget {
               if (run.byApi)
                 Text(
                   [?run.keyName, ?run.label].join(' · '),
-                  style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+                  style: app.styles.s.copyWith(color: colors.neutral.grey4),
                 ),
             ],
           ),
@@ -474,8 +473,7 @@ class _Steps extends StatelessWidget {
                       children: [
                         Text(
                           labels[i],
-                          style: TextStyle(
-                            fontSize: 14,
+                          style: app.styles.l.copyWith(
                             color: _pending(step.state)
                                 ? colors.neutral.grey4
                                 : colors.text.primary,
@@ -484,8 +482,7 @@ class _Steps extends StatelessWidget {
                         if (_subOf(step) case final sub?)
                           Text(
                             sub,
-                            style: TextStyle(
-                              fontSize: 12,
+                            style: app.styles.s.copyWith(
                               color: colors.neutral.grey4,
                               fontFeatures: const [
                                 FontFeature.tabularFigures(),
@@ -585,7 +582,7 @@ class _Log extends StatelessWidget {
                   ),
                   label: Text(
                     t.copyLog,
-                    style: TextStyle(fontSize: 12, color: colors.neutral.grey2),
+                    style: app.styles.s.copyWith(color: colors.neutral.grey2),
                   ),
                 ),
             ],
@@ -617,7 +614,7 @@ class _Log extends StatelessWidget {
                           run.status == RunStatus.queued
                       ? t.logWhenDone
                       : t.noLog,
-                  style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+                  style: app.styles.s.copyWith(color: colors.neutral.grey3),
                 )
               // selectable, to copy a few lines (the button copies it all)
               : SelectionArea(
@@ -664,8 +661,7 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text.toUpperCase(),
-      style: TextStyle(
-        fontSize: 12,
+      style: app.styles.s.copyWith(
         letterSpacing: 1.2,
         fontWeight: FontWeight.w700,
         color: app.colors.primary.primaryFaded,

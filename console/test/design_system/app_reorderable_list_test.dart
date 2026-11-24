@@ -7,7 +7,7 @@ void main() {
     final moves = <(int, int)>[];
     await tester.pumpWidget(
       MaterialApp(
-        theme: ThemeConfig.theme,
+        theme: AppTheme.dark,
         home: Scaffold(
           body: AppReorderableList<String>(
             items: items,

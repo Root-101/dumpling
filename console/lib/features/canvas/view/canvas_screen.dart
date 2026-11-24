@@ -3,14 +3,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
-class CanvasScreenNavigator {
+class CanvasScreenNavigator extends SectionNavigator {
+  @override
   String get name => RouteNames.canvas;
 
-  String get path => RouteNames.canvas;
-
+  @override
   Widget builder(BuildContext context, GoRouterState state) {
     return CanvasScreen(workspace: state.pathParameters[RouteNames.slugParam]!);
   }
+
+  /// Leaving it asks first while there are edits
+  @override
+  List<RouteBase> routes() => [
+    GoRoute(
+      name: name,
+      path: path,
+      builder: builder,
+      onExit: (context, state) => CanvasScreen.confirmLeave(),
+    ),
+  ];
 }
 
 /// The canvas of a workspace: its sources, destinations and the configs
@@ -66,18 +77,18 @@ class _CanvasScreenState extends State<CanvasScreen> {
   void _onState(BuildContext context, CanvasState state) {
     // closing or reloading the tab asks while there are edits
     BrowserWindow.guardLeave(cubit.dirty);
-    if (state is CanvasProcessInProgressState) {
+    if (state is CanvasSavingState || state is CanvasTestingState) {
       app.loading.show();
     } else {
       app.loading.hide();
     }
-    if (state is CanvasProcessingOKState) {
+    if (state is CanvasSavedOkState) {
       app.snack.showSuccess(
         message: app.intl.canvas.saved,
         context: app.context,
       );
     }
-    if (state is CanvasTestedState) {
+    if (state is CanvasTestedOkState) {
       final failed = state.checks.where((c) => !c.ok);
       if (state.checks.isEmpty) {
         app.snack.showError(
@@ -101,10 +112,8 @@ class _CanvasScreenState extends State<CanvasScreen> {
         );
       }
     }
-    if (state is CanvasRunFinishedState) {
+    if (state is CanvasRanNowOkState) {
       final run = state.run;
-      // the failing count of the rail comes from the list of workspaces
-      app.di.find<WorkspaceCubit>().load();
       if (run.status == RunStatus.success) {
         app.snack.showSuccess(
           message: app.intl.canvas.run.done(
@@ -123,14 +132,19 @@ class _CanvasScreenState extends State<CanvasScreen> {
         );
       }
     }
-    if (state is CanvasProcessingErrorState) {
-      app.snack.showError(message: state.message, context: app.context);
+    final failed = switch (state) {
+      CanvasSavingErrorState(:final message) => message,
+      CanvasRunningNowErrorState(:final exception) => exception.intlMessage,
+      _ => null,
+    };
+    if (failed != null) {
+      app.snack.showError(message: failed, context: app.context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final workspaceName = context.select<WorkspaceCubit, String>(
+    final workspaceName = context.select<WorkspacesCubit, String>(
       (c) => c.state.data.current?.name ?? widget.workspace,
     );
     return Scaffold(

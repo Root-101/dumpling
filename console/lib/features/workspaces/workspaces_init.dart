@@ -2,14 +2,17 @@ import 'package:console/app_exporter.dart';
 
 class WorkspacesInit {
   static Future init() async {
-    WorkspaceClient client = WorkspaceClient(app.di.find());
+    WorkspacesClient client = WorkspacesClient(app.di.find());
     app.di.put(client);
 
-    WorkspaceRepo repo = WorkspaceRepo(client, storage: app.di.find());
+    WorkspacesRepo repo = WorkspacesRepo(
+      client: client,
+      storage: app.di.find(),
+    );
     app.di.put(repo);
 
     // App-wide: the rail shows the current workspace on every screen
-    WorkspaceCubit cubit = WorkspaceCubit(repo, app.di.find());
+    WorkspacesCubit cubit = WorkspacesCubit(auth: app.di.find(), repo: repo);
     await cubit.restore();
     app.di.put(cubit);
   }

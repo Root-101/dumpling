@@ -30,6 +30,7 @@ class LanguageCubit extends Cubit<LanguageState> {
   Future init() async {
     String? key = await repo.loadKey();
     currentSelectedLanguage = _resolve(key: key);
+    AppIntl.current = AppIntl.resolve(currentSelectedLanguage.key);
 
     emit(
       LanguageChangedState(
@@ -51,6 +52,7 @@ class LanguageCubit extends Cubit<LanguageState> {
       return;
     }
     currentSelectedLanguage = language;
+    AppIntl.current = AppIntl.resolve(language.key);
     repo.save(model: currentSelectedLanguage);
 
     emit(
@@ -77,7 +79,6 @@ class LanguageCubit extends Cubit<LanguageState> {
   Locale get locale => Locale(currentSelectedLanguage.key);
 }
 
-// states
 abstract class LanguageState {
   final LanguageModel current;
   final List<LanguageModel> allLanguages;
@@ -85,14 +86,15 @@ abstract class LanguageState {
   const LanguageState({required this.current, required this.allLanguages});
 }
 
-class LanguageInitialState extends LanguageState {
+final class LanguageInitialState extends LanguageState {
   const LanguageInitialState({
     required super.current,
     required super.allLanguages,
   });
 }
 
-class LanguageChangedState extends LanguageState {
+/// Public contract: the texts changed language
+final class LanguageChangedState extends LanguageState {
   const LanguageChangedState({
     required super.current,
     required super.allLanguages,

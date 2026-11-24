@@ -4,26 +4,25 @@ library;
 import 'dart:convert';
 
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
-import 'package:http/http.dart' as http;
 import 'package:service/dumpling.dart';
 import 'package:test/test.dart';
 
-import '../../support/test_server.dart';
+import '../../support/test_app.dart';
 
 void main() {
-  final server = TestServer(port: 8181);
+  final server = TestApp();
 
   setUpAll(server.start);
   tearDownAll(server.stop);
 
-  Future<http.Response> login(Object body, {String? language}) => http.post(
-    server.url('/api/auth/login'),
+  Future<TestResponse> login(Object body, {String? language}) => server.post(
+    '/api/auth/login',
     headers: {'content-type': 'application/json', 'accept-language': ?language},
     body: jsonEncode(body),
   );
 
-  Future<int> sessionWith(String token) async => (await http.get(
-    server.url('/api/auth/session'),
+  Future<int> sessionWith(String token) async => (await server.get(
+    '/api/auth/session',
     headers: {'authorization': 'Bearer $token'},
   )).statusCode;
 
@@ -37,10 +36,9 @@ void main() {
       final body = jsonDecode(response.body);
       expect(body['access_token'], isNotEmpty);
       expect(body['expires_in'], const Duration(hours: 12).inMilliseconds);
-      expect(
-        body['expire_at'],
-        greaterThan(DateTime.now().millisecondsSinceEpoch),
-      );
+      // ISO 8601 in UTC, like every time of the API
+      expect(body['expire_at'], endsWith('Z'));
+      expect(DateTime.parse(body['expire_at']).isAfter(DateTime.now()), isTrue);
     });
 
     test(
@@ -75,14 +73,16 @@ void main() {
       );
     });
 
-    test('Should reject a malformed body (400) naming the field', () async {
+    test('Should reject a missing field (422) naming it', () async {
       final missing = await login({'username': testUser});
-      expect(missing.statusCode, 400);
+      expect(missing.statusCode, 422);
       expect(
         missing.headers['content-type'],
         startsWith('application/problem+json'),
       );
-      expect(jsonDecode(missing.body)['detail'], r'$.password: missing');
+      final violation = jsonDecode(missing.body)['violations'][0];
+      expect(violation['fieldName'], 'password');
+      expect(violation['code'], 'notNull');
     });
 
     test('Should not reveal internal details on a malformed login', () async {
@@ -99,23 +99,22 @@ void main() {
       'permissions': [Permissions.authSession],
     };
     String sign(Map<String, Object?> payload, [String? secret]) =>
-        JWT(payload).sign(SecretKey(secret ?? testJwtSecret(server.port)));
+        JWT(payload).sign(SecretKey(secret ?? testJwtSecret));
     int inOneHour() =>
         DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch ~/
         1000;
 
     test('Should answer who is signed in with the issued token', () async {
-      final response = await http.get(
-        server.url('/api/auth/session'),
+      final response = await server.get(
+        '/api/auth/session',
         headers: server.auth(),
       );
       expect(response.statusCode, 200);
       final body = jsonDecode(response.body);
       expect(body['username'], testUser);
-      expect(
-        body['expire_at'],
-        greaterThan(DateTime.now().millisecondsSinceEpoch),
-      );
+      // ISO 8601 in UTC, like every time of the API
+      expect(body['expire_at'], endsWith('Z'));
+      expect(DateTime.parse(body['expire_at']).isAfter(DateTime.now()), isTrue);
     });
 
     test('Should forbid a valid token without the permission (403)', () async {
@@ -141,7 +140,7 @@ void main() {
     );
 
     test('Should reject a request without a token', () async {
-      final response = await http.get(server.url('/api/auth/session'));
+      final response = await server.get('/api/auth/session');
       expect(response.statusCode, 401);
     });
 
@@ -167,8 +166,8 @@ void main() {
     });
 
     test('Should answer 404 for an unknown route of the API', () async {
-      final response = await http.get(
-        server.url('/api/nothing-here'),
+      final response = await server.get(
+        '/api/nothing-here',
         headers: server.auth(),
       );
       expect(response.statusCode, 404);

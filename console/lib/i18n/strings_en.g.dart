@@ -1,0 +1,3894 @@
+///
+/// Generated file. Do not edit.
+///
+// coverage:ignore-file
+// ignore_for_file: type=lint, unused_import
+
+part of 'strings.g.dart';
+
+// Path: <root>
+typedef AppTextsEn = AppTexts; // ignore: unused_element
+
+class AppTexts with BaseTranslations<AppLocale, AppTexts> {
+  /// You can call this constructor and build your own translation instance of this locale.
+  /// Constructing via the enum [AppLocale.build] is preferred.
+  AppTexts({
+    Map<String, Node>? overrides,
+    PluralResolver? cardinalResolver,
+    PluralResolver? ordinalResolver,
+    TranslationMetadata<AppLocale, AppTexts>? meta,
+  }) : assert(
+         overrides == null,
+         'Set "translation_overrides: true" in order to enable this feature.',
+       ),
+       _meta =
+           meta ??
+           TranslationMetadata(
+             locale: AppLocale.en,
+             overrides: overrides ?? {},
+             cardinalResolver: cardinalResolver,
+             ordinalResolver: ordinalResolver,
+           ) {
+    _meta.setFlatMapFunction(_flatMapFunction);
+  }
+
+  /// Metadata for the translations of <en>.
+  final TranslationMetadata<AppLocale, AppTexts> _meta;
+  @override
+  TranslationMetadata<AppLocale, AppTexts> get $meta => _meta;
+
+  /// Access flat map
+  dynamic operator [](String key) => _meta.getTranslation(key);
+
+  late final AppTexts _root = this; // ignore: unused_field
+
+  AppTexts $copyWith({TranslationMetadata<AppLocale, AppTexts>? meta}) =>
+      AppTexts(meta: meta ?? this.$meta);
+
+  // Translations
+  late final AppTexts$app$en app = AppTexts$app$en._(_root);
+  late final AppTexts$common$en common = AppTexts$common$en._(_root);
+  late final AppTexts$time$en time = AppTexts$time$en._(_root);
+  late final AppTexts$errors$en errors = AppTexts$errors$en._(_root);
+  late final AppTexts$nav$en nav = AppTexts$nav$en._(_root);
+  late final AppTexts$auth$en auth = AppTexts$auth$en._(_root);
+  late final AppTexts$colors$en colors = AppTexts$colors$en._(_root);
+  late final AppTexts$workspaces$en workspaces = AppTexts$workspaces$en._(
+    _root,
+  );
+  late final AppTexts$connections$en connections = AppTexts$connections$en._(
+    _root,
+  );
+  late final AppTexts$sources$en sources = AppTexts$sources$en._(_root);
+  late final AppTexts$destinations$en destinations = AppTexts$destinations$en._(
+    _root,
+  );
+  late final AppTexts$canvas$en canvas = AppTexts$canvas$en._(_root);
+  late final AppTexts$runs$en runs = AppTexts$runs$en._(_root);
+  late final AppTexts$backups$en backups = AppTexts$backups$en._(_root);
+  late final AppTexts$apiKeys$en apiKeys = AppTexts$apiKeys$en._(_root);
+}
+
+// Path: app
+class AppTexts$app$en {
+  AppTexts$app$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Dumpling'
+  String get name => 'Dumpling';
+
+  /// en: 'Need more space'
+  String get needMoreSpace => 'Need more space';
+
+  /// en: 'The console could not start'
+  String get initErrorTitle => 'The console could not start';
+
+  /// en: 'Check that the service is running and can be reached, then try again.'
+  String get initErrorHint =>
+      'Check that the service is running and can be reached, then try again.';
+
+  /// en: 'Connecting to the backup service…'
+  String get splashText => 'Connecting to the backup service…';
+
+  /// en: 'Dumpling v{version: String}'
+  String version({required String version}) => 'Dumpling v${version}';
+}
+
+// Path: common
+class AppTexts$common$en {
+  AppTexts$common$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Long names are cut on the canvas: a shorter one reads better.'
+  String get longName =>
+      'Long names are cut on the canvas: a shorter one reads better.';
+
+  /// en: 'Loading'
+  String get loading => 'Loading';
+
+  /// en: 'Error'
+  String get error => 'Error';
+
+  /// en: 'Try again'
+  String get tryAgain => 'Try again';
+
+  /// en: 'Cancel'
+  String get cancel => 'Cancel';
+
+  /// en: 'Close'
+  String get close => 'Close';
+
+  /// en: 'Required'
+  String get required => 'Required';
+
+  /// en: '(optional)'
+  String get optional => '(optional)';
+
+  /// en: 'Filters'
+  String get filters => 'Filters';
+
+  /// en: 'Clear all'
+  String get clearAll => 'Clear all';
+
+  /// en: 'Done'
+  String get done => 'Done';
+
+  /// en: 'Copied'
+  String get copied => 'Copied';
+
+  /// en: 'All'
+  String get all => 'All';
+
+  /// en: 'Selected'
+  String get selected => 'Selected';
+
+  /// en: 'Soon'
+  String get soon => 'Soon';
+
+  /// en: 'Edit'
+  String get edit => 'Edit';
+
+  /// en: 'Duplicate'
+  String get duplicate => 'Duplicate';
+
+  /// en: 'Delete'
+  String get delete => 'Delete';
+
+  /// en: 'Add'
+  String get add => 'Add';
+
+  /// en: 'Saving…'
+  String get saving => 'Saving…';
+
+  /// en: 'Save changes'
+  String get saveChanges => 'Save changes';
+
+  /// en: 'Nothing matches your search'
+  String get noMatches => 'Nothing matches your search';
+
+  /// en: 'Clear search and filters'
+  String get clearSearch => 'Clear search and filters';
+
+  /// en: 'Drag to reorder'
+  String get dragToReorder => 'Drag to reorder';
+
+  /// en: 'Clear the search and filters to reorder'
+  String get clearToReorder => 'Clear the search and filters to reorder';
+
+  /// en: '{shown: int} of {total: int}'
+  String shownOf({required int shown, required int total}) =>
+      '${shown} of ${total}';
+
+  /// en: 'Options for {name: String}'
+  String optionsFor({required String name}) => 'Options for ${name}';
+
+  /// en: 'View details'
+  String get viewDetails => 'View details';
+
+  /// en: 'Refresh'
+  String get refresh => 'Refresh';
+
+  /// en: 'List'
+  String get listView => 'List';
+
+  /// en: 'Grid'
+  String get gridView => 'Grid';
+
+  /// en: 'Back'
+  String get back => 'Back';
+
+  /// en: 'Next'
+  String get next => 'Next';
+
+  /// en: 'Step {n: int} of {total: int}'
+  String stepOf({required int n, required int total}) =>
+      'Step ${n} of ${total}';
+
+  /// en: '(one) {{n} backup} (other) {{n} backups}'
+  String backupCount({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} backup',
+        other: '${n} backups',
+      );
+}
+
+// Path: time
+class AppTexts$time$en {
+  AppTexts$time$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: '{time: String} UTC'
+  String utc({required String time}) => '${time} UTC';
+
+  /// en: '{time: String} local'
+  String local({required String time}) => '${time} local';
+}
+
+// Path: errors
+class AppTexts$errors$en {
+  AppTexts$errors$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Request to API server was cancelled'
+  String get requestCancelled => 'Request to API server was cancelled';
+
+  /// en: 'Receive timeout in connection with API server'
+  String get receiveTimeout => 'Receive timeout in connection with API server';
+
+  /// en: 'Send timeout with API server'
+  String get sendTimeout => 'Send timeout with API server';
+
+  /// en: 'Bad certificate'
+  String get badCertificate => 'Bad certificate';
+
+  /// en: 'Validation error'
+  String get validation => 'Validation error';
+
+  /// en: 'Server error'
+  String get server => 'Server error';
+
+  /// en: 'Unknown error'
+  String get unknown => 'Unknown error';
+
+  /// en: 'This page does not exist.'
+  String get pageNotFound => 'This page does not exist.';
+
+  /// en: 'This page doesn’t exist'
+  String get pageMissing => 'This page doesn’t exist';
+
+  /// en: 'The backup, source or workspace may have been deleted, or the link is wrong.'
+  String get pageMissingHint =>
+      'The backup, source or workspace may have been deleted, or the link is wrong.';
+
+  /// en: 'Go to Backups'
+  String get goToBackups => 'Go to Backups';
+
+  /// en: 'Switch workspace'
+  String get switchWorkspace => 'Switch workspace';
+
+  /// en: 'Connection lost'
+  String get offlineTitle => 'Connection lost';
+
+  /// en: 'Can’t reach the Dumpling server.'
+  String get offlineBanner => 'Can’t reach the Dumpling server.';
+
+  /// en: 'Showing what was loaded before; backups keep running on the server.'
+  String get offlineKept =>
+      'Showing what was loaded before; backups keep running on the server.';
+
+  /// en: 'Retrying in {seconds: int} s…'
+  String retryingIn({required int seconds}) => 'Retrying in ${seconds} s…';
+
+  /// en: 'Retry now'
+  String get retryNow => 'Retry now';
+
+  /// en: 'Can't reach the Dumpling service at {url: String}. Check that it is running and try again.'
+  String offline({required String url}) =>
+      'Can\'t reach the Dumpling service at ${url}. Check that it is running and try again.';
+}
+
+// Path: nav
+class AppTexts$nav$en {
+  AppTexts$nav$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: '{name: String} · switch workspace'
+  String switchWorkspace({required String name}) =>
+      '${name} · switch workspace';
+
+  /// en: 'Workspaces'
+  String get workspaces => 'Workspaces';
+
+  /// en: 'Backups'
+  String get backups => 'Backups';
+
+  /// en: 'Pipeline editor'
+  String get canvas => 'Pipeline editor';
+
+  /// en: 'Sources'
+  String get sources => 'Sources';
+
+  /// en: 'Destinations'
+  String get destinations => 'Destinations';
+
+  /// en: 'Run log'
+  String get runs => 'Run log';
+
+  /// en: 'API keys'
+  String get apiKeys => 'API keys';
+
+  /// en: '{count: int} failing'
+  String failedRuns({required int count}) => '${count} failing';
+
+  /// en: 'Language: {name: String}'
+  String language({required String name}) => 'Language: ${name}';
+
+  /// en: 'Expand menu'
+  String get expand => 'Expand menu';
+
+  /// en: 'Collapse menu'
+  String get collapse => 'Collapse menu';
+
+  /// en: 'Sign out'
+  String get logout => 'Sign out';
+}
+
+// Path: auth
+class AppTexts$auth$en {
+  AppTexts$auth$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Sign in'
+  String get title => 'Sign in';
+
+  /// en: 'Manage your database backups.'
+  String get description => 'Manage your database backups.';
+
+  /// en: 'Username'
+  String get username => 'Username';
+
+  /// en: 'Enter your username'
+  String get usernameHint => 'Enter your username';
+
+  /// en: 'Password'
+  String get password => 'Password';
+
+  /// en: 'Enter your password'
+  String get passwordHint => 'Enter your password';
+
+  /// en: 'Show password'
+  String get showPassword => 'Show password';
+
+  /// en: 'Hide password'
+  String get hidePassword => 'Hide password';
+
+  /// en: 'Sign in'
+  String get button => 'Sign in';
+
+  /// en: 'Signing in…'
+  String get signingIn => 'Signing in…';
+
+  /// en: 'Check both and try again.'
+  String get failedHint => 'Check both and try again.';
+
+  /// en: '(one) {Try again in {minutes} minute.} (other) {Try again in {minutes} minutes.}'
+  String retryIn({required num minutes}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        minutes,
+        one: 'Try again in ${minutes} minute.',
+        other: 'Try again in ${minutes} minutes.',
+      );
+
+  /// en: 'The username and password are set on the server with'
+  String get envHint => 'The username and password are set on the server with';
+
+  /// en: 'and'
+  String get envHintAnd => 'and';
+
+  /// en: 'Backups made'
+  String get tagline => 'Backups made';
+
+  /// en: 'easy'
+  String get taglineAccent => 'easy';
+
+  /// en: 'Lightweight'
+  String get tagLightweight => 'Lightweight';
+
+  /// en: 'Drag & Drop Canvas'
+  String get tagCanvas => 'Drag & Drop Canvas';
+
+  /// en: 'Powered by Winter'
+  String get tagWinter => 'Powered by Winter';
+
+  /// en: 'Your session expired'
+  String get expiredTitle => 'Your session expired';
+
+  /// en: 'Your session ended after 12 hours. Sign in again to continue where you left off.'
+  String get expiredDescription =>
+      'Your session ended after 12 hours. Sign in again to continue where you left off.';
+
+  /// en: 'Go to the sign-in page'
+  String get toSignInPage => 'Go to the sign-in page';
+}
+
+// Path: colors
+class AppTexts$colors$en {
+  AppTexts$colors$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'No color'
+  String get none => 'No color';
+
+  /// en: 'Custom color'
+  String get custom => 'Custom color';
+
+  /// en: 'Apply'
+  String get apply => 'Apply';
+
+  /// en: 'Saturation and brightness'
+  String get saturationBrightness => 'Saturation and brightness';
+
+  /// en: 'Hue'
+  String get hue => 'Hue';
+
+  /// en: 'White initial on this color: {ratio: String}:1'
+  String contrast({required String ratio}) =>
+      'White initial on this color: ${ratio}:1';
+
+  /// en: 'Low contrast with the white initial ({ratio: String}:1). It will be hard to read.'
+  String contrastLow({required String ratio}) =>
+      'Low contrast with the white initial (${ratio}:1). It will be hard to read.';
+
+  /// en: 'Enter a 6-digit HEX color, for example #0E7490'
+  String get hexInvalid => 'Enter a 6-digit HEX color, for example #0E7490';
+
+  /// en: 'Violet'
+  String get violet => 'Violet';
+
+  /// en: 'Blue'
+  String get blue => 'Blue';
+
+  /// en: 'Teal'
+  String get teal => 'Teal';
+
+  /// en: 'Green'
+  String get green => 'Green';
+
+  /// en: 'Amber'
+  String get amber => 'Amber';
+
+  /// en: 'Red'
+  String get red => 'Red';
+
+  /// en: 'Pink'
+  String get pink => 'Pink';
+
+  /// en: 'Slate'
+  String get slate => 'Slate';
+}
+
+// Path: workspaces
+class AppTexts$workspaces$en {
+  AppTexts$workspaces$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Workspaces'
+  String get title => 'Workspaces';
+
+  /// en: 'Each workspace is separate: its own canvas, sources, destinations and backups.'
+  String get description =>
+      'Each workspace is separate: its own canvas, sources, destinations and backups.';
+
+  /// en: 'New workspace'
+  String get create => 'New workspace';
+
+  /// en: 'A fresh canvas for another environment, client or project.'
+  String get createHint =>
+      'A fresh canvas for another environment, client or project.';
+
+  /// en: 'Current'
+  String get current => 'Current';
+
+  /// en: 'Copy the slug of {name: String}: the workspace in the URLs of the API'
+  String copySlug({required String name}) =>
+      'Copy the slug of ${name}: the workspace in the URLs of the API';
+
+  /// en: 'Sources'
+  String get sources => 'Sources';
+
+  /// en: 'Destinations'
+  String get destinations => 'Destinations';
+
+  /// en: 'Backups'
+  String get backups => 'Backups';
+
+  /// en: 'No backups yet'
+  String get noBackups => 'No backups yet';
+
+  /// en: 'All healthy'
+  String get healthy => 'All healthy';
+
+  /// en: '{count: int} failing'
+  String failing({required int count}) => '${count} failing';
+
+  /// en: 'Running now'
+  String get running => 'Running now';
+
+  /// en: 'Last run {time: String}'
+  String lastRun({required String time}) => 'Last run ${time}';
+
+  /// en: 'No runs yet'
+  String get noRuns => 'No runs yet';
+
+  /// en: 'Open canvas'
+  String get openCanvas => 'Open canvas';
+
+  /// en: 'Switch & open canvas'
+  String get switchAndOpen => 'Switch & open canvas';
+
+  /// en: 'New workspace'
+  String get formTitle => 'New workspace';
+
+  /// en: 'Nothing is shared between workspaces: each one has its own canvas, connections, backups and run history.'
+  String get formDescription =>
+      'Nothing is shared between workspaces: each one has its own canvas, connections, backups and run history.';
+
+  /// en: 'Name'
+  String get name => 'Name';
+
+  /// en: 'e.g. Staging'
+  String get nameHint => 'e.g. Staging';
+
+  /// en: 'Description'
+  String get descriptionLabel => 'Description';
+
+  /// en: 'What this workspace is for'
+  String get descriptionHint => 'What this workspace is for';
+
+  /// en: 'Color'
+  String get color => 'Color';
+
+  /// en: 'A new workspace starts with an empty canvas.'
+  String get emptyCanvas => 'A new workspace starts with an empty canvas.';
+
+  /// en: 'Create workspace'
+  String get createButton => 'Create workspace';
+
+  /// en: 'Creating…'
+  String get creating => 'Creating…';
+
+  /// en: 'Workspace {name: String} created'
+  String created({required String name}) => 'Workspace ${name} created';
+
+  /// en: 'Settings for {name: String}'
+  String settingsOf({required String name}) => 'Settings for ${name}';
+
+  late final AppTexts$workspaces$transfer$en transfer =
+      AppTexts$workspaces$transfer$en._(_root);
+  late final AppTexts$workspaces$settings$en settings =
+      AppTexts$workspaces$settings$en._(_root);
+}
+
+// Path: connections
+class AppTexts$connections$en {
+  AppTexts$connections$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Not tested'
+  String get notTested => 'Not tested';
+
+  /// en: 'Not tested yet'
+  String get notTestedYet => 'Not tested yet';
+
+  /// en: 'Testing…'
+  String get testing => 'Testing…';
+
+  /// en: 'Test connection'
+  String get test => 'Test connection';
+
+  /// en: 'Test again'
+  String get testAgain => 'Test again';
+
+  /// en: 'Test the connection to continue'
+  String get testToContinue => 'Test the connection to continue';
+
+  /// en: 'Connected'
+  String get connected => 'Connected';
+
+  /// en: 'Incompatible'
+  String get incompatible => 'Incompatible';
+
+  /// en: 'Connected, but the server is newer than the dump tool'
+  String get incompatibleTitle =>
+      'Connected, but the server is newer than the dump tool';
+
+  /// en: 'Server {server: String} · {tool: String}. Update the dump tool where Dumpling runs.'
+  String incompatibleSub({required String server, required String tool}) =>
+      'Server ${server} · ${tool}. Update the dump tool where Dumpling runs.';
+
+  /// en: 'Tool missing'
+  String get toolMissing => 'Tool missing';
+
+  /// en: 'Connected, but the dump tool is not installed where Dumpling runs'
+  String get toolMissingTitle =>
+      'Connected, but the dump tool is not installed where Dumpling runs';
+
+  /// en: 'Unreachable'
+  String get unreachable => 'Unreachable';
+
+  /// en: 'Couldn't connect'
+  String get failedTitle => 'Couldn\'t connect';
+
+  /// en: 'Last check'
+  String get lastCheck => 'Last check';
+
+  /// en: 'Connection check'
+  String get checkTitle => 'Connection check';
+
+  /// en: 'Before every run and when you test'
+  String get checkNote => 'Before every run and when you test';
+
+  /// en: 'Connection'
+  String get connection => 'Connection';
+
+  /// en: 'Edit connection'
+  String get editConnection => 'Edit connection';
+}
+
+// Path: sources
+class AppTexts$sources$en {
+  AppTexts$sources$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Sources'
+  String get title => 'Sources';
+
+  /// en: 'What this workspace backs up: PostgreSQL databases.'
+  String get description =>
+      'What this workspace backs up: PostgreSQL databases.';
+
+  /// en: 'New source'
+  String get create => 'New source';
+
+  /// en: 'Search sources'
+  String get search => 'Search sources';
+
+  /// en: 'Name'
+  String get columnName => 'Name';
+
+  /// en: 'Type'
+  String get columnType => 'Type';
+
+  /// en: 'Host'
+  String get columnHost => 'Host';
+
+  /// en: 'Backups'
+  String get columnBackups => 'Backups';
+
+  /// en: 'Status'
+  String get columnStatus => 'Status';
+
+  /// en: 'No sources yet'
+  String get emptyTitle => 'No sources yet';
+
+  /// en: 'Connect a database to back it up.'
+  String get emptyDescription => 'Connect a database to back it up.';
+
+  /// en: '(one) {Used by {n} backup. Remove it first.} (other) {Used by {n} backups. Remove them first.}'
+  String inUse({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: 'Used by ${n} backup. Remove it first.',
+        other: 'Used by ${n} backups. Remove them first.',
+      );
+
+  /// en: 'Delete the source {name: String}?'
+  String deleteTitle({required String name}) => 'Delete the source ${name}?';
+
+  /// en: 'It isn't used by any backup. Its saved connection and password are removed from this workspace.'
+  String get deleteConfirm =>
+      'It isn\'t used by any backup. Its saved connection and password are removed from this workspace.';
+
+  /// en: 'Source {name: String} deleted'
+  String deleted({required String name}) => 'Source ${name} deleted';
+
+  /// en: 'New source'
+  String get newTitle => 'New source';
+
+  /// en: 'Edit source'
+  String get editTitle => 'Edit source';
+
+  /// en: 'Connect what you want to back up.'
+  String get formDescription => 'Connect what you want to back up.';
+
+  /// en: 'Name & type'
+  String get stepType => 'Name & type';
+
+  /// en: 'Connection'
+  String get stepConnection => 'Connection';
+
+  /// en: 'Options & save'
+  String get stepOptions => 'Options & save';
+
+  /// en: 'What do you want to back up?'
+  String get typeTitle => 'What do you want to back up?';
+
+  /// en: 'How should Dumpling connect?'
+  String get connectionTitle => 'How should Dumpling connect?';
+
+  /// en: 'Options and save'
+  String get optionsTitle => 'Options and save';
+
+  /// en: 'Name'
+  String get name => 'Name';
+
+  /// en: 'e.g. orders-db'
+  String get nameHint => 'e.g. orders-db';
+
+  /// en: 'How it appears on the canvas, in Backups and in Run logs.'
+  String get nameHelp =>
+      'How it appears on the canvas, in Backups and in Run logs.';
+
+  /// en: '{name: String}-copy'
+  String copyName({required String name}) => '${name}-copy';
+
+  /// en: 'Connect with'
+  String get connectWith => 'Connect with';
+
+  /// en: 'Fields'
+  String get byFields => 'Fields';
+
+  /// en: 'Connection URL'
+  String get byUrl => 'Connection URL';
+
+  /// en: 'Host'
+  String get host => 'Host';
+
+  /// en: 'Port'
+  String get port => 'Port';
+
+  /// en: 'From 1 to 65535'
+  String get portInvalid => 'From 1 to 65535';
+
+  /// en: 'Database'
+  String get database => 'Database';
+
+  /// en: 'User'
+  String get username => 'User';
+
+  /// en: 'Password'
+  String get password => 'Password';
+
+  /// en: 'Leave empty to keep it (same server and user)'
+  String get passwordKeepHint =>
+      'Leave empty to keep it (same server and user)';
+
+  /// en: 'Use a read-only role. Stored encrypted; never shown again after saving.'
+  String get passwordHelp =>
+      'Use a read-only role. Stored encrypted; never shown again after saving.';
+
+  /// en: 'Connection URL'
+  String get connectionUrl => 'Connection URL';
+
+  /// en: 'The password in the URL is stored encrypted and never shown again.'
+  String get urlHelp =>
+      'The password in the URL is stored encrypted and never shown again.';
+
+  /// en: 'Without a password in the URL, the saved one is kept while the host, database and user stay the same.'
+  String get urlHelpEditing =>
+      'Without a password in the URL, the saved one is kept while the host, database and user stay the same.';
+
+  /// en: 'Use the format postgresql://user:password@host:5432/database'
+  String get urlInvalid =>
+      'Use the format postgresql://user:password@host:5432/database';
+
+  /// en: 'Dump format'
+  String get dumpFormat => 'Dump format';
+
+  /// en: 'Custom (pg_dump -Fc)'
+  String get formatCustom => 'Custom (pg_dump -Fc)';
+
+  /// en: 'Plain SQL'
+  String get formatPlain => 'Plain SQL';
+
+  /// en: 'TLS'
+  String get sslMode => 'TLS';
+
+  /// en: 'Required'
+  String get sslRequire => 'Required';
+
+  /// en: 'Off'
+  String get sslDisable => 'Off';
+
+  /// en: 'The connection is encrypted (the certificate is not checked) and the password never travels in clear.'
+  String get sslRequireHelp =>
+      'The connection is encrypted (the certificate is not checked) and the password never travels in clear.';
+
+  /// en: 'Without TLS the password and the data travel in clear: only for a database on a network you trust.'
+  String get sslDisableWarning =>
+      'Without TLS the password and the data travel in clear: only for a database on a network you trust.';
+
+  /// en: 'Checks the login, the access to the database and the TLS setting above.'
+  String get testIdle =>
+      'Checks the login, the access to the database and the TLS setting above.';
+
+  /// en: '✓ Tested · TLS on'
+  String get testedTlsOn => '✓ Tested · TLS on';
+
+  /// en: '✓ Tested · TLS off'
+  String get testedTlsOff => '✓ Tested · TLS off';
+
+  /// en: 'Connected as {user: String}'
+  String connectedAs({required String user}) => 'Connected as ${user}';
+
+  /// en: 'Create source'
+  String get createButton => 'Create source';
+
+  /// en: 'Source {name: String} created'
+  String created({required String name}) => 'Source ${name} created';
+
+  /// en: 'Source {name: String} saved'
+  String saved({required String name}) => 'Source ${name} saved';
+
+  /// en: 'A {type: String} database this workspace backs up.'
+  String detailDescription({required String type}) =>
+      'A ${type} database this workspace backs up.';
+
+  /// en: 'Backups'
+  String get statBackups => 'Backups';
+
+  /// en: '(zero) {none yet} (one) {in {n} destination} (other) {in {n} destinations}'
+  String statDestinations({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        zero: 'none yet',
+        one: 'in ${n} destination',
+        other: 'in ${n} destinations',
+      );
+
+  /// en: 'Last backup'
+  String get statLastBackup => 'Last backup';
+
+  /// en: 'Backups using this source'
+  String get sectionUses => 'Backups using this source';
+
+  /// en: 'Open editor'
+  String get openEditor => 'Open editor';
+
+  /// en: 'No backup uses it yet. Connect it to a destination in the pipeline editor.'
+  String get noUses =>
+      'No backup uses it yet. Connect it to a destination in the pipeline editor.';
+
+  /// en: 'Backup'
+  String get columnBackup => 'Backup';
+
+  /// en: 'Schedule'
+  String get columnSchedule => 'Schedule';
+
+  /// en: 'Last run'
+  String get columnLastRun => 'Last run';
+
+  /// en: 'Next run'
+  String get columnNextRun => 'Next run';
+
+  /// en: 'cron · UTC'
+  String get cronUtc => 'cron · UTC';
+
+  /// en: 'Paused'
+  String get paused => 'Paused';
+
+  /// en: 'Not run yet'
+  String get neverRun => 'Not run yet';
+
+  /// en: '•••••••• · stored encrypted'
+  String get passwordStored => '•••••••• · stored encrypted';
+}
+
+// Path: destinations
+class AppTexts$destinations$en {
+  AppTexts$destinations$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Destinations'
+  String get title => 'Destinations';
+
+  /// en: 'Where this workspace writes backups: S3 buckets.'
+  String get description => 'Where this workspace writes backups: S3 buckets.';
+
+  /// en: 'New destination'
+  String get create => 'New destination';
+
+  /// en: 'Search destinations'
+  String get search => 'Search destinations';
+
+  /// en: 'Name'
+  String get columnName => 'Name';
+
+  /// en: 'Type'
+  String get columnType => 'Type';
+
+  /// en: 'Endpoint'
+  String get columnEndpoint => 'Endpoint';
+
+  /// en: 'Backups'
+  String get columnBackups => 'Backups';
+
+  /// en: 'Status'
+  String get columnStatus => 'Status';
+
+  /// en: 'Bucket root'
+  String get bucketRoot => 'Bucket root';
+
+  /// en: '(one) {{n} folder} (other) {{n} folders}'
+  String folderCount({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} folder',
+        other: '${n} folders',
+      );
+
+  /// en: 'Show the folders of {name: String}'
+  String showFolders({required String name}) => 'Show the folders of ${name}';
+
+  /// en: 'Hide the folders of {name: String}'
+  String hideFolders({required String name}) => 'Hide the folders of ${name}';
+
+  /// en: 'No destinations yet'
+  String get emptyTitle => 'No destinations yet';
+
+  /// en: 'Add a bucket to write backups to.'
+  String get emptyDescription => 'Add a bucket to write backups to.';
+
+  /// en: '(one) {Used by {n} backup. Remove it first.} (other) {Used by {n} backups. Remove them first.}'
+  String inUse({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: 'Used by ${n} backup. Remove it first.',
+        other: 'Used by ${n} backups. Remove them first.',
+      );
+
+  /// en: 'Delete the destination {name: String}?'
+  String deleteTitle({required String name}) =>
+      'Delete the destination ${name}?';
+
+  /// en: 'It isn't used by any backup. Its saved connection and keys are removed from this workspace. The files already in the bucket stay there.'
+  String get deleteConfirm =>
+      'It isn\'t used by any backup. Its saved connection and keys are removed from this workspace. The files already in the bucket stay there.';
+
+  /// en: 'Destination {name: String} deleted'
+  String deleted({required String name}) => 'Destination ${name} deleted';
+
+  /// en: 'No folders · the bucket root is the only connection point'
+  String get noFolders =>
+      'No folders · the bucket root is the only connection point';
+
+  /// en: '(one) {{n} backup} (other) {{n} backups}'
+  String folderUsed({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} backup',
+        other: '${n} backups',
+      );
+
+  /// en: 'Not used yet'
+  String get notUsedYet => 'Not used yet';
+
+  /// en: 'Delete folder {path: String}'
+  String deleteFolder({required String path}) => 'Delete folder ${path}';
+
+  /// en: 'In use by backups. Reconnect them first.'
+  String get folderLocked => 'In use by backups. Reconnect them first.';
+
+  /// en: 'Add folder'
+  String get addFolder => 'Add folder';
+
+  /// en: '/folder-name'
+  String get folderHint => '/folder-name';
+
+  /// en: 'Enter a folder name'
+  String get folderEmpty => 'Enter a folder name';
+
+  /// en: 'Lowercase letters, digits, - . _ and / between them'
+  String get folderInvalid =>
+      'Lowercase letters, digits, - . _ and / between them';
+
+  /// en: 'That folder already exists'
+  String get folderRepeated => 'That folder already exists';
+
+  /// en: 'Folder {path: String} added'
+  String folderAdded({required String path}) => 'Folder ${path} added';
+
+  /// en: 'Folder {path: String} deleted'
+  String folderDeleted({required String path}) => 'Folder ${path} deleted';
+
+  /// en: 'New destination'
+  String get newTitle => 'New destination';
+
+  /// en: 'Edit destination'
+  String get editTitle => 'Edit destination';
+
+  /// en: 'Choose where backups are written.'
+  String get formDescription => 'Choose where backups are written.';
+
+  /// en: 'Name & type'
+  String get stepType => 'Name & type';
+
+  /// en: 'Connection'
+  String get stepConnection => 'Connection';
+
+  /// en: 'Folders'
+  String get stepFolders => 'Folders';
+
+  /// en: 'Where should backups go?'
+  String get typeTitle => 'Where should backups go?';
+
+  /// en: 'How should Dumpling connect?'
+  String get connectionTitle => 'How should Dumpling connect?';
+
+  /// en: 'Folders'
+  String get foldersTitle => 'Folders';
+
+  /// en: 'Name'
+  String get name => 'Name';
+
+  /// en: 'e.g. bucket-backups'
+  String get nameHint => 'e.g. bucket-backups';
+
+  /// en: 'How it appears on the canvas and in Backups.'
+  String get nameHelp => 'How it appears on the canvas and in Backups.';
+
+  /// en: '{name: String}-copy'
+  String copyName({required String name}) => '${name}-copy';
+
+  /// en: 'Endpoint'
+  String get endpoint => 'Endpoint';
+
+  /// en: 'Any S3-compatible URL. For AWS use https://s3.<region>.amazonaws.com.'
+  String get endpointHelp =>
+      'Any S3-compatible URL. For AWS use https://s3.<region>.amazonaws.com.';
+
+  /// en: 'Bucket'
+  String get bucket => 'Bucket';
+
+  /// en: 'Region'
+  String get region => 'Region';
+
+  /// en: 'Access key ID'
+  String get accessKeyId => 'Access key ID';
+
+  /// en: 'Secret key'
+  String get secretKey => 'Secret key';
+
+  /// en: 'Leave empty to keep it (same endpoint and bucket)'
+  String get secretKeepHint =>
+      'Leave empty to keep it (same endpoint and bucket)';
+
+  /// en: 'Stored encrypted; never shown again after saving.'
+  String get secretHelp => 'Stored encrypted; never shown again after saving.';
+
+  /// en: 'Path-style addressing'
+  String get pathStyle => 'Path-style addressing';
+
+  /// en: 'Needed by most self-hosted S3 servers.'
+  String get pathStyleHelp => 'Needed by most self-hosted S3 servers.';
+
+  /// en: 'Permissions needed: s3:PutObject and s3:AbortMultipartUpload.'
+  String get permissions =>
+      'Permissions needed: s3:PutObject and s3:AbortMultipartUpload.';
+
+  /// en: 'Optional. Each folder is a connection point on the canvas; with folders, the bucket root is not one. Each new folder is checked before saving.'
+  String get foldersHelp =>
+      'Optional. Each folder is a connection point on the canvas; with folders, the bucket root is not one. Each new folder is checked before saving.';
+
+  /// en: 'Dumpling starts and aborts a multipart upload at the bucket root; nothing is left in the bucket.'
+  String get testIdle =>
+      'Dumpling starts and aborts a multipart upload at the bucket root; nothing is left in the bucket.';
+
+  /// en: '(one) {{n} folder hasn't been checked yet.} (other) {{n} folders haven't been checked yet.}'
+  String foldersPending({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} folder hasn\'t been checked yet.',
+        other: '${n} folders haven\'t been checked yet.',
+      );
+
+  /// en: 'All folders are writable.'
+  String get foldersAllChecked => 'All folders are writable.';
+
+  /// en: 'The bucket root was checked in step 2.'
+  String get foldersRootCheckedShort =>
+      'The bucket root was checked in step 2.';
+
+  /// en: 'Writable'
+  String get folderWritable => 'Writable';
+
+  /// en: 'Not checked'
+  String get folderNotChecked => 'Not checked';
+
+  /// en: 'No folders: backups go to the bucket root, already checked in step 2.'
+  String get foldersRootChecked =>
+      'No folders: backups go to the bucket root, already checked in step 2.';
+
+  /// en: '(one) {Check {n} folder} (other) {Check {n} folders}'
+  String checkFolders({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: 'Check ${n} folder',
+        other: 'Check ${n} folders',
+      );
+
+  /// en: 'Check again'
+  String get checkAgain => 'Check again';
+
+  /// en: 'Checking…'
+  String get checkingFolders => 'Checking…';
+
+  /// en: 'Check the new folders to save'
+  String get checkFoldersToSave => 'Check the new folders to save';
+
+  /// en: '{bucket: String} · nothing was left in the bucket'
+  String connectedSub({required String bucket}) =>
+      '${bucket} · nothing was left in the bucket';
+
+  /// en: '✓ Root writable'
+  String get rootWritable => '✓ Root writable';
+
+  /// en: 'Create destination'
+  String get createButton => 'Create destination';
+
+  /// en: 'Destination {name: String} created'
+  String created({required String name}) => 'Destination ${name} created';
+
+  /// en: 'Destination {name: String} saved'
+  String saved({required String name}) => 'Destination ${name} saved';
+
+  /// en: 'A bucket this workspace writes backups to.'
+  String get detailDescription => 'A bucket this workspace writes backups to.';
+
+  /// en: 'Backups'
+  String get statBackups => 'Backups';
+
+  /// en: 'write here'
+  String get statBackupsSub => 'write here';
+
+  /// en: 'Folders'
+  String get statFolders => 'Folders';
+
+  /// en: 'connection points'
+  String get statFoldersSub => 'connection points';
+
+  /// en: 'Folders'
+  String get sectionFolders => 'Folders';
+
+  /// en: 'Folder'
+  String get columnFolder => 'Folder';
+
+  /// en: 'Written by'
+  String get columnWrittenBy => 'Written by';
+
+  /// en: 'Access key'
+  String get accessKey => 'Access key';
+
+  /// en: 'On'
+  String get on => 'On';
+
+  /// en: 'Off'
+  String get off => 'Off';
+
+  late final AppTexts$destinations$typeSub$en typeSub =
+      AppTexts$destinations$typeSub$en._(_root);
+}
+
+// Path: canvas
+class AppTexts$canvas$en {
+  AppTexts$canvas$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Connect sources to destinations to build this workspace's backups.'
+  String get description =>
+      'Connect sources to destinations to build this workspace\'s backups.';
+
+  /// en: 'Save canvas'
+  String get save => 'Save canvas';
+
+  /// en: 'Canvas saved'
+  String get saved => 'Canvas saved';
+
+  /// en: 'Discard the changes?'
+  String get unsavedTitle => 'Discard the changes?';
+
+  /// en: 'The canvas has changes that are not saved. Leaving discards them.'
+  String get unsavedDescription =>
+      'The canvas has changes that are not saved. Leaving discards them.';
+
+  /// en: 'Discard'
+  String get discard => 'Discard';
+
+  /// en: 'New config'
+  String get newConfig => 'New config';
+
+  /// en: 'Remove from canvas'
+  String get removeFromCanvas => 'Remove from canvas';
+
+  /// en: 'Every source is on the canvas'
+  String get allSourcesPlaced => 'Every source is on the canvas';
+
+  /// en: 'Every destination is on the canvas'
+  String get allDestinationsPlaced => 'Every destination is on the canvas';
+
+  /// en: 'Workspace default'
+  String get workspaceDefault => 'Workspace default';
+
+  /// en: 'Never run'
+  String get neverRun => 'Never run';
+
+  /// en: 'Disabled'
+  String get disabled => 'Disabled';
+
+  /// en: '(one) {{n} incomplete config} (other) {{n} incomplete configs}'
+  String orphans({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} incomplete config',
+        other: '${n} incomplete configs',
+      );
+
+  /// en: 'Only complete flows (source → config → destination) are saved. The configs in amber are discarded on save; sources and destinations stay.'
+  String get orphansHelp =>
+      'Only complete flows (source → config → destination) are saved. The configs in amber are discarded on save; sources and destinations stay.';
+
+  /// en: 'Canvas. Hold Space and drag to move it; right click for options; arrow keys pan; Ctrl and scroll zooms; F centers; click a connection and press Delete to remove it; Escape closes the config'
+  String get semantics =>
+      'Canvas. Hold Space and drag to move it; right click for options; arrow keys pan; Ctrl and scroll zooms; F centers; click a connection and press Delete to remove it; Escape closes the config';
+
+  /// en: 'Source'
+  String get addSource => 'Source';
+
+  /// en: 'Destination'
+  String get addDestination => 'Destination';
+
+  /// en: 'Delete config'
+  String get deleteConfig => 'Delete config';
+
+  /// en: 'Edit config'
+  String get editConfig => 'Edit config';
+
+  /// en: 'Remove connection'
+  String get removeConnection => 'Remove connection';
+
+  /// en: 'Remove connection (Del)'
+  String get removeConnectionKey => 'Remove connection (Del)';
+
+  /// en: 'Config is created here'
+  String get configHere => 'Config is created here';
+
+  /// en: 'Release to create the config'
+  String get releaseToCreate => 'Release to create the config';
+
+  /// en: 'Drag to a destination'
+  String get dragToDestination => 'Drag to a destination';
+
+  /// en: 'Last'
+  String get last => 'Last';
+
+  /// en: 'Next'
+  String get next => 'Next';
+
+  late final AppTexts$canvas$runStatus$en runStatus =
+      AppTexts$canvas$runStatus$en._(_root);
+  late final AppTexts$canvas$frequency$en frequency =
+      AppTexts$canvas$frequency$en._(_root);
+
+  /// en: '+ Add folder'
+  String get addFolder => '+ Add folder';
+
+  /// en: 'Add a folder to {name: String}'
+  String addFolderTitle({required String name}) => 'Add a folder to ${name}';
+
+  /// en: 'Each folder is a connection point. It is created in the bucket when the canvas is saved.'
+  String get addFolderDescription =>
+      'Each folder is a connection point. It is created in the bucket when the canvas is saved.';
+
+  /// en: 'With the first folder the bucket root stops being a connection point: the configs that write to it are disconnected.'
+  String get addFolderRoot =>
+      'With the first folder the bucket root stops being a connection point: the configs that write to it are disconnected.';
+
+  late final AppTexts$canvas$keys$en keys = AppTexts$canvas$keys$en._(_root);
+  late final AppTexts$canvas$shortcuts$en shortcuts =
+      AppTexts$canvas$shortcuts$en._(_root);
+  late final AppTexts$canvas$view$en view = AppTexts$canvas$view$en._(_root);
+  late final AppTexts$canvas$inspector$en inspector =
+      AppTexts$canvas$inspector$en._(_root);
+  late final AppTexts$canvas$columns$en columns = AppTexts$canvas$columns$en._(
+    _root,
+  );
+
+  /// en: 'Folder'
+  String get folder => 'Folder';
+
+  late final AppTexts$canvas$testRun$en testRun = AppTexts$canvas$testRun$en._(
+    _root,
+  );
+  late final AppTexts$canvas$run$en run = AppTexts$canvas$run$en._(_root);
+  late final AppTexts$canvas$guide$en guide = AppTexts$canvas$guide$en._(_root);
+}
+
+// Path: runs
+class AppTexts$runs$en {
+  AppTexts$runs$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Run log'
+  String get title => 'Run log';
+
+  /// en: 'Every backup run in this workspace: scheduled, manual or through the API. Times in UTC, your local time below.'
+  String get description =>
+      'Every backup run in this workspace: scheduled, manual or through the API. Times in UTC, your local time below.';
+
+  /// en: 'Search by backup, source or destination'
+  String get search => 'Search by backup, source or destination';
+
+  /// en: 'Status'
+  String get columnStatus => 'Status';
+
+  /// en: 'Started'
+  String get columnStarted => 'Started';
+
+  /// en: 'Duration'
+  String get columnDuration => 'Duration';
+
+  /// en: 'Size'
+  String get columnSize => 'Size';
+
+  /// en: 'By schedule'
+  String get scheduled => 'By schedule';
+
+  /// en: 'Manual'
+  String get manual => 'Manual';
+
+  /// en: 'API'
+  String get api => 'API';
+
+  /// en: 'No runs yet'
+  String get emptyTitle => 'No runs yet';
+
+  /// en: 'Backups run on their schedule, or with Run now in the pipeline editor.'
+  String get emptyDescription =>
+      'Backups run on their schedule, or with Run now in the pipeline editor.';
+
+  /// en: 'Only the 200 newest runs are shown.'
+  String get newestOnly => 'Only the 200 newest runs are shown.';
+
+  /// en: 'Log (UTC)'
+  String get log => 'Log (UTC)';
+
+  /// en: 'Copy log'
+  String get copyLog => 'Copy log';
+
+  /// en: 'Log copied'
+  String get logCopied => 'Log copied';
+
+  /// en: 'Copy the id of this run'
+  String get copyRunId => 'Copy the id of this run';
+
+  /// en: 'Retry now'
+  String get retryNow => 'Retry now';
+
+  /// en: 'Run again'
+  String get runAgain => 'Run again';
+
+  /// en: '{name: String} started: it follows in the run log'
+  String runStarted({required String name}) =>
+      '${name} started: it follows in the run log';
+
+  /// en: 'The log is written when the run ends. Refresh to see it.'
+  String get logWhenDone =>
+      'The log is written when the run ends. Refresh to see it.';
+
+  /// en: 'This run has no log.'
+  String get noLog => 'This run has no log.';
+
+  /// en: 'Today · {date: String} (UTC)'
+  String today({required String date}) => 'Today · ${date} (UTC)';
+
+  /// en: 'Yesterday · {date: String} (UTC)'
+  String yesterday({required String date}) => 'Yesterday · ${date} (UTC)';
+
+  /// en: '{date: String} (UTC)'
+  String day({required String date}) => '${date} (UTC)';
+
+  /// en: '(one) {{n} succeeded} (other) {{n} succeeded}'
+  String succeeded({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} succeeded',
+        other: '${n} succeeded',
+      );
+
+  /// en: '(one) {{n} failed} (other) {{n} failed}'
+  String failedCount({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} failed',
+        other: '${n} failed',
+      );
+
+  /// en: '{size: String} in {duration: String}'
+  String savedIn({required String size, required String duration}) =>
+      '${size} in ${duration}';
+
+  /// en: 'In progress'
+  String get inProgress => 'In progress';
+
+  /// en: 'In progress · {size: String} so far'
+  String soFar({required String size}) => 'In progress · ${size} so far';
+
+  /// en: 'Started by'
+  String get columnStartedBy => 'Started by';
+
+  /// en: 'Source type'
+  String get sourceType => 'Source type';
+
+  /// en: 'Destination type'
+  String get destinationType => 'Destination type';
+
+  /// en: 'Queued: starts when the run in progress ends'
+  String get queued => 'Queued: starts when the run in progress ends';
+
+  /// en: 'Label sent with the run'
+  String get labelTooltip => 'Label sent with the run';
+
+  /// en: 'View run'
+  String get viewRun => 'View run';
+
+  /// en: 'Steps'
+  String get steps => 'Steps';
+
+  /// en: 'Connect to {name: String}'
+  String stepConnect({required String name}) => 'Connect to ${name}';
+
+  /// en: 'Dump and upload to {name: String}'
+  String stepDump({required String name}) => 'Dump and upload to ${name}';
+
+  /// en: 'Skipped'
+  String get stepSkipped => 'Skipped';
+
+  /// en: 'Waiting'
+  String get stepWaiting => 'Waiting';
+
+  /// en: 'Backup saved'
+  String get resultSuccess => 'Backup saved';
+
+  /// en: 'The backup failed'
+  String get resultFailed => 'The backup failed';
+
+  /// en: 'Running. Refresh to see how far it got.'
+  String get resultRunning => 'Running. Refresh to see how far it got.';
+
+  /// en: 'It starts when the run of this config in progress ends.'
+  String get resultQueued =>
+      'It starts when the run of this config in progress ends.';
+}
+
+// Path: backups
+class AppTexts$backups$en {
+  AppTexts$backups$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Backups'
+  String get title => 'Backups';
+
+  /// en: 'Every backup in this workspace, its last run and the next one.'
+  String get description =>
+      'Every backup in this workspace, its last run and the next one.';
+
+  /// en: 'Open editor'
+  String get openEditor => 'Open editor';
+
+  /// en: 'New backup'
+  String get newBackup => 'New backup';
+
+  /// en: 'Healthy'
+  String get healthy => 'Healthy';
+
+  /// en: 'last run succeeded'
+  String get healthySub => 'last run succeeded';
+
+  /// en: 'Failing'
+  String get failing => 'Failing';
+
+  /// en: 'need attention'
+  String get failingSub => 'need attention';
+
+  /// en: 'Paused'
+  String get paused => 'Paused';
+
+  /// en: 'Next backup in'
+  String get nextBackupIn => 'Next backup in';
+
+  /// en: 'Nothing scheduled'
+  String get nothingScheduled => 'Nothing scheduled';
+
+  /// en: 'Updating in {seconds: int}…'
+  String updatingIn({required int seconds}) => 'Updating in ${seconds}…';
+
+  /// en: 'Updating…'
+  String get updating => 'Updating…';
+
+  /// en: 'Search backups'
+  String get search => 'Search backups';
+
+  /// en: 'Status'
+  String get columnStatus => 'Status';
+
+  /// en: 'Config'
+  String get columnConfig => 'Config';
+
+  /// en: 'Source'
+  String get columnSource => 'Source';
+
+  /// en: 'Destination'
+  String get columnDestination => 'Destination';
+
+  /// en: 'Schedule'
+  String get columnSchedule => 'Schedule';
+
+  /// en: 'Every hour'
+  String get everyHour => 'Every hour';
+
+  /// en: 'Every hour at :{minute: String}'
+  String everyHourAt({required String minute}) => 'Every hour at :${minute}';
+
+  /// en: 'Daily at {time: String}'
+  String dailyAt({required String time}) => 'Daily at ${time}';
+
+  /// en: 'Sundays at {time: String}'
+  String sundaysAt({required String time}) => 'Sundays at ${time}';
+
+  /// en: 'Every {n: int} hours'
+  String everyHours({required int n}) => 'Every ${n} hours';
+
+  /// en: 'Last backup'
+  String get columnLastRun => 'Last backup';
+
+  /// en: 'Next backup'
+  String get columnNextRun => 'Next backup';
+
+  /// en: 'All sources'
+  String get allSources => 'All sources';
+
+  /// en: 'All destinations'
+  String get allDestinations => 'All destinations';
+
+  /// en: '{shown: int} of {total: int} backups'
+  String shown({required int shown, required int total}) =>
+      '${shown} of ${total} backups';
+
+  /// en: 'Showing {shown: int} of {total: int} backups'
+  String showing({required int shown, required int total}) =>
+      'Showing ${shown} of ${total} backups';
+
+  /// en: 'Times in UTC · now {utc: String} ({local: String})'
+  String timesNote({required String utc, required String local}) =>
+      'Times in UTC · now ${utc} (${local})';
+
+  /// en: 'Sort:'
+  String get sort => 'Sort:';
+
+  /// en: 'Sort by'
+  String get sortBy => 'Sort by';
+
+  /// en: 'Last backup'
+  String get sortLast => 'Last backup';
+
+  /// en: 'Most recent first'
+  String get sortLastSub => 'Most recent first';
+
+  /// en: 'Last backup'
+  String get sortLastOld => 'Last backup';
+
+  /// en: 'Oldest first'
+  String get sortLastOldSub => 'Oldest first';
+
+  /// en: 'Next backup'
+  String get sortNext => 'Next backup';
+
+  /// en: 'Soonest first'
+  String get sortNextSub => 'Soonest first';
+
+  /// en: 'Source name'
+  String get sortName => 'Source name';
+
+  /// en: 'A to Z'
+  String get sortNameSub => 'A to Z';
+
+  /// en: 'Manual'
+  String get sortManual => 'Manual';
+
+  /// en: 'Drag the rows to order them'
+  String get sortManualSub => 'Drag the rows to order them';
+
+  /// en: 'in {time: String}'
+  String inTime({required String time}) => 'in ${time}';
+
+  /// en: 'Started {time: String} ago'
+  String startedAgo({required String time}) => 'Started ${time} ago';
+
+  /// en: 'Run {name: String} now'
+  String runNowFor({required String name}) => 'Run ${name} now';
+
+  /// en: 'Show run history'
+  String get showRuns => 'Show run history';
+
+  /// en: 'Hide run history'
+  String get hideRuns => 'Hide run history';
+
+  /// en: 'More actions for {name: String}'
+  String moreFor({required String name}) => 'More actions for ${name}';
+
+  /// en: 'View last run'
+  String get viewLastRun => 'View last run';
+
+  /// en: 'Edit config'
+  String get editConfig => 'Edit config';
+
+  /// en: 'Delete backup'
+  String get deleteBackup => 'Delete backup';
+
+  /// en: 'Recent runs'
+  String get recentRuns => 'Recent runs';
+
+  /// en: 'Copy config id'
+  String get copyConfigId => 'Copy config id';
+
+  /// en: 'No runs yet'
+  String get noRuns => 'No runs yet';
+
+  /// en: 'View log'
+  String get viewLog => 'View log';
+
+  /// en: 'View details'
+  String get viewDetails => 'View details';
+
+  /// en: 'No file written'
+  String get noFile => 'No file written';
+
+  /// en: 'Uploading…'
+  String get uploading => 'Uploading…';
+
+  /// en: 'Manual'
+  String get manual => 'Manual';
+
+  /// en: 'By schedule'
+  String get scheduled => 'By schedule';
+
+  /// en: 'Delete the backup {name: String}?'
+  String deleteTitle({required String name}) => 'Delete the backup ${name}?';
+
+  /// en: 'Its schedule stops. Its runs stay in the run log, and the files already in the destination stay there.'
+  String get deleteConfirm =>
+      'Its schedule stops. Its runs stay in the run log, and the files already in the destination stay there.';
+
+  /// en: 'Backup {name: String} deleted'
+  String deleted({required String name}) => 'Backup ${name} deleted';
+
+  /// en: 'Backup {name: String} saved'
+  String saved({required String name}) => 'Backup ${name} saved';
+
+  /// en: 'Connect a source to a destination in the pipeline editor to create one.'
+  String get emptyDescription =>
+      'Connect a source to a destination in the pipeline editor to create one.';
+}
+
+// Path: apiKeys
+class AppTexts$apiKeys$en {
+  AppTexts$apiKeys$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'API keys'
+  String get title => 'API keys';
+
+  /// en: 'Keys for other systems to use this workspace through the API: a deploy pipeline, a script, an integration.'
+  String get description =>
+      'Keys for other systems to use this workspace through the API: a deploy pipeline, a script, an integration.';
+
+  /// en: 'How to use a key'
+  String get howTo => 'How to use a key';
+
+  /// en: 'New API key'
+  String get create => 'New API key';
+
+  /// en: 'Search keys by name or id'
+  String get search => 'Search keys by name or id';
+
+  /// en: 'Name'
+  String get columnName => 'Name';
+
+  /// en: 'Access'
+  String get columnAccess => 'Access';
+
+  /// en: 'Configs'
+  String get columnConfigs => 'Configs';
+
+  /// en: 'Created'
+  String get columnCreated => 'Created';
+
+  /// en: 'Last used'
+  String get columnLastUsed => 'Last used';
+
+  /// en: '{n: int} permissions'
+  String permissionCount({required int n}) => '${n} permissions';
+
+  /// en: 'All configs'
+  String get allConfigs => 'All configs';
+
+  /// en: '{n: int} configs'
+  String configCount({required int n}) => '${n} configs';
+
+  /// en: 'Every config of the workspace, new ones too'
+  String get everyConfig => 'Every config of the workspace, new ones too';
+
+  /// en: 'Never used'
+  String get neverUsed => 'Never used';
+
+  /// en: 'ran {config: String}'
+  String ran({required String config}) => 'ran ${config}';
+
+  /// en: 'A key is shown once, when it is created. Keys don't expire: to renew one, create another and delete the old one. They are not part of an export.'
+  String get footer =>
+      'A key is shown once, when it is created. Keys don\'t expire: to renew one, create another and delete the old one. They are not part of an export.';
+
+  /// en: 'No API keys yet'
+  String get emptyTitle => 'No API keys yet';
+
+  /// en: 'A key lets a pipeline or another system use this workspace without your password: run a backup before a deploy and wait for it, read the run log, add sources. Each key does only what you allow.'
+  String get emptyDescription =>
+      'A key lets a pipeline or another system use this workspace without your password: run a backup before a deploy and wait for it, read the run log, add sources. Each key does only what you allow.';
+
+  /// en: 'Run backups'
+  String get run => 'Run backups';
+
+  /// en: 'Start backups and follow their runs'
+  String get runSub => 'Start backups and follow their runs';
+
+  /// en: 'Read only'
+  String get read => 'Read only';
+
+  /// en: 'See everything, change nothing'
+  String get readSub => 'See everything, change nothing';
+
+  /// en: 'Full access'
+  String get full => 'Full access';
+
+  /// en: 'Everything in this workspace'
+  String get fullSub => 'Everything in this workspace';
+
+  /// en: 'Custom'
+  String get custom => 'Custom';
+
+  /// en: 'Access'
+  String get filterAccess => 'Access';
+
+  /// en: 'Config'
+  String get filterConfig => 'Config';
+
+  /// en: 'Permission'
+  String get filterPermission => 'Permission';
+
+  /// en: 'Every config'
+  String get unlimited => 'Every config';
+
+  /// en: 'New API key'
+  String get newTitle => 'New API key';
+
+  /// en: 'Edit {name: String}'
+  String editTitle({required String name}) => 'Edit ${name}';
+
+  /// en: 'Name'
+  String get name => 'Name';
+
+  /// en: 'What uses it. The run log shows it on the runs it starts.'
+  String get nameHint =>
+      'What uses it. The run log shows it on the runs it starts.';
+
+  /// en: 'Access'
+  String get access => 'Access';
+
+  /// en: 'Permissions · {n: int} of {total: int}'
+  String permissions({required int n, required int total}) =>
+      'Permissions · ${n} of ${total}';
+
+  /// en: 'Only some configs'
+  String get limit => 'Only some configs';
+
+  /// en: 'It runs only these and sees only their runs, and can't create configs nor use the canvas. Off: every config of the workspace, new ones too.'
+  String get limitHint =>
+      'It runs only these and sees only their runs, and can\'t create configs nor use the canvas. Off: every config of the workspace, new ones too.';
+
+  /// en: 'Only for configs and runs: give the key a permission on them to limit it.'
+  String get limitOff =>
+      'Only for configs and runs: give the key a permission on them to limit it.';
+
+  /// en: 'Not with Only some configs: it reaches every config'
+  String get notLimitable =>
+      'Not with Only some configs: it reaches every config';
+
+  /// en: 'This workspace has no configs yet.'
+  String get noConfigs => 'This workspace has no configs yet.';
+
+  /// en: 'The key itself doesn't change. To renew it, create another and delete this one.'
+  String get renewNote =>
+      'The key itself doesn\'t change. To renew it, create another and delete this one.';
+
+  /// en: 'All configs · {n: int} permissions'
+  String summaryAll({required int n}) => 'All configs · ${n} permissions';
+
+  /// en: '(one) {{configs} config · {n: int} permissions} (other) {{configs} configs · {n: int} permissions}'
+  String summarySome({required num configs, required int n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        configs,
+        one: '${configs} config · ${n} permissions',
+        other: '${configs} configs · ${n} permissions',
+      );
+
+  /// en: 'Save'
+  String get save => 'Save';
+
+  /// en: 'Create key'
+  String get createButton => 'Create key';
+
+  /// en: '{name: String} is ready'
+  String readyTitle({required String name}) => '${name} is ready';
+
+  /// en: 'Copy it now: it won't be shown again. If you lose it, delete it and create another.'
+  String get readyWarning =>
+      'Copy it now: it won\'t be shown again. If you lose it, delete it and create another.';
+
+  /// en: 'Copy'
+  String get copy => 'Copy';
+
+  /// en: 'Copied'
+  String get copied => 'Copied';
+
+  /// en: 'Use it'
+  String get use => 'Use it';
+
+  /// en: 'Or with Basic auth: the user is {id: String} and the password the rest of the key. …/runs/RUN_ID/events follows a run until it ends.'
+  String basicNote({required String id}) =>
+      'Or with Basic auth: the user is ${id} and the password the rest of the key. …/runs/RUN_ID/events follows a run until it ends.';
+
+  /// en: 'Done'
+  String get done => 'Done';
+
+  /// en: 'Delete the key {name: String}?'
+  String deleteTitle({required String name}) => 'Delete the key ${name}?';
+
+  /// en: 'Whatever uses it gets a 401 from now on. The runs it started stay in the run log. It can't be undone: to give access again, create another key.'
+  String get deleteConfirm =>
+      'Whatever uses it gets a 401 from now on. The runs it started stay in the run log. It can\'t be undone: to give access again, create another key.';
+
+  /// en: 'Key {name: String} deleted'
+  String deleted({required String name}) => 'Key ${name} deleted';
+
+  /// en: 'Key {name: String} saved'
+  String saved({required String name}) => 'Key ${name} saved';
+
+  late final AppTexts$apiKeys$group$en group = AppTexts$apiKeys$group$en._(
+    _root,
+  );
+  late final AppTexts$apiKeys$action$en action = AppTexts$apiKeys$action$en._(
+    _root,
+  );
+  late final AppTexts$apiKeys$perm$en perm = AppTexts$apiKeys$perm$en._(_root);
+}
+
+// Path: workspaces.transfer
+class AppTexts$workspaces$transfer$en {
+  AppTexts$workspaces$transfer$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Import'
+  String get import => 'Import';
+
+  /// en: 'Export all'
+  String get exportAll => 'Export all';
+
+  /// en: 'Export {name: String} to a file'
+  String exportOf({required String name}) => 'Export ${name} to a file';
+
+  /// en: 'Exported to {file: String}'
+  String exported({required String file}) => 'Exported to ${file}';
+
+  /// en: 'Import workspaces'
+  String get importTitle => 'Import workspaces';
+
+  /// en: 'From a file exported by Dumpling. Its workspaces are added to the list; nothing here is replaced.'
+  String get importDescription =>
+      'From a file exported by Dumpling. Its workspaces are added to the list; nothing here is replaced.';
+
+  /// en: 'Drop the exported file here'
+  String get drop => 'Drop the exported file here';
+
+  /// en: 'A .json made by Export in Workspaces'
+  String get dropHint => 'A .json made by Export in Workspaces';
+
+  /// en: 'Choose a file'
+  String get choose => 'Choose a file';
+
+  /// en: 'Change'
+  String get change => 'Change';
+
+  /// en: 'exported {time: String}'
+  String exportedAt({required String time}) => 'exported ${time}';
+
+  /// en: 'This file is not an export of Dumpling: choose a .json made by Export in Workspaces.'
+  String get notAnExport =>
+      'This file is not an export of Dumpling: choose a .json made by Export in Workspaces.';
+
+  /// en: '(one) {{n} workspace to add} (other) {{n} workspaces to add}'
+  String toAdd({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} workspace to add',
+        other: '${n} workspaces to add',
+      );
+
+  /// en: 'as'
+  String get as => 'as';
+
+  /// en: 'Name taken'
+  String get nameTaken => 'Name taken';
+
+  /// en: '(one) {{n} run} (other) {{n} runs}'
+  String nRuns({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} run',
+        other: '${n} runs',
+      );
+
+  /// en: 'Credentials come encrypted: they only work with the same SECRETS_ENCRYPTION_KEY as the Dumpling that exported them. The run log brings its last month.'
+  String get keyNote =>
+      'Credentials come encrypted: they only work with the same SECRETS_ENCRYPTION_KEY as the Dumpling that exported them. The run log brings its last month.';
+
+  /// en: '(one) {Import {n} workspace} (other) {Import {n} workspaces}'
+  String importCount({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: 'Import ${n} workspace',
+        other: 'Import ${n} workspaces',
+      );
+
+  /// en: '(one) {{n} workspace imported} (other) {{n} workspaces imported}'
+  String imported({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} workspace imported',
+        other: '${n} workspaces imported',
+      );
+}
+
+// Path: workspaces.settings
+class AppTexts$workspaces$settings$en {
+  AppTexts$workspaces$settings$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Workspace settings'
+  String get title => 'Workspace settings';
+
+  /// en: 'Applies only to this workspace'
+  String get description => 'Applies only to this workspace';
+
+  /// en: 'General'
+  String get general => 'General';
+
+  /// en: 'Defaults for new configs'
+  String get defaults => 'Defaults for new configs';
+
+  /// en: 'Danger zone'
+  String get danger => 'Danger zone';
+
+  /// en: 'Created'
+  String get created => 'Created';
+
+  /// en: 'Workspace ID'
+  String get id => 'Workspace ID';
+
+  /// en: 'Copy workspace ID'
+  String get copyId => 'Copy workspace ID';
+
+  /// en: 'Copied'
+  String get copied => 'Copied';
+
+  /// en: 'No description'
+  String get noDescription => 'No description';
+
+  /// en: 'A new connection on the canvas starts with these values. Each config can change them.'
+  String get defaultsHint =>
+      'A new connection on the canvas starts with these values. Each config can change them.';
+
+  /// en: 'Schedule'
+  String get schedule => 'Schedule';
+
+  /// en: 'Cron'
+  String get cron => 'Cron';
+
+  /// en: 'Always in UTC.'
+  String get cronHelp => 'Always in UTC.';
+
+  /// en: 'Compression'
+  String get compression => 'Compression';
+
+  /// en: 'None'
+  String get compressionNone => 'None';
+
+  /// en: 'Object key'
+  String get objectKey => 'Object key';
+
+  /// en: 'Relative to the folder each config writes to, without extension.'
+  String get objectKeyHelp =>
+      'Relative to the folder each config writes to, without extension.';
+
+  /// en: 'You have unsaved changes'
+  String get unsaved => 'You have unsaved changes';
+
+  /// en: 'Discard'
+  String get discard => 'Discard';
+
+  /// en: 'Saved'
+  String get saved => 'Saved';
+
+  /// en: 'Delete this workspace'
+  String get deleteTitle => 'Delete this workspace';
+
+  /// en: 'Removes its canvas, sources, destinations, configs and run history. Backup files already in your buckets stay where they are.'
+  String get deleteDescription =>
+      'Removes its canvas, sources, destinations, configs and run history. Backup files already in your buckets stay where they are.';
+
+  /// en: 'Delete workspace'
+  String get deleteButton => 'Delete workspace';
+
+  /// en: 'Delete “{name: String}”?'
+  String deleteConfirmTitle({required String name}) => 'Delete “${name}”?';
+
+  /// en: 'This deletes {what: String} and their run history. Scheduled backups stop right away. It can't be undone.'
+  String deleteConfirm({required String what}) =>
+      'This deletes ${what} and their run history. Scheduled backups stop right away. It can\'t be undone.';
+
+  /// en: '(one) {{n} source} (other) {{n} sources}'
+  String nSources({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} source',
+        other: '${n} sources',
+      );
+
+  /// en: '(one) {{n} destination} (other) {{n} destinations}'
+  String nDestinations({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} destination',
+        other: '${n} destinations',
+      );
+
+  /// en: '(one) {{n} config} (other) {{n} configs}'
+  String nConfigs({required num n}) =>
+      (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(
+        n,
+        one: '${n} config',
+        other: '${n} configs',
+      );
+
+  /// en: 'Type'
+  String get typeBefore => 'Type';
+
+  /// en: 'to confirm'
+  String get typeAfter => 'to confirm';
+
+  /// en: 'Workspace {name: String} deleted'
+  String deleted({required String name}) => 'Workspace ${name} deleted';
+}
+
+// Path: destinations.typeSub
+class AppTexts$destinations$typeSub$en {
+  AppTexts$destinations$typeSub$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Any S3-compatible storage'
+  String get s3 => 'Any S3-compatible storage';
+
+  /// en: 'Shared drive or folder'
+  String get gdrive => 'Shared drive or folder';
+
+  /// en: 'App folder'
+  String get dropbox => 'App folder';
+
+  /// en: 'Storage container'
+  String get azure => 'Storage container';
+
+  /// en: 'Any SSH server'
+  String get sftp => 'Any SSH server';
+}
+
+// Path: canvas.runStatus
+class AppTexts$canvas$runStatus$en {
+  AppTexts$canvas$runStatus$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Success'
+  String get success => 'Success';
+
+  /// en: 'Failed'
+  String get failed => 'Failed';
+
+  /// en: 'Running'
+  String get running => 'Running';
+
+  /// en: 'Queued'
+  String get queued => 'Queued';
+}
+
+// Path: canvas.frequency
+class AppTexts$canvas$frequency$en {
+  AppTexts$canvas$frequency$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Hourly'
+  String get hourly => 'Hourly';
+
+  /// en: 'Daily'
+  String get daily => 'Daily';
+
+  /// en: 'Weekly'
+  String get weekly => 'Weekly';
+
+  /// en: 'Cron'
+  String get cron => 'Cron';
+}
+
+// Path: canvas.keys
+class AppTexts$canvas$keys$en {
+  AppTexts$canvas$keys$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Space'
+  String get space => 'Space';
+
+  /// en: 'Del'
+  String get del => 'Del';
+
+  /// en: 'Ctrl'
+  String get ctrl => 'Ctrl';
+
+  /// en: 'Esc'
+  String get esc => 'Esc';
+}
+
+// Path: canvas.shortcuts
+class AppTexts$canvas$shortcuts$en {
+  AppTexts$canvas$shortcuts$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Shortcuts'
+  String get title => 'Shortcuts';
+
+  /// en: 'Hide shortcuts'
+  String get hide => 'Hide shortcuts';
+
+  /// en: 'Move canvas'
+  String get moveCanvas => 'Move canvas';
+
+  /// en: ' + drag'
+  String get drag => ' + drag';
+
+  /// en: 'Connect'
+  String get connect => 'Connect';
+
+  /// en: 'drag from a port'
+  String get dragFromPort => 'drag from a port';
+
+  /// en: 'Options'
+  String get options => 'Options';
+
+  /// en: 'right click'
+  String get rightClick => 'right click';
+
+  /// en: 'click it + '
+  String get clickIt => 'click it + ';
+
+  /// en: 'Zoom'
+  String get zoom => 'Zoom';
+
+  /// en: 'scroll'
+  String get scroll => 'scroll';
+
+  /// en: 'Zoom in / out'
+  String get zoomInOut => 'Zoom in / out';
+
+  /// en: 'Center canvas'
+  String get center => 'Center canvas';
+
+  /// en: 'Reset to 100%'
+  String get reset => 'Reset to 100%';
+
+  /// en: 'Move with keys'
+  String get moveWithKeys => 'Move with keys';
+
+  /// en: 'Close config'
+  String get closeConfig => 'Close config';
+
+  /// en: 'Show / hide shortcuts'
+  String get toggle => 'Show / hide shortcuts';
+}
+
+// Path: canvas.view
+class AppTexts$canvas$view$en {
+  AppTexts$canvas$view$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Canvas settings'
+  String get settings => 'Canvas settings';
+
+  /// en: 'Show or hide shortcuts (?)'
+  String get toggleShortcuts => 'Show or hide shortcuts (?)';
+
+  /// en: 'Center'
+  String get center => 'Center';
+
+  /// en: 'Center canvas (F)'
+  String get centerTooltip => 'Center canvas (F)';
+
+  /// en: 'Zoom out (−)'
+  String get zoomOut => 'Zoom out (−)';
+
+  /// en: 'Reset to 100% (0)'
+  String get reset => 'Reset to 100% (0)';
+
+  /// en: 'Zoom in (+)'
+  String get zoomIn => 'Zoom in (+)';
+
+  /// en: 'Canvas'
+  String get settingsTitle => 'Canvas';
+
+  /// en: 'Hold Ctrl to zoom'
+  String get ctrlZoom => 'Hold Ctrl to zoom';
+
+  /// en: 'Scroll moves the canvas, Ctrl + scroll zooms'
+  String get ctrlZoomOn => 'Scroll moves the canvas, Ctrl + scroll zooms';
+
+  /// en: 'Scroll always zooms'
+  String get ctrlZoomOff => 'Scroll always zooms';
+}
+
+// Path: canvas.inspector
+class AppTexts$canvas$inspector$en {
+  AppTexts$canvas$inspector$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Config name'
+  String get configName => 'Config name';
+
+  /// en: 'The custom format (pg_dump -Fc) is compressed already: gzip barely makes it smaller.'
+  String get doubleCompression =>
+      'The custom format (pg_dump -Fc) is compressed already: gzip barely makes it smaller.';
+
+  /// en: 'Shown on the canvas, in Backups and in the run log.'
+  String get nameHelp => 'Shown on the canvas, in Backups and in the run log.';
+
+  /// en: 'Frequency'
+  String get frequency => 'Frequency';
+
+  /// en: 'Review'
+  String get review => 'Review';
+
+  /// en: 'Source'
+  String get source => 'Source';
+
+  /// en: 'Destination'
+  String get destination => 'Destination';
+
+  /// en: 'Computed when it is saved'
+  String get nextRunOnSave => 'Computed when it is saved';
+
+  /// en: 'minute hour day month weekday, in UTC. Hourly, daily and weekly write it for you.'
+  String get cronHelp =>
+      'minute hour day month weekday, in UTC. Hourly, daily and weekly write it for you.';
+
+  /// en: 'Not a valid cron expression (minute hour day month weekday)'
+  String get cronInvalid =>
+      'Not a valid cron expression (minute hour day month weekday)';
+
+  /// en: 'Enabled'
+  String get enabled => 'Enabled';
+
+  /// en: 'Runs on its schedule'
+  String get enabledOn => 'Runs on its schedule';
+
+  /// en: 'Off: it only runs with Run now'
+  String get enabledOff => 'Off: it only runs with Run now';
+
+  /// en: 'None'
+  String get compressionNone => 'None';
+
+  /// en: 'The object key cannot start with /'
+  String get objectKeySlash => 'The object key cannot start with /';
+
+  /// en: 'Leave out the extension: it is added from the dump format and the compression'
+  String get objectKeyExtension =>
+      'Leave out the extension: it is added from the dump format and the compression';
+
+  /// en: 'The object key cannot have . or .. folders'
+  String get objectKeyDots => 'The object key cannot have . or .. folders';
+
+  /// en: 'Name & schedule'
+  String get schedule => 'Name & schedule';
+
+  /// en: 'Cron'
+  String get cron => 'Cron';
+
+  /// en: 'Time zone'
+  String get timeZone => 'Time zone';
+
+  /// en: 'Next run'
+  String get nextRun => 'Next run';
+
+  /// en: 'Output'
+  String get output => 'Output';
+
+  /// en: 'Object key'
+  String get objectKey => 'Object key';
+
+  /// en: 'What the placeholders write'
+  String get placeholders => 'What the placeholders write';
+
+  /// en: 'Each placeholder is replaced when the backup starts. Dates and times are in UTC.'
+  String get placeholdersIntro =>
+      'Each placeholder is replaced when the backup starts. Dates and times are in UTC.';
+
+  late final AppTexts$canvas$inspector$placeholderHelp$en placeholderHelp =
+      AppTexts$canvas$inspector$placeholderHelp$en._(_root);
+
+  /// en: 'Any other text in braces is written as it is.'
+  String get placeholdersOther =>
+      'Any other text in braces is written as it is.';
+
+  /// en: 'How to read a cron expression'
+  String get cronInfo => 'How to read a cron expression';
+
+  /// en: 'Five fields separated by spaces, always in UTC.'
+  String get cronInfoIntro => 'Five fields separated by spaces, always in UTC.';
+
+  late final AppTexts$canvas$inspector$cronField$en cronField =
+      AppTexts$canvas$inspector$cronField$en._(_root);
+  late final AppTexts$canvas$inspector$cronExample$en cronExample =
+      AppTexts$canvas$inspector$cronExample$en._(_root);
+
+  /// en: '* means every value, */n every n, a-b a range and a,b a list.'
+  String get cronInfoSyntax =>
+      '* means every value, */n every n, a-b a range and a,b a list.';
+
+  /// en: 'Connect a destination to choose where it goes.'
+  String get connectDestination =>
+      'Connect a destination to choose where it goes.';
+
+  /// en: 'Relative to the folder {folder: String}. The extension is added from the dump format and the compression.'
+  String relativeToFolder({required String folder}) =>
+      'Relative to the folder ${folder}. The extension is added from the dump format and the compression.';
+
+  /// en: 'Relative to the root of {bucket: String}. The extension is added from the dump format and the compression.'
+  String relativeToRoot({required String bucket}) =>
+      'Relative to the root of ${bucket}. The extension is added from the dump format and the compression.';
+
+  /// en: 'Compression'
+  String get compression => 'Compression';
+
+  /// en: 'Next run writes'
+  String get writes => 'Next run writes';
+
+  /// en: 'Nothing: connect a source.'
+  String get missingSource => 'Nothing: connect a source.';
+
+  /// en: 'Nothing: connect a destination.'
+  String get missingDestination => 'Nothing: connect a destination.';
+
+  /// en: 'Nothing: connect a source and a destination.'
+  String get missingBoth => 'Nothing: connect a source and a destination.';
+
+  /// en: 'no source'
+  String get noSource => 'no source';
+
+  /// en: 'no destination'
+  String get noDestination => 'no destination';
+}
+
+// Path: canvas.columns
+class AppTexts$canvas$columns$en {
+  AppTexts$canvas$columns$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Sources'
+  String get sources => 'Sources';
+
+  /// en: 'Config · one per connection'
+  String get configs => 'Config · one per connection';
+
+  /// en: 'Destinations'
+  String get destinations => 'Destinations';
+}
+
+// Path: canvas.testRun
+class AppTexts$canvas$testRun$en {
+  AppTexts$canvas$testRun$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Test run'
+  String get button => 'Test run';
+
+  /// en: 'Checks that every complete flow could run, without backing anything up: each source connects and pg_dump can dump it, each destination takes a write in its folders.'
+  String get help =>
+      'Checks that every complete flow could run, without backing anything up: each source connects and pg_dump can dump it, each destination takes a write in its folders.';
+
+  /// en: 'Everything works: {n: int} checks passed'
+  String ok({required int n}) => 'Everything works: ${n} checks passed';
+
+  /// en: 'Some checks failed: {list: String}'
+  String failed({required String list}) => 'Some checks failed: ${list}';
+
+  /// en: 'Nothing to test: connect a source to a destination first.'
+  String get nothing =>
+      'Nothing to test: connect a source to a destination first.';
+}
+
+// Path: canvas.run
+class AppTexts$canvas$run$en {
+  AppTexts$canvas$run$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Run now'
+  String get button => 'Run now';
+
+  /// en: 'Backup {name: String} done: {size: String}'
+  String done({required String name, required String size}) =>
+      'Backup ${name} done: ${size}';
+
+  /// en: 'Backup {name: String} failed: {error: String}'
+  String failed({required String name, required String error}) =>
+      'Backup ${name} failed: ${error}';
+}
+
+// Path: canvas.guide
+class AppTexts$canvas$guide$en {
+  AppTexts$canvas$guide$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Your first backup'
+  String get title => 'Your first backup';
+
+  /// en: 'Add a source'
+  String get source => 'Add a source';
+
+  /// en: 'The database to back up.'
+  String get sourceHelp => 'The database to back up.';
+
+  /// en: 'Add a destination'
+  String get destination => 'Add a destination';
+
+  /// en: 'The bucket the backups go to.'
+  String get destinationHelp => 'The bucket the backups go to.';
+
+  /// en: 'Connect them'
+  String get connect => 'Connect them';
+
+  /// en: 'Drag from the port of the source to a folder or the bucket: a config is created between them. Then save.'
+  String get connectHelp =>
+      'Drag from the port of the source to a folder or the bucket: a config is created between them. Then save.';
+
+  /// en: 'Create one'
+  String get create => 'Create one';
+
+  /// en: 'Place {name: String}'
+  String place({required String name}) => 'Place ${name}';
+}
+
+// Path: apiKeys.group
+class AppTexts$apiKeys$group$en {
+  AppTexts$apiKeys$group$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'WORKSPACE'
+  String get workspace => 'WORKSPACE';
+
+  /// en: 'SOURCES'
+  String get sources => 'SOURCES';
+
+  /// en: 'DESTINATIONS'
+  String get destinations => 'DESTINATIONS';
+
+  /// en: 'CONFIGS'
+  String get configs => 'CONFIGS';
+
+  /// en: 'RUNS'
+  String get runs => 'RUNS';
+
+  /// en: 'CANVAS'
+  String get canvas => 'CANVAS';
+}
+
+// Path: apiKeys.action
+class AppTexts$apiKeys$action$en {
+  AppTexts$apiKeys$action$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'List'
+  String get list => 'List';
+
+  /// en: 'View'
+  String get view => 'View';
+
+  /// en: 'Create'
+  String get create => 'Create';
+
+  /// en: 'Edit'
+  String get edit => 'Edit';
+
+  /// en: 'Delete'
+  String get delete => 'Delete';
+
+  /// en: 'Test'
+  String get test => 'Test';
+
+  /// en: 'Run'
+  String get run => 'Run';
+
+  /// en: 'Save'
+  String get save => 'Save';
+}
+
+// Path: apiKeys.perm
+class AppTexts$apiKeys$perm$en {
+  AppTexts$apiKeys$perm$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'See the name, description and defaults of the workspace'
+  String get workspaceGet =>
+      'See the name, description and defaults of the workspace';
+
+  /// en: 'Change the name, description, color and defaults of the workspace'
+  String get workspaceUpdate =>
+      'Change the name, description, color and defaults of the workspace';
+
+  /// en: 'List the sources and their status'
+  String get sourceList => 'List the sources and their status';
+
+  /// en: 'See a source: its connection, without the password'
+  String get sourceGet => 'See a source: its connection, without the password';
+
+  /// en: 'Add sources'
+  String get sourceCreate => 'Add sources';
+
+  /// en: 'Change a source: its connection and its password'
+  String get sourceUpdate => 'Change a source: its connection and its password';
+
+  /// en: 'Delete sources that no config uses'
+  String get sourceDelete => 'Delete sources that no config uses';
+
+  /// en: 'Test the connection of a source'
+  String get sourceTest => 'Test the connection of a source';
+
+  /// en: 'List the destinations and their folders'
+  String get destinationList => 'List the destinations and their folders';
+
+  /// en: 'See a destination: its bucket, without the secret key'
+  String get destinationGet =>
+      'See a destination: its bucket, without the secret key';
+
+  /// en: 'Add destinations'
+  String get destinationCreate => 'Add destinations';
+
+  /// en: 'Change a destination: its bucket, credentials and folders'
+  String get destinationUpdate =>
+      'Change a destination: its bucket, credentials and folders';
+
+  /// en: 'Delete destinations that no config uses'
+  String get destinationDelete => 'Delete destinations that no config uses';
+
+  /// en: 'Test the connection of a destination'
+  String get destinationTest => 'Test the connection of a destination';
+
+  /// en: 'List the configs, with their last and next run'
+  String get configList => 'List the configs, with their last and next run';
+
+  /// en: 'See a config: schedule, folder, object key, compression'
+  String get configGet =>
+      'See a config: schedule, folder, object key, compression';
+
+  /// en: 'Add configs between a source and a destination'
+  String get configCreate => 'Add configs between a source and a destination';
+
+  /// en: 'Change a config: schedule, folder, object key, enabled'
+  String get configUpdate =>
+      'Change a config: schedule, folder, object key, enabled';
+
+  /// en: 'Delete configs (their run history stays)'
+  String get configDelete => 'Delete configs (their run history stays)';
+
+  /// en: 'Start a backup now, with an optional label; it waits its turn if the config is running'
+  String get configRun =>
+      'Start a backup now, with an optional label; it waits its turn if the config is running';
+
+  /// en: 'List the runs of the run log'
+  String get runList => 'List the runs of the run log';
+
+  /// en: 'See a run, its log, and follow it until it ends'
+  String get runGet => 'See a run, its log, and follow it until it ends';
+
+  /// en: 'Read the whole canvas: nodes, configs and where they sit'
+  String get canvasGet =>
+      'Read the whole canvas: nodes, configs and where they sit';
+
+  /// en: 'Save the whole canvas: it can add, change and delete sources, destinations and configs'
+  String get canvasSave =>
+      'Save the whole canvas: it can add, change and delete sources, destinations and configs';
+}
+
+// Path: canvas.inspector.placeholderHelp
+class AppTexts$canvas$inspector$placeholderHelp$en {
+  AppTexts$canvas$inspector$placeholderHelp$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Year, four digits (2026)'
+  String get year => 'Year, four digits (2026)';
+
+  /// en: 'Month, two digits (01-12)'
+  String get month => 'Month, two digits (01-12)';
+
+  /// en: 'Day of the month, two digits (01-31)'
+  String get day => 'Day of the month, two digits (01-31)';
+
+  /// en: 'Hour, two digits (00-23)'
+  String get hour => 'Hour, two digits (00-23)';
+
+  /// en: 'Minute, two digits (00-59)'
+  String get minute => 'Minute, two digits (00-59)';
+
+  /// en: 'Name of the database backed up'
+  String get db => 'Name of the database backed up';
+
+  /// en: 'Id of the run, different every time. Only written where you put it: without it, two backups with the same key overwrite each other.'
+  String get runId =>
+      'Id of the run, different every time. Only written where you put it: without it, two backups with the same key overwrite each other.';
+}
+
+// Path: canvas.inspector.cronField
+class AppTexts$canvas$inspector$cronField$en {
+  AppTexts$canvas$inspector$cronField$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'minute (0–59)'
+  String get minute => 'minute (0–59)';
+
+  /// en: 'hour (0–23)'
+  String get hour => 'hour (0–23)';
+
+  /// en: 'day of month (1–31)'
+  String get day => 'day of month (1–31)';
+
+  /// en: 'month (1–12)'
+  String get month => 'month (1–12)';
+
+  /// en: 'day of week (0–6, Sunday = 0)'
+  String get weekday => 'day of week (0–6, Sunday = 0)';
+}
+
+// Path: canvas.inspector.cronExample
+class AppTexts$canvas$inspector$cronExample$en {
+  AppTexts$canvas$inspector$cronExample$en._(this._root);
+
+  final AppTexts _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Every hour, on the hour'
+  String get hourly => 'Every hour, on the hour';
+
+  /// en: 'Every 15 minutes'
+  String get quarter => 'Every 15 minutes';
+
+  /// en: 'Every day at 02:00'
+  String get daily => 'Every day at 02:00';
+
+  /// en: 'Sundays at 03:00'
+  String get sundays => 'Sundays at 03:00';
+
+  /// en: 'The 1st of each month at 01:30'
+  String get monthly => 'The 1st of each month at 01:30';
+}
+
+/// The flat map containing all translations for locale <en>.
+/// Only for edge cases! For simple maps, use the map function of this library.
+///
+/// The Dart AOT compiler has issues with very large switch statements,
+/// so the map is split into smaller functions (512 entries each).
+extension on AppTexts {
+  dynamic _flatMapFunction(String path) {
+    return switch (path) {
+          'app.name' => 'Dumpling',
+          'app.needMoreSpace' => 'Need more space',
+          'app.initErrorTitle' => 'The console could not start',
+          'app.initErrorHint' => 'Check that the service is running and can be reached, then try again.',
+          'app.splashText' => 'Connecting to the backup service…',
+          'app.version' => ({
+            required String version,
+          }) => 'Dumpling v${version}',
+          'common.longName' =>
+            'Long names are cut on the canvas: a shorter one reads better.',
+          'common.loading' => 'Loading',
+          'common.error' => 'Error',
+          'common.tryAgain' => 'Try again',
+          'common.cancel' => 'Cancel',
+          'common.close' => 'Close',
+          'common.required' => 'Required',
+          'common.optional' => '(optional)',
+          'common.filters' => 'Filters',
+          'common.clearAll' => 'Clear all',
+          'common.done' => 'Done',
+          'common.copied' => 'Copied',
+          'common.all' => 'All',
+          'common.selected' => 'Selected',
+          'common.soon' => 'Soon',
+          'common.edit' => 'Edit',
+          'common.duplicate' => 'Duplicate',
+          'common.delete' => 'Delete',
+          'common.add' => 'Add',
+          'common.saving' => 'Saving…',
+          'common.saveChanges' => 'Save changes',
+          'common.noMatches' => 'Nothing matches your search',
+          'common.clearSearch' => 'Clear search and filters',
+          'common.dragToReorder' => 'Drag to reorder',
+          'common.clearToReorder' => 'Clear the search and filters to reorder',
+          'common.shownOf' => ({
+            required int shown,
+            required int total,
+          }) => '${shown} of ${total}',
+          'common.optionsFor' => ({
+            required String name,
+          }) => 'Options for ${name}',
+          'common.viewDetails' => 'View details',
+          'common.refresh' => 'Refresh',
+          'common.listView' => 'List',
+          'common.gridView' => 'Grid',
+          'common.back' => 'Back',
+          'common.next' => 'Next',
+          'common.stepOf' => ({
+            required int n,
+            required int total,
+          }) => 'Step ${n} of ${total}',
+          'common.backupCount' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} backup',
+                  other: '${n} backups',
+                ),
+          'time.utc' => ({required String time}) => '${time} UTC',
+          'time.local' => ({required String time}) => '${time} local',
+          'errors.requestCancelled' => 'Request to API server was cancelled',
+          'errors.receiveTimeout' =>
+            'Receive timeout in connection with API server',
+          'errors.sendTimeout' => 'Send timeout with API server',
+          'errors.badCertificate' => 'Bad certificate',
+          'errors.validation' => 'Validation error',
+          'errors.server' => 'Server error',
+          'errors.unknown' => 'Unknown error',
+          'errors.pageNotFound' => 'This page does not exist.',
+          'errors.pageMissing' => 'This page doesn’t exist',
+          'errors.pageMissingHint' => 'The backup, source or workspace may have been deleted, or the link is wrong.',
+          'errors.goToBackups' => 'Go to Backups',
+          'errors.switchWorkspace' => 'Switch workspace',
+          'errors.offlineTitle' => 'Connection lost',
+          'errors.offlineBanner' => 'Can’t reach the Dumpling server.',
+          'errors.offlineKept' => 'Showing what was loaded before; backups keep running on the server.',
+          'errors.retryingIn' => ({
+            required int seconds,
+          }) => 'Retrying in ${seconds} s…',
+          'errors.retryNow' => 'Retry now',
+          'errors.offline' => ({
+            required String url,
+          }) => 'Can\'t reach the Dumpling service at ${url}. Check that it is running and try again.',
+          'nav.switchWorkspace' => ({
+            required String name,
+          }) => '${name} · switch workspace',
+          'nav.workspaces' => 'Workspaces',
+          'nav.backups' => 'Backups',
+          'nav.canvas' => 'Pipeline editor',
+          'nav.sources' => 'Sources',
+          'nav.destinations' => 'Destinations',
+          'nav.runs' => 'Run log',
+          'nav.apiKeys' => 'API keys',
+          'nav.failedRuns' => ({required int count}) => '${count} failing',
+          'nav.language' => ({required String name}) => 'Language: ${name}',
+          'nav.expand' => 'Expand menu',
+          'nav.collapse' => 'Collapse menu',
+          'nav.logout' => 'Sign out',
+          'auth.title' => 'Sign in',
+          'auth.description' => 'Manage your database backups.',
+          'auth.username' => 'Username',
+          'auth.usernameHint' => 'Enter your username',
+          'auth.password' => 'Password',
+          'auth.passwordHint' => 'Enter your password',
+          'auth.showPassword' => 'Show password',
+          'auth.hidePassword' => 'Hide password',
+          'auth.button' => 'Sign in',
+          'auth.signingIn' => 'Signing in…',
+          'auth.failedHint' => 'Check both and try again.',
+          'auth.retryIn' =>
+            ({required num minutes}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  minutes,
+                  one: 'Try again in ${minutes} minute.',
+                  other: 'Try again in ${minutes} minutes.',
+                ),
+          'auth.envHint' =>
+            'The username and password are set on the server with',
+          'auth.envHintAnd' => 'and',
+          'auth.tagline' => 'Backups made',
+          'auth.taglineAccent' => 'easy',
+          'auth.tagLightweight' => 'Lightweight',
+          'auth.tagCanvas' => 'Drag & Drop Canvas',
+          'auth.tagWinter' => 'Powered by Winter',
+          'auth.expiredTitle' => 'Your session expired',
+          'auth.expiredDescription' => 'Your session ended after 12 hours. Sign in again to continue where you left off.',
+          'auth.toSignInPage' => 'Go to the sign-in page',
+          'colors.none' => 'No color',
+          'colors.custom' => 'Custom color',
+          'colors.apply' => 'Apply',
+          'colors.saturationBrightness' => 'Saturation and brightness',
+          'colors.hue' => 'Hue',
+          'colors.contrast' => ({
+            required String ratio,
+          }) => 'White initial on this color: ${ratio}:1',
+          'colors.contrastLow' => ({
+            required String ratio,
+          }) => 'Low contrast with the white initial (${ratio}:1). It will be hard to read.',
+          'colors.hexInvalid' =>
+            'Enter a 6-digit HEX color, for example #0E7490',
+          'colors.violet' => 'Violet',
+          'colors.blue' => 'Blue',
+          'colors.teal' => 'Teal',
+          'colors.green' => 'Green',
+          'colors.amber' => 'Amber',
+          'colors.red' => 'Red',
+          'colors.pink' => 'Pink',
+          'colors.slate' => 'Slate',
+          'workspaces.title' => 'Workspaces',
+          'workspaces.description' => 'Each workspace is separate: its own canvas, sources, destinations and backups.',
+          'workspaces.create' => 'New workspace',
+          'workspaces.createHint' =>
+            'A fresh canvas for another environment, client or project.',
+          'workspaces.current' => 'Current',
+          'workspaces.copySlug' => ({
+            required String name,
+          }) => 'Copy the slug of ${name}: the workspace in the URLs of the API',
+          'workspaces.sources' => 'Sources',
+          'workspaces.destinations' => 'Destinations',
+          'workspaces.backups' => 'Backups',
+          'workspaces.noBackups' => 'No backups yet',
+          'workspaces.healthy' => 'All healthy',
+          'workspaces.failing' => ({required int count}) => '${count} failing',
+          'workspaces.running' => 'Running now',
+          'workspaces.lastRun' => ({
+            required String time,
+          }) => 'Last run ${time}',
+          'workspaces.noRuns' => 'No runs yet',
+          'workspaces.openCanvas' => 'Open canvas',
+          'workspaces.switchAndOpen' => 'Switch & open canvas',
+          'workspaces.formTitle' => 'New workspace',
+          'workspaces.formDescription' => 'Nothing is shared between workspaces: each one has its own canvas, connections, backups and run history.',
+          'workspaces.name' => 'Name',
+          'workspaces.nameHint' => 'e.g. Staging',
+          'workspaces.descriptionLabel' => 'Description',
+          'workspaces.descriptionHint' => 'What this workspace is for',
+          'workspaces.color' => 'Color',
+          'workspaces.emptyCanvas' =>
+            'A new workspace starts with an empty canvas.',
+          'workspaces.createButton' => 'Create workspace',
+          'workspaces.creating' => 'Creating…',
+          'workspaces.created' => ({
+            required String name,
+          }) => 'Workspace ${name} created',
+          'workspaces.settingsOf' => ({
+            required String name,
+          }) => 'Settings for ${name}',
+          'workspaces.transfer.import' => 'Import',
+          'workspaces.transfer.exportAll' => 'Export all',
+          'workspaces.transfer.exportOf' => ({
+            required String name,
+          }) => 'Export ${name} to a file',
+          'workspaces.transfer.exported' => ({
+            required String file,
+          }) => 'Exported to ${file}',
+          'workspaces.transfer.importTitle' => 'Import workspaces',
+          'workspaces.transfer.importDescription' => 'From a file exported by Dumpling. Its workspaces are added to the list; nothing here is replaced.',
+          'workspaces.transfer.drop' => 'Drop the exported file here',
+          'workspaces.transfer.dropHint' =>
+            'A .json made by Export in Workspaces',
+          'workspaces.transfer.choose' => 'Choose a file',
+          'workspaces.transfer.change' => 'Change',
+          'workspaces.transfer.exportedAt' => ({
+            required String time,
+          }) => 'exported ${time}',
+          'workspaces.transfer.notAnExport' => 'This file is not an export of Dumpling: choose a .json made by Export in Workspaces.',
+          'workspaces.transfer.toAdd' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} workspace to add',
+                  other: '${n} workspaces to add',
+                ),
+          'workspaces.transfer.as' => 'as',
+          'workspaces.transfer.nameTaken' => 'Name taken',
+          'workspaces.transfer.nRuns' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} run',
+                  other: '${n} runs',
+                ),
+          'workspaces.transfer.keyNote' => 'Credentials come encrypted: they only work with the same SECRETS_ENCRYPTION_KEY as the Dumpling that exported them. The run log brings its last month.',
+          'workspaces.transfer.importCount' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: 'Import ${n} workspace',
+                  other: 'Import ${n} workspaces',
+                ),
+          'workspaces.transfer.imported' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} workspace imported',
+                  other: '${n} workspaces imported',
+                ),
+          'workspaces.settings.title' => 'Workspace settings',
+          'workspaces.settings.description' => 'Applies only to this workspace',
+          'workspaces.settings.general' => 'General',
+          'workspaces.settings.defaults' => 'Defaults for new configs',
+          'workspaces.settings.danger' => 'Danger zone',
+          'workspaces.settings.created' => 'Created',
+          'workspaces.settings.id' => 'Workspace ID',
+          'workspaces.settings.copyId' => 'Copy workspace ID',
+          'workspaces.settings.copied' => 'Copied',
+          'workspaces.settings.noDescription' => 'No description',
+          'workspaces.settings.defaultsHint' => 'A new connection on the canvas starts with these values. Each config can change them.',
+          'workspaces.settings.schedule' => 'Schedule',
+          'workspaces.settings.cron' => 'Cron',
+          'workspaces.settings.cronHelp' => 'Always in UTC.',
+          'workspaces.settings.compression' => 'Compression',
+          'workspaces.settings.compressionNone' => 'None',
+          'workspaces.settings.objectKey' => 'Object key',
+          'workspaces.settings.objectKeyHelp' =>
+            'Relative to the folder each config writes to, without extension.',
+          'workspaces.settings.unsaved' => 'You have unsaved changes',
+          'workspaces.settings.discard' => 'Discard',
+          'workspaces.settings.saved' => 'Saved',
+          'workspaces.settings.deleteTitle' => 'Delete this workspace',
+          'workspaces.settings.deleteDescription' => 'Removes its canvas, sources, destinations, configs and run history. Backup files already in your buckets stay where they are.',
+          'workspaces.settings.deleteButton' => 'Delete workspace',
+          'workspaces.settings.deleteConfirmTitle' => ({
+            required String name,
+          }) => 'Delete “${name}”?',
+          'workspaces.settings.deleteConfirm' => ({
+            required String what,
+          }) => 'This deletes ${what} and their run history. Scheduled backups stop right away. It can\'t be undone.',
+          'workspaces.settings.nSources' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} source',
+                  other: '${n} sources',
+                ),
+          'workspaces.settings.nDestinations' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} destination',
+                  other: '${n} destinations',
+                ),
+          'workspaces.settings.nConfigs' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} config',
+                  other: '${n} configs',
+                ),
+          'workspaces.settings.typeBefore' => 'Type',
+          'workspaces.settings.typeAfter' => 'to confirm',
+          'workspaces.settings.deleted' => ({
+            required String name,
+          }) => 'Workspace ${name} deleted',
+          'connections.notTested' => 'Not tested',
+          'connections.notTestedYet' => 'Not tested yet',
+          'connections.testing' => 'Testing…',
+          'connections.test' => 'Test connection',
+          'connections.testAgain' => 'Test again',
+          'connections.testToContinue' => 'Test the connection to continue',
+          'connections.connected' => 'Connected',
+          'connections.incompatible' => 'Incompatible',
+          'connections.incompatibleTitle' =>
+            'Connected, but the server is newer than the dump tool',
+          'connections.incompatibleSub' => ({
+            required String server,
+            required String tool,
+          }) => 'Server ${server} · ${tool}. Update the dump tool where Dumpling runs.',
+          'connections.toolMissing' => 'Tool missing',
+          'connections.toolMissingTitle' =>
+            'Connected, but the dump tool is not installed where Dumpling runs',
+          'connections.unreachable' => 'Unreachable',
+          'connections.failedTitle' => 'Couldn\'t connect',
+          'connections.lastCheck' => 'Last check',
+          'connections.checkTitle' => 'Connection check',
+          'connections.checkNote' => 'Before every run and when you test',
+          'connections.connection' => 'Connection',
+          'connections.editConnection' => 'Edit connection',
+          'sources.title' => 'Sources',
+          'sources.description' =>
+            'What this workspace backs up: PostgreSQL databases.',
+          'sources.create' => 'New source',
+          'sources.search' => 'Search sources',
+          'sources.columnName' => 'Name',
+          'sources.columnType' => 'Type',
+          'sources.columnHost' => 'Host',
+          'sources.columnBackups' => 'Backups',
+          'sources.columnStatus' => 'Status',
+          'sources.emptyTitle' => 'No sources yet',
+          'sources.emptyDescription' => 'Connect a database to back it up.',
+          'sources.inUse' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: 'Used by ${n} backup. Remove it first.',
+                  other: 'Used by ${n} backups. Remove them first.',
+                ),
+          'sources.deleteTitle' => ({
+            required String name,
+          }) => 'Delete the source ${name}?',
+          'sources.deleteConfirm' => 'It isn\'t used by any backup. Its saved connection and password are removed from this workspace.',
+          'sources.deleted' => ({
+            required String name,
+          }) => 'Source ${name} deleted',
+          'sources.newTitle' => 'New source',
+          'sources.editTitle' => 'Edit source',
+          'sources.formDescription' => 'Connect what you want to back up.',
+          'sources.stepType' => 'Name & type',
+          'sources.stepConnection' => 'Connection',
+          'sources.stepOptions' => 'Options & save',
+          'sources.typeTitle' => 'What do you want to back up?',
+          'sources.connectionTitle' => 'How should Dumpling connect?',
+          'sources.optionsTitle' => 'Options and save',
+          'sources.name' => 'Name',
+          'sources.nameHint' => 'e.g. orders-db',
+          'sources.nameHelp' =>
+            'How it appears on the canvas, in Backups and in Run logs.',
+          'sources.copyName' => ({required String name}) => '${name}-copy',
+          'sources.connectWith' => 'Connect with',
+          'sources.byFields' => 'Fields',
+          'sources.byUrl' => 'Connection URL',
+          'sources.host' => 'Host',
+          'sources.port' => 'Port',
+          'sources.portInvalid' => 'From 1 to 65535',
+          'sources.database' => 'Database',
+          'sources.username' => 'User',
+          'sources.password' => 'Password',
+          'sources.passwordKeepHint' =>
+            'Leave empty to keep it (same server and user)',
+          'sources.passwordHelp' => 'Use a read-only role. Stored encrypted; never shown again after saving.',
+          'sources.connectionUrl' => 'Connection URL',
+          'sources.urlHelp' => 'The password in the URL is stored encrypted and never shown again.',
+          'sources.urlHelpEditing' => 'Without a password in the URL, the saved one is kept while the host, database and user stay the same.',
+          'sources.urlInvalid' =>
+            'Use the format postgresql://user:password@host:5432/database',
+          'sources.dumpFormat' => 'Dump format',
+          'sources.formatCustom' => 'Custom (pg_dump -Fc)',
+          'sources.formatPlain' => 'Plain SQL',
+          'sources.sslMode' => 'TLS',
+          'sources.sslRequire' => 'Required',
+          'sources.sslDisable' => 'Off',
+          'sources.sslRequireHelp' => 'The connection is encrypted (the certificate is not checked) and the password never travels in clear.',
+          'sources.sslDisableWarning' => 'Without TLS the password and the data travel in clear: only for a database on a network you trust.',
+          'sources.testIdle' => 'Checks the login, the access to the database and the TLS setting above.',
+          'sources.testedTlsOn' => '✓ Tested · TLS on',
+          'sources.testedTlsOff' => '✓ Tested · TLS off',
+          'sources.connectedAs' => ({
+            required String user,
+          }) => 'Connected as ${user}',
+          'sources.createButton' => 'Create source',
+          'sources.created' => ({
+            required String name,
+          }) => 'Source ${name} created',
+          'sources.saved' => ({required String name}) => 'Source ${name} saved',
+          'sources.detailDescription' => ({
+            required String type,
+          }) => 'A ${type} database this workspace backs up.',
+          'sources.statBackups' => 'Backups',
+          'sources.statDestinations' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  zero: 'none yet',
+                  one: 'in ${n} destination',
+                  other: 'in ${n} destinations',
+                ),
+          'sources.statLastBackup' => 'Last backup',
+          'sources.sectionUses' => 'Backups using this source',
+          'sources.openEditor' => 'Open editor',
+          'sources.noUses' => 'No backup uses it yet. Connect it to a destination in the pipeline editor.',
+          'sources.columnBackup' => 'Backup',
+          'sources.columnSchedule' => 'Schedule',
+          'sources.columnLastRun' => 'Last run',
+          'sources.columnNextRun' => 'Next run',
+          'sources.cronUtc' => 'cron · UTC',
+          'sources.paused' => 'Paused',
+          'sources.neverRun' => 'Not run yet',
+          'sources.passwordStored' => '•••••••• · stored encrypted',
+          'destinations.title' => 'Destinations',
+          'destinations.description' =>
+            'Where this workspace writes backups: S3 buckets.',
+          'destinations.create' => 'New destination',
+          'destinations.search' => 'Search destinations',
+          'destinations.columnName' => 'Name',
+          'destinations.columnType' => 'Type',
+          'destinations.columnEndpoint' => 'Endpoint',
+          'destinations.columnBackups' => 'Backups',
+          'destinations.columnStatus' => 'Status',
+          'destinations.bucketRoot' => 'Bucket root',
+          'destinations.folderCount' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} folder',
+                  other: '${n} folders',
+                ),
+          'destinations.showFolders' => ({
+            required String name,
+          }) => 'Show the folders of ${name}',
+          'destinations.hideFolders' => ({
+            required String name,
+          }) => 'Hide the folders of ${name}',
+          'destinations.emptyTitle' => 'No destinations yet',
+          'destinations.emptyDescription' =>
+            'Add a bucket to write backups to.',
+          'destinations.inUse' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: 'Used by ${n} backup. Remove it first.',
+                  other: 'Used by ${n} backups. Remove them first.',
+                ),
+          'destinations.deleteTitle' => ({
+            required String name,
+          }) => 'Delete the destination ${name}?',
+          'destinations.deleteConfirm' => 'It isn\'t used by any backup. Its saved connection and keys are removed from this workspace. The files already in the bucket stay there.',
+          'destinations.deleted' => ({
+            required String name,
+          }) => 'Destination ${name} deleted',
+          'destinations.noFolders' =>
+            'No folders · the bucket root is the only connection point',
+          'destinations.folderUsed' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} backup',
+                  other: '${n} backups',
+                ),
+          'destinations.notUsedYet' => 'Not used yet',
+          'destinations.deleteFolder' => ({
+            required String path,
+          }) => 'Delete folder ${path}',
+          'destinations.folderLocked' =>
+            'In use by backups. Reconnect them first.',
+          'destinations.addFolder' => 'Add folder',
+          'destinations.folderHint' => '/folder-name',
+          'destinations.folderEmpty' => 'Enter a folder name',
+          'destinations.folderInvalid' =>
+            'Lowercase letters, digits, - . _ and / between them',
+          'destinations.folderRepeated' => 'That folder already exists',
+          'destinations.folderAdded' => ({
+            required String path,
+          }) => 'Folder ${path} added',
+          'destinations.folderDeleted' => ({
+            required String path,
+          }) => 'Folder ${path} deleted',
+          'destinations.newTitle' => 'New destination',
+          'destinations.editTitle' => 'Edit destination',
+          'destinations.formDescription' => 'Choose where backups are written.',
+          'destinations.stepType' => 'Name & type',
+          'destinations.stepConnection' => 'Connection',
+          'destinations.stepFolders' => 'Folders',
+          'destinations.typeTitle' => 'Where should backups go?',
+          'destinations.connectionTitle' => 'How should Dumpling connect?',
+          'destinations.foldersTitle' => 'Folders',
+          'destinations.name' => 'Name',
+          'destinations.nameHint' => 'e.g. bucket-backups',
+          'destinations.nameHelp' =>
+            'How it appears on the canvas and in Backups.',
+          'destinations.copyName' => ({required String name}) => '${name}-copy',
+          'destinations.endpoint' => 'Endpoint',
+          'destinations.endpointHelp' => 'Any S3-compatible URL. For AWS use https://s3.<region>.amazonaws.com.',
+          'destinations.bucket' => 'Bucket',
+          'destinations.region' => 'Region',
+          'destinations.accessKeyId' => 'Access key ID',
+          'destinations.secretKey' => 'Secret key',
+          'destinations.secretKeepHint' =>
+            'Leave empty to keep it (same endpoint and bucket)',
+          'destinations.secretHelp' =>
+            'Stored encrypted; never shown again after saving.',
+          'destinations.pathStyle' => 'Path-style addressing',
+          'destinations.pathStyleHelp' =>
+            'Needed by most self-hosted S3 servers.',
+          'destinations.permissions' =>
+            'Permissions needed: s3:PutObject and s3:AbortMultipartUpload.',
+          'destinations.foldersHelp' => 'Optional. Each folder is a connection point on the canvas; with folders, the bucket root is not one. Each new folder is checked before saving.',
+          'destinations.testIdle' => 'Dumpling starts and aborts a multipart upload at the bucket root; nothing is left in the bucket.',
+          'destinations.foldersPending' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} folder hasn\'t been checked yet.',
+                  other: '${n} folders haven\'t been checked yet.',
+                ),
+          'destinations.foldersAllChecked' => 'All folders are writable.',
+          'destinations.foldersRootCheckedShort' =>
+            'The bucket root was checked in step 2.',
+          'destinations.folderWritable' => 'Writable',
+          'destinations.folderNotChecked' => 'Not checked',
+          'destinations.foldersRootChecked' => 'No folders: backups go to the bucket root, already checked in step 2.',
+          'destinations.checkFolders' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: 'Check ${n} folder',
+                  other: 'Check ${n} folders',
+                ),
+          'destinations.checkAgain' => 'Check again',
+          'destinations.checkingFolders' => 'Checking…',
+          'destinations.checkFoldersToSave' => 'Check the new folders to save',
+          'destinations.connectedSub' => ({
+            required String bucket,
+          }) => '${bucket} · nothing was left in the bucket',
+          'destinations.rootWritable' => '✓ Root writable',
+          'destinations.createButton' => 'Create destination',
+          'destinations.created' => ({
+            required String name,
+          }) => 'Destination ${name} created',
+          'destinations.saved' => ({
+            required String name,
+          }) => 'Destination ${name} saved',
+          'destinations.detailDescription' =>
+            'A bucket this workspace writes backups to.',
+          'destinations.statBackups' => 'Backups',
+          'destinations.statBackupsSub' => 'write here',
+          'destinations.statFolders' => 'Folders',
+          'destinations.statFoldersSub' => 'connection points',
+          'destinations.sectionFolders' => 'Folders',
+          'destinations.columnFolder' => 'Folder',
+          'destinations.columnWrittenBy' => 'Written by',
+          'destinations.accessKey' => 'Access key',
+          'destinations.on' => 'On',
+          'destinations.off' => 'Off',
+          'destinations.typeSub.s3' => 'Any S3-compatible storage',
+          'destinations.typeSub.gdrive' => 'Shared drive or folder',
+          'destinations.typeSub.dropbox' => 'App folder',
+          'destinations.typeSub.azure' => 'Storage container',
+          'destinations.typeSub.sftp' => 'Any SSH server',
+          'canvas.description' => 'Connect sources to destinations to build this workspace\'s backups.',
+          'canvas.save' => 'Save canvas',
+          'canvas.saved' => 'Canvas saved',
+          'canvas.unsavedTitle' => 'Discard the changes?',
+          'canvas.unsavedDescription' =>
+            'The canvas has changes that are not saved. Leaving discards them.',
+          'canvas.discard' => 'Discard',
+          'canvas.newConfig' => 'New config',
+          'canvas.removeFromCanvas' => 'Remove from canvas',
+          'canvas.allSourcesPlaced' => 'Every source is on the canvas',
+          'canvas.allDestinationsPlaced' =>
+            'Every destination is on the canvas',
+          'canvas.workspaceDefault' => 'Workspace default',
+          'canvas.neverRun' => 'Never run',
+          'canvas.disabled' => 'Disabled',
+          'canvas.orphans' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} incomplete config',
+                  other: '${n} incomplete configs',
+                ),
+          'canvas.orphansHelp' => 'Only complete flows (source → config → destination) are saved. The configs in amber are discarded on save; sources and destinations stay.',
+          'canvas.semantics' => 'Canvas. Hold Space and drag to move it; right click for options; arrow keys pan; Ctrl and scroll zooms; F centers; click a connection and press Delete to remove it; Escape closes the config',
+          'canvas.addSource' => 'Source',
+          'canvas.addDestination' => 'Destination',
+          'canvas.deleteConfig' => 'Delete config',
+          'canvas.editConfig' => 'Edit config',
+          'canvas.removeConnection' => 'Remove connection',
+          'canvas.removeConnectionKey' => 'Remove connection (Del)',
+          'canvas.configHere' => 'Config is created here',
+          'canvas.releaseToCreate' => 'Release to create the config',
+          'canvas.dragToDestination' => 'Drag to a destination',
+          'canvas.last' => 'Last',
+          'canvas.next' => 'Next',
+          'canvas.runStatus.success' => 'Success',
+          'canvas.runStatus.failed' => 'Failed',
+          'canvas.runStatus.running' => 'Running',
+          'canvas.runStatus.queued' => 'Queued',
+          'canvas.frequency.hourly' => 'Hourly',
+          'canvas.frequency.daily' => 'Daily',
+          'canvas.frequency.weekly' => 'Weekly',
+          'canvas.frequency.cron' => 'Cron',
+          'canvas.addFolder' => '+ Add folder',
+          'canvas.addFolderTitle' => ({
+            required String name,
+          }) => 'Add a folder to ${name}',
+          'canvas.addFolderDescription' => 'Each folder is a connection point. It is created in the bucket when the canvas is saved.',
+          'canvas.addFolderRoot' => 'With the first folder the bucket root stops being a connection point: the configs that write to it are disconnected.',
+          'canvas.keys.space' => 'Space',
+          'canvas.keys.del' => 'Del',
+          'canvas.keys.ctrl' => 'Ctrl',
+          'canvas.keys.esc' => 'Esc',
+          'canvas.shortcuts.title' => 'Shortcuts',
+          'canvas.shortcuts.hide' => 'Hide shortcuts',
+          'canvas.shortcuts.moveCanvas' => 'Move canvas',
+          'canvas.shortcuts.drag' => ' + drag',
+          'canvas.shortcuts.connect' => 'Connect',
+          'canvas.shortcuts.dragFromPort' => 'drag from a port',
+          'canvas.shortcuts.options' => 'Options',
+          'canvas.shortcuts.rightClick' => 'right click',
+          'canvas.shortcuts.clickIt' => 'click it + ',
+          'canvas.shortcuts.zoom' => 'Zoom',
+          'canvas.shortcuts.scroll' => 'scroll',
+          'canvas.shortcuts.zoomInOut' => 'Zoom in / out',
+          'canvas.shortcuts.center' => 'Center canvas',
+          'canvas.shortcuts.reset' => 'Reset to 100%',
+          'canvas.shortcuts.moveWithKeys' => 'Move with keys',
+          'canvas.shortcuts.closeConfig' => 'Close config',
+          'canvas.shortcuts.toggle' => 'Show / hide shortcuts',
+          'canvas.view.settings' => 'Canvas settings',
+          'canvas.view.toggleShortcuts' => 'Show or hide shortcuts (?)',
+          'canvas.view.center' => 'Center',
+          'canvas.view.centerTooltip' => 'Center canvas (F)',
+          'canvas.view.zoomOut' => 'Zoom out (−)',
+          'canvas.view.reset' => 'Reset to 100% (0)',
+          'canvas.view.zoomIn' => 'Zoom in (+)',
+          'canvas.view.settingsTitle' => 'Canvas',
+          'canvas.view.ctrlZoom' => 'Hold Ctrl to zoom',
+          'canvas.view.ctrlZoomOn' =>
+            'Scroll moves the canvas, Ctrl + scroll zooms',
+          'canvas.view.ctrlZoomOff' => 'Scroll always zooms',
+          'canvas.inspector.configName' => 'Config name',
+          'canvas.inspector.doubleCompression' => 'The custom format (pg_dump -Fc) is compressed already: gzip barely makes it smaller.',
+          'canvas.inspector.nameHelp' =>
+            'Shown on the canvas, in Backups and in the run log.',
+          'canvas.inspector.frequency' => 'Frequency',
+          'canvas.inspector.review' => 'Review',
+          'canvas.inspector.source' => 'Source',
+          'canvas.inspector.destination' => 'Destination',
+          'canvas.inspector.nextRunOnSave' => 'Computed when it is saved',
+          'canvas.inspector.cronHelp' => 'minute hour day month weekday, in UTC. Hourly, daily and weekly write it for you.',
+          'canvas.inspector.cronInvalid' =>
+            'Not a valid cron expression (minute hour day month weekday)',
+          'canvas.inspector.enabled' => 'Enabled',
+          'canvas.inspector.enabledOn' => 'Runs on its schedule',
+          'canvas.inspector.enabledOff' => 'Off: it only runs with Run now',
+          'canvas.inspector.compressionNone' => 'None',
+          'canvas.inspector.objectKeySlash' =>
+            'The object key cannot start with /',
+          'canvas.inspector.objectKeyExtension' => 'Leave out the extension: it is added from the dump format and the compression',
+          'canvas.inspector.objectKeyDots' =>
+            'The object key cannot have . or .. folders',
+          'canvas.inspector.schedule' => 'Name & schedule',
+          'canvas.inspector.cron' => 'Cron',
+          'canvas.inspector.timeZone' => 'Time zone',
+          'canvas.inspector.nextRun' => 'Next run',
+          'canvas.inspector.output' => 'Output',
+          'canvas.inspector.objectKey' => 'Object key',
+          'canvas.inspector.placeholders' => 'What the placeholders write',
+          'canvas.inspector.placeholdersIntro' => 'Each placeholder is replaced when the backup starts. Dates and times are in UTC.',
+          'canvas.inspector.placeholderHelp.year' => 'Year, four digits (2026)',
+          'canvas.inspector.placeholderHelp.month' =>
+            'Month, two digits (01-12)',
+          'canvas.inspector.placeholderHelp.day' =>
+            'Day of the month, two digits (01-31)',
+          'canvas.inspector.placeholderHelp.hour' => 'Hour, two digits (00-23)',
+          'canvas.inspector.placeholderHelp.minute' =>
+            'Minute, two digits (00-59)',
+          'canvas.inspector.placeholderHelp.db' =>
+            'Name of the database backed up',
+          'canvas.inspector.placeholderHelp.runId' => 'Id of the run, different every time. Only written where you put it: without it, two backups with the same key overwrite each other.',
+          'canvas.inspector.placeholdersOther' =>
+            'Any other text in braces is written as it is.',
+          'canvas.inspector.cronInfo' => 'How to read a cron expression',
+          'canvas.inspector.cronInfoIntro' =>
+            'Five fields separated by spaces, always in UTC.',
+          'canvas.inspector.cronField.minute' => 'minute (0–59)',
+          'canvas.inspector.cronField.hour' => 'hour (0–23)',
+          'canvas.inspector.cronField.day' => 'day of month (1–31)',
+          'canvas.inspector.cronField.month' => 'month (1–12)',
+          'canvas.inspector.cronField.weekday' =>
+            'day of week (0–6, Sunday = 0)',
+          'canvas.inspector.cronExample.hourly' => 'Every hour, on the hour',
+          'canvas.inspector.cronExample.quarter' => 'Every 15 minutes',
+          'canvas.inspector.cronExample.daily' => 'Every day at 02:00',
+          'canvas.inspector.cronExample.sundays' => 'Sundays at 03:00',
+          'canvas.inspector.cronExample.monthly' =>
+            'The 1st of each month at 01:30',
+          'canvas.inspector.cronInfoSyntax' =>
+            '* means every value, */n every n, a-b a range and a,b a list.',
+          'canvas.inspector.connectDestination' =>
+            'Connect a destination to choose where it goes.',
+          'canvas.inspector.relativeToFolder' => ({
+            required String folder,
+          }) => 'Relative to the folder ${folder}. The extension is added from the dump format and the compression.',
+          'canvas.inspector.relativeToRoot' => ({
+            required String bucket,
+          }) => 'Relative to the root of ${bucket}. The extension is added from the dump format and the compression.',
+          'canvas.inspector.compression' => 'Compression',
+          'canvas.inspector.writes' => 'Next run writes',
+          'canvas.inspector.missingSource' => 'Nothing: connect a source.',
+          'canvas.inspector.missingDestination' =>
+            'Nothing: connect a destination.',
+          'canvas.inspector.missingBoth' =>
+            'Nothing: connect a source and a destination.',
+          'canvas.inspector.noSource' => 'no source',
+          'canvas.inspector.noDestination' => 'no destination',
+          'canvas.columns.sources' => 'Sources',
+          'canvas.columns.configs' => 'Config · one per connection',
+          'canvas.columns.destinations' => 'Destinations',
+          'canvas.folder' => 'Folder',
+          'canvas.testRun.button' => 'Test run',
+          'canvas.testRun.help' => 'Checks that every complete flow could run, without backing anything up: each source connects and pg_dump can dump it, each destination takes a write in its folders.',
+          'canvas.testRun.ok' => ({
+            required int n,
+          }) => 'Everything works: ${n} checks passed',
+          'canvas.testRun.failed' => ({
+            required String list,
+          }) => 'Some checks failed: ${list}',
+          'canvas.testRun.nothing' =>
+            'Nothing to test: connect a source to a destination first.',
+          'canvas.run.button' => 'Run now',
+          'canvas.run.done' => ({
+            required String name,
+            required String size,
+          }) => 'Backup ${name} done: ${size}',
+          'canvas.run.failed' => ({
+            required String name,
+            required String error,
+          }) => 'Backup ${name} failed: ${error}',
+          'canvas.guide.title' => 'Your first backup',
+          _ => null,
+        } ??
+        switch (path) {
+          'canvas.guide.source' => 'Add a source',
+          'canvas.guide.sourceHelp' => 'The database to back up.',
+          'canvas.guide.destination' => 'Add a destination',
+          'canvas.guide.destinationHelp' => 'The bucket the backups go to.',
+          'canvas.guide.connect' => 'Connect them',
+          'canvas.guide.connectHelp' => 'Drag from the port of the source to a folder or the bucket: a config is created between them. Then save.',
+          'canvas.guide.create' => 'Create one',
+          'canvas.guide.place' => ({required String name}) => 'Place ${name}',
+          'runs.title' => 'Run log',
+          'runs.description' => 'Every backup run in this workspace: scheduled, manual or through the API. Times in UTC, your local time below.',
+          'runs.search' => 'Search by backup, source or destination',
+          'runs.columnStatus' => 'Status',
+          'runs.columnStarted' => 'Started',
+          'runs.columnDuration' => 'Duration',
+          'runs.columnSize' => 'Size',
+          'runs.scheduled' => 'By schedule',
+          'runs.manual' => 'Manual',
+          'runs.api' => 'API',
+          'runs.emptyTitle' => 'No runs yet',
+          'runs.emptyDescription' => 'Backups run on their schedule, or with Run now in the pipeline editor.',
+          'runs.newestOnly' => 'Only the 200 newest runs are shown.',
+          'runs.log' => 'Log (UTC)',
+          'runs.copyLog' => 'Copy log',
+          'runs.logCopied' => 'Log copied',
+          'runs.copyRunId' => 'Copy the id of this run',
+          'runs.retryNow' => 'Retry now',
+          'runs.runAgain' => 'Run again',
+          'runs.runStarted' => ({
+            required String name,
+          }) => '${name} started: it follows in the run log',
+          'runs.logWhenDone' =>
+            'The log is written when the run ends. Refresh to see it.',
+          'runs.noLog' => 'This run has no log.',
+          'runs.today' => ({required String date}) => 'Today · ${date} (UTC)',
+          'runs.yesterday' => ({
+            required String date,
+          }) => 'Yesterday · ${date} (UTC)',
+          'runs.day' => ({required String date}) => '${date} (UTC)',
+          'runs.succeeded' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} succeeded',
+                  other: '${n} succeeded',
+                ),
+          'runs.failedCount' =>
+            ({required num n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  n,
+                  one: '${n} failed',
+                  other: '${n} failed',
+                ),
+          'runs.savedIn' => ({
+            required String size,
+            required String duration,
+          }) => '${size} in ${duration}',
+          'runs.inProgress' => 'In progress',
+          'runs.soFar' => ({
+            required String size,
+          }) => 'In progress · ${size} so far',
+          'runs.columnStartedBy' => 'Started by',
+          'runs.sourceType' => 'Source type',
+          'runs.destinationType' => 'Destination type',
+          'runs.queued' => 'Queued: starts when the run in progress ends',
+          'runs.labelTooltip' => 'Label sent with the run',
+          'runs.viewRun' => 'View run',
+          'runs.steps' => 'Steps',
+          'runs.stepConnect' => ({
+            required String name,
+          }) => 'Connect to ${name}',
+          'runs.stepDump' => ({
+            required String name,
+          }) => 'Dump and upload to ${name}',
+          'runs.stepSkipped' => 'Skipped',
+          'runs.stepWaiting' => 'Waiting',
+          'runs.resultSuccess' => 'Backup saved',
+          'runs.resultFailed' => 'The backup failed',
+          'runs.resultRunning' => 'Running. Refresh to see how far it got.',
+          'runs.resultQueued' =>
+            'It starts when the run of this config in progress ends.',
+          'backups.title' => 'Backups',
+          'backups.description' =>
+            'Every backup in this workspace, its last run and the next one.',
+          'backups.openEditor' => 'Open editor',
+          'backups.newBackup' => 'New backup',
+          'backups.healthy' => 'Healthy',
+          'backups.healthySub' => 'last run succeeded',
+          'backups.failing' => 'Failing',
+          'backups.failingSub' => 'need attention',
+          'backups.paused' => 'Paused',
+          'backups.nextBackupIn' => 'Next backup in',
+          'backups.nothingScheduled' => 'Nothing scheduled',
+          'backups.updatingIn' => ({
+            required int seconds,
+          }) => 'Updating in ${seconds}…',
+          'backups.updating' => 'Updating…',
+          'backups.search' => 'Search backups',
+          'backups.columnStatus' => 'Status',
+          'backups.columnConfig' => 'Config',
+          'backups.columnSource' => 'Source',
+          'backups.columnDestination' => 'Destination',
+          'backups.columnSchedule' => 'Schedule',
+          'backups.everyHour' => 'Every hour',
+          'backups.everyHourAt' => ({
+            required String minute,
+          }) => 'Every hour at :${minute}',
+          'backups.dailyAt' => ({required String time}) => 'Daily at ${time}',
+          'backups.sundaysAt' => ({
+            required String time,
+          }) => 'Sundays at ${time}',
+          'backups.everyHours' => ({required int n}) => 'Every ${n} hours',
+          'backups.columnLastRun' => 'Last backup',
+          'backups.columnNextRun' => 'Next backup',
+          'backups.allSources' => 'All sources',
+          'backups.allDestinations' => 'All destinations',
+          'backups.shown' => ({
+            required int shown,
+            required int total,
+          }) => '${shown} of ${total} backups',
+          'backups.showing' => ({
+            required int shown,
+            required int total,
+          }) => 'Showing ${shown} of ${total} backups',
+          'backups.timesNote' => ({
+            required String utc,
+            required String local,
+          }) => 'Times in UTC · now ${utc} (${local})',
+          'backups.sort' => 'Sort:',
+          'backups.sortBy' => 'Sort by',
+          'backups.sortLast' => 'Last backup',
+          'backups.sortLastSub' => 'Most recent first',
+          'backups.sortLastOld' => 'Last backup',
+          'backups.sortLastOldSub' => 'Oldest first',
+          'backups.sortNext' => 'Next backup',
+          'backups.sortNextSub' => 'Soonest first',
+          'backups.sortName' => 'Source name',
+          'backups.sortNameSub' => 'A to Z',
+          'backups.sortManual' => 'Manual',
+          'backups.sortManualSub' => 'Drag the rows to order them',
+          'backups.inTime' => ({required String time}) => 'in ${time}',
+          'backups.startedAgo' => ({
+            required String time,
+          }) => 'Started ${time} ago',
+          'backups.runNowFor' => ({required String name}) => 'Run ${name} now',
+          'backups.showRuns' => 'Show run history',
+          'backups.hideRuns' => 'Hide run history',
+          'backups.moreFor' => ({
+            required String name,
+          }) => 'More actions for ${name}',
+          'backups.viewLastRun' => 'View last run',
+          'backups.editConfig' => 'Edit config',
+          'backups.deleteBackup' => 'Delete backup',
+          'backups.recentRuns' => 'Recent runs',
+          'backups.copyConfigId' => 'Copy config id',
+          'backups.noRuns' => 'No runs yet',
+          'backups.viewLog' => 'View log',
+          'backups.viewDetails' => 'View details',
+          'backups.noFile' => 'No file written',
+          'backups.uploading' => 'Uploading…',
+          'backups.manual' => 'Manual',
+          'backups.scheduled' => 'By schedule',
+          'backups.deleteTitle' => ({
+            required String name,
+          }) => 'Delete the backup ${name}?',
+          'backups.deleteConfirm' => 'Its schedule stops. Its runs stay in the run log, and the files already in the destination stay there.',
+          'backups.deleted' => ({
+            required String name,
+          }) => 'Backup ${name} deleted',
+          'backups.saved' => ({required String name}) => 'Backup ${name} saved',
+          'backups.emptyDescription' => 'Connect a source to a destination in the pipeline editor to create one.',
+          'apiKeys.title' => 'API keys',
+          'apiKeys.description' => 'Keys for other systems to use this workspace through the API: a deploy pipeline, a script, an integration.',
+          'apiKeys.howTo' => 'How to use a key',
+          'apiKeys.create' => 'New API key',
+          'apiKeys.search' => 'Search keys by name or id',
+          'apiKeys.columnName' => 'Name',
+          'apiKeys.columnAccess' => 'Access',
+          'apiKeys.columnConfigs' => 'Configs',
+          'apiKeys.columnCreated' => 'Created',
+          'apiKeys.columnLastUsed' => 'Last used',
+          'apiKeys.permissionCount' => ({required int n}) => '${n} permissions',
+          'apiKeys.allConfigs' => 'All configs',
+          'apiKeys.configCount' => ({required int n}) => '${n} configs',
+          'apiKeys.everyConfig' =>
+            'Every config of the workspace, new ones too',
+          'apiKeys.neverUsed' => 'Never used',
+          'apiKeys.ran' => ({required String config}) => 'ran ${config}',
+          'apiKeys.footer' => 'A key is shown once, when it is created. Keys don\'t expire: to renew one, create another and delete the old one. They are not part of an export.',
+          'apiKeys.emptyTitle' => 'No API keys yet',
+          'apiKeys.emptyDescription' => 'A key lets a pipeline or another system use this workspace without your password: run a backup before a deploy and wait for it, read the run log, add sources. Each key does only what you allow.',
+          'apiKeys.run' => 'Run backups',
+          'apiKeys.runSub' => 'Start backups and follow their runs',
+          'apiKeys.read' => 'Read only',
+          'apiKeys.readSub' => 'See everything, change nothing',
+          'apiKeys.full' => 'Full access',
+          'apiKeys.fullSub' => 'Everything in this workspace',
+          'apiKeys.custom' => 'Custom',
+          'apiKeys.filterAccess' => 'Access',
+          'apiKeys.filterConfig' => 'Config',
+          'apiKeys.filterPermission' => 'Permission',
+          'apiKeys.unlimited' => 'Every config',
+          'apiKeys.newTitle' => 'New API key',
+          'apiKeys.editTitle' => ({required String name}) => 'Edit ${name}',
+          'apiKeys.name' => 'Name',
+          'apiKeys.nameHint' =>
+            'What uses it. The run log shows it on the runs it starts.',
+          'apiKeys.access' => 'Access',
+          'apiKeys.permissions' => ({
+            required int n,
+            required int total,
+          }) => 'Permissions · ${n} of ${total}',
+          'apiKeys.limit' => 'Only some configs',
+          'apiKeys.limitHint' => 'It runs only these and sees only their runs, and can\'t create configs nor use the canvas. Off: every config of the workspace, new ones too.',
+          'apiKeys.limitOff' => 'Only for configs and runs: give the key a permission on them to limit it.',
+          'apiKeys.notLimitable' =>
+            'Not with Only some configs: it reaches every config',
+          'apiKeys.noConfigs' => 'This workspace has no configs yet.',
+          'apiKeys.renewNote' => 'The key itself doesn\'t change. To renew it, create another and delete this one.',
+          'apiKeys.summaryAll' => ({
+            required int n,
+          }) => 'All configs · ${n} permissions',
+          'apiKeys.summarySome' =>
+            ({required num configs, required int n}) =>
+                (_root.$meta.cardinalResolver ??
+                PluralResolvers.cardinal('en'))(
+                  configs,
+                  one: '${configs} config · ${n} permissions',
+                  other: '${configs} configs · ${n} permissions',
+                ),
+          'apiKeys.save' => 'Save',
+          'apiKeys.createButton' => 'Create key',
+          'apiKeys.readyTitle' => ({
+            required String name,
+          }) => '${name} is ready',
+          'apiKeys.readyWarning' => 'Copy it now: it won\'t be shown again. If you lose it, delete it and create another.',
+          'apiKeys.copy' => 'Copy',
+          'apiKeys.copied' => 'Copied',
+          'apiKeys.use' => 'Use it',
+          'apiKeys.basicNote' => ({
+            required String id,
+          }) => 'Or with Basic auth: the user is ${id} and the password the rest of the key. …/runs/RUN_ID/events follows a run until it ends.',
+          'apiKeys.done' => 'Done',
+          'apiKeys.deleteTitle' => ({
+            required String name,
+          }) => 'Delete the key ${name}?',
+          'apiKeys.deleteConfirm' => 'Whatever uses it gets a 401 from now on. The runs it started stay in the run log. It can\'t be undone: to give access again, create another key.',
+          'apiKeys.deleted' => ({
+            required String name,
+          }) => 'Key ${name} deleted',
+          'apiKeys.saved' => ({required String name}) => 'Key ${name} saved',
+          'apiKeys.group.workspace' => 'WORKSPACE',
+          'apiKeys.group.sources' => 'SOURCES',
+          'apiKeys.group.destinations' => 'DESTINATIONS',
+          'apiKeys.group.configs' => 'CONFIGS',
+          'apiKeys.group.runs' => 'RUNS',
+          'apiKeys.group.canvas' => 'CANVAS',
+          'apiKeys.action.list' => 'List',
+          'apiKeys.action.view' => 'View',
+          'apiKeys.action.create' => 'Create',
+          'apiKeys.action.edit' => 'Edit',
+          'apiKeys.action.delete' => 'Delete',
+          'apiKeys.action.test' => 'Test',
+          'apiKeys.action.run' => 'Run',
+          'apiKeys.action.save' => 'Save',
+          'apiKeys.perm.workspaceGet' =>
+            'See the name, description and defaults of the workspace',
+          'apiKeys.perm.workspaceUpdate' =>
+            'Change the name, description, color and defaults of the workspace',
+          'apiKeys.perm.sourceList' => 'List the sources and their status',
+          'apiKeys.perm.sourceGet' =>
+            'See a source: its connection, without the password',
+          'apiKeys.perm.sourceCreate' => 'Add sources',
+          'apiKeys.perm.sourceUpdate' =>
+            'Change a source: its connection and its password',
+          'apiKeys.perm.sourceDelete' => 'Delete sources that no config uses',
+          'apiKeys.perm.sourceTest' => 'Test the connection of a source',
+          'apiKeys.perm.destinationList' =>
+            'List the destinations and their folders',
+          'apiKeys.perm.destinationGet' =>
+            'See a destination: its bucket, without the secret key',
+          'apiKeys.perm.destinationCreate' => 'Add destinations',
+          'apiKeys.perm.destinationUpdate' =>
+            'Change a destination: its bucket, credentials and folders',
+          'apiKeys.perm.destinationDelete' =>
+            'Delete destinations that no config uses',
+          'apiKeys.perm.destinationTest' =>
+            'Test the connection of a destination',
+          'apiKeys.perm.configList' =>
+            'List the configs, with their last and next run',
+          'apiKeys.perm.configGet' =>
+            'See a config: schedule, folder, object key, compression',
+          'apiKeys.perm.configCreate' =>
+            'Add configs between a source and a destination',
+          'apiKeys.perm.configUpdate' =>
+            'Change a config: schedule, folder, object key, enabled',
+          'apiKeys.perm.configDelete' =>
+            'Delete configs (their run history stays)',
+          'apiKeys.perm.configRun' => 'Start a backup now, with an optional label; it waits its turn if the config is running',
+          'apiKeys.perm.runList' => 'List the runs of the run log',
+          'apiKeys.perm.runGet' =>
+            'See a run, its log, and follow it until it ends',
+          'apiKeys.perm.canvasGet' =>
+            'Read the whole canvas: nodes, configs and where they sit',
+          'apiKeys.perm.canvasSave' => 'Save the whole canvas: it can add, change and delete sources, destinations and configs',
+          _ => null,
+        };
+  }
+}

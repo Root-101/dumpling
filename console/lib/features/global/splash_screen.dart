@@ -13,9 +13,9 @@ class SplashScreen extends StatelessWidget {
     final colors = app.colors;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeConfig.theme,
-      localizationsDelegates: appLocalizationsDelegates,
-      supportedLocales: appSupportedLocales,
+      theme: AppTheme.dark,
+      localizationsDelegates: AppIntl.delegates,
+      supportedLocales: AppIntl.supportedLocales,
       builder: (context, child) => Scaffold(
         backgroundColor: colors.surface.background,
         body: CustomPaint(
@@ -59,9 +59,8 @@ class SplashScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 18),
                   Text(
-                    context.intl.app.splashText,
-                    style: TextStyle(
-                      fontSize: 16,
+                    app.intl.app.splashText,
+                    style: app.styles.xl.copyWith(
                       height: 24 / 16,
                       color: colors.neutral.grey4,
                     ),

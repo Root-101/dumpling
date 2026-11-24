@@ -65,7 +65,7 @@ class SourceTableRepo {
         settings: Value(settings),
         secretsEncrypted: Value(secretsEncrypted),
         lastCheck: connectionChanged ? const Value(null) : const Value.absent(),
-        updatedAt: Value(DateTime.now()),
+        updatedAt: Value(utcNow()),
       ),
     );
   }

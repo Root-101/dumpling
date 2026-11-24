@@ -2,16 +2,21 @@ import 'package:console/app_exporter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// A destination in a dialog: how it is doing, the backups that write to
-/// each of its folders, its last connection check and the connection itself.
-/// It follows the list, so a test or an edit made from it shows here too
-class DestinationDialog extends StatelessWidget {
-  static Future<void> open(
+class DestinationDialogNavigator {
+  Future<void> open(
     DestinationModel destination, {
     required ValueChanged<DestinationModel> onEdit,
   }) => app.dialog.open(
     dialog: DestinationDialog(destination: destination, onEdit: onEdit),
   );
+}
+
+/// A destination in a dialog: how it is doing, the backups that write to
+/// each of its folders, its last connection check and the connection itself.
+/// It follows the list, so a test or an edit made from it shows here too
+class DestinationDialog extends StatelessWidget {
+  static final DestinationDialogNavigator navigator =
+      DestinationDialogNavigator();
 
   /// As the list had it when it opened; the list's newer one replaces it
   final DestinationModel destination;
@@ -28,7 +33,7 @@ class DestinationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = app.intl.destinations;
-    final data = context.select<DestinationCubit, DestinationData>(
+    final data = context.select<DestinationsCubit, DestinationsData>(
       (c) => c.state.data,
     );
     final d =
@@ -50,7 +55,7 @@ class DestinationDialog extends StatelessWidget {
             : ConnectionStatusLabel.colorOf(check),
         description: t.detailDescription,
         testing: testing,
-        onTest: () => context.read<DestinationCubit>().test(d),
+        onTest: () => context.read<DestinationsCubit>().test(d),
         onEdit: () => onEdit(d),
       ),
       stats: [
@@ -103,7 +108,7 @@ class DestinationDialog extends StatelessWidget {
 /// Each folder (or the root, without folders) and the backups writing there
 class _Folders extends StatelessWidget {
   final DestinationModel destination;
-  final DestinationData data;
+  final DestinationsData data;
 
   const _Folders({required this.destination, required this.data});
 
@@ -141,7 +146,7 @@ class _Folders extends StatelessWidget {
           row(
             [Text(t.columnFolder), Text(t.columnWrittenBy)],
             height: 38,
-            style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+            style: app.styles.s.copyWith(color: colors.neutral.grey3),
           ),
           for (final folder in folders)
             row([
@@ -171,12 +176,9 @@ class _Folders extends StatelessWidget {
     if (configs.isEmpty) {
       return Text(
         app.intl.destinations.notUsedYet,
-        style: TextStyle(fontSize: 13, color: app.colors.neutral.grey4),
+        style: app.styles.m.copyWith(color: app.colors.neutral.grey4),
       );
     }
-    return Text(
-      configs.map((c) => c.name).join(', '),
-      style: const TextStyle(fontSize: 14),
-    );
+    return Text(configs.map((c) => c.name).join(', '), style: app.styles.l);
   }
 }

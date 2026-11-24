@@ -56,10 +56,11 @@ Prefix everything with `fvm` (versions pinned in `.fvmrc`; the `dart` on the PAT
 | Runs, drivers, image     | `service/` | `tool/e2e/run.sh` (Docker: image, PostgreSQL, S3)    |
 | Regenerate the design    | root       | `python docs/design/tool/export.py <canvas folder>`  |
 
-- The one known analyzer info (`MaterialUiCompatibilityBridge` in `console/lib/main.dart`) is on
-  purpose.
+- The known analyzer infos (`MaterialUiCompatibilityBridge` in `console/lib/main.dart`, and the
+  `flutter/material.dart` import it needs) are on purpose.
 - `dart format` on a folder reformats unrelated files: format only the files you touched.
-- Each service test file that starts a server uses its own port.
+- Service tests run in memory (`TestApp`, Winter's `WinterTestClient`); one that needs a real socket
+  calls `listen(port)` with its own port, away from 8180/8181.
 
 ## Running it locally
 
@@ -77,7 +78,7 @@ Prefix everything with `fvm` (versions pinned in `.fvmrc`; the `dart` on the PAT
   `onUpgrade`); the SQLite file is created again. That version gets 🔴 in the upgrade table of the
   README (*Upgrading*: export, upgrade, import) and a line in the changelog; tell the user to delete
   their local `data/dumpling.sqlite`.
-- **No user-visible text hardcoded**, in English and Spanish (`console/lib/l10n/*.i18n.yaml`,
+- **No user-visible text hardcoded**, in English and Spanish (`console/lib/i18n/*.i18n.yaml`,
   `service/lib/i18n/*.i18n.yaml`). Spanish says *origen* and *destino*, never *source* or
   *destination*.
 - **A visual change to the console**, in the same change: the Claude Design canvas first

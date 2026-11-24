@@ -49,6 +49,16 @@ class WorkspaceRequest implements Validatable {
 
   String get trimmedName => name!.trim();
 
+  /// What it stores, once valid.
+  WorkspaceValues get values => (
+    name: trimmedName,
+    description: cleanDescription,
+    color: color,
+    schedule: schedule,
+    compression: compression,
+    objectKey: objectKey,
+  );
+
   String? get cleanDescription {
     final value = description?.trim();
     return value == null || value.isEmpty ? null : value;

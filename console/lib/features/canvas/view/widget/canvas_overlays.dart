@@ -5,8 +5,12 @@ BoxDecoration _panel({Color? color}) => BoxDecoration(
   color: color ?? app.colors.surface.surface1.withValues(alpha: 0.96),
   borderRadius: app.dimensions.radius.m,
   border: Border.all(color: app.colors.surface.border),
-  boxShadow: const [
-    BoxShadow(color: Color(0x59000000), blurRadius: 16, offset: Offset(0, 4)),
+  boxShadow: [
+    BoxShadow(
+      color: app.colors.surface.shadow,
+      blurRadius: 16,
+      offset: const Offset(0, 4),
+    ),
   ],
 );
 
@@ -78,14 +82,14 @@ class ShortcutsPanel extends StatelessWidget {
           Expanded(
             child: Text(
               action,
-              style: TextStyle(fontSize: 12, color: colors.text.muted),
+              style: app.styles.s.copyWith(color: colors.text.muted),
             ),
           ),
           ...keys,
         ],
       ),
     );
-    final hint = TextStyle(fontSize: 12, color: colors.text.subtle);
+    final hint = app.styles.s.copyWith(color: colors.text.subtle);
     final keys = app.intl.canvas.shortcuts;
     final cap = app.intl.canvas.keys;
     return Container(
@@ -233,7 +237,7 @@ class ViewControls extends StatelessWidget {
             app.intl.canvas.view.zoomOut,
             Text(
               '−',
-              style: TextStyle(fontSize: 16, color: colors.text.secondary),
+              style: app.styles.xl.copyWith(color: colors.text.secondary),
             ),
             onZoomOut,
             null,
@@ -250,10 +254,7 @@ class ViewControls extends StatelessWidget {
                   foregroundColor: colors.text.muted,
                   padding: EdgeInsets.zero,
                   shape: const RoundedRectangleBorder(),
-                  textStyle: const TextStyle(
-                    fontFamily: AppText.sans,
-                    fontSize: 12,
-                  ),
+                  textStyle: app.styles.s.copyWith(fontFamily: AppText.sans),
                 ),
                 child: Text('${(zoom * 100).round()}%'),
               ),
@@ -264,7 +265,7 @@ class ViewControls extends StatelessWidget {
             app.intl.canvas.view.zoomIn,
             Text(
               '+',
-              style: TextStyle(fontSize: 16, color: colors.text.secondary),
+              style: app.styles.xl.copyWith(color: colors.text.secondary),
             ),
             onZoomIn,
             null,
@@ -412,9 +413,8 @@ class CanvasContextMenu extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       foregroundColor: color,
                       disabledForegroundColor: color,
-                      textStyle: const TextStyle(
+                      textStyle: app.styles.m.copyWith(
                         fontFamily: AppText.sans,
-                        fontSize: 13,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: app.dimensions.radius.xs,
@@ -454,11 +454,11 @@ class OrphansWarning extends StatelessWidget {
           color: colors.surface.surface2,
           borderRadius: app.dimensions.radius.m,
           border: Border.all(color: colors.brand.accent.withValues(alpha: 0.6)),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
-              color: Color(0x59000000),
+              color: app.colors.surface.shadow,
               blurRadius: 16,
-              offset: Offset(0, 4),
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -476,8 +476,7 @@ class OrphansWarning extends StatelessWidget {
                 children: [
                   Text(
                     app.intl.canvas.orphans(n: count),
-                    style: TextStyle(
-                      fontSize: 13,
+                    style: app.styles.m.copyWith(
                       fontWeight: FontWeight.w600,
                       color: colors.brand.accent,
                     ),
@@ -485,7 +484,7 @@ class OrphansWarning extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     app.intl.canvas.orphansHelp,
-                    style: TextStyle(fontSize: 12, color: colors.text.muted),
+                    style: app.styles.s.copyWith(color: colors.text.muted),
                   ),
                 ],
               ),
@@ -649,8 +648,7 @@ class _GuideStep extends StatelessWidget {
                         )
                       : Text(
                           '$number',
-                          style: TextStyle(
-                            fontSize: 12,
+                          style: app.styles.s.copyWith(
                             fontWeight: FontWeight.w700,
                             color: accent,
                           ),
@@ -660,19 +658,13 @@ class _GuideStep extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: app.styles.m.copyWith(fontWeight: FontWeight.w600),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 6),
-            Text(
-              help,
-              style: TextStyle(fontSize: 12, color: colors.text.muted),
-            ),
+            Text(help, style: app.styles.s.copyWith(color: colors.text.muted)),
             if (action != null && !done) ...[
               const Spacer(),
               const SizedBox(height: 10),

@@ -1,6 +1,18 @@
 import 'package:drift/drift.dart';
 import 'package:service/dumpling.dart';
 
+/// What a config stores, besides its id, workspace and order.
+typedef ConfigValues = ({
+  String name,
+  String sourceId,
+  String destinationId,
+  String? folder,
+  String schedule,
+  Compression compression,
+  String objectKey,
+  bool enabled,
+});
+
 class ConfigTableRepo {
   final AppDatabase _db;
 
@@ -44,19 +56,41 @@ class ConfigTableRepo {
         _db.configTable,
       )..where((tbl) => tbl.destinationId.equals(destinationId))).get();
 
-  /// [config] goes last in its workspace.
-  Future<void> insert(ConfigTableCompanion config) async {
-    final position = await _next(config.workspaceSlug.value);
+  /// A new config of [workspace]; it goes last.
+  Future<void> insert({
+    required String id,
+    required String workspace,
+    required ConfigValues values,
+  }) async {
+    final position = await _next(workspace);
     await _db
         .into(_db.configTable)
-        .insert(config.copyWith(position: Value(position)));
+        .insert(
+          _companion(values).copyWith(
+            id: Value(id),
+            workspaceSlug: Value(workspace),
+            position: Value(position),
+          ),
+        );
   }
 
   /// Replaces everything but the id, the workspace and the creation date.
-  Future<void> update(String id, ConfigTableCompanion config) async {
+  Future<void> update(String id, ConfigValues values) async {
     await (_db.update(_db.configTable)..where((tbl) => tbl.id.equals(id)))
-        .write(config.copyWith(updatedAt: Value(DateTime.now())));
+        .write(_companion(values).copyWith(updatedAt: Value(utcNow())));
   }
+
+  static ConfigTableCompanion _companion(ConfigValues values) =>
+      ConfigTableCompanion(
+        name: Value(values.name),
+        sourceId: Value(values.sourceId),
+        destinationId: Value(values.destinationId),
+        folder: Value(values.folder),
+        schedule: Value(values.schedule),
+        compression: Value(values.compression),
+        objectKey: Value(values.objectKey),
+        enabled: Value(values.enabled),
+      );
 
   Future<void> delete(String id) async {
     await (_db.delete(_db.configTable)..where((tbl) => tbl.id.equals(id))).go();

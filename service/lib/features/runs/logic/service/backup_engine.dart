@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:drift/drift.dart' show Value;
 import 'package:service/dumpling.dart';
 
 /// A step of a run that can't go on (a connection that fails, a server newer
@@ -42,10 +41,10 @@ class BackupEngine {
 
   BackupEngine()
     : scheduler = di.find(),
-      configs = ConfigTableRepo(di.find()),
-      sources = SourceTableRepo(di.find()),
-      destinations = DestinationTableRepo(di.find()),
-      runs = RunTableRepo(di.find()),
+      configs = di.find(),
+      sources = di.find(),
+      destinations = di.find(),
+      runs = di.find(),
       secrets = Secrets();
 
   static String taskName(String configId) => 'config:$configId';
@@ -151,26 +150,38 @@ class BackupEngine {
       // Its row was never written: the request got the error
       return _next(configId);
     }
-    final config = await configs.byId(configId);
-    final now = DateTime.now().toUtc();
-    if (config == null) {
-      await runs.update(
-        queued.id,
-        RunTableCompanion(
-          status: const Value(RunStatus.failed),
-          error: const Value('The config was deleted before the run started'),
-          finishedAt: Value(now),
-        ),
+    final now = utcNow();
+    final ConfigTableData? config;
+    try {
+      config = await configs.byId(configId);
+      if (config == null) {
+        await runs.failBeforeStart(
+          queued.id,
+          'The config was deleted before the run started',
+          now,
+        );
+        return _next(configId);
+      }
+      await runs.start(queued.id, now);
+    } on Exception catch (e, stackTrace) {
+      // the database failed (a full disk): the config must not stay taken,
+      // or no later run of it would ever start
+      logger.error(
+        'A queued run could not start',
+        error: e,
+        stackTrace: stackTrace,
       );
+      try {
+        await runs.failBeforeStart(
+          queued.id,
+          'Could not start: ${clipText('$e')}',
+          now,
+        );
+      } on Exception {
+        // the row stays queued: the next start of the service fails it
+      }
       return _next(configId);
     }
-    await runs.update(
-      queued.id,
-      RunTableCompanion(
-        status: const Value(RunStatus.running),
-        startedAt: Value(now),
-      ),
-    );
     logger.info(
       'Queued run started',
       fields: {'config': configId, 'run': queued.id},
@@ -215,22 +226,20 @@ class BackupEngine {
     ))!.destination;
     final id = Secrets.newId('run_');
     await runs.insert(
-      RunTableCompanion.insert(
-        id: id,
-        workspaceSlug: config.workspaceSlug,
-        configId: Value(config.id),
-        configName: config.name,
-        sourceName: source.name,
-        sourceType: source.type,
-        destinationName: destination.name,
-        destinationType: destination.type,
-        trigger: trigger,
-        status: status,
-        label: Value(label),
-        keyId: Value(key?.id),
-        keyName: Value(key?.name),
-        startedAt: DateTime.now().toUtc(),
-      ),
+      id: id,
+      workspace: config.workspaceSlug,
+      configId: config.id,
+      configName: config.name,
+      sourceName: source.name,
+      sourceType: source.type,
+      destinationName: destination.name,
+      destinationType: destination.type,
+      trigger: trigger,
+      status: status,
+      label: label,
+      keyId: key?.id,
+      keyName: key?.name,
+      startedAt: utcNow(),
     );
     logger.info(
       status == RunStatus.queued ? 'Run queued' : 'Run started',
@@ -249,8 +258,7 @@ class BackupEngine {
   Future<void> _execute(ConfigTableData config, RunTableData run) async {
     final log = <RunLogLine>[];
     final watch = Stopwatch()..start();
-    void write(String message) =>
-        log.add(RunLogLine(DateTime.now().toUtc(), message));
+    void write(String message) => log.add(RunLogLine(utcNow(), message));
     String logJson() => jsonEncode(log);
 
     try {
@@ -283,6 +291,11 @@ class BackupEngine {
         sourceSettings,
         sourceSecrets,
       );
+      // the source's last check is this one: its detail says what the run saw
+      await sources.updateLastCheck(
+        id: source.id,
+        lastCheck: jsonEncode(check),
+      );
       if (check.status != CheckStatus.connected) {
         throw RunFailure(_describe(check));
       }
@@ -304,7 +317,7 @@ class BackupEngine {
         config.folder,
         key,
       );
-      await runs.update(run.id, RunTableCompanion(location: Value(location)));
+      await runs.setLocation(run.id, location);
       write(
         'Dumping into ${destination.name}: $location'
         '${gzipped ? ' (gzip)' : ''}',
@@ -319,31 +332,23 @@ class BackupEngine {
         key,
         data,
         // The progress the console shows while it runs
-        onProgress: (bytes) => unawaited(
-          runs.update(run.id, RunTableCompanion(sizeBytes: Value(bytes))),
-        ),
+        onProgress: (bytes) => unawaited(runs.setSize(run.id, bytes)),
         onPending: (pending) => unawaited(
-          runs.update(
+          runs.setPendingUpload(
             run.id,
-            RunTableCompanion(
-              pendingUpload: Value(
-                jsonEncode({'destination': destination.id, ...pending}),
-              ),
-            ),
+            jsonEncode({'destination': destination.id, ...pending}),
           ),
         ),
       );
       write('Uploaded $size bytes in ${watch.elapsed.inSeconds} s');
 
-      await runs.update(
+      await runs.finish(
         run.id,
-        RunTableCompanion(
-          status: const Value(RunStatus.success),
-          sizeBytes: Value(size),
-          log: Value(logJson()),
-          finishedAt: Value(DateTime.now().toUtc()),
-          durationMs: Value(watch.elapsedMilliseconds),
-        ),
+        status: RunStatus.success,
+        sizeBytes: size,
+        log: logJson(),
+        finishedAt: utcNow(),
+        durationMs: watch.elapsedMilliseconds,
       );
       logger.info('Run succeeded', fields: {'run': run.id, 'bytes': size});
     } catch (e, stackTrace) {
@@ -356,15 +361,13 @@ class BackupEngine {
       // Kept in every run that fails, and its text may come from a server
       final error = clipText('$e');
       write('Failed: $error');
-      await runs.update(
+      await runs.finish(
         run.id,
-        RunTableCompanion(
-          status: const Value(RunStatus.failed),
-          error: Value(error),
-          log: Value(logJson()),
-          finishedAt: Value(DateTime.now().toUtc()),
-          durationMs: Value(watch.elapsedMilliseconds),
-        ),
+        status: RunStatus.failed,
+        error: error,
+        log: logJson(),
+        finishedAt: utcNow(),
+        durationMs: watch.elapsedMilliseconds,
       );
       logger.warning('Run failed', fields: {'run': run.id, 'error': error});
     } finally {

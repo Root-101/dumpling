@@ -7,9 +7,7 @@ class WorkspaceService {
   final WorkspaceTableRepo repo;
   final ConfigTableRepo configs;
 
-  WorkspaceService()
-    : repo = WorkspaceTableRepo(di.find()),
-      configs = ConfigTableRepo(di.find());
+  WorkspaceService() : repo = di.find(), configs = di.find();
 
   Future<List<WorkspaceModel>> list() async {
     final stats = await repo.stats();
@@ -22,8 +20,9 @@ class WorkspaceService {
   Future<WorkspaceModel> get(String slug) async {
     final row = await repo.get(slug);
     if (row == null) {
-      throw NotFoundException(
-        detail: intl.errors.workspaces.notFound(slug: slug),
+      throw AppException(
+        ErrorCode.workspacesNotFound,
+        intl.errors.workspaces.notFound(slug: slug),
       );
     }
     return WorkspaceModel.fromRow(row);
@@ -31,7 +30,7 @@ class WorkspaceService {
 
   Future<WorkspaceModel> create(WorkspaceRequest request) async {
     final slug = await _freeSlug(slugOf(request.trimmedName));
-    await repo.insert(slug: slug, request: request);
+    await repo.insert(slug: slug, values: request.values);
     logger.info('Workspace created', fields: {'workspace': slug});
     return get(slug);
   }
@@ -39,7 +38,7 @@ class WorkspaceService {
   /// Replaces its data; the slug stays.
   Future<WorkspaceModel> update(String slug, WorkspaceRequest request) async {
     await get(slug);
-    await repo.update(slug: slug, request: request);
+    await repo.update(slug: slug, values: request.values);
     logger.info('Workspace updated', fields: {'workspace': slug});
     return get(slug);
   }

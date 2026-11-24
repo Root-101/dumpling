@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:console/app_exporter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:intl/intl.dart';
 
 class FeaturesInit {
   static Future<void> init() async {
@@ -13,75 +10,67 @@ class FeaturesInit {
     );
     app.di.put(storage);
 
-    Dio dio = Dio();
-    dio
+    Dio dio = Dio()
       ..options.connectTimeout = const Duration(seconds: 10)
       ..options.receiveTimeout = const Duration(seconds: 10)
-      ..options.headers = {
-        HttpHeaders.contentTypeHeader: ContentType.json.mimeType,
-      };
+      ..options.headers = {Headers.contentTypeHeader: Headers.jsonContentType};
     useBrowserHttpAdapter(dio);
-    dio.interceptors.add(
-      InterceptorsWrapper(
-        // The service translates its error messages to the app's language
-        onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
-          final language = Intl.defaultLocale;
-          if (language != null) {
-            options.headers[HttpHeaders.acceptLanguageHeader] = language;
-          }
-          // In the browser the connect timer runs until the answer starts: a
-          // request that waits longer for it (a connection test, its own
-          // checks take up to 10 s each) must not be cut as "offline" first
-          final receive = options.receiveTimeout;
-          if (receive != null &&
-              receive > (options.connectTimeout ?? receive)) {
-            options.connectTimeout = receive;
-          }
-          return handler.next(options);
-        },
-        onError: (DioException e, ErrorInterceptorHandler handler) async {
-          // A wrong password at login is a 401 too, but there is no session
-          // to expire then
-          final auth = app.di.find<AuthCubit>();
-          if (e.response?.statusCode == 401 && auth.auth != null) {
-            auth.expire();
-          }
-          return handler.next(e);
-        },
-      ),
-    );
+    dio.interceptors
+      // The service answers its errors in the console's language
+      ..add(
+        LanguageHeaderInterceptor(
+          languageCode: () => AppIntl.current.languageCode,
+        ),
+      )
+      ..add(BrowserTimeoutInterceptor())
+      ..add(
+        InterceptorsWrapper(
+          onError: (DioException e, ErrorInterceptorHandler handler) async {
+            // A wrong password at login is a 401 too, but there is no session
+            // to expire then
+            final auth = app.di.find<AuthCubit>();
+            if (e.response?.statusCode == 401 && auth.auth != null) {
+              auth.expire();
+            }
+            return handler.next(e);
+          },
+        ),
+      );
     app.di.put(dio);
 
     await AuthInit.init();
     await LanguageInit.init();
-    await WorkspacesInit.init();
-    await ConfigsInit.init();
-    await SourcesInit.init();
-    await DestinationsInit.init();
-    await CanvasInit.init();
-    await RunsInit.init();
-    await BackupsInit.init();
-    await ApiKeysInit.init();
+    // Each feature only builds its client, repo and cubits: in parallel
+    await Future.wait([
+      WorkspacesInit.init(),
+      ConfigsInit.init(),
+      SourcesInit.init(),
+      DestinationsInit.init(),
+      CanvasInit.init(),
+      RunsInit.init(),
+      BackupsInit.init(),
+      ApiKeysInit.init(),
+    ]);
 
     // Listen for logout to reset other cubits
     app.di.find<AuthCubit>().stream.listen((state) async {
-      if (state is AuthLogoutState) {
+      if (state is AuthLoggedOutState) {
         await _resetCubits();
       }
       if (state is AuthExpiredState) {
-        SessionExpiredDialog.open();
+        SessionExpiredDialog.navigator.open();
       }
     });
   }
 
   static Future<void> _resetCubits() async {
-    app.di.find<WorkspaceCubit>().reset();
-    app.di.find<SourceCubit>().reset();
-    app.di.find<DestinationCubit>().reset();
+    app.di.find<WorkspacesCubit>().reset();
+    app.di.find<SourcesCubit>().reset();
+    app.di.find<DestinationsCubit>().reset();
     app.di.find<CanvasCubit>().reset();
-    app.di.find<RunCubit>().reset();
-    app.di.find<BackupCubit>().reset();
-    app.di.find<ApiKeyCubit>().reset();
+    app.di.find<RunsCubit>().reset();
+    app.di.find<BackupsCubit>().reset();
+    app.di.find<ApiKeysCubit>().reset();
     app.di.find<AuthCubit>().reset();
   }
 
@@ -93,22 +82,28 @@ class FeaturesInit {
       create: (context) => app.di.find<LanguageCubit>(),
     ),
     // WORKSPACES: the rail shows the current one on every screen
-    BlocProvider<WorkspaceCubit>(
-      create: (context) => app.di.find<WorkspaceCubit>(),
+    BlocProvider<WorkspacesCubit>(
+      create: (context) => app.di.find<WorkspacesCubit>(),
     ),
     // SOURCES: of the open workspace
-    BlocProvider<SourceCubit>(create: (context) => app.di.find<SourceCubit>()),
+    BlocProvider<SourcesCubit>(
+      create: (context) => app.di.find<SourcesCubit>(),
+    ),
     // DESTINATIONS: of the open workspace
-    BlocProvider<DestinationCubit>(
-      create: (context) => app.di.find<DestinationCubit>(),
+    BlocProvider<DestinationsCubit>(
+      create: (context) => app.di.find<DestinationsCubit>(),
     ),
     // CANVAS: of the open workspace
     BlocProvider<CanvasCubit>(create: (context) => app.di.find<CanvasCubit>()),
     // RUNS: the run log of the open workspace
-    BlocProvider<RunCubit>(create: (context) => app.di.find<RunCubit>()),
+    BlocProvider<RunsCubit>(create: (context) => app.di.find<RunsCubit>()),
     // BACKUPS: the home of the open workspace
-    BlocProvider<BackupCubit>(create: (context) => app.di.find<BackupCubit>()),
+    BlocProvider<BackupsCubit>(
+      create: (context) => app.di.find<BackupsCubit>(),
+    ),
     // API KEYS: of the open workspace
-    BlocProvider<ApiKeyCubit>(create: (context) => app.di.find<ApiKeyCubit>()),
+    BlocProvider<ApiKeysCubit>(
+      create: (context) => app.di.find<ApiKeysCubit>(),
+    ),
   ];
 }

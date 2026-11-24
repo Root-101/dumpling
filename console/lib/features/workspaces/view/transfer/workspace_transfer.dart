@@ -7,11 +7,15 @@ import 'package:material_ui/material_ui.dart';
 abstract final class WorkspaceExport {
   /// [workspace], or every one when null
   static Future<void> run({WorkspaceModel? workspace}) async {
-    try {
-      final file = await app.di.find<WorkspaceRepo>().export(
-        slug: workspace?.slug,
-        token: app.di.find<AuthCubit>().auth?.accessToken,
-      );
+    final cubit = WorkspaceTransferCubit(
+      auth: app.di.find(),
+      repo: app.di.find(),
+    );
+    await cubit.export(workspace: workspace);
+    final state = cubit.state;
+    await cubit.close();
+    if (state is WorkspaceTransferExportedOkState) {
+      final file = state.file;
       final day = DateTime.now().toIso8601String().substring(0, 10);
       final name = workspace == null
           ? 'dumpling-export-$day.json'
@@ -27,11 +31,11 @@ abstract final class WorkspaceExport {
         message: app.intl.workspaces.transfer.exported(file: name),
         context: context,
       );
-    } catch (e) {
+    } else if (state is WorkspaceTransferExportingErrorState) {
       final context = app.context;
       if (!context.mounted) return;
       app.snack.showError(
-        message: ExceptionConverter.parse(e).message,
+        message: state.exception.intlMessage,
         context: context,
       );
     }
@@ -72,19 +76,14 @@ class _ImportState {
   bool get ready => file != null && rows.isNotEmpty && !importing;
 }
 
-/// Dialog that imports an export: a file dropped on it or chosen, what it
-/// adds, and the import. A name already taken gets `Name (2)`, as the service
-/// names it
-class WorkspaceImportDialog extends StatefulWidget {
-  static const String loadingId = 'workspace-import';
-
-  static Future<void> open(BuildContext context) async {
+class WorkspaceImportDialogNavigator {
+  Future<void> open(BuildContext context) async {
     final state = ValueNotifier(const _ImportState());
     await FormDialogTemplate.show(
       context: context,
       title: app.intl.workspaces.transfer.importTitle,
       description: app.intl.workspaces.transfer.importDescription,
-      loadingId: loadingId,
+      loadingId: WorkspaceImportDialog.loadingId,
       width: 600,
       actions: [
         PrimaryButton.secondary(
@@ -96,7 +95,9 @@ class WorkspaceImportDialog extends StatefulWidget {
         ValueListenableBuilder(
           valueListenable: state,
           builder: (context, s, _) => PrimaryButton.primary(
-            onPressed: s.ready ? () => _import(context, state) : null,
+            onPressed: s.ready
+                ? () => WorkspaceImportDialog._import(context, state)
+                : null,
             isLoading: s.importing,
             title: s.file == null
                 ? app.intl.workspaces.transfer.import
@@ -111,6 +112,16 @@ class WorkspaceImportDialog extends StatefulWidget {
     );
     state.dispose();
   }
+}
+
+/// Dialog that imports an export: a file dropped on it or chosen, what it
+/// adds, and the import. A name already taken gets `Name (2)`, as the service
+/// names it
+class WorkspaceImportDialog extends StatefulWidget {
+  static final WorkspaceImportDialogNavigator navigator =
+      WorkspaceImportDialogNavigator();
+
+  static const String loadingId = 'workspace-import';
 
   static Future<void> _import(
     BuildContext context,
@@ -126,23 +137,25 @@ class WorkspaceImportDialog extends StatefulWidget {
       importing: true,
     );
     app.loading.show(id: loadingId);
-    try {
-      final created = await app.di.find<WorkspaceRepo>().import(
-        file: s.file!,
-        token: app.di.find<AuthCubit>().auth?.accessToken,
-      );
-      app.loading.hide(id: loadingId);
+    final cubit = WorkspaceTransferCubit(
+      auth: app.di.find(),
+      repo: app.di.find(),
+    );
+    await cubit.import(s.file!);
+    final done = cubit.state;
+    await cubit.close();
+    app.loading.hide(id: loadingId);
+    if (done is WorkspaceTransferImportedOkState) {
+      final created = done.created;
       if (context.mounted) Navigator.of(context).pop();
-      app.di.find<WorkspaceCubit>().load();
       final root = app.context;
       if (!root.mounted) return;
       app.snack.showSuccess(
         message: app.intl.workspaces.transfer.imported(n: created.length),
         context: root,
       );
-    } catch (e) {
-      app.loading.hide(id: loadingId);
-      final exception = ExceptionConverter.parse(e);
+    } else if (done is WorkspaceTransferImportingErrorState) {
+      final exception = done.exception;
       state.value = _ImportState(
         fileName: s.fileName,
         size: s.size,
@@ -153,7 +166,7 @@ class WorkspaceImportDialog extends StatefulWidget {
           final List<ValidationError> errors when errors.isNotEmpty => {
             for (final v in errors) v.message,
           }.join('\n'),
-          _ => exception.message,
+          _ => exception.intlMessage,
         },
       );
     }
@@ -217,7 +230,7 @@ class _WorkspaceImportDialogState extends State<WorkspaceImportDialog> {
     }
 
     final taken = {
-      for (final w in app.di.find<WorkspaceCubit>().state.data.workspaces)
+      for (final w in app.di.find<WorkspacesCubit>().state.data.workspaces)
         w.name,
     };
     int count(Object? list) => list is List ? list.length : 0;
@@ -310,14 +323,11 @@ class _WorkspaceImportDialogState extends State<WorkspaceImportDialog> {
               children: [
                 Text(
                   t.drop,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: app.styles.xl.copyWith(fontWeight: FontWeight.w600),
                 ),
                 Text(
                   t.dropHint,
-                  style: TextStyle(fontSize: 13, color: colors.neutral.grey4),
+                  style: app.styles.m.copyWith(color: colors.neutral.grey4),
                 ),
               ],
             ),
@@ -379,7 +389,7 @@ class _WorkspaceImportDialogState extends State<WorkspaceImportDialog> {
                   s.exportedAt == null
                       ? '$kb KB'
                       : '$kb KB · ${t.exportedAt(time: '${app.dateFormatter.time.format(s.exportedAt!.toUtc())} UTC')}',
-                  style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+                  style: app.styles.s.copyWith(color: colors.neutral.grey4),
                 ),
               ],
             ),
@@ -407,7 +417,7 @@ class _WorkspaceImportDialogState extends State<WorkspaceImportDialog> {
       children: [
         Text(
           t.toAdd(n: s.rows.length),
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          style: app.styles.l.copyWith(fontWeight: FontWeight.w600),
         ),
         Container(
           clipBehavior: Clip.antiAlias,
@@ -446,23 +456,20 @@ class _WorkspaceImportDialogState extends State<WorkspaceImportDialog> {
                               children: [
                                 Text(
                                   r.name,
-                                  style: const TextStyle(
-                                    fontSize: 14,
+                                  style: app.styles.l.copyWith(
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 if (r.as != r.name) ...[
                                   Text(
                                     t.as,
-                                    style: TextStyle(
-                                      fontSize: 13,
+                                    style: app.styles.m.copyWith(
                                       color: colors.neutral.grey4,
                                     ),
                                   ),
                                   Text(
                                     r.as,
-                                    style: TextStyle(
-                                      fontSize: 14,
+                                    style: app.styles.l.copyWith(
                                       fontWeight: FontWeight.w600,
                                       color: colors.primary.primaryLight,
                                     ),
@@ -472,14 +479,18 @@ class _WorkspaceImportDialogState extends State<WorkspaceImportDialog> {
                               ],
                             ),
                             Text(
-                              t.counts(
-                                sources: r.sources,
-                                destinations: r.destinations,
-                                configs: r.configs,
-                                runs: r.runs,
-                              ),
-                              style: TextStyle(
-                                fontSize: 12,
+                              // each count with its own plural: 1 destination
+                              [
+                                app.intl.workspaces.settings.nSources(
+                                  n: r.sources,
+                                ),
+                                app.intl.workspaces.settings.nDestinations(
+                                  n: r.destinations,
+                                ),
+                                app.intl.common.backupCount(n: r.configs),
+                                t.nRuns(n: r.runs),
+                              ].join(' · '),
+                              style: app.styles.s.copyWith(
                                 color: colors.neutral.grey4,
                               ),
                             ),
@@ -518,7 +529,7 @@ class _WorkspaceImportDialogState extends State<WorkspaceImportDialog> {
           Expanded(
             child: Text(
               app.intl.workspaces.transfer.keyNote,
-              style: TextStyle(fontSize: 13, color: colors.neutral.grey3),
+              style: app.styles.m.copyWith(color: colors.neutral.grey3),
             ),
           ),
         ],
@@ -547,8 +558,7 @@ class _NameTakenBadge extends StatelessWidget {
         widthFactor: 1,
         child: Text(
           label,
-          style: TextStyle(
-            fontSize: 11,
+          style: app.styles.xs.copyWith(
             fontWeight: FontWeight.w600,
             color: color,
           ),

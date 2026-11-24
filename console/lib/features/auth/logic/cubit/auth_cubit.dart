@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:console/app_exporter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AuthCubit extends Cubit<AuthState> {
+class AuthCubit extends Cubit<AuthState>
+    with GlobalEventBusCommunication<AuthState> {
   final AuthRepo repo;
   AuthModel? _auth;
 
@@ -13,7 +14,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   bool _expired = false;
 
-  AuthCubit(this.repo) : super(AuthInitialState());
+  AuthCubit({required this.repo}) : super(const AuthInitialState());
 
   AuthModel? get auth => _auth;
 
@@ -47,16 +48,16 @@ class AuthCubit extends Cubit<AuthState> {
     required String username,
     required String password,
   }) async {
-    emit(AuthProcessInProgressState());
+    emit(const AuthLoggingInState());
     _username = username;
     try {
       _auth = await repo.login(username: username, password: password);
       await repo.save(_auth!);
       _expired = false;
-      emit(AuthProcessingOKState());
-    } catch (e) {
+      emit(const AuthLoggedInOkState());
+    } on Exception catch (e) {
       // an expired session keeps its screen, so the dialog can try again
-      emit(AuthProcessingErrorState(ExceptionConverter.parse(e)));
+      emit(AuthLoggingInErrorState(ExceptionConverter.parse(e)));
     }
   }
 
@@ -66,40 +67,61 @@ class AuthCubit extends Cubit<AuthState> {
     if (_auth == null || _expired) return;
     _expired = true;
     repo.clear();
-    emit(AuthExpiredState());
+    emit(const AuthExpiredState());
   }
 
   void logout() {
     _auth = null;
     _expired = false;
     repo.clear();
-    emit(AuthLogoutState());
+    emit(const AuthLoggedOutState());
   }
 
   void reset() {
     _auth = null;
     _expired = false;
     repo.clear();
-    emit(AuthInitialState());
+    emit(const AuthInitialState());
   }
 }
 
-abstract class AuthState {}
+abstract class AuthState {
+  const AuthState();
+}
 
-class AuthInitialState extends AuthState {}
+final class AuthInitialState extends AuthState {
+  const AuthInitialState();
+}
 
-class AuthProcessInProgressState extends AuthState {}
+//----------------- login -----------------\\
+abstract class AuthLoginState extends AuthState {
+  const AuthLoginState();
+}
 
-class AuthProcessingOKState extends AuthState {}
+final class AuthLoggingInState extends AuthLoginState {
+  const AuthLoggingInState();
+}
 
-class AuthProcessingErrorState extends AuthState {
+/// Public contract: the list of workspaces reloads on it (after an expired
+/// session it may have failed with the old token)
+final class AuthLoggedInOkState extends AuthLoginState {
+  const AuthLoggedInOkState();
+}
+
+final class AuthLoggingInErrorState extends AuthLoginState {
   /// [GlobalExceptionType.auth]: a wrong username or password; anything else
   /// (too many attempts, no connection) only has its message
   final GlobalException exception;
 
-  AuthProcessingErrorState(this.exception);
+  const AuthLoggingInErrorState(this.exception);
 }
 
-class AuthLogoutState extends AuthState {}
+//----------------- the session ends -----------------\\
+final class AuthLoggedOutState extends AuthState {
+  const AuthLoggedOutState();
+}
 
-class AuthExpiredState extends AuthState {}
+/// The service refused the token: the session expired dialog asks again
+final class AuthExpiredState extends AuthState {
+  const AuthExpiredState();
+}

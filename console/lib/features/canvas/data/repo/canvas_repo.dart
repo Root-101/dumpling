@@ -4,13 +4,13 @@ import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
 class CanvasRepo {
-  final CanvasClient _client;
+  final CanvasClient client;
 
-  CanvasRepo(this._client);
+  CanvasRepo({required this.client});
 
   Future<CanvasModel> get({required String workspace, String? token}) async {
     try {
-      final response = await _client.get(workspace: workspace, token: token);
+      final response = await client.get(workspace: workspace, token: token);
       return response.toModel();
     } catch (e) {
       throw ExceptionConverter.parse(e);
@@ -23,7 +23,7 @@ class CanvasRepo {
     String? token,
   }) async {
     try {
-      final response = await _client.save(
+      final response = await client.save(
         workspace: workspace,
         request: data.toRequest(),
         token: token,
@@ -40,7 +40,7 @@ class CanvasRepo {
     String? token,
   }) async {
     try {
-      final json = await _client.runNow(
+      final json = await client.runNow(
         workspace: workspace,
         configId: configId,
         token: token,
@@ -57,11 +57,7 @@ class CanvasRepo {
     String? token,
   }) async {
     try {
-      final json = await _client.run(
-        workspace: workspace,
-        id: id,
-        token: token,
-      );
+      final json = await client.run(workspace: workspace, id: id, token: token);
       return LastRun.fromJson(json);
     } catch (e) {
       throw ExceptionConverter.parse(e);

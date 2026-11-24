@@ -11,7 +11,7 @@ unless you'd rather not.
 
 ## Supported versions
 
-Only the latest release gets security fixes (today `0.1.7`).
+Only the latest release gets security fixes (today `0.1.8`).
 
 ## Security model
 
@@ -26,7 +26,8 @@ reasons behind each decision are in [`DECISIONS.md`](DECISIONS.md).
   `down`) needs it, in the `Authorization` header: never a cookie, so there is no CSRF.
 - The username and password are compared in constant time. Each failed login waits 1 second, and
   10 in a row lock the client IP for 15 minutes, even with the right password afterward
-  (`LOGIN_MAX_FAILURES`, `LOGIN_LOCK_SECONDS`, `LOGIN_FAILURE_DELAY_MS`).
+  (`LOGIN_MAX_FAILURES`, `LOGIN_LOCK_SECONDS`, `LOGIN_FAILURE_DELAY_MS`). A locked login answers 429
+  with `Retry-After`, and the console says how many minutes are left.
 - A general rate limit per IP (600 requests per minute by default, `RATE_LIMIT_REQUESTS` and
   `RATE_LIMIT_WINDOW_SECONDS`) stops floods before a body is read or a token checked.
 - **API keys** are the second credential: the admin creates them per workspace, for a pipeline or
@@ -47,7 +48,9 @@ reasons behind each decision are in [`DECISIONS.md`](DECISIONS.md).
 - Database passwords and S3 secret keys are stored encrypted with AES-256-GCM (key derived from
   `SECRETS_ENCRYPTION_KEY`), each with its own random nonce and bound to its row: a value copied
   to another source doesn't decrypt. They are never returned by the API nor shown again in the
-  console; an edit without a new password keeps the saved one. An export
+  console; an edit without a new password keeps the saved one only while it connects to the same
+  place (host, port, database, user and TLS; endpoint, region, bucket and access key), so a stored
+  password or secret key is never sent to a server an edit or a test points to. An export
   (`GET /api/export`) carries them only as stored, encrypted: the file is useless without
   `SECRETS_ENCRYPTION_KEY`, but keep it like a backup of the database.
 - The connection to PostgreSQL uses TLS by default (`ssl_mode` `require`, which doesn't check the
@@ -77,7 +80,8 @@ reasons behind each decision are in [`DECISIONS.md`](DECISIONS.md).
   passwords, tokens nor secrets; a failed login logs the IP, not what was typed.
 - Every response carries `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY` and
   `Referrer-Policy: no-referrer`. CORS accepts any origin without credentials (the console in
-  development runs on another origin), which is safe because authentication is a header.
+  development runs on another origin), which is safe because authentication is a header. The only
+  header it lets a browser read is `Retry-After`.
 
 ## Deploying it safely
 

@@ -11,6 +11,12 @@ class WorkspacesScreenNavigator {
   Widget builder(BuildContext context, GoRouterState state) {
     return const WorkspacesScreen();
   }
+
+  void go() => app.navigator.go(name);
+
+  List<RouteBase> routes() => [
+    GoRoute(name: name, path: path, builder: builder),
+  ];
 }
 
 /// Every workspace as a card, the current one first in its place, and the
@@ -26,13 +32,13 @@ class WorkspacesScreen extends StatefulWidget {
 }
 
 class _WorkspacesScreenState extends State<WorkspacesScreen> {
-  late final WorkspaceCubit cubit;
+  late final WorkspacesCubit cubit;
 
   @override
   void initState() {
     super.initState();
     // the counts of the cards change while away from here
-    cubit = context.read<WorkspaceCubit>()..load();
+    cubit = context.read<WorkspacesCubit>()..load();
   }
 
   @override
@@ -47,7 +53,7 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
             description: app.intl.workspaces.description,
             actions: [
               PrimaryButton.secondary(
-                onPressed: () => WorkspaceImportDialog.open(context),
+                onPressed: () => WorkspaceImportDialog.navigator.open(context),
                 title: app.intl.workspaces.transfer.import,
                 icon: app.assets.icons.actions.import,
                 color: app.colors.surface.control,
@@ -63,7 +69,7 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
                 horizontalPadding: 16,
               ),
               PrimaryButton.primary(
-                onPressed: () => WorkspaceForm.open(context),
+                onPressed: () => WorkspaceForm.navigator.open(context),
                 title: app.intl.workspaces.create,
                 icon: app.assets.icons.actions.add,
                 color: app.colors.primary.primaryAction,
@@ -74,10 +80,10 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
           ),
           Expanded(
             child: PagePanel(
-              child: BlocBuilder<WorkspaceCubit, WorkspaceState>(
+              child: BlocBuilder<WorkspacesCubit, WorkspacesState>(
                 builder: (context, state) {
                   if (!state.data.loaded) {
-                    return state is WorkspaceLoadingErrorState
+                    return state is WorkspacesSearchErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.load)
                         : AppShimmer(
                             child: _grid(
@@ -100,7 +106,7 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
     );
   }
 
-  Widget _buildGrid(WorkspaceData data) => _grid(
+  Widget _buildGrid(WorkspacesData data) => _grid(
     (width) => [
       for (final workspace in data.workspaces)
         SizedBox(
@@ -112,7 +118,9 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
         ),
       SizedBox(
         width: width,
-        child: _NewWorkspaceTile(onPressed: () => WorkspaceForm.open(context)),
+        child: _NewWorkspaceTile(
+          onPressed: () => WorkspaceForm.navigator.open(context),
+        ),
       ),
     ],
   );
@@ -185,8 +193,7 @@ class _NewWorkspaceTile extends StatelessWidget {
                     app.dimensions.padding.sm.gap(),
                     Text(
                       app.intl.workspaces.create,
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: app.styles.l.copyWith(
                         color: app.colors.neutral.grey3,
                       ),
                     ),
@@ -196,8 +203,7 @@ class _NewWorkspaceTile extends StatelessWidget {
                       child: Text(
                         app.intl.workspaces.createHint,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12,
+                        style: app.styles.s.copyWith(
                           color: app.colors.neutral.grey4,
                         ),
                       ),

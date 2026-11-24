@@ -29,11 +29,13 @@ class ApiKeyRequest implements Validatable {
           (list) => list!.every(Permissions.grantable.contains)
               ? null
               : intl.errors.validations.permission,
+          code: 'validations.permission',
         )
     ..field('config_ids', configIds).custom(
       (list) => (list ?? const []).every((id) => id is String)
           ? null
           : intl.errors.validations.unknownConfig,
+      code: 'validations.unknownConfig',
     )
     ..field('config_ids', configIds).custom(
       (list) =>
@@ -41,6 +43,7 @@ class ApiKeyRequest implements Validatable {
               (permissions ?? const []).any(Permissions.limitable.contains)
           ? null
           : intl.errors.validations.limitWithout,
+      code: 'validations.limitWithout',
     )
     ..field('permissions', permissions).custom(
       (list) =>
@@ -48,6 +51,7 @@ class ApiKeyRequest implements Validatable {
               !(list ?? const []).any(Permissions.notLimitable.contains)
           ? null
           : intl.errors.validations.notLimitable,
+      code: 'validations.notLimitable',
     );
 
   String get trimmedName => name!.trim();
@@ -59,29 +63,4 @@ class ApiKeyRequest implements Validatable {
   ];
 
   List<String> get cleanConfigIds => {...?configIds?.cast<String>()}.toList();
-}
-
-/// Body of Run now: an optional [label] that names what asked for it (a
-/// version, a commit), shown in the run log.
-class RunNowRequest implements Validatable {
-  static const int maxLabelLength = 64;
-  static final RegExp _label = RegExp(r'^[A-Za-z0-9._-]+$');
-
-  final String? label;
-
-  RunNowRequest({this.label});
-
-  factory RunNowRequest.fromJson(Map<String, dynamic> json) =>
-      RunNowRequest(label: json.field<String?>('label'));
-
-  @override
-  ConstraintValidatorContext validate() =>
-      ConstraintValidatorContext()
-        ..field('label', label).custom(
-          (value) =>
-              value == null ||
-                  (value.length <= maxLabelLength && _label.hasMatch(value))
-              ? null
-              : intl.errors.validations.label(max: maxLabelLength),
-        );
 }

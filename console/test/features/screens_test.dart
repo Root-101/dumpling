@@ -14,23 +14,23 @@ class _MockAuth extends MockCubit<AuthState> implements AuthCubit {}
 
 class _MockLanguage extends MockCubit<LanguageState> implements LanguageCubit {}
 
-class _MockRepo extends Mock implements WorkspaceRepo {}
+class _MockRepo extends Mock implements WorkspacesRepo {}
 
-class _MockSourceRepo extends Mock implements SourceRepo {}
+class _MockSourceRepo extends Mock implements SourcesRepo {}
 
-class _MockDestinationRepo extends Mock implements DestinationRepo {}
+class _MockDestinationRepo extends Mock implements DestinationsRepo {}
 
-class _MockWorkspaces extends MockCubit<WorkspaceState>
-    implements WorkspaceCubit {}
+class _MockWorkspaces extends MockCubit<WorkspacesState>
+    implements WorkspacesCubit {}
 
-class _MockSources extends MockCubit<SourceState> implements SourceCubit {}
+class _MockSources extends MockCubit<SourcesState> implements SourcesCubit {}
 
-class _MockDestinations extends MockCubit<DestinationState>
-    implements DestinationCubit {}
+class _MockDestinations extends MockCubit<DestinationsState>
+    implements DestinationsCubit {}
 
-class _MockBackups extends MockCubit<BackupState> implements BackupCubit {}
+class _MockBackups extends MockCubit<BackupsState> implements BackupsCubit {}
 
-class _MockRuns extends MockCubit<RunState> implements RunCubit {}
+class _MockRuns extends MockCubit<RunsState> implements RunsCubit {}
 
 /// The app as `main` runs it, at the size of a laptop screen, with the cubits
 /// the router and the rail read in DI. A layout that overflows fails the test
@@ -51,8 +51,11 @@ void main() {
     name: 'English',
   );
 
+  // the warning of a long name measures it with the app's fonts
+  setUpAll(loadAppFonts);
+
   setUpAll(() {
-    whenListen(auth, authStates.stream, initialState: AuthInitialState());
+    whenListen(auth, authStates.stream, initialState: const AuthInitialState());
     whenListen(
       language,
       const Stream<LanguageState>.empty(),
@@ -63,9 +66,9 @@ void main() {
     );
     whenListen(
       workspaces,
-      const Stream<WorkspaceState>.empty(),
-      initialState: WorkspaceLoadingSuccessState(
-        data: const WorkspaceData.empty()
+      const Stream<WorkspacesState>.empty(),
+      initialState: WorkspacesSearchOkState(
+        data: const WorkspacesData.empty()
             .withList([
               workspace(
                 'production',
@@ -82,9 +85,9 @@ void main() {
     );
     whenListen(
       sources,
-      const Stream<SourceState>.empty(),
-      initialState: SourceLoadingSuccessState(
-        data: const SourceData.empty('production').withList(
+      const Stream<SourcesState>.empty(),
+      initialState: SourcesSearchOkState(
+        data: const SourcesData.empty('production').withList(
           sourceTypes,
           [
             source('orders', lastCheck: check(CheckStatus.connected)),
@@ -96,9 +99,9 @@ void main() {
     );
     whenListen(
       destinations,
-      const Stream<DestinationState>.empty(),
-      initialState: DestinationLoadingSuccessState(
-        data: const DestinationData.empty('production').withList(
+      const Stream<DestinationsState>.empty(),
+      initialState: DestinationsSearchOkState(
+        data: const DestinationsData.empty('production').withList(
           destinationTypes,
           [
             destination('bucket', folders: ['orders', 'users']),
@@ -112,9 +115,9 @@ void main() {
     );
     whenListen(
       runs,
-      const Stream<RunState>.empty(),
-      initialState: RunLoadingSuccessState(
-        data: const RunData.empty('production')
+      const Stream<RunsState>.empty(),
+      initialState: RunsSearchOkState(
+        data: const RunsData.empty('production')
             .withRuns([
               run('r2', status: RunStatus.failed),
               run('r1', config: 'Hourly users'),
@@ -131,9 +134,9 @@ void main() {
     when(() => runs.load(any())).thenAnswer((_) async {});
     whenListen(
       backups,
-      const Stream<BackupState>.empty(),
-      initialState: BackupLoadingSuccessState(
-        data: const BackupData.empty('production').withCanvas(backupCanvas()),
+      const Stream<BackupsState>.empty(),
+      initialState: BackupsSearchOkState(
+        data: const BackupsData.empty('production').withCanvas(backupCanvas()),
       ),
     );
     when(() => backups.load(any())).thenAnswer((_) async {});
@@ -156,16 +159,18 @@ void main() {
     when(() => workspaces.select(any())).thenReturn(null);
     app.di.put<AuthCubit>(auth);
     app.di.put<LanguageCubit>(language);
-    app.di.put<WorkspaceCubit>(workspaces);
-    app.di.put<SourceCubit>(sources);
-    app.di.put<DestinationCubit>(destinations);
-    app.di.put<RunCubit>(runs);
-    app.di.put<BackupCubit>(backups);
+    app.di.put<WorkspacesCubit>(workspaces);
+    app.di.put<SourcesCubit>(sources);
+    app.di.put<DestinationsCubit>(destinations);
+    app.di.put<RunsCubit>(runs);
+    app.di.put<BackupsCubit>(backups);
     // the dialogs and drawers make their own cubit with them
-    app.di.put<WorkspaceRepo>(workspaceRepo);
-    registerFallbackValue(const WorkspaceDraft(name: 'fallback'));
-    registerFallbackValue(const SourceDraft(name: 'fallback', type: 'pg'));
-    registerFallbackValue(const DestinationDraft(name: 'fallback', type: 's3'));
+    app.di.put<WorkspacesRepo>(workspaceRepo);
+    registerFallbackValue(const WorkspaceFormModel(name: 'fallback'));
+    registerFallbackValue(const SourceFormModel(name: 'fallback', type: 'pg'));
+    registerFallbackValue(
+      const DestinationFormModel(name: 'fallback', type: 's3'),
+    );
     // every test of a form connects
     final sourceRepo = _MockSourceRepo();
     when(
@@ -176,8 +181,8 @@ void main() {
         token: any(named: 'token'),
       ),
     ).thenAnswer((_) async => check(CheckStatus.connected));
-    app.di.put<SourceRepo>(sourceRepo);
-    app.di.put<DestinationRepo>(_MockDestinationRepo());
+    app.di.put<SourcesRepo>(sourceRepo);
+    app.di.put<DestinationsRepo>(_MockDestinationRepo());
   });
 
   tearDownAll(authStates.close);
@@ -185,7 +190,7 @@ void main() {
   /// The frames of a navigation or a dialog. Not `pumpAndSettle`: the cursor
   /// of a focused field blinks forever
   Future<void> settle(WidgetTester tester) async {
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 10; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }
   }
@@ -200,11 +205,11 @@ void main() {
         providers: [
           BlocProvider<AuthCubit>.value(value: auth),
           BlocProvider<LanguageCubit>.value(value: language),
-          BlocProvider<WorkspaceCubit>.value(value: workspaces),
-          BlocProvider<SourceCubit>.value(value: sources),
-          BlocProvider<DestinationCubit>.value(value: destinations),
-          BlocProvider<RunCubit>.value(value: runs),
-          BlocProvider<BackupCubit>.value(value: backups),
+          BlocProvider<WorkspacesCubit>.value(value: workspaces),
+          BlocProvider<SourcesCubit>.value(value: sources),
+          BlocProvider<DestinationsCubit>.value(value: destinations),
+          BlocProvider<RunsCubit>.value(value: runs),
+          BlocProvider<BackupsCubit>.value(value: backups),
         ],
         child: const App(),
       ),
@@ -230,10 +235,12 @@ void main() {
 
     // A wrong password shows what the service said, with what to do
     authStates.add(
-      AuthProcessingErrorState(
+      AuthLoggingInErrorState(
         GlobalException(
           type: GlobalExceptionType.auth,
           message: 'Wrong username or password',
+          statusCode: 401,
+          errorCode: ApiErrorCode.authInvalidCredentials,
         ),
       ),
     );
@@ -351,7 +358,7 @@ void main() {
                 token: any(named: 'token'),
               ),
             ).captured.single
-            as WorkspaceDraft;
+            as WorkspaceFormModel;
     expect(draft.name, 'QA');
     expect(draft.description, 'About staging');
     expect(draft.defaults, WorkspaceSettings.fallbackDefaults);
@@ -456,10 +463,11 @@ void main() {
       when(() => auth.auth).thenReturn(session());
       whenListen(
         backups,
-        const Stream<BackupState>.empty(),
-        initialState: BackupLoadingErrorState(
+        const Stream<BackupsState>.empty(),
+        initialState: BackupsSearchErrorState(
           GlobalException(type: GlobalExceptionType.offline, message: ''),
-          data: const BackupData.empty('production').withCanvas(backupCanvas()),
+          data: const BackupsData.empty('production')
+              .withCanvas(backupCanvas()),
         ),
       );
       RouteConfig.router.go('/workspaces/production/backups');
@@ -484,9 +492,9 @@ void main() {
     // the next runs of the fixture are past: reloading, their rows say so
     whenListen(
       backups,
-      const Stream<BackupState>.empty(),
-      initialState: BackupLoadingInProgressState(
-        data: const BackupData.empty('production').withCanvas(backupCanvas()),
+      const Stream<BackupsState>.empty(),
+      initialState: BackupsSearchingState(
+        data: const BackupsData.empty('production').withCanvas(backupCanvas()),
       ),
     );
     RouteConfig.router.go('/workspaces/production/backups');
@@ -731,7 +739,7 @@ void main() {
     expect(find.text('Where should backups go?'), findsOneWidget);
 
     // the root tested in step 2, each new folder in step 3
-    final repo = app.di.find<DestinationRepo>() as _MockDestinationRepo;
+    final repo = app.di.find<DestinationsRepo>() as _MockDestinationRepo;
     final tested = <List<String>>[];
     when(
       () => repo.testUnsaved(
@@ -741,7 +749,7 @@ void main() {
         token: any(named: 'token'),
       ),
     ).thenAnswer((call) async {
-      tested.add((call.namedArguments[#draft] as DestinationDraft).folders);
+      tested.add((call.namedArguments[#draft] as DestinationFormModel).folders);
       return check(CheckStatus.connected);
     });
     await tester.tap(find.widgetWithText(PrimaryButton, 'Next'));
@@ -821,35 +829,61 @@ void main() {
     expect(find.text('The backup failed'), findsNothing);
   });
 
+  testWidgets('Run again closes the run, and it stays closed', (tester) async {
+    when(() => auth.auth).thenReturn(session());
+    final states = StreamController<RunsState>.broadcast();
+    addTearDown(states.close);
+    final loaded = runs.state;
+    whenListen(runs, states.stream, initialState: loaded);
+    when(() => runs.runAgain(any(), workspace: any(named: 'workspace')))
+        .thenAnswer((_) async {
+          // the action and the search after it, while the URL still names
+          // the run
+          states
+            ..add(RunsRunningAgainState(run('r2'), data: loaded.data))
+            ..add(RunsSearchingState(data: loaded.data))
+            ..add(RunsSearchOkState(data: loaded.data));
+          return true;
+        });
+    await pumpApp(tester);
+    RouteConfig.router.go('/workspaces/production/runs/r2');
+    await settle(tester);
+    expect(find.text('The backup failed'), findsOneWidget);
+
+    await tester.tap(find.text('Retry now'));
+    await settle(tester);
+    expect(find.text('The backup failed'), findsNothing);
+  });
+
   // last: its loading states stay on the shared mocks
   testWidgets('Every screen loads as a skeleton of itself', (tester) async {
     when(() => auth.auth).thenReturn(session());
     whenListen(
       sources,
-      const Stream<SourceState>.empty(),
-      initialState: const SourceLoadingInProgressState(
-        data: SourceData.empty('production'),
+      const Stream<SourcesState>.empty(),
+      initialState: const SourcesSearchingState(
+        data: SourcesData.empty('production'),
       ),
     );
     whenListen(
       destinations,
-      const Stream<DestinationState>.empty(),
-      initialState: const DestinationLoadingInProgressState(
-        data: DestinationData.empty('production'),
+      const Stream<DestinationsState>.empty(),
+      initialState: const DestinationsSearchingState(
+        data: DestinationsData.empty('production'),
       ),
     );
     whenListen(
       runs,
-      const Stream<RunState>.empty(),
-      initialState: const RunLoadingInProgressState(
-        data: RunData.empty('production'),
+      const Stream<RunsState>.empty(),
+      initialState: const RunsSearchingState(
+        data: RunsData.empty('production'),
       ),
     );
     whenListen(
       backups,
-      const Stream<BackupState>.empty(),
-      initialState: const BackupLoadingInProgressState(
-        data: BackupData.empty('production'),
+      const Stream<BackupsState>.empty(),
+      initialState: const BackupsSearchingState(
+        data: BackupsData.empty('production'),
       ),
     );
     await pumpApp(tester);
@@ -861,9 +895,9 @@ void main() {
     }
     whenListen(
       workspaces,
-      const Stream<WorkspaceState>.empty(),
-      initialState: const WorkspaceLoadingInProgressState(
-        data: WorkspaceData.empty(),
+      const Stream<WorkspacesState>.empty(),
+      initialState: const WorkspacesSearchingState(
+        data: WorkspacesData.empty(),
       ),
     );
     RouteConfig.router.go('/workspaces');

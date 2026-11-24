@@ -10,9 +10,9 @@ class _MockRepo extends Mock implements CanvasRepo {}
 
 class _MockAuth extends Mock implements AuthCubit {}
 
-class _MockSources extends Mock implements SourceRepo {}
+class _MockSources extends Mock implements SourcesRepo {}
 
-class _MockDestinations extends Mock implements DestinationRepo {}
+class _MockDestinations extends Mock implements DestinationsRepo {}
 
 void main() {
   // the texts of a new config come from app.intl, which reads the navigator
@@ -24,7 +24,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(const CanvasData.empty());
-    registerFallbackValue(const DestinationDraft(name: '', type: ''));
+    registerFallbackValue(const DestinationFormModel(name: '', type: ''));
   });
 
   setUp(() {
@@ -39,7 +39,12 @@ void main() {
 
   /// The cubit with [demoCanvas] loaded
   Future<CanvasCubit> loaded() async {
-    final cubit = CanvasCubit(repo, sources, destinations, auth);
+    final cubit = CanvasCubit(
+      auth: auth,
+      repo: repo,
+      sources: sources,
+      destinations: destinations,
+    );
     await cubit.load('production');
     return cubit;
   }
@@ -55,7 +60,12 @@ void main() {
   test('a load that fails keeps what there was and says why', () async {
     when(() => repo.get(workspace: 'production', token: 'jwt'))
         .thenThrow(apiError('down'));
-    final cubit = CanvasCubit(repo, sources, destinations, auth);
+    final cubit = CanvasCubit(
+      auth: auth,
+      repo: repo,
+      sources: sources,
+      destinations: destinations,
+    );
     await cubit.load('production');
     expect(cubit.state, isA<CanvasLoadingErrorState>());
     expect(cubit.state.data.loaded, isFalse);
@@ -345,7 +355,7 @@ void main() {
       ),
     );
     await cubit.save();
-    expect(cubit.state, isA<CanvasProcessingOKState>());
+    expect(cubit.state, isA<CanvasSavedOkState>());
     expect(cubit.state.data.selectedId, 'cfg_new');
     expect(cubit.state.data.config('cfg_new')!.schedule, '0 3 * * *');
   });
@@ -362,7 +372,7 @@ void main() {
     await cubit.save();
     expect(
       cubit.state,
-      isA<CanvasProcessingErrorState>().having(
+      isA<CanvasSavingErrorState>().having(
         (s) => s.message,
         'message',
         'invalid',
@@ -408,7 +418,7 @@ void main() {
         token: 'jwt',
       ),
     ).thenAnswer((i) async {
-      final draft = i.namedArguments[#draft] as DestinationDraft;
+      final draft = i.namedArguments[#draft] as DestinationFormModel;
       if (draft.bucket == 'ca') throw apiError('AccessDenied');
       return ConnectionCheckModel(
         status: CheckStatus.connected,
@@ -420,7 +430,7 @@ void main() {
       ..addFolder('bb', 'billing');
     await cubit.testRun();
 
-    final state = cubit.state as CanvasTestedState;
+    final state = cubit.state as CanvasTestedOkState;
     expect(
       [for (final c in state.checks) (c.name, c.ok, c.error)],
       [
@@ -439,7 +449,7 @@ void main() {
                 token: 'jwt',
               ),
             ).captured.single
-            as DestinationDraft;
+            as DestinationFormModel;
     expect(bb.folders, ['orders', 'users', 'billing']);
     expect(bb.secretKey, isNull);
   });
@@ -456,10 +466,10 @@ void main() {
     'run now follows the run until it ends, without moving the selection',
     () async {
       final cubit = CanvasCubit(
-        repo,
-        sources,
-        destinations,
-        auth,
+        auth: auth,
+        repo: repo,
+        sources: sources,
+        destinations: destinations,
         pollEvery: Duration.zero,
       );
       await cubit.load('production');
@@ -485,7 +495,7 @@ void main() {
       expect(seen.first, RunStatus.running);
       expect(
         cubit.state,
-        isA<CanvasRunFinishedState>()
+        isA<CanvasRanNowOkState>()
             .having((s) => s.configName, 'name', 'Nightly full')
             .having((s) => s.run.sizeBytes, 'size', 2048),
       );
@@ -498,10 +508,10 @@ void main() {
     'a run that moves during a save waits for it: the overlay stays',
     () async {
       final cubit = CanvasCubit(
-        repo,
-        sources,
-        destinations,
-        auth,
+        auth: auth,
+        repo: repo,
+        sources: sources,
+        destinations: destinations,
         pollEvery: Duration.zero,
       );
       await cubit.load('production');
@@ -523,11 +533,11 @@ void main() {
       final save = cubit.save();
       final running = cubit.runNow('j1');
       await pumpEventQueue();
-      expect(cubit.state, isA<CanvasProcessInProgressState>());
+      expect(cubit.state, isA<CanvasSavingState>());
 
       saving.complete(demoCanvas());
       await Future.wait([save, running]);
-      expect(cubit.state, isA<CanvasRunFinishedState>());
+      expect(cubit.state, isA<CanvasRanNowOkState>());
       // the saved canvas did not drop it
       expect(cubit.state.data.config('j1')!.lastRun!.status, RunStatus.success);
     },
@@ -539,7 +549,7 @@ void main() {
       () => repo.runNow(workspace: 'production', configId: 'j1', token: 'jwt'),
     ).thenThrow(apiError('A run of this config is already in progress'));
     await cubit.runNow('j1');
-    expect(cubit.state, isA<CanvasProcessingErrorState>());
+    expect(cubit.state, isA<CanvasRunningNowErrorState>());
     expect(cubit.state.data.config('j1')!.lastRun, isNull);
   });
 
@@ -636,7 +646,7 @@ void main() {
     );
     await cubit.save();
     expect(
-      (cubit.state as CanvasProcessingErrorState).message,
+      (cubit.state as CanvasSavingErrorState).message,
       'Nightly: Not a valid cron expression',
     );
   });

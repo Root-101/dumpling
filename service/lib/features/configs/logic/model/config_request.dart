@@ -1,4 +1,3 @@
-import 'package:drift/drift.dart' show Value;
 import 'package:service/dumpling.dart';
 
 /// Body to create a config or replace it. A missing schedule, compression or
@@ -51,24 +50,22 @@ class ConfigRequest implements Validatable {
 
   /// What it stores once its source, destination and folder are known; a
   /// missing schedule, compression or object key takes the [defaults].
-  ConfigTableCompanion values(
+  ConfigValues values(
     WorkspaceDefaults defaults, {
     required String sourceId,
     required String destinationId,
     required String? folder,
-  }) => ConfigTableCompanion(
-    name: Value(trimmedName),
-    sourceId: Value(sourceId),
-    destinationId: Value(destinationId),
-    folder: Value(folder),
-    schedule: Value(schedule?.trim() ?? defaults.schedule),
-    compression: Value(
-      compression == null
-          ? defaults.compression
-          : Compression.values.byName(compression!),
-    ),
-    objectKey: Value(objectKey ?? defaults.objectKey),
-    enabled: Value(enabled ?? true),
+  }) => (
+    name: trimmedName,
+    sourceId: sourceId,
+    destinationId: destinationId,
+    folder: folder,
+    schedule: schedule?.trim() ?? defaults.schedule,
+    compression: compression == null
+        ? defaults.compression
+        : Compression.values.byName(compression!),
+    objectKey: objectKey ?? defaults.objectKey,
+    enabled: enabled ?? true,
   );
 
   /// Why [folder] can't be where it writes in a destination with [folders]:

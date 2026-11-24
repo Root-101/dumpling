@@ -1,10 +1,8 @@
 import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Asks the path of a new folder of [destination], checked like the
-/// Destinations screen does; [onAdd] gets it clean (`orders`, `eu/billing`)
-class AddFolderDialog extends StatefulWidget {
-  static Future<void> open(
+class AddFolderDialogNavigator {
+  Future<void> open(
     BuildContext context, {
     required DestinationNode destination,
     required ValueChanged<String> onAdd,
@@ -40,6 +38,12 @@ class AddFolderDialog extends StatefulWidget {
       ),
     );
   }
+}
+
+/// Asks the path of a new folder of [destination], checked like the
+/// Destinations screen does; [onAdd] gets it clean (`orders`, `eu/billing`)
+class AddFolderDialog extends StatefulWidget {
+  static final AddFolderDialogNavigator navigator = AddFolderDialogNavigator();
 
   final DestinationNode destination;
   final ValueChanged<String> onAdd;

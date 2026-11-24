@@ -107,8 +107,6 @@ class ServiceMessages$errors$auth$es implements ServiceMessages$errors$auth$en {
   @override
   String get tooManyLoginAttempts =>
       'Demasiados intentos de inicio de sesión fallidos';
-  @override
-  String get invalidLoginRequest => 'Petición de inicio de sesión no válida';
 }
 
 // Path: errors.workspaces
@@ -195,11 +193,6 @@ class ServiceMessages$errors$runs$es implements ServiceMessages$errors$runs$en {
   @override
   String notFound({required Object id}) =>
       'La ejecución "${id}" no existe en este workspace.';
-  @override
-  String invalidFilter({required Object name, required Object values}) =>
-      '${name} debe ser uno de: ${values}';
-  @override
-  String invalidLimit({required Object max}) => 'limit debe ir de 1 a ${max}';
 }
 
 // Path: errors.transfer
@@ -304,8 +297,6 @@ extension on ServiceMessagesEs {
       'errors.auth.invalidCredentials' => 'Usuario o contraseña incorrectos',
       'errors.auth.tooManyLoginAttempts' =>
         'Demasiados intentos de inicio de sesión fallidos',
-      'errors.auth.invalidLoginRequest' =>
-        'Petición de inicio de sesión no válida',
       'errors.workspaces.notFound' => ({
         required Object slug,
       }) => 'El workspace "${slug}" no existe.',
@@ -334,13 +325,6 @@ extension on ServiceMessagesEs {
       'errors.runs.notFound' => ({
         required Object id,
       }) => 'La ejecución "${id}" no existe en este workspace.',
-      'errors.runs.invalidFilter' => ({
-        required Object name,
-        required Object values,
-      }) => '${name} debe ser uno de: ${values}',
-      'errors.runs.invalidLimit' => ({
-        required Object max,
-      }) => 'limit debe ir de 1 a ${max}',
       'errors.transfer.notAnExport' =>
         'No es un fichero exportado por Dumpling',
       'errors.transfer.version' => ({

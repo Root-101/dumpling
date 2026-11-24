@@ -1,4 +1,3 @@
-import 'package:drift/drift.dart' show Value;
 import 'package:service/dumpling.dart';
 
 class ConfigService {
@@ -12,11 +11,11 @@ class ConfigService {
   final BackupEngine engine;
 
   ConfigService()
-    : repo = ConfigTableRepo(di.find()),
-      sources = SourceTableRepo(di.find()),
-      destinations = DestinationTableRepo(di.find()),
-      workspaces = WorkspaceService(),
-      runs = RunTableRepo(di.find()),
+    : repo = di.find(),
+      sources = di.find(),
+      destinations = di.find(),
+      workspaces = di.find(),
+      runs = di.find(),
       engine = di.find();
 
   /// With [only], just those configs (an API key limited to them).
@@ -49,9 +48,7 @@ class ConfigService {
     String id, {
     Set<String>? only,
   }) async {
-    if (only != null && !only.contains(id)) {
-      throw NotFoundException(detail: intl.errors.configs.notFound(id: id));
-    }
+    _reach(id, only);
     final row = await _row(workspace, id);
     final last = await runs.getAll(workspace, configId: id, limit: 1);
     return ConfigModel.fromRow(row, lastRun: last.firstOrNull);
@@ -60,9 +57,7 @@ class ConfigService {
   Future<ConfigModel> create(String workspace, ConfigRequest request) async {
     final values = await _values(workspace, request);
     final id = Secrets.newId(idPrefix);
-    await repo.insert(
-      values.copyWith(id: Value(id), workspaceSlug: Value(workspace)),
-    );
+    await repo.insert(id: id, workspace: workspace, values: values);
     engine.schedule((await repo.get(workspace, id))!);
     logger.info(
       'Config created',
@@ -76,8 +71,10 @@ class ConfigService {
   Future<ConfigModel> update(
     String workspace,
     String id,
-    ConfigRequest request,
-  ) async {
+    ConfigRequest request, {
+    Set<String>? only,
+  }) async {
+    _reach(id, only);
     await _row(workspace, id);
     await repo.update(id, await _values(workspace, request));
     // A new schedule, or none once disabled
@@ -89,7 +86,8 @@ class ConfigService {
     return get(workspace, id);
   }
 
-  Future<void> delete(String workspace, String id) async {
+  Future<void> delete(String workspace, String id, {Set<String>? only}) async {
+    _reach(id, only);
     await _row(workspace, id);
     engine.unschedule(id);
     await repo.delete(id);
@@ -101,10 +99,7 @@ class ConfigService {
 
   /// What [request] stores, once its source, destination and folder are known
   /// to be of [workspace] (a 422 naming the field otherwise).
-  Future<ConfigTableCompanion> _values(
-    String workspace,
-    ConfigRequest request,
-  ) async {
+  Future<ConfigValues> _values(String workspace, ConfigRequest request) async {
     final defaults = (await workspaces.get(workspace)).defaults;
     final source = await sources.get(workspace, request.sourceId!);
     final destination = await destinations.get(
@@ -121,11 +116,13 @@ class ConfigService {
     final context = ConstraintValidatorContext()
       ..field('source_id', request.sourceId).custom(
         (_) => source == null ? intl.errors.validations.unknownSource : null,
+        code: 'validations.unknownSource',
       )
       ..field('destination_id', request.destinationId).custom(
         (_) => destination == null
             ? intl.errors.validations.unknownDestination
             : null,
+        code: 'validations.unknownDestination',
       );
     if (destination != null) {
       // With folders, one of them; without, the root
@@ -147,8 +144,22 @@ class ConfigService {
     await workspaces.get(workspace);
     final row = await repo.get(workspace, id);
     if (row == null) {
-      throw NotFoundException(detail: intl.errors.configs.notFound(id: id));
+      throw AppException(
+        ErrorCode.configsNotFound,
+        intl.errors.configs.notFound(id: id),
+      );
     }
     return row;
+  }
+
+  /// A config an API key limited to others ([only]) doesn't reach is not
+  /// found, as one of another workspace.
+  static void _reach(String id, Set<String>? only) {
+    if (only != null && !only.contains(id)) {
+      throw AppException(
+        ErrorCode.configsNotFound,
+        intl.errors.configs.notFound(id: id),
+      );
+    }
   }
 }

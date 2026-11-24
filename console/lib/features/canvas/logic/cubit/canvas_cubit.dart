@@ -7,27 +7,29 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// The graph of the canvas of the open workspace: loaded whole, edited here
 /// and saved whole with one Save. The viewport (pan, zoom) and the gesture in
 /// progress live in the canvas widget: they are not part of the graph
-class CanvasCubit extends Cubit<CanvasState> {
+class CanvasCubit extends Cubit<CanvasState>
+    with GlobalEventBusCommunication<CanvasState> {
   /// The prefix the service takes as "create this node"
   static const String newPrefix = 'new_';
 
-  final CanvasRepo _repo;
-  final SourceRepo _sources;
-  final DestinationRepo _destinations;
-  final AuthCubit _auth;
+  final AuthCubit auth;
+  final CanvasRepo repo;
+  final SourcesRepo sources;
+  final DestinationsRepo destinations;
 
   /// How often a run started here is asked how it goes
   final Duration pollEvery;
 
-  CanvasCubit(
-    this._repo,
-    this._sources,
-    this._destinations,
-    this._auth, {
+  CanvasCubit({
+    required this.auth,
+    required this.repo,
+    required this.sources,
+    required this.destinations,
     this.pollEvery = const Duration(seconds: 2),
   }) : super(const CanvasInitialState());
 
-  String? get _token => _auth.auth?.accessToken;
+  /// The service gives no refresh token: the one of the session, or none
+  String? get _token => auth.auth?.accessToken;
 
   CanvasData get _data => state.data;
 
@@ -40,7 +42,7 @@ class CanvasCubit extends Cubit<CanvasState> {
   /// test are not edits
   bool get dirty => _data.loaded && _saved != null && _saved != _request(_data);
 
-  void _edit(CanvasData data) => emit(CanvasLoadingSuccessState(data: data));
+  void _edit(CanvasData data) => emit(CanvasEditedState(data: data));
 
   /// The save or test in progress: a run waits for it to show how it goes,
   /// so the overlay stays up and the saved canvas doesn't drop its update
@@ -60,16 +62,16 @@ class CanvasCubit extends Cubit<CanvasState> {
     final data = _data.workspace == workspace
         ? _data
         : CanvasData.empty(workspace);
-    emit(CanvasLoadingInProgressState(data: data));
+    emit(CanvasLoadingState(data: data));
     try {
-      final canvas = await _repo.get(workspace: workspace, token: _token);
+      final canvas = await repo.get(workspace: workspace, token: _token);
       // the answer of a workspace already left behind is dropped
       if (_data.workspace != workspace) return;
       final loaded = _data.withCanvas(canvas);
       // before the state: its listeners ask for [dirty]
       _saved = _request(loaded);
-      emit(CanvasLoadingSuccessState(data: loaded));
-    } catch (e) {
+      emit(CanvasLoadedOkState(data: loaded));
+    } on Exception catch (e) {
       if (_data.workspace != workspace) return;
       emit(CanvasLoadingErrorState(ExceptionConverter.parse(e), data: _data));
     }
@@ -87,9 +89,9 @@ class CanvasCubit extends Cubit<CanvasState> {
   Future<void> _save() async {
     final workspace = _data.workspace;
     if (workspace == null || !_data.loaded) return;
-    emit(CanvasProcessInProgressState(data: _data));
+    emit(CanvasSavingState(data: _data));
     try {
-      final canvas = await _repo.save(
+      final canvas = await repo.save(
         workspace: workspace,
         data: _data,
         token: _token,
@@ -97,22 +99,28 @@ class CanvasCubit extends Cubit<CanvasState> {
       if (_data.workspace != workspace) return;
       final saved = _data.withCanvas(canvas);
       _saved = _request(saved);
-      emit(CanvasProcessingOKState(data: saved));
-    } catch (e) {
+      emit(CanvasSavedOkState(data: saved));
+    } on Exception catch (e) {
       if (_data.workspace != workspace) return;
-      emit(CanvasProcessingErrorState(_saveError(e), data: _data));
+      final exception = ExceptionConverter.parse(e);
+      emit(
+        CanvasSavingErrorState(
+          exception,
+          message: _saveError(exception),
+          data: _data,
+        ),
+      );
     }
   }
 
   /// A 422 names each field by its place in the request
   /// (`configs[0].schedule`): it says the name of that node instead
-  String _saveError(Object e) {
-    final exception = ExceptionConverter.parse(e);
+  String _saveError(GlobalException exception) {
     final errors = exception.data;
     if (exception.type != GlobalExceptionType.validation ||
         errors is! List<ValidationError> ||
         errors.isEmpty) {
-      return exception.message;
+      return exception.intlMessage;
     }
     final request = _data.toRequest().toJson();
     final node = RegExp(r'^(sources|destinations|configs)\[(\d+)\]');
@@ -139,8 +147,8 @@ class CanvasCubit extends Cubit<CanvasState> {
     final workspace = _data.workspace;
     if (workspace == null || !_data.loaded) return;
     final complete = _data.configs.where((c) => !CanvasData.configOrphan(c));
-    final sources = {for (final c in complete) ?_data.source(c.sourceId)};
-    final destinations = {
+    final sourceNodes = {for (final c in complete) ?_data.source(c.sourceId)};
+    final destinationNodes = {
       for (final c in complete) ?_data.destination(c.destinationId),
     };
     Future<CanvasCheck> check(
@@ -149,32 +157,35 @@ class CanvasCubit extends Cubit<CanvasState> {
     ) async {
       try {
         return CanvasCheck(name, check: await test());
-      } catch (e) {
-        return CanvasCheck(name, error: ExceptionConverter.parse(e).message);
+      } on Exception catch (e) {
+        return CanvasCheck(
+          name,
+          error: ExceptionConverter.parse(e).intlMessage,
+        );
       }
     }
 
-    emit(CanvasProcessInProgressState(data: _data));
+    emit(CanvasTestingState(data: _data));
     final checks = await Future.wait([
-      for (final s in sources)
+      for (final s in sourceNodes)
         check(
           s.name,
           () =>
-              _sources.testSaved(workspace: workspace, id: s.id, token: _token),
+              sources.testSaved(workspace: workspace, id: s.id, token: _token),
         ),
-      for (final d in destinations)
+      for (final d in destinationNodes)
         check(
           d.name,
-          () => _destinations.testUnsaved(
+          () => destinations.testUnsaved(
             workspace: workspace,
-            draft: d.toDraft(),
+            draft: d.toFormModel(),
             destinationId: d.id,
             token: _token,
           ),
         ),
     ]);
     if (_data.workspace != workspace) return;
-    emit(CanvasTestedState(checks, data: _data));
+    emit(CanvasTestedOkState(checks, data: _data));
   }
 
   /// Runs the saved [configId] for real, whether it is enabled or not, and
@@ -185,7 +196,7 @@ class CanvasCubit extends Cubit<CanvasState> {
     final config = _data.config(configId);
     if (workspace == null || config == null) return;
     try {
-      var run = await _repo.runNow(
+      var run = await repo.runNow(
         workspace: workspace,
         configId: configId,
         token: _token,
@@ -193,33 +204,34 @@ class CanvasCubit extends Cubit<CanvasState> {
       while (true) {
         await _process;
         if (isClosed || _data.workspace != workspace) return;
-        _setRun(configId, run);
+        _setRun(config.name, configId, run);
         if (!run.running) break;
         await Future.delayed(pollEvery);
-        run = await _repo.run(workspace: workspace, id: run.id, token: _token);
+        run = await repo.run(workspace: workspace, id: run.id, token: _token);
       }
       await _process;
       if (isClosed || _data.workspace != workspace) return;
-      emit(CanvasRunFinishedState(config.name, run, data: _data));
-    } catch (e) {
+      emit(CanvasRanNowOkState(config.name, run, data: _data));
+    } on Exception catch (e) {
       await _process;
       if (isClosed || _data.workspace != workspace) return;
       emit(
-        CanvasProcessingErrorState(
-          ExceptionConverter.parse(e).message,
-          data: _data,
-        ),
+        CanvasRunningNowErrorState(ExceptionConverter.parse(e), data: _data),
       );
     }
   }
 
   /// Without selecting it: the user may be on another config meanwhile
-  void _setRun(String configId, LastRun run) => _edit(
-    _data.copyWith(
-      configs: [
-        for (final c in _data.configs)
-          c.id == configId ? c.copyWith(lastRun: run) : c,
-      ],
+  void _setRun(String name, String configId, LastRun run) => emit(
+    CanvasRunningNowState(
+      name,
+      run,
+      data: _data.copyWith(
+        configs: [
+          for (final c in _data.configs)
+            c.id == configId ? c.copyWith(lastRun: run) : c,
+        ],
+      ),
     ),
   );
 

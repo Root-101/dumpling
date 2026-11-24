@@ -12,34 +12,15 @@ class _MockRepo extends Mock implements CanvasRepo {}
 
 class _MockAuth extends Mock implements AuthCubit {}
 
-class _MockSources extends Mock implements SourceRepo {}
+class _MockSources extends Mock implements SourcesRepo {}
 
-class _MockDestinations extends Mock implements DestinationRepo {}
+class _MockDestinations extends Mock implements DestinationsRepo {}
 
-class _MockWorkspaces extends Mock implements WorkspaceCubit {}
+class _MockWorkspaces extends Mock implements WorkspacesCubit {}
 
 void main() {
   // the real fonts, so text overflows are the ones of the browser
-  setUpAll(() async {
-    for (final (family, files) in [
-      (
-        'DMSans',
-        [
-          'DMSans/DMSans-Regular',
-          'DMSans/DMSans-Medium',
-          'DMSans/DMSans-SemiBold',
-          'DMSans/DMSans-Bold',
-        ],
-      ),
-      ('JetBrainsMono', ['JetBrainsMono/JetBrainsMono-Regular']),
-    ]) {
-      final loader = FontLoader(family);
-      for (final f in files) {
-        loader.addFont(rootBundle.load('assets/fonts/$f.ttf'));
-      }
-      await loader.load();
-    }
-  });
+  setUpAll(loadAppFonts);
 
   /// The editor with [demoCanvas] loaded
   Future<CanvasCubit> pump(WidgetTester tester, [CanvasModel? canvas]) async {
@@ -56,8 +37,8 @@ void main() {
     // the open workspace: a wire dropped on a bucket takes its defaults
     final workspaces = _MockWorkspaces();
     when(() => workspaces.state).thenReturn(
-      WorkspaceLoadingSuccessState(
-        data: const WorkspaceData.empty()
+      WorkspacesSearchOkState(
+        data: const WorkspacesData.empty()
             .withList([
               const WorkspaceModel(
                 slug: 'production',
@@ -72,14 +53,19 @@ void main() {
             .withCurrent('production'),
       ),
     );
-    app.di.put<WorkspaceCubit>(workspaces);
-    final cubit = CanvasCubit(repo, sources, destinations, auth);
+    app.di.put<WorkspacesCubit>(workspaces);
+    final cubit = CanvasCubit(
+      auth: auth,
+      repo: repo,
+      sources: sources,
+      destinations: destinations,
+    );
     await cubit.load('production');
     await tester.pumpWidget(
       MaterialApp(
         // the dialogs and buttons of the app read it
         navigatorKey: navigatorKey,
-        theme: ThemeConfig.theme,
+        theme: AppTheme.dark,
         home: BlocProvider.value(
           value: cubit,
           // a config opens in its dialog, over the editor

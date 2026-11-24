@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.1.8
+
+- When the service can't be reached, the errors say *Can't reach the Dumpling service at …*
+  with its URL, not that the internet connection failed.
+- A sign-in locked after too many failures says *Try again in N minutes*, from the
+  `Retry-After` of the service.
+- In Spanish, *backups* everywhere, as in the rail: the title of Backups and other texts said
+  *respaldos*.
+- The splash of `index.html` comes in the language chosen with the flag, like the console; the
+  browser's only until one is chosen.
+- The workspaces of an import count each thing with its plural: *1 destination*.
+- The days of the run log count with their plural in Spanish: *1 correcta · 1 fallida*.
+- The duration of a run is the one the service measured: a backup of 190 ms said *0.0 s*, as
+  its start and end are kept to the second.
+- In Spanish, *clave del objeto* everywhere: the field of a config and its errors said *object key*,
+  the service *clave del objeto*.
+- The warning of a long name (source, destination or config) measures it on its node: a config's
+  name shares its line with the cron, and *Nightly full* no longer warns.
+- Built with Flutter 3.50.1 and the latest version of every dependency (go_router 18, material_ui
+  1.11, flutter_svg 2.5, flutter_secure_storage 11.2…).
+- A run that wrote nothing (it failed connecting) shows its size as *—*, not *0 B*.
+- Reads `expire_at` of the sign-in as ISO 8601, as the service now writes it.
+- When the console can't start, it says so with «Try again» instead of staying on the splash.
+- The button that shows the password says what it does to a screen reader.
+- The lists of sources, destinations, backups and workspaces reload when the canvas is saved
+  or a run started from it ends, without leaving the screen.
+- Loads four weights of DM Sans instead of eighteen files: a lighter first load.
+- *Run again* closes the dialog of the run for good: it could open again over the run log.
+- The hint of a saved password or secret key says it is kept only while the server and user
+  (endpoint and bucket) stay the same.
+
 ## 0.1.7
 
 - The dialog of a disabled config says *Disabled* in *Output* and *Review*, not its frequency and

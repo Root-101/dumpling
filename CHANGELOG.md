@@ -4,6 +4,35 @@ What changes in each version of Dumpling, from 0.1.0. The detail of each package
 changelogs of [`service/`](service/CHANGELOG.md) and [`console/`](console/CHANGELOG.md), which also
 have the release candidates before 0.1.0 one by one.
 
+## 0.1.8
+
+- Service: a stored password or secret key only goes where it was saved for; an edit, test or
+  canvas save that points a source or destination elsewhere asks for it again (`422`).
+- Service: a small backup, and the start and end of a big one, are tried again on a `503`
+  like its parts; a queued run the database can't start no longer blocks its config.
+- Console: when the service can't be reached, the errors say so with its URL (*Can't reach the
+  Dumpling service at …*) instead of blaming the internet connection.
+- Console: a sign-in locked after too many failures says how many minutes are left.
+- Console: in Spanish the backups are *backups* everywhere, as in the rail (some texts said
+  *respaldos*); the splash comes in the language chosen with the flag, like the console; the
+  import says *1 destination*, not *1 destinations*; the object key is *clave del objeto*
+  everywhere, as the service says it.
+- Console: the warning of a long name only shows when the name would be cut on its node.
+- Console: a run shows the duration the service measured (a short one said *0.0 s*), and the
+  days of the run log say *1 correcta* in Spanish.
+- Service: a source's last check is also the one of each run, so its detail says when a run
+  couldn't connect; a server that refuses TLS says so plainly.
+- Console: a run that wrote nothing shows no size instead of *0 B*.
+- Service: every error and violation carries a stable `code` to decide on (`sources.inUse`).
+- Service: `expire_at` of the sign-in is ISO 8601 UTC, like every other time (it was epoch
+  milliseconds); the console reads it so.
+- Service: `/api/health` answers `application/health+json` (`pass` / `fail`) instead of `up` / `down`.
+- Service: creates answer with `Location`; a `limit` out of range in the run log is a `422`.
+- Console: a start that fails shows what happened and «Try again», not an endless splash.
+- Console: the lists reload when the canvas is saved or a run started from it ends; the
+  password button speaks to a screen reader; four font files instead of eighteen.
+- Console: *Run again* closes the dialog of the run for good; it could open again.
+
 ## 0.1.7
 
 - Console: the dialog of a disabled config says *Disabled* in its *Output* and *Review* steps

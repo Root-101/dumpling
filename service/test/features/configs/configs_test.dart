@@ -3,14 +3,13 @@ library;
 
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
 import 'package:service/dumpling.dart';
 import 'package:test/test.dart';
 
-import '../../support/test_server.dart';
+import '../../support/test_app.dart';
 
 void main() {
-  final server = TestServer(port: 8185);
+  final server = TestApp();
 
   late String sourceId;
   late String foldersId;
@@ -21,17 +20,11 @@ void main() {
     'content-type': 'application/json',
   };
 
-  Future<http.Response> post(String path, Object body) => http.post(
-    server.url(path),
-    headers: jsonHeaders(),
-    body: jsonEncode(body),
-  );
+  Future<TestResponse> post(String path, Object body) =>
+      server.post(path, headers: jsonHeaders(), body: jsonEncode(body));
 
-  Future<http.Response> put(String path, Object body) => http.put(
-    server.url(path),
-    headers: jsonHeaders(),
-    body: jsonEncode(body),
-  );
+  Future<TestResponse> put(String path, Object body) =>
+      server.put(path, headers: jsonHeaders(), body: jsonEncode(body));
 
   Future<String> createdId(String path, Object body) async {
     final response = await post(path, body);
@@ -85,10 +78,7 @@ void main() {
       'destination_id': rootId,
     });
     Future<List<Object?>> ids() async {
-      final response = await http.get(
-        server.url(configs),
-        headers: server.auth(),
-      );
+      final response = await server.get(configs, headers: server.auth());
       return [for (final c in jsonDecode(response.body) as List) c['id']];
     }
 
@@ -100,7 +90,7 @@ void main() {
     expect(await ids(), reversed);
     expect((await put('$configs/order', {'ids': []})).statusCode, 422);
     for (final id in reversed) {
-      await http.delete(server.url('$configs/$id'), headers: server.auth());
+      await server.delete('$configs/$id', headers: server.auth());
     }
   });
 
@@ -210,31 +200,30 @@ void main() {
 
     test('Should delete a config', () async {
       final id = await createdId(configs, config(name: 'Temporary'));
-      final deleted = await http.delete(
-        server.url('$configs/$id'),
+      final deleted = await server.delete(
+        '$configs/$id',
         headers: server.auth(),
       );
       expect(deleted.statusCode, 204);
-      final read = await http.get(
-        server.url('$configs/$id'),
-        headers: server.auth(),
-      );
+      final read = await server.get('$configs/$id', headers: server.auth());
       expect(read.statusCode, 404);
     });
   });
 
   group('What a config uses', () {
     test('Should not delete a source or destination in use (409)', () async {
-      final source = await http.delete(
-        server.url('/api/workspaces/production/sources/$sourceId'),
+      final source = await server.delete(
+        '/api/workspaces/production/sources/$sourceId',
         headers: server.auth(),
       );
       expect(source.statusCode, 409);
-      final destination = await http.delete(
-        server.url('/api/workspaces/production/destinations/$foldersId'),
+      expect(jsonDecode(source.body)['code'], 'sources.inUse');
+      final destination = await server.delete(
+        '/api/workspaces/production/destinations/$foldersId',
         headers: server.auth(),
       );
       expect(destination.statusCode, 409);
+      expect(jsonDecode(destination.body)['code'], 'destinations.inUse');
     });
 
     test('Should not remove a folder or the root in use (409)', () async {
@@ -242,6 +231,7 @@ void main() {
       // `orders` has a config
       final removed = await put('$path/$foldersId', destination(['users']));
       expect(removed.statusCode, 409);
+      expect(jsonDecode(removed.body)['code'], 'destinations.folderInUse');
       expect(jsonDecode(removed.body)['detail'], contains('"orders"'));
       // The root has a config: it can't get folders
       final rooted = await put('$path/$rootId', destination(['new']));
@@ -276,10 +266,7 @@ void main() {
       });
       final scheduler = di.find<Scheduler>();
       expect(scheduler[BackupEngine.taskName(id)], isNotNull);
-      final deleted = await http.delete(
-        server.url(base),
-        headers: server.auth(),
-      );
+      final deleted = await server.delete(base, headers: server.auth());
       expect(deleted.statusCode, 204);
       expect(scheduler[BackupEngine.taskName(id)], isNull);
     });

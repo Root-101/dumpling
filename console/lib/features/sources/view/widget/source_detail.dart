@@ -2,17 +2,21 @@ import 'package:console/app_exporter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// A source in a dialog: how it is doing, the backups that dump it (where,
-/// when, how the last run went and when the next one is), its last connection
-/// check and the connection itself. It follows the list, so a test or an edit
-/// made from it shows here too
-class SourceDialog extends StatelessWidget {
-  static Future<void> open(
+class SourceDialogNavigator {
+  Future<void> open(
     SourceModel source, {
     required ValueChanged<SourceModel> onEdit,
   }) => app.dialog.open(
     dialog: SourceDialog(source: source, onEdit: onEdit),
   );
+}
+
+/// A source in a dialog: how it is doing, the backups that dump it (where,
+/// when, how the last run went and when the next one is), its last connection
+/// check and the connection itself. It follows the list, so a test or an edit
+/// made from it shows here too
+class SourceDialog extends StatelessWidget {
+  static final SourceDialogNavigator navigator = SourceDialogNavigator();
 
   /// As the list had it when it opened; the list's newer one replaces it
   final SourceModel source;
@@ -25,7 +29,7 @@ class SourceDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = app.intl.sources;
-    final data = context.select<SourceCubit, SourceData>((c) => c.state.data);
+    final data = context.select<SourcesCubit, SourcesData>((c) => c.state.data);
     final s =
         data.sources.where((e) => e.id == source.id).firstOrNull ?? source;
     final testing = data.testing.contains(s.id);
@@ -36,7 +40,7 @@ class SourceDialog extends StatelessWidget {
       null,
       (a, b) => a == null || b.startedAt.isAfter(a.startedAt) ? b : a,
     );
-    final size = lastRun?.sizeBytes;
+    final size = lastRun?.written;
     final destinations = {for (final c in uses) c.destinationId}.length;
     return DetailDialogTemplate(
       header: DetailHeader(
@@ -50,7 +54,7 @@ class SourceDialog extends StatelessWidget {
             : ConnectionStatusLabel.colorOf(check),
         description: t.detailDescription(type: SourceTypeLook.labelOf(s.type)),
         testing: testing,
-        onTest: () => context.read<SourceCubit>().test(s),
+        onTest: () => context.read<SourcesCubit>().test(s),
         onEdit: () => onEdit(s),
       ),
       stats: [
@@ -139,7 +143,7 @@ class _Uses extends StatelessWidget {
     final divider = BorderSide(
       color: colors.neutral.white.withValues(alpha: 0.06),
     );
-    final muted = TextStyle(fontSize: 12, color: colors.neutral.grey4);
+    final muted = app.styles.s.copyWith(color: colors.neutral.grey4);
     Widget row(List<Widget> cells, {double height = 58, TextStyle? style}) =>
         Container(
           constraints: BoxConstraints(minHeight: height),
@@ -165,15 +169,13 @@ class _Uses extends StatelessWidget {
             trailing: InkWell(
               onTap: () {
                 Navigator.of(context).pop();
-                RouteNames.openWorkspace(
-                  app.di.find<SourceCubit>().state.data.workspace!,
-                  section: RouteNames.canvas,
+                CanvasScreen.navigator.go(
+                  workspace: app.di.find<SourcesCubit>().state.data.workspace!,
                 );
               },
               child: Text(
                 t.openEditor,
-                style: TextStyle(
-                  fontSize: 13,
+                style: app.styles.m.copyWith(
                   color: colors.primary.primaryFaded,
                 ),
               ),
@@ -193,7 +195,7 @@ class _Uses extends StatelessWidget {
                 Text(t.columnNextRun),
               ],
               height: 38,
-              style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+              style: app.styles.s.copyWith(color: colors.neutral.grey3),
             ),
             for (final config in configs)
               row([

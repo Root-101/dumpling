@@ -94,9 +94,6 @@ class ServiceMessages$errors$auth$en {
 
   /// en: 'Too many failed sign-in attempts'
   String get tooManyLoginAttempts => 'Too many failed sign-in attempts';
-
-  /// en: 'Invalid sign-in request'
-  String get invalidLoginRequest => 'Invalid sign-in request';
 }
 
 // Path: errors.workspaces
@@ -187,13 +184,6 @@ class ServiceMessages$errors$runs$en {
   /// en: 'The run "{id: String}" does not exist in this workspace.'
   String notFound({required String id}) =>
       'The run "${id}" does not exist in this workspace.';
-
-  /// en: '{name: String} must be one of: {values: String}'
-  String invalidFilter({required String name, required String values}) =>
-      '${name} must be one of: ${values}';
-
-  /// en: 'limit must be from 1 to {max: int}'
-  String invalidLimit({required int max}) => 'limit must be from 1 to ${max}';
 }
 
 // Path: errors.transfer
@@ -322,7 +312,6 @@ extension on ServiceMessages {
     return switch (path) {
       'errors.auth.invalidCredentials' => 'Wrong username or password',
       'errors.auth.tooManyLoginAttempts' => 'Too many failed sign-in attempts',
-      'errors.auth.invalidLoginRequest' => 'Invalid sign-in request',
       'errors.workspaces.notFound' => ({
         required String slug,
       }) => 'The workspace "${slug}" does not exist.',
@@ -351,13 +340,6 @@ extension on ServiceMessages {
       'errors.runs.notFound' => ({
         required String id,
       }) => 'The run "${id}" does not exist in this workspace.',
-      'errors.runs.invalidFilter' => ({
-        required String name,
-        required String values,
-      }) => '${name} must be one of: ${values}',
-      'errors.runs.invalidLimit' => ({
-        required int max,
-      }) => 'limit must be from 1 to ${max}',
       'errors.transfer.notAnExport' => 'Not a file exported by Dumpling',
       'errors.transfer.version' => ({
         required int version,

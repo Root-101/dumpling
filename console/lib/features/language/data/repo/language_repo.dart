@@ -9,9 +9,13 @@ class LanguageRepo {
 
   Future save({required LanguageModel model}) async {
     await storage.write(key: languageKey, value: model.key);
+    BrowserWindow.rememberLanguage(model.key);
   }
 
   Future<String?> loadKey() async {
-    return storage.read(key: languageKey);
+    final key = await storage.read(key: languageKey);
+    // a language saved before the splash read it
+    if (key != null) BrowserWindow.rememberLanguage(key);
+    return key;
   }
 }

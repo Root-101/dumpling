@@ -57,7 +57,7 @@ class ConfigModel {
       ? CronSchedule.parse(
           schedule,
           utc: true,
-        ).next((after ?? DateTime.now()).toUtc())
+        ).next((after ?? utcNow()).toUtc())
       : null;
 
   Map<String, Object?> toJson() => {
@@ -71,9 +71,9 @@ class ConfigModel {
     'compression': compression.name,
     'object_key': objectKey,
     'enabled': enabled,
-    'next_run': nextRun()?.toIso8601String(),
+    'next_run': nextRun()?.toJsonDate(),
     'last_run': lastRun == null ? null : RunModel(lastRun!),
-    'created_at': createdAt.toUtc().toIso8601String(),
-    'updated_at': updatedAt.toUtc().toIso8601String(),
+    'created_at': createdAt.toJsonDate(),
+    'updated_at': updatedAt.toJsonDate(),
   };
 }

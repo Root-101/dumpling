@@ -77,15 +77,113 @@ class RunTableRepo {
           ))
           .getSingleOrNull();
 
-  Future<void> insert(RunTableCompanion run) async {
-    await _db.into(_db.runTable).insert(run);
-  }
+  /// A new run; the fields after [startedAt] only for one that already ended
+  /// (an import).
+  Future<void> insert({
+    required String id,
+    required String workspace,
+    required String? configId,
+    required String configName,
+    required String sourceName,
+    required SourceType sourceType,
+    required String destinationName,
+    required DestinationType destinationType,
+    required RunTrigger trigger,
+    required RunStatus status,
+    required DateTime startedAt,
+    String? label,
+    String? keyId,
+    String? keyName,
+    String? location,
+    int sizeBytes = 0,
+    String? error,
+    String log = '[]',
+    DateTime? finishedAt,
+    int? durationMs,
+  }) => _db
+      .into(_db.runTable)
+      .insert(
+        RunTableCompanion.insert(
+          id: id,
+          workspaceSlug: workspace,
+          configId: Value(configId),
+          configName: configName,
+          sourceName: sourceName,
+          sourceType: sourceType,
+          destinationName: destinationName,
+          destinationType: destinationType,
+          trigger: trigger,
+          status: status,
+          label: Value(label),
+          keyId: Value(keyId),
+          keyName: Value(keyName),
+          location: Value(location),
+          sizeBytes: Value(sizeBytes),
+          error: Value(error),
+          log: Value(log),
+          startedAt: startedAt,
+          finishedAt: Value(finishedAt),
+          durationMs: Value(durationMs),
+        ),
+      );
 
-  Future<void> update(String id, RunTableCompanion run) async {
-    await (_db.update(
-      _db.runTable,
-    )..where((tbl) => tbl.id.equals(id))).write(run);
-  }
+  /// A queued run that starts now.
+  Future<void> start(String id, DateTime at) => _write(
+    id,
+    RunTableCompanion(
+      status: const Value(RunStatus.running),
+      startedAt: Value(at),
+    ),
+  );
+
+  /// Where the file of [id] goes.
+  Future<void> setLocation(String id, String location) =>
+      _write(id, RunTableCompanion(location: Value(location)));
+
+  /// The bytes uploaded so far.
+  Future<void> setSize(String id, int bytes) =>
+      _write(id, RunTableCompanion(sizeBytes: Value(bytes)));
+
+  /// The multipart upload in progress (JSON), to abort it after a stop.
+  Future<void> setPendingUpload(String id, String pending) =>
+      _write(id, RunTableCompanion(pendingUpload: Value(pending)));
+
+  /// The end of [id]: [status] with its log and, if it failed, [error].
+  Future<void> finish(
+    String id, {
+    required RunStatus status,
+    required String log,
+    required DateTime finishedAt,
+    int? sizeBytes,
+    String? error,
+    int? durationMs,
+  }) => _write(
+    id,
+    RunTableCompanion(
+      status: Value(status),
+      sizeBytes: Value.absentIfNull(sizeBytes),
+      error: Value(error),
+      log: Value(log),
+      finishedAt: Value(finishedAt),
+      durationMs: Value.absentIfNull(durationMs),
+      // completed or aborted: nothing left to abort on a restart
+      pendingUpload: const Value(null),
+    ),
+  );
+
+  /// A queued run that can't start ([error]), without log.
+  Future<void> failBeforeStart(String id, String error, DateTime at) => _write(
+    id,
+    RunTableCompanion(
+      status: const Value(RunStatus.failed),
+      error: Value(error),
+      finishedAt: Value(at),
+    ),
+  );
+
+  Future<void> _write(String id, RunTableCompanion values) => (_db.update(
+    _db.runTable,
+  )..where((tbl) => tbl.id.equals(id))).write(values);
 
   /// The runs still running: on start, those a stop left half done.
   Future<List<RunTableData>> running() => (_db.select(
@@ -103,7 +201,8 @@ class RunTableRepo {
             RunTableCompanion(
               status: const Value(RunStatus.failed),
               error: Value(error),
-              finishedAt: Value(DateTime.now()),
+              finishedAt: Value(utcNow()),
+              pendingUpload: const Value(null),
             ),
           );
 }

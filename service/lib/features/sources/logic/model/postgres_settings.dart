@@ -92,11 +92,10 @@ class PostgresSettings implements SourceSettings {
 
   @override
   ConstraintValidatorContext validate() => ConstraintValidatorContext()
-    ..field(
-      connectionUrlKey,
-      connectionUrl,
-      sensitive: true,
-    ).custom((_) => invalidUrl ? intl.errors.validations.postgresUrl : null)
+    ..field(connectionUrlKey, connectionUrl, sensitive: true).custom(
+      (_) => invalidUrl ? intl.errors.validations.postgresUrl : null,
+      code: 'validations.postgresUrl',
+    )
     ..field('host', host?.trim()).notNull().size(min: 1, max: 255)
     ..field('port', port).min(1).max(65535)
     ..field('database', database?.trim()).notNull().size(min: 1, max: 63)
@@ -128,6 +127,10 @@ class PostgresSettings implements SourceSettings {
     'dump_format': format.name,
     'ssl_mode': ssl.name,
   };
+
+  /// The server, the database and the role the password is sent to, and how
+  @override
+  Map<String, Object?> get target => {...toJson()}..remove('dump_format');
 
   @override
   Map<String, String> get secrets => {passwordKey: ?password};

@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import 'package:console/app_exporter.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -25,6 +26,19 @@ void main() {
 
     test('Never goes back to the login itself', () {
       expect(RouteConfig.afterLogin(LoginScreen.navigator.path), workspaces);
+    });
+  });
+
+  group('SectionNavigator.routes', () {
+    test('A screen with items shares its page with the dialog of one', () {
+      final routes = BackupsScreen.navigator.routes().cast<GoRoute>();
+      expect(routes.map((r) => r.path), ['backups', 'backups/runs/:id']);
+      expect(routes.map((r) => r.name), ['backups', 'backup-run']);
+    });
+
+    test('A screen without items is one route', () {
+      final routes = ApiKeysScreen.navigator.routes().cast<GoRoute>();
+      expect(routes.map((r) => r.path), ['keys']);
     });
   });
 }

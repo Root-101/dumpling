@@ -24,9 +24,14 @@ class JwtFilter extends Filter {
 
       if (payload != null) {
         request.securityContext.setAuthentication(
-          Authentication(
-            principal: payload['sub'],
-            roles: Set.from(payload['roles'] ?? []),
+          Authentication<Object>(
+            principal: AdminPrincipal(
+              username: payload['sub'] as String,
+              expireAt: DateTime.fromMillisecondsSinceEpoch(
+                (payload['exp'] as int) * 1000,
+                isUtc: true,
+              ),
+            ),
             // The admin has every permission of this version: a token signed
             // before an upgrade added one still reaches it
             permissions: payload['sub'] == env.adminUser

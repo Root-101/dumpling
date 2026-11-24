@@ -2,13 +2,17 @@ import 'package:console/app_exporter.dart';
 
 class SourcesInit {
   static Future init() async {
-    SourceClient client = SourceClient(app.di.find());
+    SourcesClient client = SourcesClient(app.di.find());
     app.di.put(client);
 
-    SourceRepo repo = SourceRepo(client);
+    SourcesRepo repo = SourcesRepo(client: client);
     app.di.put(repo);
 
-    SourceCubit cubit = SourceCubit(repo, app.di.find(), app.di.find());
+    SourcesCubit cubit = SourcesCubit(
+      auth: app.di.find(),
+      repo: repo,
+      configs: app.di.find(),
+    );
     app.di.put(cubit);
   }
 }

@@ -146,7 +146,7 @@ class PostgresSourceDriver implements SourceDriver {
       toolVersion: tool == null ? null : 'pg_dump $tool',
       message: message,
       durationMs: watch.elapsedMilliseconds,
-      checkedAt: DateTime.now().toUtc(),
+      checkedAt: utcNow(),
     );
 
     final server = await _askServer(
@@ -257,6 +257,14 @@ class PostgresSourceDriver implements SourceDriver {
     } on TimeoutException {
       return failed('Timed out after ${timeout.inSeconds} s');
     } on Object catch (e) {
+      // TLS required by the source, refused by a server without it: the
+      // driver's text names its own settings, not the source's
+      if ('$e'.contains('does not support SSL')) {
+        return failed(
+          "The server doesn't accept TLS: turn TLS off if it is on a network "
+          'you trust',
+        );
+      }
       // A TLS handshake that fails, a closed connection…
       return failed('$e', unexpected: true);
     }

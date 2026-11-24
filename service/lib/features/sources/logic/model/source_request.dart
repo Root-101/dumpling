@@ -37,6 +37,7 @@ class SourceRequest implements Validatable {
             (value) => sourceType?.enabled ?? true
                 ? null
                 : intl.errors.validations.sourceTypeDisabled,
+            code: 'validations.sourceTypeDisabled',
           );
     // The settings depend on the type: only checked for one that works
     if (sourceType?.enabled ?? false) {

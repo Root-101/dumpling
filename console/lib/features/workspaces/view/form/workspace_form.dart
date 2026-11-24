@@ -2,19 +2,20 @@ import 'package:console/app_exporter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Dialog of a new workspace: name, description and color. Once created it
-/// reloads the list and opens the new workspace
-class WorkspaceForm extends StatefulWidget {
+class WorkspaceFormNavigator {
   /// Opens the dialog with its own [WorkspaceFormCubit]
-  static Future<void> open(BuildContext context) async {
+  Future<void> open(BuildContext context) async {
     final formKey = GlobalKey<_WorkspaceFormState>();
-    final formCubit = WorkspaceFormCubit(app.di.find(), app.di.find());
+    final formCubit = WorkspaceFormCubit(
+      auth: app.di.find(),
+      repo: app.di.find(),
+    );
 
     await FormDialogTemplate.show(
       context: context,
       title: app.intl.workspaces.formTitle,
       description: app.intl.workspaces.formDescription,
-      loadingId: loadingId,
+      loadingId: WorkspaceForm.loadingId,
       actions: [
         PrimaryButton.secondary(
           onPressed: () => Navigator.of(context).pop(),
@@ -34,6 +35,12 @@ class WorkspaceForm extends StatefulWidget {
     );
     await formCubit.close();
   }
+}
+
+/// Dialog of a new workspace: name, description and color. Once created it
+/// reloads the list and opens the new workspace
+class WorkspaceForm extends StatefulWidget {
+  static final WorkspaceFormNavigator navigator = WorkspaceFormNavigator();
 
   /// Id of the dialog's [LoadingOverlay]
   static const String loadingId = 'workspace-form';
@@ -77,7 +84,7 @@ class _WorkspaceFormState extends State<WorkspaceForm> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final description = _descriptionController.text.trim();
     cubit.create(
-      WorkspaceDraft(
+      WorkspaceFormModel(
         name: _nameController.text.trim(),
         description: description.isEmpty ? null : description,
         color: _color,
@@ -101,20 +108,23 @@ class _WorkspaceFormState extends State<WorkspaceForm> {
         }
         if (state is WorkspaceFormProcessingErrorState) {
           setState(() {
-            _serverErrors = state.fieldErrors;
-            _formError = state.fieldErrors.isEmpty
-                ? state.exception.message
-                : null;
+            _serverErrors = const {};
+            _formError = state.exception.intlMessage;
+          });
+        }
+        if (state is WorkspaceFormValidationErrorState) {
+          setState(() {
+            _serverErrors = state.failValidations;
+            _formError = null;
           });
         }
         if (state is WorkspaceFormProcessingOKState) {
           Navigator.of(context).pop();
-          app.di.find<WorkspaceCubit>().load();
           app.snack.showSuccess(
             message: app.intl.workspaces.created(name: state.workspace.name),
             context: app.context,
           );
-          RouteNames.openWorkspace(state.workspace.slug);
+          BackupsScreen.navigator.go(workspace: state.workspace.slug);
         }
       },
       child: Form(
@@ -197,7 +207,7 @@ class _WorkspaceFormState extends State<WorkspaceForm> {
             app.dimensions.padding.l.gap(),
             Text(
               app.intl.workspaces.color,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              style: app.styles.l.copyWith(fontWeight: FontWeight.w600),
             ),
             app.dimensions.padding.s.gap(),
             AppColorPicker(
@@ -209,7 +219,7 @@ class _WorkspaceFormState extends State<WorkspaceForm> {
             app.dimensions.padding.l.gap(),
             Text(
               app.intl.workspaces.emptyCanvas,
-              style: TextStyle(fontSize: 12, color: app.colors.neutral.grey4),
+              style: app.styles.s.copyWith(color: app.colors.neutral.grey4),
             ),
           ],
         ),

@@ -28,20 +28,55 @@ class ApiKeyTableRepo {
     _db.apiKeyTable,
   )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
 
-  /// Goes last in its workspace.
-  Future<void> insert(ApiKeyTableCompanion key) async {
+  /// A new key of [workspace], stored by the hash of its secret; it goes last.
+  /// [permissions] and [configIds] are JSON lists.
+  Future<void> insert({
+    required String id,
+    required String workspace,
+    required String name,
+    required String secretHash,
+    required String permissions,
+    required String configIds,
+  }) async {
+    final position = await _next(workspace);
     await _db
         .into(_db.apiKeyTable)
         .insert(
-          key.copyWith(position: Value(await _next(key.workspaceSlug.value))),
+          ApiKeyTableCompanion.insert(
+            id: id,
+            workspaceSlug: workspace,
+            name: name,
+            secretHash: secretHash,
+            permissions: permissions,
+            configIds: Value(configIds),
+            position: Value(position),
+          ),
         );
   }
 
-  Future<void> update(String id, ApiKeyTableCompanion key) async {
-    await (_db.update(
-      _db.apiKeyTable,
-    )..where((tbl) => tbl.id.equals(id))).write(key);
-  }
+  /// What a key may do; its secret never changes.
+  Future<void> update(
+    String id, {
+    required String name,
+    required String permissions,
+    required String configIds,
+  }) => _write(
+    id,
+    ApiKeyTableCompanion(
+      name: Value(name),
+      permissions: Value(permissions),
+      configIds: Value(configIds),
+      updatedAt: Value(utcNow()),
+    ),
+  );
+
+  /// The key was used [at].
+  Future<void> touch(String id, DateTime at) =>
+      _write(id, ApiKeyTableCompanion(lastUsedAt: Value(at)));
+
+  Future<void> _write(String id, ApiKeyTableCompanion values) => (_db.update(
+    _db.apiKeyTable,
+  )..where((tbl) => tbl.id.equals(id))).write(values);
 
   Future<void> delete(String id) async {
     await (_db.delete(_db.apiKeyTable)..where((tbl) => tbl.id.equals(id))).go();

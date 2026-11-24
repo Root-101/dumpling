@@ -2,15 +2,12 @@ import 'package:console/app_exporter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Dialog of a destination in three steps: its type, the connection with the
-/// test of the bucket root, and its folders, each new one tested too (always
-/// by the service). Once saved it reloads the list
-class DestinationForm extends StatefulWidget {
+class DestinationFormNavigator {
   /// Opens the dialog with its own [DestinationFormCubit]. With [destination]
   /// it edits it; with [duplicate] too it creates a copy (the secret key isn't
   /// copied: the API never returns it). [folderUsage] locks the folders a
   /// backup writes to
-  static Future<void> open(
+  Future<void> open(
     BuildContext context, {
     required String workspace,
     required List<DestinationTypeModel> types,
@@ -20,8 +17,8 @@ class DestinationForm extends StatefulWidget {
   }) async {
     final editing = destination != null && !duplicate;
     final formCubit = DestinationFormCubit(
-      app.di.find(),
-      app.di.find(),
+      auth: app.di.find(),
+      repo: app.di.find(),
       workspace: workspace,
       destinationId: editing ? destination.id : null,
     );
@@ -40,6 +37,13 @@ class DestinationForm extends StatefulWidget {
     );
     await formCubit.close();
   }
+}
+
+/// Dialog of a destination in three steps: its type, the connection with the
+/// test of the bucket root, and its folders, each new one tested too (always
+/// by the service). Once saved it reloads the list
+class DestinationForm extends StatefulWidget {
+  static final DestinationFormNavigator navigator = DestinationFormNavigator();
 
   /// Id of the dialog's [LoadingOverlay]
   static const String loadingId = 'destination-form';
@@ -151,7 +155,7 @@ class _DestinationFormState extends State<DestinationForm> {
   }
 
   /// With [folders] it tests only those (none: the bucket root)
-  DestinationDraft _draft({List<String>? folders}) => DestinationDraft(
+  DestinationFormModel _draft({List<String>? folders}) => DestinationFormModel(
     name: _nameController.text.trim(),
     type: _type,
     endpoint: _endpointController.text.trim(),
@@ -170,7 +174,7 @@ class _DestinationFormState extends State<DestinationForm> {
 
   bool get _busy =>
       cubit.state is DestinationFormProcessInProgressState ||
-      cubit.state is DestinationFormTestInProgressState;
+      cubit.state is DestinationFormTestingState;
 
   /// The fields of the connection step; an error of the service in one of
   /// them takes the form back there
@@ -289,7 +293,7 @@ class _DestinationFormState extends State<DestinationForm> {
         } else {
           app.loading.hide(id: DestinationForm.loadingId);
         }
-        if (state is DestinationFormTestedState) {
+        if (state is DestinationFormTestedOkState) {
           setState(() {
             _formError = null;
             if (_step < _lastStep) {
@@ -307,13 +311,24 @@ class _DestinationFormState extends State<DestinationForm> {
             }
           });
         }
-        if (state is DestinationFormProcessingErrorState) {
+        if (state is DestinationFormProcessingErrorState ||
+            state is DestinationFormTestingErrorState) {
           setState(() {
-            _serverErrors = state.fieldErrors;
-            _formError = state.fieldErrors.isEmpty
-                ? state.exception.message
-                : null;
-            final fields = state.fieldErrors.keys;
+            _serverErrors = const {};
+            _formError = switch (state) {
+              DestinationFormProcessingErrorState(:final exception) ||
+              DestinationFormTestingErrorState(
+                :final exception,
+              ) => exception.intlMessage,
+              _ => null,
+            };
+          });
+        }
+        if (state is DestinationFormValidationErrorState) {
+          setState(() {
+            _serverErrors = state.failValidations;
+            _formError = null;
+            final fields = state.failValidations.keys;
             if (fields.contains(DestinationFormField.type) ||
                 fields.contains(DestinationFormField.name)) {
               _step = 0;
@@ -324,7 +339,6 @@ class _DestinationFormState extends State<DestinationForm> {
         }
         if (state is DestinationFormProcessingOKState) {
           Navigator.of(context).pop();
-          app.di.find<DestinationCubit>().reload();
           final name = state.destination.name;
           app.snack.showSuccess(
             message: _editing
@@ -386,7 +400,11 @@ class _DestinationFormState extends State<DestinationForm> {
                     helperText: app.intl.destinations.nameHelp,
                     autofocus: !_editing,
                     maxLength: _nameMaxLength,
-                    warningText: CanvasGeometry.longName(_nameController.text)
+                    warningText:
+                        CanvasGeometry.longName(
+                          _nameController.text,
+                          CanvasGeometry.destinationNameRoom,
+                        )
                         ? app.intl.common.longName
                         : null,
                     errorText: _serverErrors[DestinationFormField.name],
@@ -410,7 +428,7 @@ class _DestinationFormState extends State<DestinationForm> {
                     BlocBuilder<DestinationFormCubit, DestinationFormState>(
                       builder: (context, state) => ConnectionTestBanner(
                         check: _check,
-                        testing: state is DestinationFormTestInProgressState,
+                        testing: state is DestinationFormTestingState,
                         onTest: _test,
                         idleSub: app.intl.destinations.testIdle,
                         connectedSub: (_) => app.intl.destinations.connectedSub(
@@ -612,7 +630,7 @@ class _DestinationFormState extends State<DestinationForm> {
       app.dimensions.padding.m.gap(),
       Text(
         app.intl.destinations.permissions,
-        style: TextStyle(fontSize: 12, color: app.colors.neutral.grey4),
+        style: app.styles.s.copyWith(color: app.colors.neutral.grey4),
       ),
     ];
   }
@@ -629,7 +647,7 @@ class _DestinationFormState extends State<DestinationForm> {
     return [
       Text(
         app.intl.destinations.foldersHelp,
-        style: TextStyle(fontSize: 12, color: app.colors.neutral.grey3),
+        style: app.styles.s.copyWith(color: app.colors.neutral.grey3),
       ),
       app.dimensions.padding.m.gap(),
       Container(
@@ -641,7 +659,7 @@ class _DestinationFormState extends State<DestinationForm> {
         ),
         child: BlocBuilder<DestinationFormCubit, DestinationFormState>(
           builder: (context, state) {
-            final testing = state is DestinationFormTestInProgressState;
+            final testing = state is DestinationFormTestingState;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -690,8 +708,7 @@ class _DestinationFormState extends State<DestinationForm> {
                         Expanded(
                           child: Text(
                             app.intl.destinations.foldersRootChecked,
-                            style: TextStyle(
-                              fontSize: 13,
+                            style: app.styles.m.copyWith(
                               color: app.colors.neutral.grey3,
                             ),
                           ),
@@ -751,13 +768,13 @@ class _DestinationFormState extends State<DestinationForm> {
     return Row(
       children: [
         Expanded(
-          child: Text(note, style: TextStyle(fontSize: 12, color: color)),
+          child: Text(note, style: app.styles.s.copyWith(color: color)),
         ),
         if (_folders.isNotEmpty) ...[
           app.dimensions.padding.s.gap(),
           BlocBuilder<DestinationFormCubit, DestinationFormState>(
             builder: (context, state) {
-              final testing = state is DestinationFormTestInProgressState;
+              final testing = state is DestinationFormTestingState;
               return PrimaryButton.secondary(
                 onPressed: testing ? null : _checkFolders,
                 title: testing
@@ -829,10 +846,7 @@ class _FolderRow extends StatelessWidget {
               shown,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: AppText.monoFamily,
-                fontSize: 13,
-              ),
+              style: app.styles.m.copyWith(fontFamily: AppText.monoFamily),
             ),
           ),
           if (state == _FolderState.checking)
@@ -846,7 +860,7 @@ class _FolderRow extends StatelessWidget {
                     : app.assets.icons.actions.warning)
                 .build(size: 14, color: color),
           const SizedBox(width: 6),
-          Text(label, style: TextStyle(fontSize: 12, color: color)),
+          Text(label, style: app.styles.s.copyWith(color: color)),
           const SizedBox(width: 10),
           Tooltip(
             message: locked ? t.folderLocked : t.deleteFolder(path: shown),
@@ -888,9 +902,7 @@ class _NextButton extends StatelessWidget {
       builder: (context, state) {
         final loading = state is DestinationFormProcessInProgressState;
         return PrimaryButton.primary(
-          onPressed: state is DestinationFormTestInProgressState
-              ? null
-              : onPressed,
+          onPressed: state is DestinationFormTestingState ? null : onPressed,
           isLoading: loading,
           title: loading ? app.intl.common.saving : title,
           color: app.colors.primary.primaryAction,

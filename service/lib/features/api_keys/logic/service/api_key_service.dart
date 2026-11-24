@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:drift/drift.dart' show Value;
 import 'package:service/dumpling.dart';
 
 class ApiKeyService {
@@ -9,9 +8,9 @@ class ApiKeyService {
   final WorkspaceService workspaces;
 
   ApiKeyService()
-    : repo = ApiKeyTableRepo(di.find()),
-      configs = ConfigTableRepo(di.find()),
-      workspaces = WorkspaceService();
+    : repo = di.find(),
+      configs = di.find(),
+      workspaces = di.find();
 
   /// A key used again within this time doesn't write its last use: one write
   /// a minute at most, however often a script calls.
@@ -22,7 +21,7 @@ class ApiKeyService {
     final last = await repo.lastRuns(workspace);
     return [
       for (final row in await repo.getAll(workspace))
-        ApiKeyModel(row, lastRun: last[row.id]),
+        ApiKeyModel.fromRow(row, lastRun: last[row.id]),
     ];
   }
 
@@ -33,17 +32,15 @@ class ApiKeyService {
     final id = Secrets.newId(ApiKeyToken.idPrefix);
     final secret = ApiKeyToken.newSecret();
     await repo.insert(
-      ApiKeyTableCompanion.insert(
-        id: id,
-        workspaceSlug: workspace,
-        name: request.trimmedName,
-        secretHash: ApiKeyToken.hash(secret),
-        permissions: jsonEncode(request.cleanPermissions),
-        configIds: Value(jsonEncode(configIds)),
-      ),
+      id: id,
+      workspace: workspace,
+      name: request.trimmedName,
+      secretHash: ApiKeyToken.hash(secret),
+      permissions: jsonEncode(request.cleanPermissions),
+      configIds: jsonEncode(configIds),
     );
     logger.info('API key created', fields: {'workspace': workspace, 'key': id});
-    return ApiKeyModel(
+    return ApiKeyModel.fromRow(
       (await repo.get(workspace, id))!,
       key: ApiKeyToken.of(id, secret),
     );
@@ -58,16 +55,16 @@ class ApiKeyService {
     final configIds = await _configIds(workspace, request);
     await repo.update(
       id,
-      ApiKeyTableCompanion(
-        name: Value(request.trimmedName),
-        permissions: Value(jsonEncode(request.cleanPermissions)),
-        configIds: Value(jsonEncode(configIds)),
-        updatedAt: Value(DateTime.now().toUtc()),
-      ),
+      name: request.trimmedName,
+      permissions: jsonEncode(request.cleanPermissions),
+      configIds: jsonEncode(configIds),
     );
     logger.info('API key changed', fields: {'workspace': workspace, 'key': id});
     final last = await repo.lastRuns(workspace);
-    return ApiKeyModel((await repo.get(workspace, id))!, lastRun: last[id]);
+    return ApiKeyModel.fromRow(
+      (await repo.get(workspace, id))!,
+      lastRun: last[id],
+    );
   }
 
   /// Whatever uses it gets a 401 from the next request; its runs stay.
@@ -95,15 +92,16 @@ class ApiKeyService {
     String secret,
   ) async {
     final row = await repo.byId(id);
-    if (row == null || !_same(ApiKeyToken.hash(secret), row.secretHash)) {
+    if (row == null ||
+        !Secrets.sameText(ApiKeyToken.hash(secret), row.secretHash)) {
       return null;
     }
-    final now = DateTime.now().toUtc();
+    final now = utcNow();
     final used = row.lastUsedAt;
     if (used == null || now.difference(used) >= touchEvery) {
-      await repo.update(id, ApiKeyTableCompanion(lastUsedAt: Value(now)));
+      await repo.touch(id, now);
     }
-    final model = ApiKeyModel(row);
+    final model = ApiKeyModel.fromRow(row);
     final configIds = model.configIds;
     return (
       ApiKeyPrincipal(
@@ -126,7 +124,10 @@ class ApiKeyService {
     await workspaces.get(workspace);
     final row = await repo.get(workspace, id);
     if (row == null) {
-      throw NotFoundException(detail: intl.errors.apiKeys.notFound(id: id));
+      throw AppException(
+        ErrorCode.apiKeysNotFound,
+        intl.errors.apiKeys.notFound(id: id),
+      );
     }
     return row;
   }
@@ -145,17 +146,9 @@ class ApiKeyService {
             (_) => saved.containsAll(ids)
                 ? null
                 : intl.errors.validations.unknownConfig,
+            code: 'validations.unknownConfig',
           ))
         .throwOnFailure();
     return ids;
-  }
-
-  static bool _same(String a, String b) {
-    if (a.length != b.length) return false;
-    var diff = 0;
-    for (var i = 0; i < a.length; i++) {
-      diff |= a.codeUnitAt(i) ^ b.codeUnitAt(i);
-    }
-    return diff == 0;
   }
 }

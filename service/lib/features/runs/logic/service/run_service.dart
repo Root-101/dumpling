@@ -9,9 +9,9 @@ class RunService {
   final BackupEngine engine;
 
   RunService()
-    : repo = RunTableRepo(di.find()),
-      configs = ConfigTableRepo(di.find()),
-      workspaces = WorkspaceService(),
+    : repo = di.find(),
+      configs = di.find(),
+      workspaces = di.find(),
       engine = di.find();
 
   /// The most runs a list answers.
@@ -34,6 +34,8 @@ class RunService {
     Set<String>? only,
     int limit = maxRuns,
   }) async {
+    (ConstraintValidatorContext()..field('limit', limit).min(1).max(maxRuns))
+        .throwOnFailure();
     await workspaces.get(workspace);
     final rows = await repo.getAll(
       workspace,
@@ -67,8 +69,9 @@ class RunService {
     final config = await configs.get(workspace, configId);
     final reached = key?.configs?.contains(configId) ?? true;
     if (config == null || !reached) {
-      throw NotFoundException(
-        detail: intl.errors.configs.notFound(id: configId),
+      throw AppException(
+        ErrorCode.configsNotFound,
+        intl.errors.configs.notFound(id: configId),
       );
     }
     return RunModel(await engine.runNow(config, label: label, key: key));
@@ -129,7 +132,10 @@ class RunService {
     await workspaces.get(workspace);
     final row = await repo.get(workspace, id);
     if (row == null || (only != null && !only.contains(row.configId))) {
-      throw NotFoundException(detail: intl.errors.runs.notFound(id: id));
+      throw AppException(
+        ErrorCode.runsNotFound,
+        intl.errors.runs.notFound(id: id),
+      );
     }
     return row;
   }

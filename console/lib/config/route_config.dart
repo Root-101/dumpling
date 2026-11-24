@@ -34,21 +34,13 @@ class RouteConfig {
         path: '/',
         redirect: (context, state) => WorkspacesScreen.navigator.path,
       ),
-      GoRoute(
-        name: LoginScreen.navigator.name,
-        path: LoginScreen.navigator.path,
-        builder: LoginScreen.navigator.builder,
-      ),
+      ...LoginScreen.navigator.routes(),
       ShellRoute(
         builder: (context, state, child) =>
             BaseScreen(state: state, child: child),
         routes: [
           ///   /workspaces
-          GoRoute(
-            name: WorkspacesScreen.navigator.name,
-            path: WorkspacesScreen.navigator.path,
-            builder: WorkspacesScreen.navigator.builder,
-          ),
+          ...WorkspacesScreen.navigator.routes(),
 
           ///   /workspaces/{slug}: its backups. Beside the list, not under
           /// it: as a child, opening a section from its URL would also build
@@ -60,42 +52,12 @@ class RouteConfig {
                 ? '${state.matchedLocation}/${RouteNames.backups}'
                 : null,
             routes: [
-              ..._withItem(
-                name: SourcesScreen.navigator.name,
-                path: SourcesScreen.navigator.path,
-                itemName: RouteNames.source,
-                builder: SourcesScreen.navigator.builder,
-              ),
-              ..._withItem(
-                name: DestinationsScreen.navigator.name,
-                path: DestinationsScreen.navigator.path,
-                itemName: RouteNames.destination,
-                builder: DestinationsScreen.navigator.builder,
-              ),
-              GoRoute(
-                name: CanvasScreen.navigator.name,
-                path: CanvasScreen.navigator.path,
-                builder: CanvasScreen.navigator.builder,
-                onExit: (context, state) => CanvasScreen.confirmLeave(),
-              ),
-              ..._withItem(
-                name: BackupsScreen.navigator.name,
-                path: BackupsScreen.navigator.path,
-                itemName: RouteNames.backupRun,
-                itemPath: RouteNames.runs,
-                builder: BackupsScreen.navigator.builder,
-              ),
-              ..._withItem(
-                name: RunsScreen.navigator.name,
-                path: RunsScreen.navigator.path,
-                itemName: RouteNames.run,
-                builder: RunsScreen.navigator.builder,
-              ),
-              GoRoute(
-                name: ApiKeysScreen.navigator.name,
-                path: ApiKeysScreen.navigator.path,
-                builder: ApiKeysScreen.navigator.builder,
-              ),
+              ...SourcesScreen.navigator.routes(),
+              ...DestinationsScreen.navigator.routes(),
+              ...CanvasScreen.navigator.routes(),
+              ...BackupsScreen.navigator.routes(),
+              ...RunsScreen.navigator.routes(),
+              ...ApiKeysScreen.navigator.routes(),
             ],
           ),
         ],
@@ -122,27 +84,6 @@ class RouteConfig {
             route.settings.name == SessionExpiredDialog.routeName,
       ),
     );
-  }
-
-  /// [name] at [path] and [itemName] at `[path]/[itemPath]/:id` share one
-  /// page: an id keeps the screen as it is and opens its dialog over it
-  static List<GoRoute> _withItem({
-    required String name,
-    required String path,
-    required String itemName,
-    required GoRouterWidgetBuilder builder,
-    String? itemPath,
-  }) {
-    Page<void> page(BuildContext context, GoRouterState state) =>
-        MaterialPage(key: ValueKey(path), child: builder(context, state));
-    return [
-      GoRoute(name: name, path: path, pageBuilder: page),
-      GoRoute(
-        name: itemName,
-        path: [path, ?itemPath, ':${RouteNames.idParam}'].join('/'),
-        pageBuilder: page,
-      ),
-    ];
   }
 
   /// The location saved in `?from=` if it is one of ours (a path, not the login

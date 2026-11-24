@@ -1,4 +1,3 @@
-import 'package:drift/drift.dart' show Value;
 import 'package:service/dumpling.dart';
 
 /// Export and import of workspaces ([TransferFile]): how the data crosses a
@@ -13,17 +12,17 @@ class TransferService {
   final Secrets secrets;
 
   TransferService()
-    : workspaces = WorkspaceService(),
-      workspaceRepo = WorkspaceTableRepo(di.find()),
-      canvas = CanvasService(),
-      sources = SourceTableRepo(di.find()),
-      destinations = DestinationTableRepo(di.find()),
-      runs = RunTableRepo(di.find()),
+    : workspaces = di.find(),
+      workspaceRepo = di.find(),
+      canvas = di.find(),
+      sources = di.find(),
+      destinations = di.find(),
+      runs = di.find(),
       secrets = Secrets();
 
   /// [slug], or every workspace when null.
   Future<Map<String, Object?>> export({String? slug}) async {
-    final now = DateTime.now();
+    final now = utcNow();
     final list = slug == null
         ? await workspaces.list()
         : [await workspaces.get(slug)];
@@ -75,11 +74,25 @@ class TransferService {
         final saved = await canvas.save(workspace.slug, canvasRequest);
         for (final run in w.runs) {
           await runs.insert(
-            run.copyWith(
-              id: Value(Secrets.newId('run_')),
-              workspaceSlug: Value(workspace.slug),
-              configId: Value(saved.ids[_newId(run.configId.value)]),
-            ),
+            id: Secrets.newId('run_'),
+            workspace: workspace.slug,
+            configId: saved.ids[_newId(run.configId)],
+            configName: run.configName,
+            sourceName: run.sourceName,
+            sourceType: run.sourceType,
+            destinationName: run.destinationName,
+            destinationType: run.destinationType,
+            trigger: run.trigger,
+            status: run.status,
+            label: run.label,
+            keyName: run.keyName,
+            location: run.location,
+            sizeBytes: run.sizeBytes,
+            error: run.error,
+            log: run.log,
+            startedAt: run.startedAt,
+            finishedAt: run.finishedAt,
+            durationMs: run.durationMs,
           );
         }
       }
@@ -115,7 +128,10 @@ class TransferService {
         } on Object {
           context
               .field('$prefix.secrets.$id', id)
-              .custom((_) => intl.errors.transfer.secrets);
+              .custom(
+                (_) => intl.errors.transfer.secrets,
+                code: 'transfer.secrets',
+              );
         }
       }
       final settings = node['settings'];

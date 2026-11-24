@@ -4,15 +4,14 @@ library;
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:http/http.dart' as http;
 import 'package:service/dumpling.dart';
 import 'package:test/test.dart';
 
 import '../../support/fake_s3.dart';
-import '../../support/test_server.dart';
+import '../../support/test_app.dart';
 
 void main() {
-  final server = TestServer(port: 8184);
+  final server = TestApp();
   final s3 = FakeS3();
 
   setUpAll(() async {
@@ -52,14 +51,12 @@ void main() {
     'folders': ?folders,
   };
 
-  Future<http.Response> create(
-    Object body, {
-    String workspace = 'production',
-  }) => http.post(
-    server.url(path(workspace)),
-    headers: jsonHeaders(),
-    body: jsonEncode(body),
-  );
+  Future<TestResponse> create(Object body, {String workspace = 'production'}) =>
+      server.post(
+        path(workspace),
+        headers: jsonHeaders(),
+        body: jsonEncode(body),
+      );
 
   Future<Map<String, dynamic>> created(Object body) async {
     final response = await create(body);
@@ -68,8 +65,8 @@ void main() {
   }
 
   Future<Map<String, dynamic>> testConnection(Object body) async {
-    final response = await http.post(
-      server.url(path('production', '/test')),
+    final response = await server.post(
+      path('production', '/test'),
       headers: jsonHeaders(),
       body: jsonEncode(body),
     );
@@ -79,8 +76,8 @@ void main() {
 
   group('DestinationController', () {
     test('Should list every type, only S3 enabled', () async {
-      final response = await http.get(
-        server.url('/api/destination-types'),
+      final response = await server.get(
+        '/api/destination-types',
         headers: server.auth(),
       );
       final types = {
@@ -131,18 +128,15 @@ void main() {
 
       final a = await make('a-bucket');
       final b = await make('b-bucket');
-      final response = await http.put(
-        server.url(path('ordering', '/order')),
+      final response = await server.put(
+        path('ordering', '/order'),
         headers: jsonHeaders(),
         body: jsonEncode({
           'ids': [b, a],
         }),
       );
       expect(response.statusCode, 200, reason: response.body);
-      final list = await http.get(
-        server.url(path('ordering')),
-        headers: server.auth(),
-      );
+      final list = await server.get(path('ordering'), headers: server.auth());
       expect(
         [for (final d in jsonDecode(list.body) as List) d['name']],
         ['b-bucket', 'a-bucket'],
@@ -151,8 +145,8 @@ void main() {
 
     test('Should replace the folders and keep the secret on update', () async {
       final destination = await created(bucket(folders: ['a', 'b']));
-      final response = await http.put(
-        server.url(path('production', '/${destination['id']}')),
+      final response = await server.put(
+        path('production', '/${destination['id']}'),
         headers: jsonHeaders(),
         body: jsonEncode(bucket(secret: null, folders: ['c'])),
       );
@@ -160,11 +154,35 @@ void main() {
       expect(jsonDecode(response.body)['folders'], ['c']);
 
       // The stored secret still signs
-      final tested = await http.post(
-        server.url(path('production', '/${destination['id']}/test')),
+      final tested = await server.post(
+        path('production', '/${destination['id']}/test'),
         headers: server.auth(),
       );
       expect(jsonDecode(tested.body)['status'], 'connected');
+    });
+
+    test('Should never sign for another endpoint with the stored secret: an '
+        'update or a test that moves it asks for it again', () async {
+      final id = (await created(bucket(name: 'moved-bucket')))['id'];
+      final elsewhere = bucket(
+        name: 'moved-bucket',
+        secret: null,
+        endpoint: 'http://attacker.example',
+      );
+      final updated = await server.put(
+        path('production', '/$id'),
+        headers: jsonHeaders(),
+        body: jsonEncode(elsewhere),
+      );
+      expect(updated.statusCode, 422, reason: updated.body);
+      expect(updated.body, contains('settings.secret_access_key'));
+
+      final tested = await server.post(
+        path('production', '/test?destination=$id'),
+        headers: jsonHeaders(),
+        body: jsonEncode(elsewhere),
+      );
+      expect(tested.statusCode, 422, reason: tested.body);
     });
 
     test('Should reject invalid data (422) naming each field', () async {
@@ -200,8 +218,8 @@ void main() {
 
     test('Should not find a destination from another workspace', () async {
       final destination = await created(bucket(name: 'replica'));
-      final response = await http.get(
-        server.url(path('staging', '/${destination['id']}')),
+      final response = await server.get(
+        path('staging', '/${destination['id']}'),
         headers: server.auth(),
       );
       expect(response.statusCode, 404);
@@ -209,8 +227,8 @@ void main() {
 
     test('Should delete a destination with its folders', () async {
       final destination = await created(bucket(folders: ['gone']));
-      final deleted = await http.delete(
-        server.url(path('production', '/${destination['id']}')),
+      final deleted = await server.delete(
+        path('production', '/${destination['id']}'),
         headers: server.auth(),
       );
       expect(deleted.statusCode, 204);
@@ -284,13 +302,13 @@ void main() {
 
     test('Should keep the result of testing a saved destination', () async {
       final destination = await created(bucket(folders: ['denied']));
-      await http.post(
-        server.url(path('production', '/${destination['id']}/test')),
+      await server.post(
+        path('production', '/${destination['id']}/test'),
         headers: server.auth(),
       );
       final read = jsonDecode(
-        (await http.get(
-          server.url(path('production', '/${destination['id']}')),
+        (await server.get(
+          path('production', '/${destination['id']}'),
           headers: server.auth(),
         )).body,
       );

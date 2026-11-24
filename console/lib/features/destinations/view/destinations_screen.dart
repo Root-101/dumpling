@@ -5,11 +5,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
-class DestinationsScreenNavigator {
+class DestinationsScreenNavigator extends SectionNavigator {
+  @override
   String get name => RouteNames.destinations;
 
-  String get path => RouteNames.destinations;
+  @override
+  String get itemName => RouteNames.destination;
 
+  @override
   Widget builder(BuildContext context, GoRouterState state) {
     return DestinationsScreen(
       workspace: state.pathParameters[RouteNames.slugParam]!,
@@ -38,7 +41,7 @@ class DestinationsScreen extends StatefulWidget {
 
 class _DestinationsScreenState extends State<DestinationsScreen>
     with UrlDialog {
-  late final DestinationCubit cubit;
+  late final DestinationsCubit cubit;
   final _searchController = TextEditingController();
 
   /// The ids of the rows with their folders open
@@ -49,7 +52,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
   @override
   void initState() {
     super.initState();
-    cubit = context.read<DestinationCubit>();
+    cubit = context.read<DestinationsCubit>();
     _load();
     // a list loaded already changes no state
     WidgetsBinding.instance.addPostFrameCallback((_) => _followUrl());
@@ -83,7 +86,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
 
   void _openForm({DestinationModel? destination, bool duplicate = false}) {
     final data = cubit.state.data;
-    DestinationForm.open(
+    DestinationForm.navigator.open(
       context,
       workspace: widget.workspace,
       types: data.types,
@@ -95,11 +98,8 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     );
   }
 
-  void _openDetail(DestinationModel destination) => RouteNames.openItem(
-    widget.workspace,
-    RouteNames.destination,
-    destination.id,
-  );
+  void _openDetail(DestinationModel destination) => DestinationsScreen.navigator
+      .open(workspace: widget.workspace, id: destination.id);
 
   /// The destination of the URL over the list, once it is loaded
   void _followUrl() {
@@ -110,16 +110,13 @@ class _DestinationsScreenState extends State<DestinationsScreen>
       show: (id) async {
         final item = data.destinations.where((e) => e.id == id).firstOrNull;
         if (item == null) return false;
-        await DestinationDialog.open(
+        await DestinationDialog.navigator.open(
           item,
           onEdit: (d) => _openForm(destination: d),
         );
         return true;
       },
-      leave: () => RouteNames.openWorkspace(
-        widget.workspace,
-        section: RouteNames.destinations,
-      ),
+      leave: () => DestinationsScreen.navigator.go(workspace: widget.workspace),
     );
   }
 
@@ -135,7 +132,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final workspaceName = context.select<WorkspaceCubit, String>(
+    final workspaceName = context.select<WorkspacesCubit, String>(
       (c) => c.state.data.current?.name ?? widget.workspace,
     );
     return Scaffold(
@@ -148,15 +145,14 @@ class _DestinationsScreenState extends State<DestinationsScreen>
             workspace: workspaceName,
             description: app.intl.destinations.description,
             actions: [
-              BlocBuilder<DestinationCubit, DestinationState>(
+              BlocBuilder<DestinationsCubit, DestinationsState>(
                 builder: (context, state) => AppRefreshButton(
                   onPressed: cubit.reload,
                   loading:
-                      state is DestinationLoadingInProgressState &&
-                      state.data.loaded,
+                      state is DestinationsSearchingState && state.data.loaded,
                 ),
               ),
-              BlocBuilder<DestinationCubit, DestinationState>(
+              BlocBuilder<DestinationsCubit, DestinationsState>(
                 builder: (context, state) => PrimaryButton.primary(
                   // the form needs the types
                   onPressed: state.data.loaded ? () => _openForm() : null,
@@ -171,11 +167,11 @@ class _DestinationsScreenState extends State<DestinationsScreen>
           ),
           Expanded(
             child: PagePanel(
-              child: BlocConsumer<DestinationCubit, DestinationState>(
+              child: BlocConsumer<DestinationsCubit, DestinationsState>(
                 listener: _onState,
                 builder: (context, state) {
                   if (!state.data.loaded) {
-                    return state is DestinationLoadingErrorState
+                    return state is DestinationsSearchErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
                         : _buildSkeleton();
                   }
@@ -195,34 +191,38 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     );
   }
 
-  void _onState(BuildContext context, DestinationState state) {
+  void _onState(BuildContext context, DestinationsState state) {
     _followUrl();
-    if (state is DestinationProcessInProgressState) {
+    if (state is DestinationsDeletingState ||
+        state is DestinationsAddingFolderState ||
+        state is DestinationsDeletingFolderState) {
       app.loading.show();
     } else {
       app.loading.hide();
     }
-    if (state is DestinationProcessingOKState) {
-      final folder = FolderPath.show(state.folder ?? '');
-      final message = switch (state.action) {
-        DestinationAction.deleted => app.intl.destinations.deleted(
-          name: state.destination.name,
-        ),
-        DestinationAction.folderAdded => app.intl.destinations.folderAdded(
-          path: folder,
-        ),
-        DestinationAction.folderDeleted => app.intl.destinations.folderDeleted(
-          path: folder,
-        ),
-        // the row shows what the test found
-        DestinationAction.tested => null,
-      };
-      if (message != null) {
-        app.snack.showSuccess(message: message, context: app.context);
-      }
+    // the row shows what a test found: no notice for it
+    final done = switch (state) {
+      DestinationsDeletedOkState(:final destination) =>
+        app.intl.destinations.deleted(name: destination.name),
+      DestinationsAddedFolderOkState(:final folder) =>
+        app.intl.destinations.folderAdded(path: FolderPath.show(folder)),
+      DestinationsDeletedFolderOkState(:final folder) =>
+        app.intl.destinations.folderDeleted(path: FolderPath.show(folder)),
+      _ => null,
+    };
+    if (done != null) {
+      app.snack.showSuccess(message: done, context: app.context);
     }
-    if (state is DestinationProcessingErrorState) {
-      app.snack.showError(message: state.message, context: app.context);
+    final failed = switch (state) {
+      DestinationsTestingErrorState(:final exception) ||
+      DestinationsAddingFolderErrorState(:final exception) ||
+      DestinationsDeletingFolderErrorState(:final exception) ||
+      DestinationsDeletingErrorState(:final exception) ||
+      DestinationsReorderingErrorState(:final exception) => exception,
+      _ => null,
+    };
+    if (failed != null) {
+      app.snack.showError(message: failed.intlMessage, context: app.context);
     }
   }
 
@@ -264,7 +264,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     ),
   );
 
-  Widget _buildTable(DestinationData data) {
+  Widget _buildTable(DestinationsData data) {
     return AppSimpleTable(
       toolbar: Row(
         children: [
@@ -328,7 +328,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     );
   }
 
-  Widget _buildFilter(DestinationData data) {
+  Widget _buildFilter(DestinationsData data) {
     // the types available, and any other one a destination still has
     final types = {
       for (final t in data.types)
@@ -371,11 +371,14 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     );
   }
 
-  List<Widget> _buildCells(DestinationData data, DestinationModel destination) {
+  List<Widget> _buildCells(
+    DestinationsData data,
+    DestinationModel destination,
+  ) {
     final used = data.usageOf(destination);
     final testing = data.testing.contains(destination.id);
     final open = _open.contains(destination.id);
-    final muted = TextStyle(fontSize: 14, color: app.colors.neutral.grey3);
+    final muted = app.styles.l.copyWith(color: app.colors.neutral.grey3);
     final folders = destination.folders.length;
     return [
       IconButton(
@@ -415,10 +418,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
                   folders == 0
                       ? app.intl.destinations.bucketRoot
                       : app.intl.destinations.folderCount(n: folders),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: app.colors.neutral.grey4,
-                  ),
+                  style: app.styles.s.copyWith(color: app.colors.neutral.grey4),
                 ),
               ],
             ),
@@ -446,7 +446,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     ];
   }
 
-  Widget _buildMenu(DestinationData data, DestinationModel destination) {
+  Widget _buildMenu(DestinationsData data, DestinationModel destination) {
     final used = data.usageOf(destination);
     final testing = data.testing.contains(destination.id);
     return AppRowMenu(
@@ -487,7 +487,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
   }
 
   /// The same destinations as cards, three in a row when there is room
-  Widget _buildGrid(DestinationData data) {
+  Widget _buildGrid(DestinationsData data) {
     const gap = 12.0;
     return Padding(
       padding: EdgeInsets.all(app.dimensions.padding.l),
@@ -512,10 +512,10 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     );
   }
 
-  Widget _buildCard(DestinationData data, DestinationModel destination) {
+  Widget _buildCard(DestinationsData data, DestinationModel destination) {
     final colors = app.colors;
     final folders = destination.folders.length;
-    final muted = TextStyle(fontSize: 12, color: colors.neutral.grey4);
+    final muted = app.styles.s.copyWith(color: colors.neutral.grey4);
     return Container(
       padding: EdgeInsets.all(app.dimensions.padding.l),
       decoration: BoxDecoration(
@@ -601,7 +601,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
                 Expanded(
                   child: Text(
                     app.intl.common.backupCount(n: data.usageOf(destination)),
-                    style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+                    style: app.styles.s.copyWith(color: colors.neutral.grey3),
                   ),
                 ),
                 Flexible(

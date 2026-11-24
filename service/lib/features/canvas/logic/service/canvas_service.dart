@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:drift/drift.dart' show Value;
 import 'package:service/dumpling.dart';
 
 class CanvasService {
@@ -16,12 +15,12 @@ class CanvasService {
 
   CanvasService()
     : db = di.find(),
-      repo = CanvasRepo(di.find()),
-      sources = SourceTableRepo(di.find()),
-      destinations = DestinationTableRepo(di.find()),
-      configs = ConfigTableRepo(di.find()),
-      runs = RunTableRepo(di.find()),
-      workspaces = WorkspaceService(),
+      repo = di.find(),
+      sources = di.find(),
+      destinations = di.find(),
+      configs = di.find(),
+      runs = di.find(),
+      workspaces = di.find(),
       engine = di.find(),
       secrets = Secrets();
 
@@ -84,7 +83,10 @@ class CanvasService {
           } else {
             context
                 .field('$name[$i].id', node.id)
-                .custom((_) => intl.errors.validations.unknownNode);
+                .custom(
+                  (_) => intl.errors.validations.unknownNode,
+                  code: 'validations.unknownNode',
+                );
           }
         }
       }
@@ -116,11 +118,13 @@ class CanvasService {
             (id) => sourceIds.contains(id)
                 ? null
                 : intl.errors.validations.unknownSource,
+            code: 'validations.unknownSource',
           )
           ..field('configs[$i].destination_id', config.destinationId).custom(
             (_) => destinationFolders == null
                 ? intl.errors.validations.unknownDestination
                 : null,
+            code: 'validations.unknownDestination',
           );
         if (destinationFolders != null) {
           context
@@ -150,7 +154,12 @@ class CanvasService {
         final settings = source.settings!;
         final saved = savedSources[id];
         final stored = saved != null && saved.type == source.sourceType
-            ? secrets.decryptOrNone(id, saved.secretsEncrypted)
+            ? secrets.storedFor(
+                id,
+                saved.secretsEncrypted,
+                saved: saved.settings,
+                target: settings.target,
+              )
             : const <String, String>{};
         final values = Secrets.require(settings.requiredSecrets, {
           ...stored,
@@ -188,7 +197,12 @@ class CanvasService {
         final saved = savedRow?.destination;
         final stored =
             saved != null && saved.type == destination.destinationType
-            ? secrets.decryptOrNone(id, saved.secretsEncrypted)
+            ? secrets.storedFor(
+                id,
+                saved.secretsEncrypted,
+                saved: saved.settings,
+                target: settings.target,
+              )
             : const <String, String>{};
         final values = Secrets.require(settings.requiredSecrets, {
           ...stored,
@@ -235,9 +249,7 @@ class CanvasService {
         if (before.contains(id)) {
           await configs.update(id, values);
         } else {
-          await configs.insert(
-            values.copyWith(id: Value(id), workspaceSlug: Value(workspace)),
-          );
+          await configs.insert(id: id, workspace: workspace, values: values);
         }
       }
 

@@ -12,6 +12,9 @@ Most things live in a workspace, so most paths start with `/api/workspaces/{slug
 their kind: `src_…` for sources, `dst_…` for destinations, `cfg_…` for configs, `run_…` for runs,
 `key_…` for API keys.
 
+Creating a workspace, source, destination, config or key answers `201` with it and a `Location`
+header with its path (`/api/workspaces/production/sources/src_…`).
+
 ## Authentication
 
 | Who                                          | How                                                                                          |
@@ -36,7 +39,8 @@ Without a token, or with an expired one, or a wrong key:
 ## Errors
 
 Every error is a Problem Details (RFC 9457). The `detail` is in English, or in Spanish with
-`Accept-Language: es`, and the `instance` is the path of the request:
+`Accept-Language: es`, and the `instance` is the path of the request. The errors of Dumpling itself
+carry a `code` that never changes: decide on it, never on the text.
 
 ```http
 GET /api/workspaces/nope
@@ -49,9 +53,24 @@ Accept-Language: es
   "title": "Not Found",
   "status": 404,
   "detail": "El workspace \"nope\" no existe.",
-  "instance": "/api/workspaces/nope"
+  "instance": "/api/workspaces/nope",
+  "code": "workspaces.notFound"
 }
 ```
+
+| `code`                       | Status | When                                                         |
+|------------------------------|--------|--------------------------------------------------------------|
+| `auth.invalidCredentials`    | 401    | Wrong username or password                                   |
+| `auth.tooManyLoginAttempts`  | 429    | Sign-in locked after too many failures (`Retry-After`)       |
+| `workspaces.notFound`        | 404    | No workspace with that slug                                  |
+| `sources.notFound`           | 404    | No such source in the workspace                              |
+| `sources.inUse`              | 409    | Deleting a source that configs back up                       |
+| `destinations.notFound`      | 404    | No such destination in the workspace                         |
+| `destinations.inUse`         | 409    | Deleting a destination that configs write to                 |
+| `destinations.folderInUse`   | 409    | Removing a folder (or the root) a config writes to           |
+| `configs.notFound`           | 404    | No such config in the workspace (or out of an API key's reach) |
+| `apiKeys.notFound`           | 404    | No such API key in the workspace                             |
+| `runs.notFound`              | 404    | No such run in the workspace (or out of an API key's reach)  |
 
 A body that can't be read is a `400` naming the field, and one that breaks a rule a `422` with its
 `violations` (the console shows each one under its field):
@@ -64,7 +83,7 @@ A body that can't be read is a `400` naming the field, and one that breaks a rul
 {
   "violations": [
     {"fieldName": "name", "message": "The minimum is 1", "code": "size.min", "params": {"value": 1}},
-    {"fieldName": "defaults.schedule", "message": "Not a valid cron expression (minute hour day month weekday)"},
+    {"fieldName": "defaults.schedule", "message": "Not a valid cron expression (minute hour day month weekday)", "code": "validations.cron"},
     {"fieldName": "defaults.compression", "message": "The value must be one of: gzip, none", "code": "isEnum", "params": {"values": ["gzip", "none"]}}
   ],
   "type": "about:blank",
@@ -74,8 +93,8 @@ A body that can't be read is a `400` naming the field, and one that breaks a rul
 }
 ```
 
-Not every violation has a `code`: the rules of Dumpling itself (a cron expression, a folder of the
-destination…) only bring the `message`.
+Every violation has a `code`: Winter's own rules (`size.min`, `isEnum`, `notNull`…) and those of
+Dumpling (`validations.cron`, `validations.folderPath`, `transfer.notAnExport`…).
 
 Other common answers: `404` for a workspace, source, destination, config or run that doesn't exist
 (in that workspace), `409` when something is in use, and `429` above the rate
@@ -95,18 +114,19 @@ Content-Type: application/json
 ```
 
 ```json
-{"access_token": "eyJ…", "expires_in": 43200000, "expire_at": 1793381180834}
+{"access_token": "eyJ…", "expires_in": 43200000, "expire_at": "2026-10-30T17:26:20.834Z"}
 ```
 
-The token lasts 12 hours (`expires_in` in milliseconds, `expire_at` as epoch milliseconds). Wrong
+The token lasts 12 hours (`expires_in` in milliseconds, `expire_at` in UTC, like every time of the API). Wrong
 credentials:
 
 ```json
-{"type": "about:blank", "title": "Unauthorized", "status": 401, "detail": "Wrong username or password", "instance": "/api/auth/login"}
+{"type": "about:blank", "title": "Unauthorized", "status": 401, "detail": "Wrong username or password", "instance": "/api/auth/login", "code": "auth.invalidCredentials"}
 ```
 
 Every failure waits a second, and 10 in a row lock the IP for 15 minutes, even with the right
-password afterward (`429` with `Retry-After`).
+password afterward (`429` with `Retry-After`). A body without `username` or `password` is a `422`
+naming the field, like any other body.
 
 ## Session
 
@@ -115,7 +135,7 @@ GET /api/auth/session
 ```
 
 ```json
-{"username": "admin", "expire_at": 1793381180000}
+{"username": "admin", "expire_at": "2026-10-30T17:26:20.000Z"}
 ```
 
 Who the token belongs to and when it expires (epoch milliseconds, to the second). A quick way to
@@ -128,12 +148,13 @@ GET /api/health
 ```
 
 ```json
-{"status": "up"}
+{"status": "pass", "checks": {"database": [{"status": "pass"}]}}
 ```
 
-For load balancers and container checks: no token, and nothing else in the answer. `up` means the
-service answers and so does its database; if the database doesn't, it is a `503` with
-`{"status": "down"}` and the error goes to the log.
+For load balancers and container checks: no token. It answers in the format of the draft *Health
+Check Response Format for HTTP APIs* (`application/health+json`): `pass` means the service answers
+and so does its database; if the database doesn't, it is a `503` with `"status": "fail"` (and `fail`
+in its check), and the reason goes to the log.
 
 ## Types of sources and destinations
 
@@ -343,8 +364,8 @@ GET /api/workspaces/e2e/sources
 ```
 
 They come in the order set by hand ([Reorder sources](#reorder-sources)), a new one last.
-`last_check` is the last [test of the saved source](#test-a-saved-source), `null` until the first
-one. `dump_format` is `custom` (`pg_dump -Fc`, for `pg_restore`) or `plain` (SQL); `ssl_mode` is
+`last_check` is the last check of its connection: a [test of the saved source](#test-a-saved-source)
+or the one each run makes before dumping, `null` until the first one. `dump_format` is `custom` (`pg_dump -Fc`, for `pg_restore`) or `plain` (SQL); `ssl_mode` is
 `require` (the default: TLS without checking the certificate) or `disable`.
 
 ### Get a source
@@ -391,7 +412,10 @@ would refuse it), `toolMissing` (no `pg_dump` where the service runs) or `failed
 up to 90 seconds for an answer.
 
 When editing a saved source, `?source=src_…` uses its stored password if the form sends none
-(`POST /api/workspaces/docs-tour/sources/test?source=src_qnr4bf2dwuxtg3uz`).
+(`POST /api/workspaces/docs-tour/sources/test?source=src_qnr4bf2dwuxtg3uz`), only while the host,
+port, database, user and `ssl_mode` are the saved ones; otherwise a `422` asks for it
+(`settings.password`). The same goes for an update, a destination (its endpoint, region, bucket,
+access key and path style) and the canvas save.
 
 ### Create a source
 
@@ -448,7 +472,7 @@ DELETE /api/workspaces/docs-tour/sources/src_qnr4bf2dwuxtg3uz
 `204`, only when no config backs it up:
 
 ```json
-{"type": "about:blank", "title": "Conflict", "status": 409, "detail": "Configs back up this source (1): delete them or connect them to another source first.", "instance": "/api/workspaces/docs-tour/sources/src_qnr4bf2dwuxtg3uz"}
+{"type": "about:blank", "title": "Conflict", "status": 409, "detail": "Configs back up this source (1): delete them or connect them to another source first.", "instance": "/api/workspaces/docs-tour/sources/src_qnr4bf2dwuxtg3uz", "code": "sources.inUse"}
 ```
 
 ### Reorder sources
@@ -591,7 +615,7 @@ Answers the destination (here with `"folders": ["daily", "weekly", "monthly"]`, 
 it, `folders` included, except the secret key: without one, the saved one stays. Removing a folder a config writes to is refused:
 
 ```json
-{"type": "about:blank", "title": "Conflict", "status": 409, "detail": "The config \"Shop daily\" writes to \"daily\": move it before removing that folder.", "instance": "/api/workspaces/docs-tour/destinations/dst_6zzbgd4gbnfidygl"}
+{"type": "about:blank", "title": "Conflict", "status": 409, "detail": "The config \"Shop daily\" writes to \"daily\": move it before removing that folder.", "instance": "/api/workspaces/docs-tour/destinations/dst_6zzbgd4gbnfidygl", "code": "destinations.folderInUse"}
 ```
 
 ### Test a saved destination
@@ -705,7 +729,7 @@ The order of each list is the order the workspace keeps ([Reorder sources](#reor
 the console sends them back in the order it got them.
 
 - A node with a saved id replaces it, with the same body as its own `PUT` (a missing secret keeps
-  the stored one).
+  the stored one while it connects to the same place).
 - A node whose id starts with `new_` is created. The console makes those ids up, so a config can
   point at a source or destination that isn't saved yet (`"source_id": "new_1"`).
 - What the body leaves out is deleted.
@@ -894,11 +918,12 @@ GET /api/workspaces/e2e/runs?status=failed&config=cfg_hleo4cvfwnc6tmtp&limit=1
 (a run cut by a stop of the service gets it from those times). Newest first. Every filter is
 optional: `status` (`queued`, `running`, `success`, `failed`), `trigger` (`schedule`, `manual`,
 `api`), `label` (exact), `source_type`, `destination_type`, `config` (an id) and `limit` (1 to 200,
-200 by default). An API key limited to some configs only sees their runs. A value out of them is a
-`400` (`"limit must be from 1 to 200"`):
+200 by default). An API key limited to some configs only sees their runs. A filter that is none of
+its values (or a `limit` that is not a number) is a `400`; a `limit` out of 1–200, a `422` naming
+`limit`:
 
 ```json
-{"type": "about:blank", "title": "Bad Request", "status": 400, "detail": "status must be one of: queued, running, success, failed", "instance": "/api/workspaces/e2e/runs"}
+{"type": "about:blank", "title": "Bad Request", "status": 400, "detail": "The query param status must be one of: queued, running, success, failed", "instance": "/api/workspaces/e2e/runs"}
 ```
 
 ### A run and its log

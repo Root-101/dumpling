@@ -19,6 +19,11 @@ One Claude Design canvas, "Dumpling": https://claude.ai/artifact/8ZG7z26F5hn1KMs
 pages are **Screens** (a replica of every screen and state of the console), **Logo** (the icon,
 its versions, its rules and the identity images) and **Later · 0.2.0**.
 
+In **Screens** each screen is one artboard, in a row per numbered section, and its states are
+tweaks: `state` (loading, error, empty…), `dialog`, `panel`, `notice`, `step`, `mode`, and on
+every artboard `language` (English / Español, the texts of the console's yaml) and `menu` (the
+rail collapsed or expanded).
+
 ## Keeping it up to date
 
 **When a change touches what the console looks like, in that same change: update the canvas,
@@ -36,9 +41,9 @@ built with the canvas until they match** (a new screen, URL or action gets its s
 
    It renders the artboards listed in `SCREENS` and `BRAND` with headless Chrome
    (`tool/support.js` stands in for the canvas runtime: it runs each artboard's `renderVals()`
-   with its default props) and rewrites `screens/`, `brand/images/` and the PDF. A new screen goes
-   into `SCREENS`; a shot of an artboard in another state (the rail expanded) lists the text to
-   replace in it.
+   with its default props, or the tweaks of the shot) and rewrites `screens/`, `brand/images/` and
+   the PDF. A new screen goes into `SCREENS`; a shot of an artboard in another state gives its
+   tweaks as a query string (`state=Loading`, `menu=Expanded`).
 3. Look at the result and commit it with the change.
 
 The icon SVGs in `brand/` are kept by hand, with the values of the canvas's `Logo · Main`

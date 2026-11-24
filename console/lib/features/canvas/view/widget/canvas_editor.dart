@@ -264,7 +264,7 @@ class _CanvasEditorState extends State<CanvasEditor>
     final s = _cubit.state.data;
     final config = s.config(id);
     if (config == null) return;
-    await ConfigDialog.open(
+    await ConfigDialog.navigator.open(
       context: context,
       config: config,
       source: config.sourceId == null ? null : s.source(config.sourceId!),
@@ -381,9 +381,9 @@ class _CanvasEditorState extends State<CanvasEditor>
   }
 
   /// Another section of this workspace (to create what the canvas lacks)
-  void _open(String section) {
+  void _open(SectionNavigator section) {
     final slug = _cubit.state.data.workspace;
-    if (slug != null) RouteNames.openWorkspace(slug, section: section);
+    if (slug != null) section.go(workspace: slug);
   }
 
   /// The toolbar opens its menu under itself. On release, so the press that
@@ -466,7 +466,7 @@ class _CanvasEditorState extends State<CanvasEditor>
                 link.id,
                 target,
                 defaults: app.di
-                    .find<WorkspaceCubit>()
+                    .find<WorkspacesCubit>()
                     .state
                     .data
                     .current
@@ -733,9 +733,9 @@ class _CanvasEditorState extends State<CanvasEditor>
                                   onPlaceSource: _cubit.addSource,
                                   onPlaceDestination: _cubit.addDestination,
                                   onCreateSource: () =>
-                                      _open(RouteNames.sources),
+                                      _open(SourcesScreen.navigator),
                                   onCreateDestination: () =>
-                                      _open(RouteNames.destinations),
+                                      _open(DestinationsScreen.navigator),
                                 ),
                               ),
                             ),
@@ -868,7 +868,7 @@ class _CanvasEditorState extends State<CanvasEditor>
               ),
               orphan: s.destinationOrphan(d.id),
               handlers: handlers,
-              onAddFolder: () => AddFolderDialog.open(
+              onAddFolder: () => AddFolderDialog.navigator.open(
                 context,
                 destination: d,
                 onAdd: (path) => _cubit.addFolder(d.id, path),
@@ -968,10 +968,7 @@ class _CanvasEditorState extends State<CanvasEditor>
                         target != null
                             ? app.intl.canvas.releaseToCreate
                             : app.intl.canvas.configHere,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colors.text.muted,
-                        ),
+                        style: app.styles.s.copyWith(color: colors.text.muted),
                       ),
                     ],
                   ),

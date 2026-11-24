@@ -7,13 +7,10 @@ import 'package:material_ui/material_ui.dart';
 
 enum _Tab { general, defaults, danger }
 
-/// The settings of a workspace in a dialog: who it is on top, and in tabs its
-/// general data (read, or edited after *Edit*), the defaults of its new
-/// configs and its deletion. Saving sends everything: the service replaces it
-class WorkspaceSettings extends StatefulWidget {
+class WorkspaceSettingsNavigator {
   /// Opens the dialog with its own [WorkspaceFormCubit]
-  static Future<void> open(BuildContext context, WorkspaceModel workspace) {
-    final cubit = WorkspaceFormCubit(app.di.find(), app.di.find());
+  Future<void> open(BuildContext context, WorkspaceModel workspace) {
+    final cubit = WorkspaceFormCubit(auth: app.di.find(), repo: app.di.find());
     return showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -28,6 +25,14 @@ class WorkspaceSettings extends StatefulWidget {
           FadeTransition(opacity: animation, child: child),
     );
   }
+}
+
+/// The settings of a workspace in a dialog: who it is on top, and in tabs its
+/// general data (read, or edited after *Edit*), the defaults of its new
+/// configs and its deletion. Saving sends everything: the service replaces it
+class WorkspaceSettings extends StatefulWidget {
+  static final WorkspaceSettingsNavigator navigator =
+      WorkspaceSettingsNavigator();
 
   /// Id of the dialog's [LoadingOverlay]
   static const String loadingId = 'workspace-settings';
@@ -141,7 +146,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
     final description = _description.text.trim();
     cubit.update(
       _saved.slug,
-      WorkspaceDraft(
+      WorkspaceFormModel(
         name: _name.text.trim(),
         description: description.isEmpty ? null : description,
         color: _color,
@@ -154,28 +159,37 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
     );
   }
 
-  void _askDelete() {
-    showDialog<void>(
-      context: context,
-      barrierColor: app.colors.neutral.black.withValues(alpha: 0.5),
-      builder: (_) => _DeleteDialog(
-        workspace: _saved,
-        stats: widget.workspace.stats,
-        onConfirm: () => context.read<WorkspaceFormCubit>().delete(_saved),
-      ),
-    );
-  }
+  void _askDelete() => _DeleteDialog.navigator.open(
+    context,
+    workspace: _saved,
+    stats: widget.workspace.stats,
+    onConfirm: () => context.read<WorkspaceFormCubit>().delete(_saved),
+  );
 
   void _onState(BuildContext context, WorkspaceFormState state) {
-    if (state is WorkspaceFormProcessInProgressState) {
+    if (state is WorkspaceFormProcessInProgressState ||
+        state is WorkspaceFormDeletingState) {
       app.loading.show(id: WorkspaceSettings.loadingId);
     } else {
       app.loading.hide(id: WorkspaceSettings.loadingId);
     }
-    if (state is WorkspaceFormProcessingErrorState) {
+    if (state is WorkspaceFormProcessingErrorState ||
+        state is WorkspaceFormDeletingErrorState) {
       setState(() {
-        _serverErrors = state.fieldErrors;
-        _formError = state.fieldErrors.isEmpty ? state.exception.message : null;
+        _serverErrors = const {};
+        _formError = switch (state) {
+          WorkspaceFormProcessingErrorState(:final exception) ||
+          WorkspaceFormDeletingErrorState(
+            :final exception,
+          ) => exception.intlMessage,
+          _ => null,
+        };
+      });
+    }
+    if (state is WorkspaceFormValidationErrorState) {
+      setState(() {
+        _serverErrors = state.failValidations;
+        _formError = null;
         if (_serverErrors.keys.any((k) => k.startsWith('defaults.'))) {
           _tab = _Tab.defaults;
         } else if (_serverErrors.isNotEmpty) {
@@ -183,16 +197,15 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
         }
       });
     }
+    if (state is WorkspaceFormDeletedOkState) {
+      Navigator.of(context).pop();
+      app.snack.showSuccess(
+        message: app.intl.workspaces.settings.deleted(name: _saved.name),
+        context: app.context,
+      );
+      return;
+    }
     if (state is WorkspaceFormProcessingOKState) {
-      app.di.find<WorkspaceCubit>().load();
-      if (state.deleted) {
-        Navigator.of(context).pop();
-        app.snack.showSuccess(
-          message: app.intl.workspaces.settings.deleted(name: _saved.name),
-          context: app.context,
-        );
-        return;
-      }
       _savedTimer?.cancel();
       _savedTimer = Timer(const Duration(milliseconds: 2500), () {
         if (mounted) setState(() => _justSaved = false);
@@ -291,8 +304,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                   children: [
                     Text(
                       t.title.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 11,
+                      style: app.styles.xs.copyWith(
                         letterSpacing: 1.2,
                         fontWeight: FontWeight.w700,
                         color: colors.primary.primaryFaded,
@@ -302,8 +314,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                       _name.text.trim(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 22,
+                      style: app.styles.h2.copyWith(
                         height: 28 / 22,
                         fontWeight: FontWeight.w700,
                       ),
@@ -313,8 +324,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                         description,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 13,
+                        style: app.styles.m.copyWith(
                           color: colors.neutral.grey3,
                         ),
                       ),
@@ -380,10 +390,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
               label: app.intl.workspaces.name,
               child: Text(
                 _saved.name,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: app.styles.l.copyWith(fontWeight: FontWeight.w600),
               ),
             ),
             _InfoRow(
@@ -392,8 +399,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                 description == null || description.isEmpty
                     ? t.noDescription
                     : description,
-                style: TextStyle(
-                  fontSize: 14,
+                style: app.styles.l.copyWith(
                   color: description == null || description.isEmpty
                       ? app.colors.neutral.grey4
                       : null,
@@ -486,7 +492,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
     return [
       Text(
         t.defaultsHint,
-        style: TextStyle(fontSize: 13, color: app.colors.neutral.grey3),
+        style: app.styles.m.copyWith(color: app.colors.neutral.grey3),
       ),
       Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -570,17 +576,11 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
               children: [
                 Text(
                   t.deleteTitle,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: app.styles.l.copyWith(fontWeight: FontWeight.w600),
                 ),
                 Text(
                   t.deleteDescription,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: app.colors.neutral.grey3,
-                  ),
+                  style: app.styles.m.copyWith(color: app.colors.neutral.grey3),
                 ),
               ],
             ),
@@ -623,9 +623,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                     shape: BoxShape.circle,
                   ),
                 ),
-                Expanded(
-                  child: Text(t.unsaved, style: const TextStyle(fontSize: 13)),
-                ),
+                Expanded(child: Text(t.unsaved, style: app.styles.m)),
                 PrimaryButton.secondary(
                   onPressed: () => setState(_reset),
                   title: t.discard,
@@ -645,7 +643,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                 Expanded(
                   child: Text(
                     t.description,
-                    style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+                    style: app.styles.s.copyWith(color: colors.neutral.grey4),
                   ),
                 ),
                 if (_justSaved)
@@ -658,8 +656,7 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
                       ),
                       Text(
                         t.saved,
-                        style: TextStyle(
-                          fontSize: 13,
+                        style: app.styles.m.copyWith(
                           color: colors.status.success,
                         ),
                       ),
@@ -709,8 +706,7 @@ class _TabButton extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: TextStyle(
-              fontSize: 14,
+            style: app.styles.l.copyWith(
               fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
               color: selected
                   ? colors.neutral.white
@@ -753,7 +749,7 @@ class _InfoRow extends StatelessWidget {
             width: 160,
             child: Text(
               label,
-              style: TextStyle(fontSize: 13, color: app.colors.neutral.grey3),
+              style: app.styles.m.copyWith(color: app.colors.neutral.grey3),
             ),
           ),
           16.gap(),
@@ -818,8 +814,7 @@ class _Label extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
     text,
-    style: TextStyle(
-      fontSize: 13,
+    style: app.styles.m.copyWith(
       fontWeight: FontWeight.w600,
       color: app.colors.neutral.grey2,
     ),
@@ -827,7 +822,23 @@ class _Label extends StatelessWidget {
 }
 
 /// Deleting asks for the name of the workspace, typed
+class _DeleteDialogNavigator {
+  Future<void> open(
+    BuildContext context, {
+    required WorkspaceModel workspace,
+    required WorkspaceStatsModel? stats,
+    required VoidCallback onConfirm,
+  }) => showDialog<void>(
+    context: context,
+    barrierColor: app.colors.neutral.black.withValues(alpha: 0.5),
+    builder: (_) =>
+        _DeleteDialog(workspace: workspace, stats: stats, onConfirm: onConfirm),
+  );
+}
+
 class _DeleteDialog extends StatefulWidget {
+  static final _DeleteDialogNavigator navigator = _DeleteDialogNavigator();
+
   final WorkspaceModel workspace;
   final WorkspaceStatsModel? stats;
   final VoidCallback onConfirm;
@@ -904,8 +915,7 @@ class _DeleteDialogState extends State<_DeleteDialog> {
                         children: [
                           Text(
                             t.deleteConfirmTitle(name: widget.workspace.name),
-                            style: const TextStyle(
-                              fontSize: 18,
+                            style: app.styles.h4.copyWith(
                               height: 26 / 18,
                               fontWeight: FontWeight.w700,
                             ),
@@ -918,8 +928,7 @@ class _DeleteDialogState extends State<_DeleteDialog> {
                                 t.nConfigs(n: stats?.configs ?? 0),
                               ].join(', '),
                             ),
-                            style: TextStyle(
-                              fontSize: 13,
+                            style: app.styles.m.copyWith(
                               color: colors.neutral.grey3,
                             ),
                           ),
@@ -934,7 +943,7 @@ class _DeleteDialogState extends State<_DeleteDialog> {
                   children: [
                     Text.rich(
                       TextSpan(
-                        style: const TextStyle(fontSize: 13),
+                        style: app.styles.m,
                         children: [
                           TextSpan(text: '${t.typeBefore} '),
                           WidgetSpan(

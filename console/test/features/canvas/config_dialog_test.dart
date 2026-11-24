@@ -15,11 +15,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         navigatorKey: navigatorKey,
-        theme: ThemeConfig.theme,
+        theme: AppTheme.dark,
         home: const Scaffold(),
       ),
     );
-    ConfigDialog.open(
+    ConfigDialog.navigator.open(
       config: BackupConfig(
         id: 'cfg_nightly',
         sourceId: 'orders',

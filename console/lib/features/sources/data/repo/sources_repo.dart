@@ -1,0 +1,162 @@
+import 'package:console/app_exporter.dart';
+
+class SourcesRepo {
+  final SourcesClient client;
+
+  SourcesRepo({required this.client});
+
+  Future<List<SourceTypeModel>> types({String? token}) async {
+    try {
+      final response = await client.types(token: token);
+      return response
+          .map((e) => SourceTypeModel(type: e.type, enabled: e.enabled))
+          .toList();
+    } catch (e) {
+      throw ExceptionConverter.parse(e);
+    }
+  }
+
+  Future<List<SourceModel>> list({
+    required String workspace,
+    String? token,
+  }) async {
+    try {
+      final response = await client.list(workspace: workspace, token: token);
+      return response.map((e) => e.toModel()).toList();
+    } catch (e) {
+      throw ExceptionConverter.parse(e);
+    }
+  }
+
+  /// Creates the source, or replaces [id] when editing
+  Future<SourceModel> save({
+    required String workspace,
+    required SourceFormModel draft,
+    String? id,
+    String? token,
+  }) async {
+    try {
+      final request = draft.toRequest();
+      final response = id == null
+          ? await client.create(
+              workspace: workspace,
+              request: request,
+              token: token,
+            )
+          : await client.update(
+              workspace: workspace,
+              id: id,
+              request: request,
+              token: token,
+            );
+      return response.toModel();
+    } catch (e) {
+      throw ExceptionConverter.parse(e);
+    }
+  }
+
+  Future<void> reorder({
+    required String workspace,
+    required List<String> ids,
+    String? token,
+  }) async {
+    try {
+      await client.reorder(workspace: workspace, ids: ids, token: token);
+    } catch (e) {
+      throw ExceptionConverter.parse(e);
+    }
+  }
+
+  Future<void> delete({
+    required String workspace,
+    required String id,
+    String? token,
+  }) async {
+    try {
+      await client.delete(workspace: workspace, id: id, token: token);
+    } catch (e) {
+      throw ExceptionConverter.parse(e);
+    }
+  }
+
+  Future<ConnectionCheckModel> testUnsaved({
+    required String workspace,
+    required SourceFormModel draft,
+    String? sourceId,
+    String? token,
+  }) async {
+    try {
+      final response = await client.testUnsaved(
+        workspace: workspace,
+        request: draft.toRequest(),
+        sourceId: sourceId,
+        token: token,
+      );
+      return response.toModel();
+    } catch (e) {
+      throw ExceptionConverter.parse(e);
+    }
+  }
+
+  Future<ConnectionCheckModel> testSaved({
+    required String workspace,
+    required String id,
+    String? token,
+  }) async {
+    try {
+      final response = await client.testSaved(
+        workspace: workspace,
+        id: id,
+        token: token,
+      );
+      return response.toModel();
+    } catch (e) {
+      throw ExceptionConverter.parse(e);
+    }
+  }
+}
+
+extension SourceResponseMapping on SourceResponse {
+  SourceModel toModel() {
+    final s = settings;
+    return SourceModel(
+      id: id,
+      name: name,
+      type: type,
+      postgres: type == SourceTypes.postgres
+          ? PostgresSettingsModel(
+              host: s['host'],
+              port: s['port'],
+              database: s['database'],
+              username: s['username'],
+              dumpFormat: s['dump_format'],
+              sslMode: s['ssl_mode'] ?? PostgresSettingsModel.sslRequire,
+            )
+          : null,
+      lastCheck: lastCheck?.toModel(),
+    );
+  }
+}
+
+extension SourceDraftMapping on SourceFormModel {
+  SourceRequest toRequest() {
+    final url = connectionUrl;
+    return SourceRequest(
+      name: name,
+      type: type,
+      settings: {
+        if (url != null)
+          'connection_url': url
+        else ...{
+          'host': host,
+          'port': ?port,
+          'database': database,
+          'username': username,
+        },
+        if (password != null && password!.isNotEmpty) 'password': password,
+        'dump_format': dumpFormat,
+        'ssl_mode': sslMode,
+      },
+    );
+  }
+}

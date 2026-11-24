@@ -5,19 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Over the screen where the service refused the token: signing in again
-/// keeps it (an unsaved canvas too); the sign-in page closes the session
-class SessionExpiredDialog extends StatefulWidget {
-  /// Its route: a change of screen doesn't close it
-  static const String routeName = 'session-expired';
-
-  const SessionExpiredDialog({super.key});
-
+class SessionExpiredDialogNavigator {
   /// Over the root navigator, without a way to close it but signing in
-  static Future<void> open() => showGeneralDialog(
+  Future<void> open() => showGeneralDialog(
     context: app.context,
     barrierDismissible: false,
-    routeSettings: const RouteSettings(name: routeName),
+    routeSettings: const RouteSettings(name: SessionExpiredDialog.routeName),
     barrierColor: app.colors.neutral.black.withValues(alpha: 0.72),
     transitionDuration: const Duration(milliseconds: 200),
     // the screen stays under it, blurred: it comes back as it was
@@ -35,6 +28,18 @@ class SessionExpiredDialog extends StatefulWidget {
     transitionBuilder: (context, animation, secondaryAnimation, child) =>
         FadeTransition(opacity: animation, child: child),
   );
+}
+
+/// Over the screen where the service refused the token: signing in again
+/// keeps it (an unsaved canvas too); the sign-in page closes the session
+class SessionExpiredDialog extends StatefulWidget {
+  static final SessionExpiredDialogNavigator navigator =
+      SessionExpiredDialogNavigator();
+
+  /// Its route: a change of screen doesn't close it
+  static const String routeName = 'session-expired';
+
+  const SessionExpiredDialog({super.key});
 
   @override
   State<SessionExpiredDialog> createState() => _SessionExpiredDialogState();
@@ -76,21 +81,19 @@ class _SessionExpiredDialogState extends State<SessionExpiredDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final t = app.intl.login;
+    final t = app.intl.auth;
     // the username is known after a login in this tab, not after a reload
     final knownUser = _auth.username != null;
     return BlocConsumer<AuthCubit, AuthState>(
       bloc: _auth,
       listener: (context, state) {
-        if (state is AuthProcessingOKState) {
+        if (state is AuthLoggedInOkState) {
           TextInput.finishAutofillContext();
           Navigator.of(context).pop();
-          // the rail's workspaces may have failed with the old token
-          app.di.find<WorkspaceCubit>().load();
         }
       },
       builder: (context, state) {
-        final loading = state is AuthProcessInProgressState;
+        final loading = state is AuthLoggingInState;
         return Align(
           alignment: const Alignment(0, -0.4),
           child: Container(
@@ -133,8 +136,7 @@ class _SessionExpiredDialogState extends State<SessionExpiredDialog> {
                     16.gap(),
                     Text(
                       t.expiredTitle,
-                      style: const TextStyle(
-                        fontSize: 20,
+                      style: app.styles.h3.copyWith(
                         height: 28 / 20,
                         fontWeight: FontWeight.w700,
                       ),
@@ -142,19 +144,15 @@ class _SessionExpiredDialogState extends State<SessionExpiredDialog> {
                     6.gap(),
                     Text(
                       t.expiredDescription,
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: app.styles.l.copyWith(
                         color: app.colors.neutral.grey3,
                       ),
                     ),
-                    if (state is AuthProcessingErrorState) ...[
+                    if (state is AuthLoggingInErrorState) ...[
                       16.gap(),
                       AppFormAlert(
-                        title: state.exception.message,
-                        message:
-                            state.exception.type == GlobalExceptionType.auth
-                            ? t.failedHint
-                            : null,
+                        title: state.exception.intlMessage,
+                        message: loginErrorHint(state.exception),
                       ),
                     ],
                     16.gap(),
@@ -190,8 +188,7 @@ class _SessionExpiredDialogState extends State<SessionExpiredDialog> {
                       onPressed: loading ? null : _toSignInPage,
                       style: TextButton.styleFrom(
                         foregroundColor: app.colors.primary.primaryFaded,
-                        textStyle: TextStyle(
-                          fontSize: 13,
+                        textStyle: app.styles.m.copyWith(
                           decoration: TextDecoration.underline,
                           decorationColor: app.colors.primary.primaryFaded,
                         ),

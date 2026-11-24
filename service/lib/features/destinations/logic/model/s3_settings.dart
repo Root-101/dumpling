@@ -39,6 +39,7 @@ class S3Settings implements DestinationSettings {
           (value) => value == null || _isEndpoint(value)
               ? null
               : intl.errors.validations.s3Endpoint,
+          code: 'validations.s3Endpoint',
         )
     ..field('region', region?.trim()).size(min: 1, max: 64)
     // The rules of S3 for a bucket name
@@ -78,6 +79,10 @@ class S3Settings implements DestinationSettings {
     'access_key_id': accessKeyId!.trim(),
     'path_style': pathStyle ?? false,
   };
+
+  /// Everything the requests signed with the secret key go to
+  @override
+  Map<String, Object?> get target => toJson();
 
   @override
   Map<String, String> get secrets => {secretKey: ?secretAccessKey};

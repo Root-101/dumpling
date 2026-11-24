@@ -252,7 +252,7 @@ only when no backup uses it (the menu says how many do):
 ![Delete a source](design/screens/20-source-delete.png)
 
 The detail shows the backups that dump it (with their schedule, last and next run), the last check
-and the connection:
+(a test, or the one each run makes before dumping) and the connection:
 
 ![Source detail](design/screens/21-source-detail.png)
 
@@ -411,10 +411,15 @@ when a row is dropped, and [`DELETE …/keys/{id}`](api.md#delete-an-api-key).
 
 ## Loading and errors
 
-While it starts, the console shows its mark, its name and a bar, in the language of the browser
-(Spanish or English):
+While it starts, the console shows its mark, its name and a bar, in its language (the one chosen
+with the flag, else the browser's):
 
 ![Starting](design/screens/42-splash.png)
+
+If something it needs before the first screen fails (what it keeps in the browser, for example),
+it says so in place of the splash, with **Try again**, which starts it over:
+
+![Could not start](design/screens/43-init-error.png)
 
 Each screen loads as a skeleton of itself:
 

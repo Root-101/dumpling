@@ -58,22 +58,20 @@ class DestinationTableRepo {
     required String secretsEncrypted,
     required List<String> folders,
   }) async {
-    await _db.transaction(() async {
-      await _db
-          .into(_db.destinationTable)
-          .insert(
-            DestinationTableCompanion.insert(
-              id: id,
-              workspaceSlug: workspace,
-              name: name,
-              type: type,
-              settings: settings,
-              secretsEncrypted: secretsEncrypted,
-              position: Value(await _next(workspace)),
-            ),
-          );
-      await _insertFolders(id, folders);
-    });
+    await _db
+        .into(_db.destinationTable)
+        .insert(
+          DestinationTableCompanion.insert(
+            id: id,
+            workspaceSlug: workspace,
+            name: name,
+            type: type,
+            settings: settings,
+            secretsEncrypted: secretsEncrypted,
+            position: Value(await _next(workspace)),
+          ),
+        );
+    await _insertFolders(id, folders);
   }
 
   /// Whether saving [row] with these values changes what its last check
@@ -104,26 +102,22 @@ class DestinationTableRepo {
     required List<String> folders,
     required bool connectionChanged,
   }) async {
-    await _db.transaction(() async {
-      await (_db.update(
-        _db.destinationTable,
-      )..where((tbl) => tbl.id.equals(id))).write(
-        DestinationTableCompanion(
-          name: Value(name),
-          type: Value(type),
-          settings: Value(settings),
-          secretsEncrypted: Value(secretsEncrypted),
-          lastCheck: connectionChanged
-              ? const Value(null)
-              : const Value.absent(),
-          updatedAt: Value(DateTime.now()),
-        ),
-      );
-      await (_db.delete(
-        _db.destinationFolderTable,
-      )..where((tbl) => tbl.destinationId.equals(id))).go();
-      await _insertFolders(id, folders);
-    });
+    await (_db.update(
+      _db.destinationTable,
+    )..where((tbl) => tbl.id.equals(id))).write(
+      DestinationTableCompanion(
+        name: Value(name),
+        type: Value(type),
+        settings: Value(settings),
+        secretsEncrypted: Value(secretsEncrypted),
+        lastCheck: connectionChanged ? const Value(null) : const Value.absent(),
+        updatedAt: Value(utcNow()),
+      ),
+    );
+    await (_db.delete(
+      _db.destinationFolderTable,
+    )..where((tbl) => tbl.destinationId.equals(id))).go();
+    await _insertFolders(id, folders);
   }
 
   Future<void> updateLastCheck({

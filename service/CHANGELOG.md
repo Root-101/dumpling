@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.1.8
+
+- A stored password or secret key is only reused for the place it was saved for: an edit, a
+  test or a canvas save that changes the host, port, database, user or TLS of a source (the
+  endpoint, region, bucket, access key or path style of a destination) without the secret is a
+  `422` that asks for it. An API key allowed to test or edit could send it to its own server.
+- A single upload (a dump under 16 MiB), the start and the completion of a multipart upload are
+  tried again like its parts: one `503 SlowDown` no longer fails the backup.
+- A queued run that can't start because the database fails (a full disk) is marked failed and
+  frees its config; the config used to stop running until a restart.
+- An UploadId over 2000 characters or an ETag over 1024 is refused, and a run that ends clears
+  the upload id it kept.
+- Built with Dart 3.14 (Flutter 3.50.1, like the console) and the latest version of every
+  dependency (winter 1.0.1, postgres 3.7, sqlite3 3.9.2, drift 2.35.4…).
+- CORS exposes `Retry-After`, so the console (on another origin in development) can say how long
+  a locked sign-in waits.
+- The check each run makes before dumping is kept as the source's last check: its detail no
+  longer says *Connected* after a run that couldn't connect.
+- A test with TLS required against a server without TLS says *The server doesn't accept TLS:
+  turn TLS off if it is on a network you trust*, not the driver's text.
+- Every error of Dumpling carries a stable `code` (`sources.inUse`, `workspaces.notFound`…) and
+  every violation of its own rules too (`validations.cron`): clients decide on it, never on the text.
+- `expire_at` of the sign-in and the session is ISO 8601 in UTC, like every other time of the API
+  (it was epoch milliseconds); every time is written with milliseconds and `Z`.
+- `/api/health` answers the health check format (`application/health+json`, `pass` / `fail`), not
+  `{"status": "up"}`: a monitor that read `up` reads `pass` now.
+- A create answers `201` with a `Location` header (the path of what was created).
+- `limit` out of 1–200 in the run log is a `422` naming `limit` (a `limit` that is not a number,
+  and a filter that is none of its values, stay `400`).
+- A sign-in without `username` or `password` is a `422` naming the field, like every other body
+  (it was a `400`).
+
 ## 0.1.7
 
 - Nothing in the service; the version follows the console.

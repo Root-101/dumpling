@@ -3,7 +3,7 @@ import 'package:service/dumpling.dart';
 class DestinationController {
   final DestinationService destinationService;
 
-  DestinationController() : destinationService = DestinationService();
+  DestinationController() : destinationService = di.find();
 
   /// Every type, the disabled ones too (the console shows them as soon).
   Future<ResponseEntity> types(RequestEntity request) async {
@@ -12,7 +12,7 @@ class DestinationController {
 
   Future<ResponseEntity> list(RequestEntity request) async {
     final destinations = await destinationService.list(
-      request.pathParams['slug']!,
+      request.pathParam<String>('workspace'),
     );
     return ResponseEntity.ok(body: destinations);
   }
@@ -21,7 +21,7 @@ class DestinationController {
     final body = await request.body<OrderRequest>();
 
     final items = await destinationService.reorder(
-      request.pathParams['slug']!,
+      request.pathParam<String>('workspace'),
       body,
     );
     return ResponseEntity.ok(body: items);
@@ -29,8 +29,8 @@ class DestinationController {
 
   Future<ResponseEntity> get(RequestEntity request) async {
     final destination = await destinationService.get(
-      request.pathParams['slug']!,
-      request.pathParams['id']!,
+      request.pathParam<String>('workspace'),
+      request.pathParam<String>('destination'),
     );
     return ResponseEntity.ok(body: destination);
   }
@@ -39,18 +39,18 @@ class DestinationController {
     final body = await request.body<DestinationRequest>();
 
     final destination = await destinationService.create(
-      request.pathParams['slug']!,
+      request.pathParam<String>('workspace'),
       body,
     );
-    return ResponseEntity(201, body: destination);
+    return created(request, destination.id, destination);
   }
 
   Future<ResponseEntity> update(RequestEntity request) async {
     final body = await request.body<DestinationRequest>();
 
     final destination = await destinationService.update(
-      request.pathParams['slug']!,
-      request.pathParams['id']!,
+      request.pathParam<String>('workspace'),
+      request.pathParam<String>('destination'),
       body,
     );
     return ResponseEntity.ok(body: destination);
@@ -58,8 +58,8 @@ class DestinationController {
 
   Future<ResponseEntity> delete(RequestEntity request) async {
     await destinationService.delete(
-      request.pathParams['slug']!,
-      request.pathParams['id']!,
+      request.pathParam<String>('workspace'),
+      request.pathParam<String>('destination'),
     );
     return ResponseEntity.noContent();
   }
@@ -70,7 +70,7 @@ class DestinationController {
     final body = await request.body<DestinationRequest>();
 
     final check = await destinationService.testUnsaved(
-      request.pathParams['slug']!,
+      request.pathParam<String>('workspace'),
       body,
       destinationId: request.queryParam<String>('destination'),
     );
@@ -79,8 +79,8 @@ class DestinationController {
 
   Future<ResponseEntity> testSaved(RequestEntity request) async {
     final check = await destinationService.testSaved(
-      request.pathParams['slug']!,
-      request.pathParams['id']!,
+      request.pathParam<String>('workspace'),
+      request.pathParam<String>('destination'),
     );
     return ResponseEntity.ok(body: check);
   }

@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:material_ui/material_ui.dart';
 
 /// The only dependency on Get, the framework underneath, must live ONLY in this class
 
@@ -23,34 +22,6 @@ class DI {
   S put<S>(S dependency, {String? tag}) => Get.put<S>(dependency, tag: tag);
 
   S find<S>({String? tag}) => Get.find<S>(tag: tag);
-}
 
-/// CubitView is a great way of quickly access your Cubit
-/// without having to call app.di.find&lt;AwesomeCubit&gt;() yourself.
-///
-/// Sample:
-/// ```
-/// class AwesomeCubit extends Cubit<SomeState> {
-///   final String title = 'My Awesome View';
-/// }
-///
-/// class AwesomeView extends CubitView<AwesomeCubit> {
-///   AwesomeView({Key key}):super(key:key);
-///
-///   @override
-///   Widget build(BuildContext context) {
-///     return Container(
-///       padding: EdgeInsets.all(20),
-///       child: Text( cubit.title ),
-///     );
-///   }
-/// }
-/// ``
-abstract class CubitView<T> extends StatelessWidget {
-  const CubitView({super.key});
-
-  T get cubit => Get.find<T>()!;
-
-  @override
-  Widget build(BuildContext context);
+  bool isRegistered<S>({String? tag}) => Get.isRegistered<S>(tag: tag);
 }

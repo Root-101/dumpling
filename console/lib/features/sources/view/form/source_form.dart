@@ -3,14 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Dialog of a source in three steps: its type, how it connects (fields or a
-/// connection URL, TLS) with the test of that connection (always run by the
-/// service), and a summary with the dump format. Once saved it reloads the list
-class SourceForm extends StatefulWidget {
+class SourceFormNavigator {
   /// Opens the dialog with its own [SourceFormCubit]. With [source] it edits
   /// it; with [duplicate] too it creates a copy (the password isn't copied:
   /// the API never returns it)
-  static Future<void> open(
+  Future<void> open(
     BuildContext context, {
     required String workspace,
     required List<SourceTypeModel> types,
@@ -19,8 +16,8 @@ class SourceForm extends StatefulWidget {
   }) async {
     final editing = source != null && !duplicate;
     final formCubit = SourceFormCubit(
-      app.di.find(),
-      app.di.find(),
+      auth: app.di.find(),
+      repo: app.di.find(),
       workspace: workspace,
       sourceId: editing ? source.id : null,
     );
@@ -34,6 +31,13 @@ class SourceForm extends StatefulWidget {
     );
     await formCubit.close();
   }
+}
+
+/// Dialog of a source in three steps: its type, how it connects (fields or a
+/// connection URL, TLS) with the test of that connection (always run by the
+/// service), and a summary with the dump format. Once saved it reloads the list
+class SourceForm extends StatefulWidget {
+  static final SourceFormNavigator navigator = SourceFormNavigator();
 
   /// Id of the dialog's [LoadingOverlay]
   static const String loadingId = 'source-form';
@@ -129,7 +133,7 @@ class _SourceFormState extends State<SourceForm> {
     super.dispose();
   }
 
-  SourceDraft _draft() => SourceDraft(
+  SourceFormModel _draft() => SourceFormModel(
     name: _nameController.text.trim(),
     type: _type,
     connectionUrl: _byUrl ? _urlController.text.trim() : null,
@@ -149,7 +153,7 @@ class _SourceFormState extends State<SourceForm> {
 
   bool get _busy =>
       cubit.state is SourceFormProcessInProgressState ||
-      cubit.state is SourceFormTestInProgressState;
+      cubit.state is SourceFormTestingState;
 
   static const int _lastStep = 2;
 
@@ -210,20 +214,31 @@ class _SourceFormState extends State<SourceForm> {
         } else {
           app.loading.hide(id: SourceForm.loadingId);
         }
-        if (state is SourceFormTestedState) {
+        if (state is SourceFormTestedOkState) {
           setState(() {
             _check = state.check;
             _formError = null;
           });
         }
-        if (state is SourceFormProcessingErrorState) {
+        if (state is SourceFormProcessingErrorState ||
+            state is SourceFormTestingErrorState) {
           setState(() {
-            _serverErrors = state.fieldErrors;
-            _formError = state.fieldErrors.isEmpty
-                ? state.exception.message
-                : null;
+            _serverErrors = const {};
+            _formError = switch (state) {
+              SourceFormProcessingErrorState(:final exception) ||
+              SourceFormTestingErrorState(
+                :final exception,
+              ) => exception.intlMessage,
+              _ => null,
+            };
+          });
+        }
+        if (state is SourceFormValidationErrorState) {
+          setState(() {
+            _serverErrors = state.failValidations;
+            _formError = null;
             // back to the step of the field the service refused
-            final fields = state.fieldErrors.keys;
+            final fields = state.failValidations.keys;
             if (fields.contains(SourceFormField.type) ||
                 fields.contains(SourceFormField.name)) {
               _step = 0;
@@ -234,7 +249,6 @@ class _SourceFormState extends State<SourceForm> {
         }
         if (state is SourceFormProcessingOKState) {
           Navigator.of(context).pop();
-          app.di.find<SourceCubit>().reload();
           app.snack.showSuccess(
             message: _editing
                 ? app.intl.sources.saved(name: state.source.name)
@@ -295,7 +309,11 @@ class _SourceFormState extends State<SourceForm> {
                     helperText: app.intl.sources.nameHelp,
                     autofocus: !_editing,
                     maxLength: _nameMaxLength,
-                    warningText: CanvasGeometry.longName(_nameController.text)
+                    warningText:
+                        CanvasGeometry.longName(
+                          _nameController.text,
+                          CanvasGeometry.sourceNameRoom,
+                        )
                         ? app.intl.common.longName
                         : null,
                     errorText: _serverErrors[SourceFormField.name],
@@ -321,7 +339,7 @@ class _SourceFormState extends State<SourceForm> {
                     BlocBuilder<SourceFormCubit, SourceFormState>(
                       builder: (context, state) => ConnectionTestBanner(
                         check: _check,
-                        testing: state is SourceFormTestInProgressState,
+                        testing: state is SourceFormTestingState,
                         onTest: _test,
                         idleSub: app.intl.sources.testIdle,
                         connectedSub: (check) => [
@@ -548,7 +566,7 @@ class _SourceFormState extends State<SourceForm> {
           padding: const EdgeInsets.only(top: 6),
           child: Text(
             error,
-            style: TextStyle(fontSize: 12, color: app.colors.primary.error),
+            style: app.styles.s.copyWith(color: app.colors.primary.error),
           ),
         ),
     ];
@@ -576,14 +594,14 @@ class _SourceFormState extends State<SourceForm> {
       if (_serverErrors[SourceFormField.sslMode] case final error?)
         Text(
           error,
-          style: TextStyle(fontSize: 12, color: app.colors.primary.error),
+          style: app.styles.s.copyWith(color: app.colors.primary.error),
         )
       else if (disabled)
         AppFieldWarning(t.sslDisableWarning)
       else
         Text(
           t.sslRequireHelp,
-          style: TextStyle(fontSize: 12, color: app.colors.text.secondary),
+          style: app.styles.s.copyWith(color: app.colors.text.secondary),
         ),
     ];
   }
@@ -659,10 +677,8 @@ class _SourceFormState extends State<SourceForm> {
     );
   }
 
-  Widget _label(String text) => Text(
-    text,
-    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-  );
+  Widget _label(String text) =>
+      Text(text, style: app.styles.l.copyWith(fontWeight: FontWeight.w600));
 }
 
 /// Two or more choices in one control, like *Fields · Connection URL*
@@ -709,8 +725,7 @@ class _Segmented extends StatelessWidget {
                           option,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 13,
+                          style: app.styles.m.copyWith(
                             fontWeight: index == selected
                                 ? FontWeight.w600
                                 : FontWeight.w400,
@@ -748,7 +763,7 @@ class _NextButton extends StatelessWidget {
       builder: (context, state) {
         final loading = state is SourceFormProcessInProgressState;
         return PrimaryButton.primary(
-          onPressed: state is SourceFormTestInProgressState ? null : onPressed,
+          onPressed: state is SourceFormTestingState ? null : onPressed,
           isLoading: loading,
           title: loading ? app.intl.common.saving : title,
           color: app.colors.primary.primaryAction,

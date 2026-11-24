@@ -108,12 +108,62 @@ void main() {
 
     test('Should give up and abort after the last try', () async {
       S3Client.retryDelay = Duration.zero;
-      s3.failingParts = S3Client.partTries;
+      s3.failingParts = S3Client.tries;
       await expectLater(
         S3Uploader(client, partSize: 1000).upload('orders/e.dump', bytes(2500)),
         throwsA(
           isA<S3ClientException>().having((e) => e.code, 'code', 'SlowDown'),
         ),
+      );
+      expect(s3.objects, isEmpty);
+      expect(s3.openUploads, isEmpty);
+    });
+
+    test(
+      'Should try a small upload and the completion of a big one again',
+      () async {
+        S3Client.retryDelay = Duration.zero;
+        // one PUT of a dump smaller than a part
+        s3.failingPuts = 2;
+        expect(
+          await S3Uploader(
+            client,
+            partSize: 1000,
+          ).upload('orders/f.dump', bytes(500)),
+          500,
+        );
+        expect(s3.objects['backups/orders/f.dump'], expected(500));
+
+        // the last step of a multipart upload: its parts are not sent again
+        s3.failingCompletes = 2;
+        expect(
+          await S3Uploader(
+            client,
+            partSize: 1000,
+          ).upload('orders/g.dump', bytes(2500)),
+          2500,
+        );
+        expect(s3.objects['backups/orders/g.dump'], expected(2500));
+        expect(
+          s3.requests.where((r) => r.contains('partNumber')),
+          hasLength(3),
+        );
+      },
+    );
+
+    test('Should refuse an UploadId or an ETag too long to keep', () async {
+      s3.uploadIdGiven = 'u' * (S3Client.maxUploadId + 1);
+      await expectLater(
+        S3Uploader(client, partSize: 1000).upload('orders/h.dump', bytes(2500)),
+        throwsA(isA<S3ClientException>()),
+      );
+      // refused before it is kept: never aborted with it, and it has no parts
+      s3
+        ..reset()
+        ..etagGiven = '"${'e' * S3Client.maxEtag}"';
+      await expectLater(
+        S3Uploader(client, partSize: 1000).upload('orders/i.dump', bytes(2500)),
+        throwsA(isA<S3ClientException>()),
       );
       expect(s3.objects, isEmpty);
       expect(s3.openUploads, isEmpty);

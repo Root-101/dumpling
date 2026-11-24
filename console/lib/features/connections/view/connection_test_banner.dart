@@ -70,8 +70,7 @@ class ConnectionTestBanner extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 13,
+                  style: app.styles.m.copyWith(
                     fontWeight: FontWeight.w600,
                     color: color,
                   ),
@@ -79,8 +78,7 @@ class ConnectionTestBanner extends StatelessWidget {
                 if (sub.isNotEmpty)
                   Text(
                     sub,
-                    style: TextStyle(
-                      fontSize: 12,
+                    style: app.styles.s.copyWith(
                       color: app.colors.neutral.grey3,
                     ),
                   ),

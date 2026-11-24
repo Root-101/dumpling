@@ -6,12 +6,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:drift/drift.dart' show Value;
-import 'package:http/http.dart' as http;
 import 'package:service/dumpling.dart';
 import 'package:test/test.dart';
 
 import '../../support/fake_s3.dart';
-import '../../support/test_server.dart';
+import '../../support/test_app.dart';
 
 /// A PostgreSQL that dumps [data] without a server or pg_dump. With [failAt]
 /// the dump breaks after that many bytes; with [hold] it waits for it first.
@@ -49,8 +48,17 @@ class FakeSourceDriver extends PostgresSourceDriver {
   }
 }
 
+/// A database that fails when a queued run starts (a full disk).
+class _FailingStart extends RunTableRepo {
+  _FailingStart(super.db);
+
+  @override
+  Future<void> start(String id, DateTime at) =>
+      Future.error(Exception('database or disk is full'));
+}
+
 void main() {
-  final server = TestServer(port: 8186);
+  final server = TestApp();
   final s3 = FakeS3();
   final fake = FakeSourceDriver();
   final original = SourceDriver.drivers[SourceType.postgres]!;
@@ -65,8 +73,8 @@ void main() {
   };
 
   Future<Map<String, dynamic>> post(String path, Object body) async {
-    final response = await http.post(
-      server.url(path),
+    final response = await server.post(
+      path,
       headers: jsonHeaders(),
       body: jsonEncode(body),
     );
@@ -74,9 +82,8 @@ void main() {
     return jsonDecode(response.body);
   }
 
-  Future<Map<String, dynamic>> getJson(String path) async => jsonDecode(
-    (await http.get(server.url(path), headers: server.auth())).body,
-  );
+  Future<Map<String, dynamic>> getJson(String path) async =>
+      jsonDecode((await server.get(path, headers: server.auth())).body);
 
   Future<String> config({
     String name = 'Orders nightly',
@@ -162,10 +169,7 @@ void main() {
 
       // The config shows it as its last run, in the list and the detail
       expect((await getJson('$base/configs/$id'))['last_run']['id'], run['id']);
-      final listed = await http.get(
-        server.url('$base/configs'),
-        headers: server.auth(),
-      );
+      final listed = await server.get('$base/configs', headers: server.auth());
       final listedConfig = (jsonDecode(listed.body) as List).firstWhere(
         (c) => c['id'] == id,
       );
@@ -202,6 +206,10 @@ void main() {
         expect(run['error'], 'Could not connect: Connection refused');
         expect(run['location'], isNull);
         expect(s3.requests, isEmpty);
+        // the source's last check is the run's, not an older test
+        final check = (await getJson('$base/sources/$sourceId'))['last_check'];
+        expect(check['status'], 'failed');
+        expect(check['message'], 'Connection refused');
       },
     );
 
@@ -242,8 +250,8 @@ void main() {
     test('Should refuse a label that is not a short name (422)', () async {
       final id = await config(name: 'Labels');
       for (final label in ['has space', 'a/b', 'x' * 65]) {
-        final response = await http.post(
-          server.url('$base/configs/$id/run'),
+        final response = await server.post(
+          '$base/configs/$id/run',
           headers: jsonHeaders(),
           body: jsonEncode({'label': label}),
         );
@@ -262,8 +270,8 @@ void main() {
           'config_ids': [id],
         });
         final started = jsonDecode(
-          (await http.post(
-            server.url('$base/configs/$id/run'),
+          (await server.post(
+            '$base/configs/$id/run',
             headers: {
               'authorization': 'Bearer ${key['key']}',
               'content-type': 'application/json',
@@ -278,8 +286,8 @@ void main() {
         await di.find<BackupEngine>().idle();
 
         final found = jsonDecode(
-          (await http.get(
-            server.url('$base/runs?label=release-42&trigger=api'),
+          (await server.get(
+            '$base/runs?label=release-42&trigger=api',
             headers: server.auth(),
           )).body,
         ) as List;
@@ -287,10 +295,7 @@ void main() {
 
         // The key shows the last run it started
         final keys = jsonDecode(
-          (await http.get(
-            server.url('$base/keys'),
-            headers: server.auth(),
-          )).body,
+          (await server.get('$base/keys', headers: server.auth())).body,
         ) as List;
         final listed = keys.firstWhere((k) => k['id'] == key['id']);
         expect(listed['last_run']['label'], 'release-42');
@@ -304,20 +309,17 @@ void main() {
       final id = await config(name: 'Followed');
       fake.hold = Completer<void>();
       final started = await post('$base/configs/$id/run', {});
-      final request = http.Request(
-        'GET',
-        server.url('$base/runs/${started['id']}/events'),
-      )..headers.addAll(server.auth());
-      final response = await http.Client().send(request);
-      expect(response.statusCode, 200);
-      expect(response.headers['content-type'], startsWith('text/event-stream'));
-      final text = StringBuffer();
-      final done = response.stream.transform(utf8.decoder).forEach(text.write);
+      // The answer streams until the run ends: it is complete once released
+      final events = server.get(
+        '$base/runs/${started['id']}/events',
+        headers: server.auth(),
+      );
       await Future<void>.delayed(const Duration(milliseconds: 200));
       fake.hold!.complete();
-      await done.timeout(const Duration(seconds: 10));
-
-      final body = text.toString();
+      final response = await events.timeout(const Duration(seconds: 10));
+      expect(response.statusCode, 200);
+      expect(response.headers['content-type'], startsWith('text/event-stream'));
+      final body = response.body;
       expect(body, contains('event: run'));
       expect(body, contains('"status":"running"'));
       expect(body, contains('event: end'));
@@ -326,8 +328,8 @@ void main() {
       await di.find<BackupEngine>().idle();
 
       // A run that ended answers end at once
-      final again = await http.get(
-        server.url('$base/runs/${started['id']}/events'),
+      final again = await server.get(
+        '$base/runs/${started['id']}/events',
         headers: server.auth(),
       );
       expect(again.body, contains('event: end'));
@@ -335,8 +337,8 @@ void main() {
     });
 
     test('Should list the runs newest first, filtered', () async {
-      final response = await http.get(
-        server.url('$base/runs?status=failed&source_type=postgres'),
+      final response = await server.get(
+        '$base/runs?status=failed&source_type=postgres',
         headers: server.auth(),
       );
       final runs = jsonDecode(response.body) as List;
@@ -344,8 +346,8 @@ void main() {
       expect(runs.every((r) => r['status'] == 'failed'), isTrue);
       expect(runs.first.containsKey('log'), isFalse);
 
-      final invalid = await http.get(
-        server.url('$base/runs?status=nope'),
+      final invalid = await server.get(
+        '$base/runs?status=nope',
         headers: server.auth(),
       );
       expect(invalid.statusCode, 400);
@@ -353,27 +355,31 @@ void main() {
       // the last run of one config: what a row of Backups opens
       final configId = runs.first['config_id'];
       final last = jsonDecode(
-        (await http.get(
-          server.url('$base/runs?config=$configId&limit=1'),
+        (await server.get(
+          '$base/runs?config=$configId&limit=1',
           headers: server.auth(),
         )).body,
       ) as List;
       expect(last, hasLength(1));
       expect(last.single['config_id'], configId);
-      for (final limit in ['0', '201', 'x']) {
-        final bad = await http.get(
-          server.url('$base/runs?limit=$limit'),
+      // not a number: 400; out of 1 to 200: a violation of `limit`
+      final notNumber = await server.get(
+        '$base/runs?limit=x',
+        headers: server.auth(),
+      );
+      expect(notNumber.statusCode, 400);
+      for (final limit in ['0', '201']) {
+        final bad = await server.get(
+          '$base/runs?limit=$limit',
           headers: server.auth(),
         );
-        expect(bad.statusCode, 400);
+        expect(bad.statusCode, 422);
+        expect(jsonDecode(bad.body)['violations'][0]['fieldName'], 'limit');
       }
 
       // The workspace counts the configs whose last run failed
       final workspaces = jsonDecode(
-        (await http.get(
-          server.url('/api/workspaces'),
-          headers: server.auth(),
-        )).body,
+        (await server.get('/api/workspaces', headers: server.auth())).body,
       ) as List;
       final stats = workspaces.single['stats'];
       expect(stats['sources'], 1);
@@ -409,13 +415,36 @@ void main() {
         expect(scheduler()[BackupEngine.taskName(disabled)], isNull);
         expect((await getJson('$base/configs/$disabled'))['last_run'], isNull);
 
-        await http.delete(
-          server.url('$base/configs/$id'),
-          headers: server.auth(),
-        );
+        await server.delete('$base/configs/$id', headers: server.auth());
         expect(scheduler()[BackupEngine.taskName(id)], isNull);
       },
     );
+
+    test('Should free a config whose queued run could not start', () async {
+      final id = await config(name: 'Queue that breaks');
+      final real = di.find<RunTableRepo>();
+      di.put<RunTableRepo>(_FailingStart(di.find<AppDatabase>()));
+      final engine = BackupEngine();
+      di.put<RunTableRepo>(real);
+      final saved = (await di.find<ConfigTableRepo>().byId(id))!;
+
+      fake.hold = Completer<void>();
+      final first = await engine.runNow(saved);
+      final queued = await engine.runNow(saved);
+      expect(queued.status, RunStatus.queued);
+      fake.hold!.complete();
+      fake.hold = null;
+      await engine.idle();
+
+      expect((await getJson('$base/runs/${first.id}'))['status'], 'success');
+      final failed = await getJson('$base/runs/${queued.id}');
+      expect(failed['status'], 'failed');
+      expect(failed['error'], contains('disk is full'));
+      // the config is free: a new run starts at once
+      final again = await engine.runNow(saved);
+      expect(again.status, RunStatus.running);
+      await engine.idle();
+    });
 
     test('Should fail the runs a stop left half done', () async {
       final db = di.find<AppDatabase>();
@@ -459,6 +488,10 @@ void main() {
       final run = await getJson('$base/runs/run_interrupted');
       expect(run['status'], 'failed');
       expect(run['error'], contains('Interrupted'));
+      final row = await (db.select(
+        db.runTable,
+      )..where((t) => t.id.equals('run_interrupted'))).getSingle();
+      expect(row.pendingUpload, isNull);
       // A queued one too: nothing would start it any more
       await db
           .into(db.runTable)
@@ -481,6 +514,29 @@ void main() {
       // its parts are no longer billed
       expect(s3.openUploads, isEmpty);
       expect(s3.requests.last, startsWith('DELETE /backups/orders/half.dump'));
+    });
+  });
+
+  group('PostgresSourceDriver.testConnection', () {
+    test('Should say plainly that the server refuses TLS', () async {
+      // a PostgreSQL without TLS answers `N` to the request for it
+      final server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      server.listen(
+        (socket) => socket.listen((_) => socket.add('N'.codeUnits)),
+      );
+      final check = await original.testConnection(
+        PostgresSettings(
+          host: '127.0.0.1',
+          port: server.port,
+          database: 'd',
+          username: 'u',
+          sslMode: 'require',
+        ),
+        {'password': 'p'},
+      );
+      await server.close();
+      expect(check.status, CheckStatus.failed);
+      expect(check.message, startsWith("The server doesn't accept TLS"));
     });
   });
 

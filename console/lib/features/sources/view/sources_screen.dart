@@ -3,11 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
-class SourcesScreenNavigator {
+class SourcesScreenNavigator extends SectionNavigator {
+  @override
   String get name => RouteNames.sources;
 
-  String get path => RouteNames.sources;
+  @override
+  String get itemName => RouteNames.source;
 
+  @override
   Widget builder(BuildContext context, GoRouterState state) {
     return SourcesScreen(
       workspace: state.pathParameters[RouteNames.slugParam]!,
@@ -34,7 +37,7 @@ class SourcesScreen extends StatefulWidget {
 }
 
 class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
-  late final SourceCubit cubit;
+  late final SourcesCubit cubit;
   final _searchController = TextEditingController();
 
   AppView _view = AppView.list;
@@ -42,7 +45,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
   @override
   void initState() {
     super.initState();
-    cubit = context.read<SourceCubit>();
+    cubit = context.read<SourcesCubit>();
     _load();
     // a list loaded already changes no state
     WidgetsBinding.instance.addPostFrameCallback((_) => _followUrl());
@@ -74,7 +77,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
   }
 
   void _openForm({SourceModel? source, bool duplicate = false}) {
-    SourceForm.open(
+    SourceForm.navigator.open(
       context,
       workspace: widget.workspace,
       types: cubit.state.data.types,
@@ -84,7 +87,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
   }
 
   void _openDetail(SourceModel source) =>
-      RouteNames.openItem(widget.workspace, RouteNames.source, source.id);
+      SourcesScreen.navigator.open(workspace: widget.workspace, id: source.id);
 
   /// The source of the URL over the list, once it is loaded
   void _followUrl() {
@@ -95,13 +98,13 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
       show: (id) async {
         final item = data.sources.where((e) => e.id == id).firstOrNull;
         if (item == null) return false;
-        await SourceDialog.open(item, onEdit: (s) => _openForm(source: s));
+        await SourceDialog.navigator.open(
+          item,
+          onEdit: (s) => _openForm(source: s),
+        );
         return true;
       },
-      leave: () => RouteNames.openWorkspace(
-        widget.workspace,
-        section: RouteNames.sources,
-      ),
+      leave: () => SourcesScreen.navigator.go(workspace: widget.workspace),
     );
   }
 
@@ -117,7 +120,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
 
   @override
   Widget build(BuildContext context) {
-    final workspaceName = context.select<WorkspaceCubit, String>(
+    final workspaceName = context.select<WorkspacesCubit, String>(
       (c) => c.state.data.current?.name ?? widget.workspace,
     );
     return Scaffold(
@@ -130,15 +133,13 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
             workspace: workspaceName,
             description: app.intl.sources.description,
             actions: [
-              BlocBuilder<SourceCubit, SourceState>(
+              BlocBuilder<SourcesCubit, SourcesState>(
                 builder: (context, state) => AppRefreshButton(
                   onPressed: cubit.reload,
-                  loading:
-                      state is SourceLoadingInProgressState &&
-                      state.data.loaded,
+                  loading: state is SourcesSearchingState && state.data.loaded,
                 ),
               ),
-              BlocBuilder<SourceCubit, SourceState>(
+              BlocBuilder<SourcesCubit, SourcesState>(
                 builder: (context, state) => PrimaryButton.primary(
                   // the form needs the types
                   onPressed: state.data.loaded ? () => _openForm() : null,
@@ -153,11 +154,11 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
           ),
           Expanded(
             child: PagePanel(
-              child: BlocConsumer<SourceCubit, SourceState>(
+              child: BlocConsumer<SourcesCubit, SourcesState>(
                 listener: _onState,
                 builder: (context, state) {
                   if (!state.data.loaded) {
-                    return state is SourceLoadingErrorState
+                    return state is SourcesSearchErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
                         : _buildSkeleton();
                   }
@@ -177,22 +178,27 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
     );
   }
 
-  void _onState(BuildContext context, SourceState state) {
+  void _onState(BuildContext context, SourcesState state) {
     _followUrl();
-    if (state is SourceProcessInProgressState) {
+    if (state is SourcesDeletingState) {
       app.loading.show();
     } else {
       app.loading.hide();
     }
-    if (state is SourceProcessingOKState &&
-        state.action == SourceAction.deleted) {
+    if (state is SourcesDeletedOkState) {
       app.snack.showSuccess(
         message: app.intl.sources.deleted(name: state.source.name),
         context: app.context,
       );
     }
-    if (state is SourceProcessingErrorState) {
-      app.snack.showError(message: state.message, context: app.context);
+    final failed = switch (state) {
+      SourcesTestingErrorState(:final exception) ||
+      SourcesDeletingErrorState(:final exception) ||
+      SourcesReorderingErrorState(:final exception) => exception,
+      _ => null,
+    };
+    if (failed != null) {
+      app.snack.showError(message: failed.intlMessage, context: app.context);
     }
   }
 
@@ -230,7 +236,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
     ),
   );
 
-  Widget _buildTable(SourceData data) {
+  Widget _buildTable(SourcesData data) {
     return AppSimpleTable(
       toolbar: Row(
         children: [
@@ -279,7 +285,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
     );
   }
 
-  Widget _buildFilter(SourceData data) {
+  Widget _buildFilter(SourcesData data) {
     // the types available, and any other one a source still has
     final types = {
       for (final t in data.types)
@@ -319,10 +325,10 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
     );
   }
 
-  List<Widget> _buildCells(SourceData data, SourceModel source) {
+  List<Widget> _buildCells(SourcesData data, SourceModel source) {
     final used = data.usageOf(source);
     final testing = data.testing.contains(source.id);
-    final muted = TextStyle(fontSize: 14, color: app.colors.neutral.grey3);
+    final muted = app.styles.l.copyWith(color: app.colors.neutral.grey3);
     return [
       Row(
         children: [
@@ -368,7 +374,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
     ?source.lastCheck?.serverMajor,
   ].join(' ');
 
-  Widget _buildMenu(SourceData data, SourceModel source) {
+  Widget _buildMenu(SourcesData data, SourceModel source) {
     final used = data.usageOf(source);
     final testing = data.testing.contains(source.id);
     return AppRowMenu(
@@ -409,7 +415,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
   }
 
   /// The same sources as cards, three in a row when there is room
-  Widget _buildGrid(SourceData data) {
+  Widget _buildGrid(SourcesData data) {
     const gap = 12.0;
     return Padding(
       padding: EdgeInsets.all(app.dimensions.padding.l),
@@ -434,7 +440,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
     );
   }
 
-  Widget _buildCard(SourceData data, SourceModel source) {
+  Widget _buildCard(SourcesData data, SourceModel source) {
     final colors = app.colors;
     return Container(
       padding: EdgeInsets.all(app.dimensions.padding.l),
@@ -466,10 +472,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
                     ),
                     Text(
                       _typeLabel(source),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: colors.neutral.grey4,
-                      ),
+                      style: app.styles.s.copyWith(color: colors.neutral.grey4),
                     ),
                   ],
                 ),
@@ -500,7 +503,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
                 Expanded(
                   child: Text(
                     app.intl.common.backupCount(n: data.usageOf(source)),
-                    style: TextStyle(fontSize: 12, color: colors.neutral.grey3),
+                    style: app.styles.s.copyWith(color: colors.neutral.grey3),
                   ),
                 ),
                 Flexible(

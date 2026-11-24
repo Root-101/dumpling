@@ -1,8 +1,13 @@
-export 'data/repo/workspace_repo.dart';
-export 'data/rest/workspace_client.dart';
-export 'logic/cubit/workspace_cubit.dart';
+export 'data/repo/workspaces_repo.dart';
+export 'data/rest/workspaces_client.dart';
+export 'logic/cubit/workspaces_cubit.dart';
 export 'logic/cubit/workspace_form_cubit.dart';
+export 'logic/cubit/workspace_transfer_cubit.dart';
 export 'logic/model/workspace_model.dart';
+export 'logic/model/workspace_defaults.dart';
+export 'logic/model/workspace_preview_link.dart';
+export 'logic/model/workspace_stats_model.dart';
+export 'logic/model/workspace_form_model.dart';
 export 'view/form/workspace_form.dart';
 export 'view/settings/workspace_settings.dart';
 export 'view/transfer/workspace_transfer.dart';

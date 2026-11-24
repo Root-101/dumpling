@@ -1,21 +1,16 @@
 import 'package:console/app_exporter.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show PlatformDispatcher, kIsWeb;
 import 'package:flutter/material.dart' as old;
 import 'package:flutter/services.dart' show BrowserContextMenu;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 import 'package:material_ui/material_ui.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 final String loadingOverlayGlobalId = 'app-global-loading';
-
-/// The Material texts that `material_ui` widgets read; the app's own come from
-/// `context.intl` (slang). Every MaterialApp uses these (app and splash)
-const List<LocalizationsDelegate<dynamic>> appLocalizationsDelegates = [
-  ...GlobalMaterialLocalizations.delegates,
-];
 
 // generate code
 // fvm dart run slang
@@ -28,8 +23,12 @@ class Init {
 
   static final instance = Init._();
 
-  Future initialize() async {
-    await FeaturesInit.init();
+  /// The features, with the splash shown for at least a second meanwhile
+  Future<void> initialize() async {
+    await Future.wait([
+      FeaturesInit.init(),
+      Future<void>.delayed(const Duration(seconds: 1)),
+    ]);
   }
 }
 
@@ -38,23 +37,57 @@ void main() {
   GoRouter.optionURLReflectsImperativeAPIs = true;
 
   WidgetsFlutterBinding.ensureInitialized();
+  // Nothing unexpected goes unseen: to the browser console
+  FlutterError.onError = (details) =>
+      app.logger.e(details.exceptionAsString(), stackTrace: details.stack);
+  PlatformDispatcher.instance.onError = (error, stackTrace) {
+    app.logger.e('Unhandled error', error: error, stackTrace: stackTrace);
+    return true;
+  };
+  // Until the saved one loads: the browser's language, if it is one of ours
+  AppIntl.current = AppIntl.resolve(
+    WidgetsBinding.instance.platformDispatcher.locale.languageCode,
+  );
   // the right click is the canvas's own menu, not the browser's
   if (kIsWeb) BrowserContextMenu.disableContextMenu();
 
-  runApp(
-    FutureBuilder(
-      future: Init.instance.initialize(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return MultiBlocProvider(
-            providers: [...FeaturesInit.blocProviders],
-            child: const App(),
-          );
-        } else {
-          return const SplashScreen();
-        }
-      },
-    ),
+  runApp(const Startup());
+}
+
+/// The splash while [Init] runs; the console once it is done, or what failed
+/// with «Try again»
+class Startup extends StatefulWidget {
+  const Startup({super.key});
+
+  @override
+  State<Startup> createState() => _StartupState();
+}
+
+class _StartupState extends State<Startup> {
+  late Future<void> _init = Init.instance.initialize();
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder(
+    future: _init,
+    builder: (context, snapshot) {
+      if (snapshot.connectionState != ConnectionState.done) {
+        return const SplashScreen();
+      }
+      if (snapshot.hasError) {
+        app.logger.e(
+          'The console could not start',
+          error: snapshot.error,
+          stackTrace: snapshot.stackTrace,
+        );
+        return InitErrorScreen(
+          onRetry: () => setState(() => _init = Init.instance.initialize()),
+        );
+      }
+      return MultiBlocProvider(
+        providers: [...FeaturesInit.blocProviders],
+        child: const App(),
+      );
+    },
   );
 }
 
@@ -69,13 +102,12 @@ class App extends StatelessWidget {
         if (size.width < 800 || size.height < 400) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            theme: ThemeConfig.theme,
+            theme: AppTheme.dark,
             locale: locale,
-            localizationsDelegates: appLocalizationsDelegates,
-            supportedLocales: appSupportedLocales,
-            builder: (context, child) => Scaffold(
-              body: Center(child: Text(context.intl.app.needMoreSpace)),
-            ),
+            localizationsDelegates: AppIntl.delegates,
+            supportedLocales: AppIntl.supportedLocales,
+            builder: (context, child) =>
+                Scaffold(body: Center(child: Text(app.intl.app.needMoreSpace))),
           );
         } else {
           return MaterialApp.router(
@@ -95,12 +127,12 @@ class App extends StatelessWidget {
               );
             },
             debugShowCheckedModeBanner: false,
-            onGenerateTitle: (context) => context.intl.app.name,
-            theme: ThemeConfig.theme,
+            onGenerateTitle: (context) => app.intl.app.name,
+            theme: AppTheme.dark,
             locale: locale,
             routerConfig: RouteConfig.router,
-            localizationsDelegates: appLocalizationsDelegates,
-            supportedLocales: appSupportedLocales,
+            localizationsDelegates: AppIntl.delegates,
+            supportedLocales: AppIntl.supportedLocales,
           );
         }
       },
@@ -118,7 +150,7 @@ class AppGlobal {
   factory AppGlobal() => _instance;
 
   /// The version shown under the login (the `version` of pubspec.yaml)
-  static const String version = '0.1.7';
+  static const String version = '0.1.8';
 
   BuildContext get context => navigatorKey.currentContext!;
 
@@ -126,13 +158,8 @@ class AppGlobal {
 
   TextTheme get textTheme => theme.textTheme;
 
-  /// Texts of the app's language; without a navigator yet (or in tests), those
-  /// of `Intl.defaultLocale`, English by default
-  AppMessages get intl {
-    final context = navigatorKey.currentContext;
-    if (context != null) return context.intl;
-    return messagesOf(Locale(Intl.defaultLocale ?? 'en'));
-  }
+  /// Texts of the current language (`AppIntl.current`, set by `LanguageCubit`)
+  AppTexts get intl => AppIntl.texts;
 
   LoadingOverlayController loading = LoadingOverlayController();
 
@@ -143,6 +170,8 @@ class AppGlobal {
   AppDimensions dimensions = AppDimensions();
 
   AppColors colors = AppColors();
+
+  AppTextStyles styles = AppTextStyles();
 
   AppAssets assets = AppAssets();
 
@@ -155,4 +184,7 @@ class AppGlobal {
   DialogHelper dialog = DialogHelper();
 
   MediaQueryData get mediaQuery => MediaQuery.of(context);
+
+  /// Unexpected errors and warnings, to the browser console
+  Logger logger = Logger(printer: SimplePrinter(printTime: true));
 }

@@ -5,14 +5,14 @@ class CanvasInit {
     CanvasClient client = CanvasClient(app.di.find());
     app.di.put(client);
 
-    CanvasRepo repo = CanvasRepo(client);
+    CanvasRepo repo = CanvasRepo(client: client);
     app.di.put(repo);
 
     CanvasCubit cubit = CanvasCubit(
-      repo,
-      app.di.find(),
-      app.di.find(),
-      app.di.find(),
+      auth: app.di.find(),
+      repo: repo,
+      sources: app.di.find(),
+      destinations: app.di.find(),
     );
     app.di.put(cubit);
   }
