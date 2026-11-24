@@ -82,15 +82,13 @@ class _SessionExpiredDialogState extends State<SessionExpiredDialog> {
     return BlocConsumer<AuthCubit, AuthState>(
       bloc: _auth,
       listener: (context, state) {
-        if (state is AuthProcessingOKState) {
+        if (state is AuthLoggedInOkState) {
           TextInput.finishAutofillContext();
           Navigator.of(context).pop();
-          // the rail's workspaces may have failed with the old token
-          app.di.find<WorkspacesCubit>().load();
         }
       },
       builder: (context, state) {
-        final loading = state is AuthProcessInProgressState;
+        final loading = state is AuthLoggingInState;
         return Align(
           alignment: const Alignment(0, -0.4),
           child: Container(
@@ -147,7 +145,7 @@ class _SessionExpiredDialogState extends State<SessionExpiredDialog> {
                         color: app.colors.neutral.grey3,
                       ),
                     ),
-                    if (state is AuthProcessingErrorState) ...[
+                    if (state is AuthLoggingInErrorState) ...[
                       16.gap(),
                       AppFormAlert(
                         title: state.exception.intlMessage,

@@ -20,6 +20,8 @@ class WorkspacesCubit extends Cubit<WorkspacesState>
     onBus<BackupsRanNowOkState>((_) => load());
     onBus<CanvasRanNowOkState>((_) => load());
     onBus<CanvasSavedOkState>((_) => load());
+    // after an expired session it may have failed with the old token
+    onBus<AuthLoggedInOkState>((_) => load());
   }
 
   /// The workspace opened last, before the first screen

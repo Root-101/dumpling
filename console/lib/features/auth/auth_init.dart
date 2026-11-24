@@ -8,7 +8,7 @@ class AuthInit {
     AuthRepo repo = AuthRepo(client, storage: app.di.find());
     app.di.put(repo);
 
-    AuthCubit cubit = AuthCubit(repo);
+    AuthCubit cubit = AuthCubit(repo: repo);
     // Before the router is built: a saved session skips the login
     await cubit.restore();
     app.di.put(cubit);

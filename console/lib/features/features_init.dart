@@ -54,7 +54,7 @@ class FeaturesInit {
 
     // Listen for logout to reset other cubits
     app.di.find<AuthCubit>().stream.listen((state) async {
-      if (state is AuthLogoutState) {
+      if (state is AuthLoggedOutState) {
         await _resetCubits();
       }
       if (state is AuthExpiredState) {
@@ -86,7 +86,9 @@ class FeaturesInit {
       create: (context) => app.di.find<WorkspacesCubit>(),
     ),
     // SOURCES: of the open workspace
-    BlocProvider<SourcesCubit>(create: (context) => app.di.find<SourcesCubit>()),
+    BlocProvider<SourcesCubit>(
+      create: (context) => app.di.find<SourcesCubit>(),
+    ),
     // DESTINATIONS: of the open workspace
     BlocProvider<DestinationsCubit>(
       create: (context) => app.di.find<DestinationsCubit>(),
@@ -96,8 +98,12 @@ class FeaturesInit {
     // RUNS: the run log of the open workspace
     BlocProvider<RunsCubit>(create: (context) => app.di.find<RunsCubit>()),
     // BACKUPS: the home of the open workspace
-    BlocProvider<BackupsCubit>(create: (context) => app.di.find<BackupsCubit>()),
+    BlocProvider<BackupsCubit>(
+      create: (context) => app.di.find<BackupsCubit>(),
+    ),
     // API KEYS: of the open workspace
-    BlocProvider<ApiKeysCubit>(create: (context) => app.di.find<ApiKeysCubit>()),
+    BlocProvider<ApiKeysCubit>(
+      create: (context) => app.di.find<ApiKeysCubit>(),
+    ),
   ];
 }

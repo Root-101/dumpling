@@ -36,7 +36,7 @@ void main() {
     whenListen(
       auth,
       const Stream<AuthState>.empty(),
-      initialState: AuthInitialState(),
+      initialState: const AuthInitialState(),
     );
     whenListen(
       language,

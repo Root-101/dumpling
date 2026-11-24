@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onLogin() {
     // Enter in a field still reaches here under the overlay
-    if (context.read<AuthCubit>().state is AuthProcessInProgressState) return;
+    if (context.read<AuthCubit>().state is AuthLoggingInState) return;
     if (!_submitted) setState(() => _submitted = true);
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthCubit>().login(
@@ -64,10 +64,10 @@ class _LoginScreenState extends State<LoginScreen> {
         // On success the router leaves the login by itself (it listens to
         // AuthCubit), to the page asked for before logging in. Closing the
         // autofill context first lets the browser offer to save the password
-        if (state is AuthProcessingOKState) {
+        if (state is AuthLoggedInOkState) {
           TextInput.finishAutofillContext();
         }
-        if (state is AuthProcessInProgressState) {
+        if (state is AuthLoggingInState) {
           app.loading.show(id: _loadingId);
         } else {
           app.loading.hide(id: _loadingId);
@@ -210,7 +210,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: app.colors.neutral.grey4,
                     ),
                   ),
-                  if (state is AuthProcessingErrorState) ...[
+                  if (state is AuthLoggingInErrorState) ...[
                     18.gap(),
                     AppFormAlert(
                       title: state.exception.intlMessage,

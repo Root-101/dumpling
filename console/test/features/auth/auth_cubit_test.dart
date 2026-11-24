@@ -20,7 +20,7 @@ void main() {
   Future<AuthCubit> signedIn() async {
     when(() => repo.login(username: 'admin', password: 'right'))
         .thenAnswer((_) async => session());
-    final cubit = AuthCubit(repo);
+    final cubit = AuthCubit(repo: repo);
     await cubit.login(username: 'admin', password: 'right');
     return cubit;
   }
@@ -53,18 +53,18 @@ void main() {
       );
 
       await cubit.login(username: 'admin', password: 'wrong');
-      expect(cubit.state, isA<AuthProcessingErrorState>());
+      expect(cubit.state, isA<AuthLoggingInErrorState>());
       expect(cubit.auth, isNotNull);
       expect(cubit.expired, isTrue);
 
       await cubit.login(username: 'admin', password: 'right');
-      expect(cubit.state, isA<AuthProcessingOKState>());
+      expect(cubit.state, isA<AuthLoggedInOkState>());
       expect(cubit.expired, isFalse);
     },
   );
 
   test('Without a session a 401 expires nothing', () {
-    final cubit = AuthCubit(repo)..expire();
+    final cubit = AuthCubit(repo: repo)..expire();
     expect(cubit.expired, isFalse);
   });
 

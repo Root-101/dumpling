@@ -55,7 +55,7 @@ void main() {
   setUpAll(loadAppFonts);
 
   setUpAll(() {
-    whenListen(auth, authStates.stream, initialState: AuthInitialState());
+    whenListen(auth, authStates.stream, initialState: const AuthInitialState());
     whenListen(
       language,
       const Stream<LanguageState>.empty(),
@@ -233,7 +233,7 @@ void main() {
 
     // A wrong password shows what the service said, with what to do
     authStates.add(
-      AuthProcessingErrorState(
+      AuthLoggingInErrorState(
         GlobalException(
           type: GlobalExceptionType.auth,
           message: 'Wrong username or password',
@@ -464,7 +464,8 @@ void main() {
         const Stream<BackupsState>.empty(),
         initialState: BackupsSearchErrorState(
           GlobalException(type: GlobalExceptionType.offline, message: ''),
-          data: const BackupsData.empty('production').withCanvas(backupCanvas()),
+          data: const BackupsData.empty('production')
+              .withCanvas(backupCanvas()),
         ),
       );
       RouteConfig.router.go('/workspaces/production/backups');
