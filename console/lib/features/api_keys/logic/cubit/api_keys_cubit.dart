@@ -2,62 +2,67 @@ import 'package:console/app_exporter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// The API keys of the open workspace: list, search, the filters, the order
-/// and the form's save. The configs (and the names of their ends) are
-/// loaded with them, for the form and the filter by config
-class ApiKeysCubit extends Cubit<ApiKeysState> {
-  final ApiKeysRepo _repo;
-  final ConfigsRepo _configs;
-  final SourcesRepo _sources;
-  final DestinationsRepo _destinations;
-  final AuthCubit _auth;
+/// and delete. The configs (and the names of their ends) are loaded with
+/// them, for the form and the filter by config
+class ApiKeysCubit extends Cubit<ApiKeysState>
+    with GlobalEventBusCommunication<ApiKeysState> {
+  final AuthCubit auth;
+  final ApiKeysRepo repo;
+  final ConfigsRepo configs;
+  final SourcesRepo sources;
+  final DestinationsRepo destinations;
 
-  ApiKeysCubit(
-    this._repo,
-    this._configs,
-    this._sources,
-    this._destinations,
-    this._auth,
-  ) : super(const ApiKeysInitialState());
+  ApiKeysCubit({
+    required this.auth,
+    required this.repo,
+    required this.configs,
+    required this.sources,
+    required this.destinations,
+  }) : super(const ApiKeysInitialState()) {
+    // a key saved in its form: a new one goes last, a changed one in place
+    onBus<ApiKeyFormProcessingOKState>(_saved);
+  }
 
-  String? get _token => _auth.auth?.accessToken;
+  /// The service gives no refresh token: the one of the session, or none
+  String? get _token => auth.auth?.accessToken;
 
   /// The keys of [workspace]; another workspace starts from empty
   Future<void> load(String workspace) async {
     final data = state.data.workspace == workspace
         ? state.data
         : ApiKeysData.empty(workspace);
-    emit(ApiKeysLoadingInProgressState(data: data));
+    emit(ApiKeysSearchingState(data: data));
     try {
       final results = await Future.wait([
-        _repo.list(workspace: workspace, token: _token),
-        _configs.list(workspace: workspace, token: _token),
-        _sources.list(workspace: workspace, token: _token),
-        _destinations.list(workspace: workspace, token: _token),
+        repo.list(workspace: workspace, token: _token),
+        configs.list(workspace: workspace, token: _token),
+        sources.list(workspace: workspace, token: _token),
+        destinations.list(workspace: workspace, token: _token),
       ]);
       // the answer of a workspace already left behind is dropped
       if (state.data.workspace != workspace) return;
-      final sources = {
+      final sourceNames = {
         for (final s in results[2] as List<SourceModel>) s.id: s.name,
       };
-      final destinations = {
+      final destinationNames = {
         for (final d in results[3] as List<DestinationModel>)
           d.id: d.s3?.bucket ?? d.name,
       };
       emit(
-        ApiKeysLoadingSuccessState(
+        ApiKeysSearchOkState(
           data: state.data._copy(
             loaded: true,
             keys: results[0] as List<ApiKeyModel>,
             configs: results[1] as List<ConfigModel>,
-            sourceNames: sources,
-            destinationNames: destinations,
+            sourceNames: sourceNames,
+            destinationNames: destinationNames,
           ),
         ),
       );
-    } catch (e) {
+    } on Exception catch (e) {
       if (state.data.workspace != workspace) return;
       emit(
-        ApiKeysLoadingErrorState(ExceptionConverter.parse(e), data: state.data),
+        ApiKeysSearchErrorState(ExceptionConverter.parse(e), data: state.data),
       );
     }
   }
@@ -91,54 +96,27 @@ class ApiKeysCubit extends Cubit<ApiKeysState> {
     ),
   );
 
-  void _show(ApiKeysData data) => emit(ApiKeysLoadingSuccessState(data: data));
+  void _show(ApiKeysData data) => emit(ApiKeysSearchOkState(data: data));
 
-  /// Creates the key, or changes [id]; the new key comes with its text. Null
-  /// when the service refuses it (the error goes to the state)
-  Future<ApiKeyModel?> save(ApiKeyDraft draft, {String? id}) async {
-    final workspace = state.data.workspace!;
-    emit(ApiKeysProcessInProgressState(data: state.data));
-    try {
-      final key = await _repo.save(
-        workspace: workspace,
-        draft: draft,
-        id: id,
-        token: _token,
-      );
-      if (state.data.workspace != workspace) return null;
-      final keys = id == null
-          ? [...state.data.keys, key]
-          : [for (final k in state.data.keys) k.id == id ? key : k];
-      emit(
-        ApiKeysProcessingOKState(
-          id == null ? ApiKeysAction.created : ApiKeysAction.saved,
-          key,
-          data: state.data._copy(keys: keys),
-        ),
-      );
-      return key;
-    } catch (e) {
-      emit(
-        ApiKeysProcessingErrorState(
-          ExceptionConverter.parse(e).intlMessage,
-          data: state.data,
-        ),
-      );
-      return null;
-    }
+  void _saved(ApiKeyFormProcessingOKState saved) {
+    if (saved.workspace != state.data.workspace) return;
+    final key = saved.key;
+    final keys = saved.created
+        ? [...state.data.keys, key]
+        : [for (final k in state.data.keys) k.id == key.id ? key : k];
+    emit(ApiKeysSearchOkState(data: state.data._copy(keys: keys)));
   }
 
   Future<void> delete(ApiKeyModel key) async {
-    emit(ApiKeysProcessInProgressState(data: state.data));
+    emit(ApiKeysDeletingState(key, data: state.data));
     try {
-      await _repo.delete(
+      await repo.delete(
         workspace: state.data.workspace!,
         id: key.id,
         token: _token,
       );
       emit(
-        ApiKeysProcessingOKState(
-          ApiKeysAction.deleted,
+        ApiKeysDeletedOkState(
           key,
           data: state.data._copy(
             keys: [
@@ -148,10 +126,10 @@ class ApiKeysCubit extends Cubit<ApiKeysState> {
           ),
         ),
       );
-    } catch (e) {
+    } on Exception catch (e) {
       emit(
-        ApiKeysProcessingErrorState(
-          ExceptionConverter.parse(e).intlMessage,
+        ApiKeysDeletingErrorState(
+          ExceptionConverter.parse(e),
           data: state.data,
         ),
       );
@@ -163,20 +141,17 @@ class ApiKeysCubit extends Cubit<ApiKeysState> {
   Future<void> reorder(int from, int to) async {
     final before = state.data;
     final keys = reordered(before.keys, from, to);
-    emit(ApiKeysLoadingSuccessState(data: before._copy(keys: keys)));
+    emit(ApiKeysSearchOkState(data: before._copy(keys: keys)));
     try {
-      await _repo.reorder(
+      await repo.reorder(
         workspace: before.workspace!,
         ids: [for (final k in keys) k.id],
         token: _token,
       );
-    } catch (e) {
+    } on Exception catch (e) {
       if (state.data.workspace != before.workspace) return;
       emit(
-        ApiKeysProcessingErrorState(
-          ExceptionConverter.parse(e).intlMessage,
-          data: before,
-        ),
+        ApiKeysReorderingErrorState(ExceptionConverter.parse(e), data: before),
       );
     }
   }
@@ -186,7 +161,6 @@ class ApiKeysCubit extends Cubit<ApiKeysState> {
 }
 
 /// What a key action did, so the view can confirm it
-enum ApiKeysAction { created, saved, deleted }
 
 /// The loaded keys and what the search and the filters leave ([visibleKeys],
 /// filled on every change)
@@ -316,44 +290,62 @@ class ApiKeysData {
 }
 
 abstract class ApiKeysState {
+  /// The keys of the open workspace, kept in every state
   final ApiKeysData data;
 
   const ApiKeysState({this.data = const ApiKeysData.empty()});
 }
 
-class ApiKeysInitialState extends ApiKeysState {
+final class ApiKeysInitialState extends ApiKeysState {
   const ApiKeysInitialState();
 }
 
-//------------------------- LOADING -------------------------\
-class ApiKeysLoadingInProgressState extends ApiKeysState {
-  const ApiKeysLoadingInProgressState({required super.data});
+//----------------- search -----------------\\
+abstract class ApiKeysSearchState extends ApiKeysState {
+  const ApiKeysSearchState({required super.data});
 }
 
-class ApiKeysLoadingSuccessState extends ApiKeysState {
-  const ApiKeysLoadingSuccessState({required super.data});
+final class ApiKeysSearchingState extends ApiKeysSearchState {
+  const ApiKeysSearchingState({required super.data});
 }
 
-class ApiKeysLoadingErrorState extends ApiKeysState {
+final class ApiKeysSearchOkState extends ApiKeysSearchState {
+  const ApiKeysSearchOkState({required super.data});
+}
+
+final class ApiKeysSearchErrorState extends ApiKeysSearchState {
   final GlobalException exception;
 
-  const ApiKeysLoadingErrorState(this.exception, {required super.data});
+  const ApiKeysSearchErrorState(this.exception, {required super.data});
 }
 
-//------------------------- PROCESSING -------------------------\
-class ApiKeysProcessInProgressState extends ApiKeysState {
-  const ApiKeysProcessInProgressState({required super.data});
+//----------------- delete -----------------\\
+abstract class ApiKeysDeleteState extends ApiKeysState {
+  const ApiKeysDeleteState({required super.data});
 }
 
-class ApiKeysProcessingOKState extends ApiKeysState {
-  final ApiKeysAction action;
+final class ApiKeysDeletingState extends ApiKeysDeleteState {
   final ApiKeyModel key;
 
-  const ApiKeysProcessingOKState(this.action, this.key, {required super.data});
+  const ApiKeysDeletingState(this.key, {required super.data});
 }
 
-class ApiKeysProcessingErrorState extends ApiKeysState {
-  final String message;
+final class ApiKeysDeletedOkState extends ApiKeysDeleteState {
+  final ApiKeyModel key;
 
-  const ApiKeysProcessingErrorState(this.message, {required super.data});
+  const ApiKeysDeletedOkState(this.key, {required super.data});
+}
+
+final class ApiKeysDeletingErrorState extends ApiKeysDeleteState {
+  final GlobalException exception;
+
+  const ApiKeysDeletingErrorState(this.exception, {required super.data});
+}
+
+//----------------- reorder -----------------\\
+/// The order went back as it was (the move is shown before it is saved)
+final class ApiKeysReorderingErrorState extends ApiKeysState {
+  final GlobalException exception;
+
+  const ApiKeysReorderingErrorState(this.exception, {required super.data});
 }

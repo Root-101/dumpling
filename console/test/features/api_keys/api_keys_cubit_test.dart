@@ -68,7 +68,13 @@ void main() {
   });
 
   Future<ApiKeysCubit> loaded() async {
-    final cubit = ApiKeysCubit(repo, configs, sources, destinations, auth);
+    final cubit = ApiKeysCubit(
+      auth: auth,
+      repo: repo,
+      configs: configs,
+      sources: sources,
+      destinations: destinations,
+    );
     await cubit.load('production');
     return cubit;
   }
@@ -170,10 +176,22 @@ void main() {
       ),
     ).thenAnswer((_) async => apiKey('new', key: 'dmp_x_secret'));
     final cubit = await loaded();
-    final created = await cubit.save(
+    // the form saves it; the list takes it from the bus
+    ApiKeyFormCubit form({String? id}) => ApiKeyFormCubit(
+      auth: auth,
+      repo: repo,
+      workspace: 'production',
+      keyId: id,
+    );
+    final create = form();
+    await create.save(
       const ApiKeyDraft(name: 'new', permissions: ['run.list'], configIds: []),
     );
-    expect(created?.key, 'dmp_x_secret');
+    await Future<void>.delayed(Duration.zero);
+    expect(
+      (create.state as ApiKeyFormProcessingOKState).key.key,
+      'dmp_x_secret',
+    );
     expect(visible(cubit), ['deploy', 'grafana', 'provisioning', 'new']);
 
     when(
@@ -183,11 +201,20 @@ void main() {
         id: 'key_grafana',
         token: 'jwt',
       ),
-    ).thenAnswer((_) async => apiKey('grafana-ro'));
-    await cubit.save(
-      const ApiKeyDraft(name: 'grafana-ro', permissions: [], configIds: []),
-      id: 'key_grafana',
+    ).thenAnswer(
+      // the same key, renamed
+      (_) async => ApiKeyModel(
+        id: 'key_grafana',
+        name: 'grafana-ro',
+        permissions: const [],
+        configIds: const [],
+        createdAt: DateTime.utc(2026, 10, 2),
+      ),
     );
+    await form(id: 'key_grafana').save(
+      const ApiKeyDraft(name: 'grafana-ro', permissions: [], configIds: []),
+    );
+    await Future<void>.delayed(Duration.zero);
     expect(visible(cubit), ['deploy', 'grafana-ro', 'provisioning', 'new']);
   });
 
@@ -201,7 +228,7 @@ void main() {
     ).thenThrow(apiError());
     final cubit = await loaded();
     await cubit.reorder(2, 0);
-    expect(cubit.state, isA<ApiKeysProcessingErrorState>());
+    expect(cubit.state, isA<ApiKeysReorderingErrorState>());
     expect(visible(cubit), ['deploy', 'grafana', 'provisioning']);
   });
 
@@ -212,7 +239,7 @@ void main() {
     ).thenAnswer((_) async {});
     final cubit = await loaded();
     await cubit.delete(cubit.state.data.keys.first);
-    expect(cubit.state, isA<ApiKeysProcessingOKState>());
+    expect(cubit.state, isA<ApiKeysDeletedOkState>());
     expect(visible(cubit), ['grafana', 'provisioning']);
   });
 }

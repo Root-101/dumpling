@@ -33,7 +33,13 @@ void main() {
         .thenAnswer((_) async => [source('orders-database-01')]);
     when(() => destinations.list(workspace: 'production', token: 'jwt'))
         .thenAnswer((_) async => [destination('bucket')]);
-    final cubit = ApiKeysCubit(repo, configs, sources, destinations, auth);
+    final cubit = ApiKeysCubit(
+      auth: auth,
+      repo: repo,
+      configs: configs,
+      sources: sources,
+      destinations: destinations,
+    );
     await cubit.load('production');
 
     tester.view
@@ -47,8 +53,11 @@ void main() {
         home: const Scaffold(),
       ),
     );
+    // the form builds its own cubit from the DI
+    app.di.put<AuthCubit>(auth);
+    app.di.put<ApiKeysRepo>(repo);
     ApiKeyForm.open(
-      cubit,
+      cubit.state.data,
       key: ApiKeyModel(
         id: 'key_deploy',
         name: 'deploy',

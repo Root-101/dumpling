@@ -9,11 +9,11 @@ class ApiKeysInit {
     app.di.put(repo);
 
     ApiKeysCubit cubit = ApiKeysCubit(
-      repo,
-      app.di.find(),
-      app.di.find(),
-      app.di.find(),
-      app.di.find(),
+      auth: app.di.find(),
+      repo: repo,
+      configs: app.di.find(),
+      sources: app.di.find(),
+      destinations: app.di.find(),
     );
     app.di.put(cubit);
   }

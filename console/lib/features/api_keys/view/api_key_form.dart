@@ -1,31 +1,43 @@
 import 'package:console/app_exporter.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The form of a key: its name, a template and the permissions one by one, and
 /// optionally the only configs it reaches. Creating it shows the key once
 class ApiKeyForm extends StatefulWidget {
-  /// Opens the form of [key], or of a new one
-  static Future<void> open(ApiKeysCubit cubit, {ApiKeyModel? key}) {
-    return showGeneralDialog(
+  /// Opens the form of [key], or of a new one, over the list of [data]
+  static Future<void> open(ApiKeysData data, {ApiKeyModel? key}) async {
+    final formCubit = ApiKeyFormCubit(
+      auth: app.di.find(),
+      repo: app.di.find(),
+      workspace: data.workspace!,
+      keyId: key?.id,
+    );
+    await showGeneralDialog(
       context: app.context,
       barrierDismissible: true,
       barrierLabel: app.intl.common.close,
       barrierColor: app.colors.neutral.black.withValues(alpha: 0.54),
       transitionDuration: const Duration(milliseconds: 200),
       pageBuilder: (context, animation, secondaryAnimation) =>
-          ApiKeyForm(cubit: cubit, apiKey: key),
+          BlocProvider.value(
+            value: formCubit,
+            child: ApiKeyForm(data: data, apiKey: key),
+          ),
       transitionBuilder: (context, animation, secondaryAnimation, child) =>
           FadeTransition(opacity: animation, child: child),
     );
+    await formCubit.close();
   }
 
-  final ApiKeysCubit cubit;
+  /// The list it opens over: the configs and the names of their ends
+  final ApiKeysData data;
 
   /// Null for a new one
   final ApiKeyModel? apiKey;
 
-  const ApiKeyForm({required this.cubit, this.apiKey, super.key});
+  const ApiKeyForm({required this.data, this.apiKey, super.key});
 
   @override
   State<ApiKeyForm> createState() => _ApiKeyFormState();
@@ -70,14 +82,34 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
       ],
       configIds: _limit ? _configs.toList() : const [],
     );
-    final saved = await widget.cubit.save(draft, id: widget.apiKey?.id);
-    if (saved == null || !mounted) return;
-    Navigator.of(context).pop();
-    if (saved.key != null) {
-      await ApiKeyCreatedDialog.open(
-        saved,
-        workspace: widget.cubit.state.data.workspace!,
-      );
+    await context.read<ApiKeyFormCubit>().save(draft);
+  }
+
+  void _onState(BuildContext context, ApiKeyFormState state) {
+    if (state is ApiKeyFormProcessInProgressState) {
+      app.loading.show();
+    } else {
+      app.loading.hide();
+    }
+    if (state is ApiKeyFormProcessingOKState) {
+      Navigator.of(context).pop();
+      if (state.created) {
+        // the only time the whole key is shown
+        ApiKeyCreatedDialog.open(state.key, workspace: state.workspace);
+      } else {
+        app.snack.showSuccess(
+          message: app.intl.apiKeys.saved(name: state.key.name),
+          context: app.context,
+        );
+      }
+    }
+    final failed = switch (state) {
+      ApiKeyFormProcessingErrorState(:final exception) ||
+      ApiKeyFormValidationErrorState(:final exception) => exception,
+      _ => null,
+    };
+    if (failed != null) {
+      app.snack.showError(message: failed.intlMessage, context: app.context);
     }
   }
 
@@ -85,180 +117,186 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
   Widget build(BuildContext context) {
     final t = app.intl.apiKeys;
     final colors = app.colors;
-    final data = widget.cubit.state.data;
+    final data = widget.data;
     final access = ApiKeyAccess.of(_permissions, limited: _limit);
     final label = TextStyle(
       fontSize: 13,
       fontWeight: FontWeight.w600,
       color: colors.text.primary,
     );
-    return FormDialogTemplate(
-      title: _editing ? t.editTitle(name: widget.apiKey!.name) : t.newTitle,
-      width: 760,
-      actions: [
-        Expanded(
-          child: Text(
-            _limit
-                ? t.summarySome(
-                    configs: _configs.length,
-                    n: _permissions.length,
-                  )
-                : t.summaryAll(n: _permissions.length),
-            style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+    return BlocListener<ApiKeyFormCubit, ApiKeyFormState>(
+      listener: _onState,
+      child: FormDialogTemplate(
+        title: _editing ? t.editTitle(name: widget.apiKey!.name) : t.newTitle,
+        width: 760,
+        actions: [
+          Expanded(
+            child: Text(
+              _limit
+                  ? t.summarySome(
+                      configs: _configs.length,
+                      n: _permissions.length,
+                    )
+                  : t.summaryAll(n: _permissions.length),
+              style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+            ),
           ),
-        ),
-        PrimaryButton.secondary(
-          onPressed: () => Navigator.of(context).pop(),
-          title: app.intl.common.cancel,
-          h: 40,
-          horizontalPadding: 16,
-        ),
-        PrimaryButton.primary(
-          onPressed: _valid ? _save : null,
-          title: _editing ? t.save : t.createButton,
-          color: colors.primary.primaryAction,
-          h: 40,
-          horizontalPadding: 20,
-        ),
-      ],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: 18,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 6,
-            children: [
-              Text(t.name, style: label),
-              AppFormInput(
-                controller: _name,
-                autofocus: !_editing,
-                maxLength: 64,
-                onChange: (_) => setState(() {}),
-              ),
-              Text(
-                t.nameHint,
-                style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
-              ),
-            ],
+          PrimaryButton.secondary(
+            onPressed: () => Navigator.of(context).pop(),
+            title: app.intl.common.cancel,
+            h: 40,
+            horizontalPadding: 16,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 8,
-            children: [
-              Text(t.access, style: label),
-              // as tall as the one whose text takes more lines
-              IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  spacing: 10,
-                  children: [
-                    for (final (template, sub) in [
-                      (ApiKeyAccess.run, t.runSub),
-                      (ApiKeyAccess.read, t.readSub),
-                      (ApiKeyAccess.full, t.fullSub),
-                    ])
-                      Expanded(
-                        child: _TemplateCard(
-                          title: template.label,
-                          subtitle: sub,
-                          selected: access == template,
-                          onTap: () => setState(
-                            () => _permissions = {
-                              ...ApiKeyPermissions.of(
-                                template,
-                                limited: _limit,
-                              ),
-                            },
+          PrimaryButton.primary(
+            onPressed: _valid ? _save : null,
+            title: _editing ? t.save : t.createButton,
+            color: colors.primary.primaryAction,
+            h: 40,
+            horizontalPadding: 20,
+          ),
+        ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 18,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 6,
+              children: [
+                Text(t.name, style: label),
+                AppFormInput(
+                  controller: _name,
+                  autofocus: !_editing,
+                  maxLength: 64,
+                  onChange: (_) => setState(() {}),
+                ),
+                Text(
+                  t.nameHint,
+                  style: TextStyle(fontSize: 12, color: colors.neutral.grey4),
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 8,
+              children: [
+                Text(t.access, style: label),
+                // as tall as the one whose text takes more lines
+                IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: 10,
+                    children: [
+                      for (final (template, sub) in [
+                        (ApiKeyAccess.run, t.runSub),
+                        (ApiKeyAccess.read, t.readSub),
+                        (ApiKeyAccess.full, t.fullSub),
+                      ])
+                        Expanded(
+                          child: _TemplateCard(
+                            title: template.label,
+                            subtitle: sub,
+                            selected: access == template,
+                            onTap: () => setState(
+                              () => _permissions = {
+                                ...ApiKeyPermissions.of(
+                                  template,
+                                  limited: _limit,
+                                ),
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              _PermissionGrid(
-                selected: _permissions,
-                custom: access == ApiKeyAccess.custom,
-                locked: _limit ? ApiKeyPermissions.notLimitable : const [],
-                onToggle: (key) => setState(() {
-                  if (!_permissions.remove(key)) _permissions.add(key);
-                  if (!_canLimit) _limit = false;
-                }),
-              ),
-            ],
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 8,
-            children: [
-              AppSwitchTile(
-                title: t.limit,
-                subtitle: _canLimit ? t.limitHint : t.limitOff,
-                value: _limit,
-                onChanged: _canLimit
-                    ? () => setState(() {
-                        _limit = !_limit;
-                        if (_limit) {
-                          _permissions.removeAll(
-                            ApiKeyPermissions.notLimitable,
-                          );
-                        }
-                      })
-                    : null,
-              ),
-              if (_limit)
-                data.configs.isEmpty
-                    ? Text(
-                        t.noConfigs,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colors.neutral.grey4,
-                        ),
-                      )
-                    : LayoutBuilder(
-                        builder: (_, constraints) => Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final config in data.configs)
-                              SizedBox(
-                                // the id doesn't shrink: on a phone, one per row
-                                width: constraints.maxWidth < 520
-                                    ? constraints.maxWidth
-                                    : (constraints.maxWidth - 8) / 2,
-                                child: _ConfigChip(
-                                  name: config.name,
-                                  id: config.id,
-                                  route: data.routeOf(config),
-                                  selected: _configs.contains(config.id),
-                                  onTap: () => setState(() {
-                                    if (!_configs.remove(config.id)) {
-                                      _configs.add(config.id);
-                                    }
-                                  }),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-            ],
-          ),
-          if (_editing)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: colors.primary.primaryFaded.withValues(alpha: 0.10),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                t.renewNote,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: colors.primary.primaryLight,
+                _PermissionGrid(
+                  selected: _permissions,
+                  custom: access == ApiKeyAccess.custom,
+                  locked: _limit ? ApiKeyPermissions.notLimitable : const [],
+                  onToggle: (key) => setState(() {
+                    if (!_permissions.remove(key)) _permissions.add(key);
+                    if (!_canLimit) _limit = false;
+                  }),
                 ),
-              ),
+              ],
             ),
-        ],
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 8,
+              children: [
+                AppSwitchTile(
+                  title: t.limit,
+                  subtitle: _canLimit ? t.limitHint : t.limitOff,
+                  value: _limit,
+                  onChanged: _canLimit
+                      ? () => setState(() {
+                          _limit = !_limit;
+                          if (_limit) {
+                            _permissions.removeAll(
+                              ApiKeyPermissions.notLimitable,
+                            );
+                          }
+                        })
+                      : null,
+                ),
+                if (_limit)
+                  data.configs.isEmpty
+                      ? Text(
+                          t.noConfigs,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: colors.neutral.grey4,
+                          ),
+                        )
+                      : LayoutBuilder(
+                          builder: (_, constraints) => Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              for (final config in data.configs)
+                                SizedBox(
+                                  // the id doesn't shrink: on a phone, one per row
+                                  width: constraints.maxWidth < 520
+                                      ? constraints.maxWidth
+                                      : (constraints.maxWidth - 8) / 2,
+                                  child: _ConfigChip(
+                                    name: config.name,
+                                    id: config.id,
+                                    route: data.routeOf(config),
+                                    selected: _configs.contains(config.id),
+                                    onTap: () => setState(() {
+                                      if (!_configs.remove(config.id)) {
+                                        _configs.add(config.id);
+                                      }
+                                    }),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+              ],
+            ),
+            if (_editing)
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: colors.primary.primaryFaded.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  t.renewNote,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: colors.primary.primaryLight,
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

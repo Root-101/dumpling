@@ -67,7 +67,8 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
     cubit.clearFilters();
   }
 
-  void _openForm([ApiKeyModel? key]) => ApiKeyForm.open(cubit, key: key);
+  void _openForm([ApiKeyModel? key]) =>
+      ApiKeyForm.open(cubit.state.data, key: key);
 
   void _confirmDelete(ApiKeyModel key) {
     ConfirmDialog.show(
@@ -102,9 +103,7 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
               BlocBuilder<ApiKeysCubit, ApiKeysState>(
                 builder: (context, state) => AppRefreshButton(
                   onPressed: cubit.reload,
-                  loading:
-                      state is ApiKeysLoadingInProgressState &&
-                      state.data.loaded,
+                  loading: state is ApiKeysSearchingState && state.data.loaded,
                 ),
               ),
               BlocBuilder<ApiKeysCubit, ApiKeysState>(
@@ -126,7 +125,7 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
                 listener: _onState,
                 builder: (context, state) {
                   if (!state.data.loaded) {
-                    return state is ApiKeysLoadingErrorState
+                    return state is ApiKeysSearchErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
                         : _buildSkeleton();
                   }
@@ -147,31 +146,24 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
   }
 
   void _onState(BuildContext context, ApiKeysState state) {
-    if (state is ApiKeysProcessInProgressState) {
+    if (state is ApiKeysDeletingState) {
       app.loading.show();
     } else {
       app.loading.hide();
     }
-    if (state is ApiKeysProcessingOKState) {
-      final t = app.intl.apiKeys;
-      switch (state.action) {
-        case ApiKeysAction.deleted:
-          app.snack.showSuccess(
-            message: t.deleted(name: state.key.name),
-            context: app.context,
-          );
-        case ApiKeysAction.saved:
-          app.snack.showSuccess(
-            message: t.saved(name: state.key.name),
-            context: app.context,
-          );
-        // the form shows the key itself
-        case ApiKeysAction.created:
-          break;
-      }
+    if (state is ApiKeysDeletedOkState) {
+      app.snack.showSuccess(
+        message: app.intl.apiKeys.deleted(name: state.key.name),
+        context: app.context,
+      );
     }
-    if (state is ApiKeysProcessingErrorState) {
-      app.snack.showError(message: state.message, context: app.context);
+    final failed = switch (state) {
+      ApiKeysDeletingErrorState(:final exception) ||
+      ApiKeysReorderingErrorState(:final exception) => exception,
+      _ => null,
+    };
+    if (failed != null) {
+      app.snack.showError(message: failed.intlMessage, context: app.context);
     }
   }
 
