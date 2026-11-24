@@ -116,7 +116,7 @@ void main() {
     whenListen(
       runs,
       const Stream<RunsState>.empty(),
-      initialState: RunsLoadingSuccessState(
+      initialState: RunsSearchOkState(
         data: const RunsData.empty('production')
             .withRuns([
               run('r2', status: RunStatus.failed),
@@ -846,7 +846,7 @@ void main() {
     whenListen(
       runs,
       const Stream<RunsState>.empty(),
-      initialState: const RunsLoadingInProgressState(
+      initialState: const RunsSearchingState(
         data: RunsData.empty('production'),
       ),
     );

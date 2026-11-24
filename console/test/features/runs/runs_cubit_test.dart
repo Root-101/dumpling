@@ -26,7 +26,7 @@ void main() {
   });
 
   Future<RunsCubit> loaded() async {
-    final cubit = RunsCubit(repo, auth);
+    final cubit = RunsCubit(auth: auth, repo: repo);
     await cubit.load('production');
     return cubit;
   }
@@ -117,8 +117,11 @@ void main() {
         .thenThrow(apiError('Not found'));
     final cubit = await loaded();
     await cubit.detail(cubit.state.data.runs[2]);
-    expect(cubit.state, isA<RunsProcessingErrorState>());
-    expect((cubit.state as RunsProcessingErrorState).message, 'Not found');
+    expect(cubit.state, isA<RunsLoadingDetailErrorState>());
+    expect(
+      (cubit.state as RunsLoadingDetailErrorState).exception.intlMessage,
+      'Not found',
+    );
     expect(cubit.state.data.runs, hasLength(3));
   });
 }

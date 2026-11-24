@@ -164,8 +164,7 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
               BlocBuilder<RunsCubit, RunsState>(
                 builder: (context, state) => AppRefreshButton(
                   onPressed: cubit.reload,
-                  loading:
-                      state is RunsLoadingInProgressState && state.data.loaded,
+                  loading: state is RunsSearchingState && state.data.loaded,
                 ),
               ),
             ],
@@ -175,16 +174,21 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
               child: BlocConsumer<RunsCubit, RunsState>(
                 listener: (context, state) {
                   _followUrl();
-                  if (state is RunsProcessingErrorState) {
+                  final failed = switch (state) {
+                    RunsLoadingDetailErrorState(:final exception) ||
+                    RunsRunningAgainErrorState(:final exception) => exception,
+                    _ => null,
+                  };
+                  if (failed != null) {
                     app.snack.showError(
-                      message: state.message,
+                      message: failed.intlMessage,
                       context: app.context,
                     );
                   }
                 },
                 builder: (context, state) {
                   if (!state.data.loaded) {
-                    return state is RunsLoadingErrorState
+                    return state is RunsSearchErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
                         : _buildSkeleton();
                   }

@@ -8,7 +8,7 @@ class RunsInit {
     RunsRepo repo = RunsRepo(client);
     app.di.put(repo);
 
-    RunsCubit cubit = RunsCubit(repo, app.di.find());
+    RunsCubit cubit = RunsCubit(auth: app.di.find(), repo: repo);
     app.di.put(cubit);
   }
 }

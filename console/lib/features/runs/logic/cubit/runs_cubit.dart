@@ -3,28 +3,31 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// The run log of the open workspace: the 200 newest runs, the search and the
 /// filters over them, and the detail (with its log) of the runs opened
-class RunsCubit extends Cubit<RunsState> {
-  final RunsRepo _repo;
-  final AuthCubit _auth;
+class RunsCubit extends Cubit<RunsState>
+    with GlobalEventBusCommunication<RunsState> {
+  final AuthCubit auth;
+  final RunsRepo repo;
 
-  RunsCubit(this._repo, this._auth) : super(const RunsInitialState());
+  RunsCubit({required this.auth, required this.repo})
+    : super(const RunsInitialState());
 
-  String? get _token => _auth.auth?.accessToken;
+  /// The service gives no refresh token: the one of the session, or none
+  String? get _token => auth.auth?.accessToken;
 
   /// The runs of [workspace]; another workspace starts from empty
   Future<void> load(String workspace) async {
     final data = state.data.workspace == workspace
         ? state.data
         : RunsData.empty(workspace);
-    emit(RunsLoadingInProgressState(data: data));
+    emit(RunsSearchingState(data: data));
     try {
-      final runs = await _repo.list(workspace: workspace, token: _token);
+      final runs = await repo.list(workspace: workspace, token: _token);
       // the answer of a workspace already left behind is dropped
       if (state.data.workspace != workspace) return;
-      emit(RunsLoadingSuccessState(data: state.data.withRuns(runs)));
-    } catch (e) {
+      emit(RunsSearchOkState(data: state.data.withRuns(runs)));
+    } on Exception catch (e) {
       if (state.data.workspace != workspace) return;
-      emit(RunsLoadingErrorState(ExceptionConverter.parse(e), data: state.data));
+      emit(RunsSearchErrorState(ExceptionConverter.parse(e), data: state.data));
     }
   }
 
@@ -39,18 +42,20 @@ class RunsCubit extends Cubit<RunsState> {
     final configId = run.configId;
     workspace ??= state.data.workspace;
     if (configId == null || workspace == null) return false;
+    emit(RunsRunningAgainState(run, data: state.data));
     try {
-      await _repo.runAgain(
+      final started = await repo.runAgain(
         workspace: workspace,
         configId: configId,
         token: _token,
       );
+      emit(RunsRanAgainOkState(started, data: state.data));
       if (state.data.workspace == workspace) await load(workspace);
       return true;
-    } catch (e) {
+    } on Exception catch (e) {
       emit(
-        RunsProcessingErrorState(
-          ExceptionConverter.parse(e).intlMessage,
+        RunsRunningAgainErrorState(
+          ExceptionConverter.parse(e),
           data: state.data,
         ),
       );
@@ -64,22 +69,25 @@ class RunsCubit extends Cubit<RunsState> {
   /// may be of another workspace or not loaded yet
   Future<void> detail(RunModel run, {String? workspace}) async {
     workspace ??= state.data.workspace!;
-    if (state.data.workspace != workspace) {
-      emit(RunsLoadingSuccessState(data: RunsData.empty(workspace)));
-    }
+    final data = state.data.workspace == workspace
+        ? state.data
+        : RunsData.empty(workspace);
+    emit(RunsLoadingDetailState(run, data: data));
     try {
-      final detail = await _repo.get(
+      final detail = await repo.get(
         workspace: workspace,
         id: run.id,
         token: _token,
       );
       if (state.data.workspace != workspace) return;
-      emit(RunsLoadingSuccessState(data: state.data.withDetail(detail)));
-    } catch (e) {
+      emit(
+        RunsLoadedDetailOkState(detail, data: state.data.withDetail(detail)),
+      );
+    } on Exception catch (e) {
       if (state.data.workspace != workspace) return;
       emit(
-        RunsProcessingErrorState(
-          ExceptionConverter.parse(e).intlMessage,
+        RunsLoadingDetailErrorState(
+          ExceptionConverter.parse(e),
           data: state.data,
         ),
       );
@@ -97,36 +105,33 @@ class RunsCubit extends Cubit<RunsState> {
       if (known != null) return known;
     }
     try {
-      return await _repo.get(workspace: workspace, id: id, token: _token);
-    } catch (_) {
+      return await repo.get(workspace: workspace, id: id, token: _token);
+    } on Exception {
       return null;
     }
   }
 
   /// By config, source or destination name, over the runs already loaded
   void search(String query) =>
-      emit(RunsLoadingSuccessState(data: state.data.withQuery(query)));
+      emit(RunsSearchOkState(data: state.data.withQuery(query)));
 
   /// Null: every status
-  void filterStatus(RunStatus? status) => emit(
-    RunsLoadingSuccessState(data: state.data._copy(status: () => status)),
-  );
+  void filterStatus(RunStatus? status) =>
+      emit(RunsSearchOkState(data: state.data._copy(status: () => status)));
 
-  void filterSourceType(String? type) => emit(
-    RunsLoadingSuccessState(data: state.data._copy(sourceType: () => type)),
-  );
+  void filterSourceType(String? type) =>
+      emit(RunsSearchOkState(data: state.data._copy(sourceType: () => type)));
 
   void filterDestinationType(String? type) => emit(
-    RunsLoadingSuccessState(data: state.data._copy(destinationType: () => type)),
+    RunsSearchOkState(data: state.data._copy(destinationType: () => type)),
   );
 
   /// `schedule`, `manual` or `api`; null: all of them
-  void filterTrigger(String? trigger) => emit(
-    RunsLoadingSuccessState(data: state.data._copy(trigger: () => trigger)),
-  );
+  void filterTrigger(String? trigger) =>
+      emit(RunsSearchOkState(data: state.data._copy(trigger: () => trigger)));
 
   void clearFilters() => emit(
-    RunsLoadingSuccessState(
+    RunsSearchOkState(
       data: state.data._copy(
         query: '',
         status: () => null,
@@ -258,33 +263,80 @@ class RunsData {
 }
 
 abstract class RunsState {
+  /// The runs of the open workspace and the details opened, kept in every
+  /// state
   final RunsData data;
 
   const RunsState({this.data = const RunsData.empty()});
 }
 
-class RunsInitialState extends RunsState {
+final class RunsInitialState extends RunsState {
   const RunsInitialState();
 }
 
-//------------------------- LOADING -------------------------\
-class RunsLoadingInProgressState extends RunsState {
-  const RunsLoadingInProgressState({required super.data});
+//----------------- search -----------------\\
+abstract class RunsSearchState extends RunsState {
+  const RunsSearchState({required super.data});
 }
 
-class RunsLoadingSuccessState extends RunsState {
-  const RunsLoadingSuccessState({required super.data});
+final class RunsSearchingState extends RunsSearchState {
+  const RunsSearchingState({required super.data});
 }
 
-class RunsLoadingErrorState extends RunsState {
+final class RunsSearchOkState extends RunsSearchState {
+  const RunsSearchOkState({required super.data});
+}
+
+final class RunsSearchErrorState extends RunsSearchState {
   final GlobalException exception;
 
-  const RunsLoadingErrorState(this.exception, {required super.data});
+  const RunsSearchErrorState(this.exception, {required super.data});
 }
 
-//------------------------- PROCESSING -------------------------\
-class RunsProcessingErrorState extends RunsState {
-  final String message;
+//----------------- the detail of a run -----------------\\
+abstract class RunsDetailState extends RunsState {
+  const RunsDetailState({required super.data});
+}
 
-  const RunsProcessingErrorState(this.message, {required super.data});
+final class RunsLoadingDetailState extends RunsDetailState {
+  final RunModel run;
+
+  const RunsLoadingDetailState(this.run, {required super.data});
+}
+
+final class RunsLoadedDetailOkState extends RunsDetailState {
+  /// With its log
+  final RunModel run;
+
+  const RunsLoadedDetailOkState(this.run, {required super.data});
+}
+
+final class RunsLoadingDetailErrorState extends RunsDetailState {
+  final GlobalException exception;
+
+  const RunsLoadingDetailErrorState(this.exception, {required super.data});
+}
+
+//----------------- run the config of a run again -----------------\\
+abstract class RunsRunAgainState extends RunsState {
+  const RunsRunAgainState({required super.data});
+}
+
+final class RunsRunningAgainState extends RunsRunAgainState {
+  final RunModel run;
+
+  const RunsRunningAgainState(this.run, {required super.data});
+}
+
+final class RunsRanAgainOkState extends RunsRunAgainState {
+  /// The new run
+  final RunModel run;
+
+  const RunsRanAgainOkState(this.run, {required super.data});
+}
+
+final class RunsRunningAgainErrorState extends RunsRunAgainState {
+  final GlobalException exception;
+
+  const RunsRunningAgainErrorState(this.exception, {required super.data});
 }
