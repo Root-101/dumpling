@@ -27,6 +27,7 @@
 - The lists of sources, destinations, backups and workspaces reload when the canvas is saved
   or a run started from it ends, without leaving the screen.
 - Loads four weights of DM Sans instead of eighteen files: a lighter first load.
+- *Run again* closes the dialog of the run for good: it could open again over the run log.
 
 ## 0.1.7
 

@@ -27,6 +27,7 @@ have the release candidates before 0.1.0 one by one.
 - Console: a start that fails shows what happened and «Try again», not an endless splash.
 - Console: the lists reload when the canvas is saved or a run started from it ends; the
   password button speaks to a screen reader; four font files instead of eighteen.
+- Console: *Run again* closes the dialog of the run for good; it could open again.
 
 ## 0.1.7
 
