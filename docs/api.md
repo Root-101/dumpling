@@ -12,6 +12,9 @@ Most things live in a workspace, so most paths start with `/api/workspaces/{slug
 their kind: `src_…` for sources, `dst_…` for destinations, `cfg_…` for configs, `run_…` for runs,
 `key_…` for API keys.
 
+Creating a workspace, source, destination, config or key answers `201` with it and a `Location`
+header with its path (`/api/workspaces/production/sources/src_…`).
+
 ## Authentication
 
 | Who                                          | How                                                                                          |
@@ -122,7 +125,8 @@ credentials:
 ```
 
 Every failure waits a second, and 10 in a row lock the IP for 15 minutes, even with the right
-password afterward (`429` with `Retry-After`).
+password afterward (`429` with `Retry-After`). A body without `username` or `password` is a `422`
+naming the field, like any other body.
 
 ## Session
 
