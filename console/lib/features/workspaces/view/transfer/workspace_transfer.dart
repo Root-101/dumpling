@@ -76,19 +76,14 @@ class _ImportState {
   bool get ready => file != null && rows.isNotEmpty && !importing;
 }
 
-/// Dialog that imports an export: a file dropped on it or chosen, what it
-/// adds, and the import. A name already taken gets `Name (2)`, as the service
-/// names it
-class WorkspaceImportDialog extends StatefulWidget {
-  static const String loadingId = 'workspace-import';
-
-  static Future<void> open(BuildContext context) async {
+class WorkspaceImportDialogNavigator {
+  Future<void> open(BuildContext context) async {
     final state = ValueNotifier(const _ImportState());
     await FormDialogTemplate.show(
       context: context,
       title: app.intl.workspaces.transfer.importTitle,
       description: app.intl.workspaces.transfer.importDescription,
-      loadingId: loadingId,
+      loadingId: WorkspaceImportDialog.loadingId,
       width: 600,
       actions: [
         PrimaryButton.secondary(
@@ -100,7 +95,9 @@ class WorkspaceImportDialog extends StatefulWidget {
         ValueListenableBuilder(
           valueListenable: state,
           builder: (context, s, _) => PrimaryButton.primary(
-            onPressed: s.ready ? () => _import(context, state) : null,
+            onPressed: s.ready
+                ? () => WorkspaceImportDialog._import(context, state)
+                : null,
             isLoading: s.importing,
             title: s.file == null
                 ? app.intl.workspaces.transfer.import
@@ -115,6 +112,16 @@ class WorkspaceImportDialog extends StatefulWidget {
     );
     state.dispose();
   }
+}
+
+/// Dialog that imports an export: a file dropped on it or chosen, what it
+/// adds, and the import. A name already taken gets `Name (2)`, as the service
+/// names it
+class WorkspaceImportDialog extends StatefulWidget {
+  static final WorkspaceImportDialogNavigator navigator =
+      WorkspaceImportDialogNavigator();
+
+  static const String loadingId = 'workspace-import';
 
   static Future<void> _import(
     BuildContext context,

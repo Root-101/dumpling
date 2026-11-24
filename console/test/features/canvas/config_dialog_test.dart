@@ -19,7 +19,7 @@ void main() {
         home: const Scaffold(),
       ),
     );
-    ConfigDialog.open(
+    ConfigDialog.navigator.open(
       config: BackupConfig(
         id: 'cfg_nightly',
         sourceId: 'orders',

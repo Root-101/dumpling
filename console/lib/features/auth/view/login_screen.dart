@@ -13,6 +13,10 @@ class LoginScreenNavigator {
   Widget builder(BuildContext context, GoRouterState state) {
     return const LoginScreen();
   }
+
+  List<RouteBase> routes() => [
+    GoRoute(name: name, path: path, builder: builder),
+  ];
 }
 
 /// The only user comes from the env (`DUMPLING_ADMIN_USER`,

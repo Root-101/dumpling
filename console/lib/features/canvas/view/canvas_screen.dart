@@ -3,14 +3,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
-class CanvasScreenNavigator {
+class CanvasScreenNavigator extends SectionNavigator {
+  @override
   String get name => RouteNames.canvas;
 
-  String get path => RouteNames.canvas;
-
+  @override
   Widget builder(BuildContext context, GoRouterState state) {
     return CanvasScreen(workspace: state.pathParameters[RouteNames.slugParam]!);
   }
+
+  /// Leaving it asks first while there are edits
+  @override
+  List<RouteBase> routes() => [
+    GoRoute(
+      name: name,
+      path: path,
+      builder: builder,
+      onExit: (context, state) => CanvasScreen.confirmLeave(),
+    ),
+  ];
 }
 
 /// The canvas of a workspace: its sources, destinations and the configs

@@ -256,8 +256,7 @@ class _WorkspaceCardState extends State<WorkspaceCard> {
         children: [
           Expanded(
             child: PrimaryButton.primary(
-              onPressed: () =>
-                  RouteNames.openWorkspace(slug, section: RouteNames.canvas),
+              onPressed: () => CanvasScreen.navigator.go(workspace: slug),
               title: widget.current
                   ? app.intl.workspaces.openCanvas
                   : app.intl.workspaces.switchAndOpen,
@@ -280,7 +279,7 @@ class _WorkspaceCardState extends State<WorkspaceCard> {
           _SquareButton(
             tooltip: app.intl.workspaces.settingsOf(name: _workspace.name),
             icon: app.assets.icons.navigation.settings,
-            onTap: () => WorkspaceSettings.open(context, _workspace),
+            onTap: () => WorkspaceSettings.navigator.open(context, _workspace),
           ),
         ],
       ),

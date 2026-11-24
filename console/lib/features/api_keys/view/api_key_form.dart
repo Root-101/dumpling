@@ -3,11 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// The form of a key: its name, a template and the permissions one by one, and
-/// optionally the only configs it reaches. Creating it shows the key once
-class ApiKeyForm extends StatefulWidget {
+class ApiKeyFormNavigator {
   /// Opens the form of [key], or of a new one, over the list of [data]
-  static Future<void> open(ApiKeysData data, {ApiKeyModel? key}) async {
+  Future<void> open(ApiKeysData data, {ApiKeyModel? key}) async {
     final formCubit = ApiKeyFormCubit(
       auth: app.di.find(),
       repo: app.di.find(),
@@ -30,6 +28,12 @@ class ApiKeyForm extends StatefulWidget {
     );
     await formCubit.close();
   }
+}
+
+/// The form of a key: its name, a template and the permissions one by one, and
+/// optionally the only configs it reaches. Creating it shows the key once
+class ApiKeyForm extends StatefulWidget {
+  static final ApiKeyFormNavigator navigator = ApiKeyFormNavigator();
 
   /// The list it opens over: the configs and the names of their ends
   final ApiKeysData data;
@@ -95,7 +99,10 @@ class _ApiKeyFormState extends State<ApiKeyForm> {
       Navigator.of(context).pop();
       if (state.created) {
         // the only time the whole key is shown
-        ApiKeyCreatedDialog.open(state.key, workspace: state.workspace);
+        ApiKeyCreatedDialog.navigator.open(
+          state.key,
+          workspace: state.workspace,
+        );
       } else {
         app.snack.showSuccess(
           message: app.intl.apiKeys.saved(name: state.key.name),
@@ -652,12 +659,17 @@ class _ConfigChip extends StatelessWidget {
   }
 }
 
-/// The key just created, the only time it is shown: copy it, and how to use it
-class ApiKeyCreatedDialog extends StatefulWidget {
-  static Future<void> open(ApiKeyModel key, {required String workspace}) =>
+class ApiKeyCreatedDialogNavigator {
+  Future<void> open(ApiKeyModel key, {required String workspace}) =>
       app.dialog.open(
         dialog: ApiKeyCreatedDialog(apiKey: key, workspace: workspace),
       );
+}
+
+/// The key just created, the only time it is shown: copy it, and how to use it
+class ApiKeyCreatedDialog extends StatefulWidget {
+  static final ApiKeyCreatedDialogNavigator navigator =
+      ApiKeyCreatedDialogNavigator();
 
   final ApiKeyModel apiKey;
   final String workspace;

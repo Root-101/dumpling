@@ -3,11 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
-class SourcesScreenNavigator {
+class SourcesScreenNavigator extends SectionNavigator {
+  @override
   String get name => RouteNames.sources;
 
-  String get path => RouteNames.sources;
+  @override
+  String get itemName => RouteNames.source;
 
+  @override
   Widget builder(BuildContext context, GoRouterState state) {
     return SourcesScreen(
       workspace: state.pathParameters[RouteNames.slugParam]!,
@@ -74,7 +77,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
   }
 
   void _openForm({SourceModel? source, bool duplicate = false}) {
-    SourceForm.open(
+    SourceForm.navigator.open(
       context,
       workspace: widget.workspace,
       types: cubit.state.data.types,
@@ -84,7 +87,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
   }
 
   void _openDetail(SourceModel source) =>
-      RouteNames.openItem(widget.workspace, RouteNames.source, source.id);
+      SourcesScreen.navigator.open(workspace: widget.workspace, id: source.id);
 
   /// The source of the URL over the list, once it is loaded
   void _followUrl() {
@@ -95,13 +98,13 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
       show: (id) async {
         final item = data.sources.where((e) => e.id == id).firstOrNull;
         if (item == null) return false;
-        await SourceDialog.open(item, onEdit: (s) => _openForm(source: s));
+        await SourceDialog.navigator.open(
+          item,
+          onEdit: (s) => _openForm(source: s),
+        );
         return true;
       },
-      leave: () => RouteNames.openWorkspace(
-        widget.workspace,
-        section: RouteNames.sources,
-      ),
+      leave: () => SourcesScreen.navigator.go(workspace: widget.workspace),
     );
   }
 

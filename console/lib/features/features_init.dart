@@ -58,7 +58,7 @@ class FeaturesInit {
         await _resetCubits();
       }
       if (state is AuthExpiredState) {
-        SessionExpiredDialog.open();
+        SessionExpiredDialog.navigator.open();
       }
     });
   }

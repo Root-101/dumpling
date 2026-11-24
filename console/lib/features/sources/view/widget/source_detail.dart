@@ -2,17 +2,21 @@ import 'package:console/app_exporter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// A source in a dialog: how it is doing, the backups that dump it (where,
-/// when, how the last run went and when the next one is), its last connection
-/// check and the connection itself. It follows the list, so a test or an edit
-/// made from it shows here too
-class SourceDialog extends StatelessWidget {
-  static Future<void> open(
+class SourceDialogNavigator {
+  Future<void> open(
     SourceModel source, {
     required ValueChanged<SourceModel> onEdit,
   }) => app.dialog.open(
     dialog: SourceDialog(source: source, onEdit: onEdit),
   );
+}
+
+/// A source in a dialog: how it is doing, the backups that dump it (where,
+/// when, how the last run went and when the next one is), its last connection
+/// check and the connection itself. It follows the list, so a test or an edit
+/// made from it shows here too
+class SourceDialog extends StatelessWidget {
+  static final SourceDialogNavigator navigator = SourceDialogNavigator();
 
   /// As the list had it when it opened; the list's newer one replaces it
   final SourceModel source;
@@ -165,9 +169,8 @@ class _Uses extends StatelessWidget {
             trailing: InkWell(
               onTap: () {
                 Navigator.of(context).pop();
-                RouteNames.openWorkspace(
-                  app.di.find<SourcesCubit>().state.data.workspace!,
-                  section: RouteNames.canvas,
+                CanvasScreen.navigator.go(
+                  workspace: app.di.find<SourcesCubit>().state.data.workspace!,
                 );
               },
               child: Text(

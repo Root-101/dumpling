@@ -103,7 +103,7 @@ class _RailState extends State<_Rail> {
     final expanded = _expanded;
     // [label]: the name when it isn't the whole tooltip (its badge says the rest)
     Widget item(
-      String name,
+      SectionNavigator section,
       String tooltip,
       SvgAsset icon, {
       Widget? badge,
@@ -111,11 +111,11 @@ class _RailState extends State<_Rail> {
     }) => RailButton(
       tooltip: tooltip,
       label: expanded ? label ?? tooltip : null,
-      selected: widget.section == name,
+      selected: widget.section == section.name,
       badge: badge,
       onPressed: workspace == null
           ? null
-          : (_) => RouteNames.openWorkspace(workspace.slug, section: name),
+          : (_) => section.go(workspace: workspace.slug),
       icon: (color) => icon.build(size: 20, color: color),
     );
     final divider = Padding(
@@ -143,29 +143,29 @@ class _RailState extends State<_Rail> {
               ),
               if (workspace != null) ...[
                 item(
-                  RouteNames.backups,
+                  BackupsScreen.navigator,
                   app.intl.nav.backups,
                   icons.nodes.clock,
                 ),
                 item(
-                  RouteNames.canvas,
+                  CanvasScreen.navigator,
                   app.intl.nav.canvas,
                   icons.navigation.pipeline,
                 ),
                 divider,
                 item(
-                  RouteNames.sources,
+                  SourcesScreen.navigator,
                   app.intl.nav.sources,
                   icons.nodes.database,
                 ),
                 item(
-                  RouteNames.destinations,
+                  DestinationsScreen.navigator,
                   app.intl.nav.destinations,
                   icons.nodes.bucket,
                 ),
                 divider,
                 item(
-                  RouteNames.runs,
+                  RunsScreen.navigator,
                   failing > 0
                       ? '${app.intl.nav.runs} · ${app.intl.nav.failedRuns(count: failing)}'
                       : app.intl.nav.runs,
@@ -175,7 +175,7 @@ class _RailState extends State<_Rail> {
                 ),
                 divider,
                 item(
-                  RouteNames.apiKeys,
+                  ApiKeysScreen.navigator,
                   app.intl.nav.apiKeys,
                   icons.navigation.keys,
                 ),
@@ -285,7 +285,7 @@ class _WorkspaceSwitcher extends StatelessWidget {
         tooltip: app.intl.nav.workspaces,
         label: expanded ? app.intl.nav.workspaces : null,
         selected: selected,
-        onPressed: (_) => app.navigator.go(RouteNames.workspaces),
+        onPressed: (_) => WorkspacesScreen.navigator.go(),
         icon: (color) =>
             app.assets.icons.navigation.pipeline.build(size: 20, color: color),
       );
@@ -307,7 +307,7 @@ class _WorkspaceSwitcher extends StatelessWidget {
             ),
             child: InkWell(
               borderRadius: radius,
-              onTap: () => app.navigator.go(RouteNames.workspaces),
+              onTap: () => WorkspacesScreen.navigator.go(),
               child: SizedBox(
                 height: RailButton.size,
                 child: Row(

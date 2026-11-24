@@ -1,14 +1,10 @@
 import 'package:console/app_exporter.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// A config in a dialog of three steps: its name and schedule, its output
-/// (object key and compression), and a review of everything with what the
-/// next run writes. It edits a copy; the canvas applies it to its draft (saved
-/// with the canvas) and Backups saves it right away
-class ConfigDialog extends StatefulWidget {
+class ConfigDialogNavigator {
   /// [onSave] gets the edited copy: null closes the dialog, a message stays
   /// in it. [onDelete], when given, is the *Delete config* of the footer
-  static Future<void> open({
+  Future<void> open({
     required BackupConfig config,
     required SourceNode? source,
     required DestinationNode? destination,
@@ -25,6 +21,14 @@ class ConfigDialog extends StatefulWidget {
       onDelete: onDelete,
     ),
   );
+}
+
+/// A config in a dialog of three steps: its name and schedule, its output
+/// (object key and compression), and a review of everything with what the
+/// next run writes. It edits a copy; the canvas applies it to its draft (saved
+/// with the canvas) and Backups saves it right away
+class ConfigDialog extends StatefulWidget {
+  static final ConfigDialogNavigator navigator = ConfigDialogNavigator();
 
   final BackupConfig config;
   final SourceNode? source;

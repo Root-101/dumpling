@@ -7,12 +7,9 @@ import 'package:material_ui/material_ui.dart';
 
 enum _Tab { general, defaults, danger }
 
-/// The settings of a workspace in a dialog: who it is on top, and in tabs its
-/// general data (read, or edited after *Edit*), the defaults of its new
-/// configs and its deletion. Saving sends everything: the service replaces it
-class WorkspaceSettings extends StatefulWidget {
+class WorkspaceSettingsNavigator {
   /// Opens the dialog with its own [WorkspaceFormCubit]
-  static Future<void> open(BuildContext context, WorkspaceModel workspace) {
+  Future<void> open(BuildContext context, WorkspaceModel workspace) {
     final cubit = WorkspaceFormCubit(auth: app.di.find(), repo: app.di.find());
     return showGeneralDialog(
       context: context,
@@ -28,6 +25,14 @@ class WorkspaceSettings extends StatefulWidget {
           FadeTransition(opacity: animation, child: child),
     );
   }
+}
+
+/// The settings of a workspace in a dialog: who it is on top, and in tabs its
+/// general data (read, or edited after *Edit*), the defaults of its new
+/// configs and its deletion. Saving sends everything: the service replaces it
+class WorkspaceSettings extends StatefulWidget {
+  static final WorkspaceSettingsNavigator navigator =
+      WorkspaceSettingsNavigator();
 
   /// Id of the dialog's [LoadingOverlay]
   static const String loadingId = 'workspace-settings';
@@ -154,17 +159,12 @@ class _WorkspaceSettingsState extends State<WorkspaceSettings> {
     );
   }
 
-  void _askDelete() {
-    showDialog<void>(
-      context: context,
-      barrierColor: app.colors.neutral.black.withValues(alpha: 0.5),
-      builder: (_) => _DeleteDialog(
-        workspace: _saved,
-        stats: widget.workspace.stats,
-        onConfirm: () => context.read<WorkspaceFormCubit>().delete(_saved),
-      ),
-    );
-  }
+  void _askDelete() => _DeleteDialog.navigator.open(
+    context,
+    workspace: _saved,
+    stats: widget.workspace.stats,
+    onConfirm: () => context.read<WorkspaceFormCubit>().delete(_saved),
+  );
 
   void _onState(BuildContext context, WorkspaceFormState state) {
     if (state is WorkspaceFormProcessInProgressState ||
@@ -840,7 +840,23 @@ class _Label extends StatelessWidget {
 }
 
 /// Deleting asks for the name of the workspace, typed
+class _DeleteDialogNavigator {
+  Future<void> open(
+    BuildContext context, {
+    required WorkspaceModel workspace,
+    required WorkspaceStatsModel? stats,
+    required VoidCallback onConfirm,
+  }) => showDialog<void>(
+    context: context,
+    barrierColor: app.colors.neutral.black.withValues(alpha: 0.5),
+    builder: (_) =>
+        _DeleteDialog(workspace: workspace, stats: stats, onConfirm: onConfirm),
+  );
+}
+
 class _DeleteDialog extends StatefulWidget {
+  static final _DeleteDialogNavigator navigator = _DeleteDialogNavigator();
+
   final WorkspaceModel workspace;
   final WorkspaceStatsModel? stats;
   final VoidCallback onConfirm;

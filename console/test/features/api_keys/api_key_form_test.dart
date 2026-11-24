@@ -56,7 +56,7 @@ void main() {
     // the form builds its own cubit from the DI
     app.di.put<AuthCubit>(auth);
     app.di.put<ApiKeysRepo>(repo);
-    ApiKeyForm.open(
+    ApiKeyForm.navigator.open(
       cubit.state.data,
       key: ApiKeyModel(
         id: 'key_deploy',

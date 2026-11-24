@@ -177,7 +177,8 @@ class NotFoundPage extends StatelessWidget {
                     if (known && slug != null)
                       PrimaryButton.primary(
                         title: t.goToBackups,
-                        onPressed: () => RouteNames.openWorkspace(slug),
+                        onPressed: () =>
+                            BackupsScreen.navigator.go(workspace: slug),
                         color: colors.primary.primaryAction,
                         h: 42,
                         horizontalPadding: 18,
@@ -186,7 +187,7 @@ class NotFoundPage extends StatelessWidget {
                       title: known
                           ? t.switchWorkspace
                           : app.intl.nav.workspaces,
-                      onPressed: () => app.navigator.go(RouteNames.workspaces),
+                      onPressed: () => WorkspacesScreen.navigator.go(),
                       color: known
                           ? colors.surface.control
                           : colors.primary.primaryAction,

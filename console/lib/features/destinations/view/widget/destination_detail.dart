@@ -2,16 +2,21 @@ import 'package:console/app_exporter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// A destination in a dialog: how it is doing, the backups that write to
-/// each of its folders, its last connection check and the connection itself.
-/// It follows the list, so a test or an edit made from it shows here too
-class DestinationDialog extends StatelessWidget {
-  static Future<void> open(
+class DestinationDialogNavigator {
+  Future<void> open(
     DestinationModel destination, {
     required ValueChanged<DestinationModel> onEdit,
   }) => app.dialog.open(
     dialog: DestinationDialog(destination: destination, onEdit: onEdit),
   );
+}
+
+/// A destination in a dialog: how it is doing, the backups that write to
+/// each of its folders, its last connection check and the connection itself.
+/// It follows the list, so a test or an edit made from it shows here too
+class DestinationDialog extends StatelessWidget {
+  static final DestinationDialogNavigator navigator =
+      DestinationDialogNavigator();
 
   /// As the list had it when it opened; the list's newer one replaces it
   final DestinationModel destination;

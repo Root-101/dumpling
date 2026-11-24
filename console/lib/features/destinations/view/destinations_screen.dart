@@ -5,11 +5,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
-class DestinationsScreenNavigator {
+class DestinationsScreenNavigator extends SectionNavigator {
+  @override
   String get name => RouteNames.destinations;
 
-  String get path => RouteNames.destinations;
+  @override
+  String get itemName => RouteNames.destination;
 
+  @override
   Widget builder(BuildContext context, GoRouterState state) {
     return DestinationsScreen(
       workspace: state.pathParameters[RouteNames.slugParam]!,
@@ -83,7 +86,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
 
   void _openForm({DestinationModel? destination, bool duplicate = false}) {
     final data = cubit.state.data;
-    DestinationForm.open(
+    DestinationForm.navigator.open(
       context,
       workspace: widget.workspace,
       types: data.types,
@@ -95,11 +98,8 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     );
   }
 
-  void _openDetail(DestinationModel destination) => RouteNames.openItem(
-    widget.workspace,
-    RouteNames.destination,
-    destination.id,
-  );
+  void _openDetail(DestinationModel destination) => DestinationsScreen.navigator
+      .open(workspace: widget.workspace, id: destination.id);
 
   /// The destination of the URL over the list, once it is loaded
   void _followUrl() {
@@ -110,16 +110,13 @@ class _DestinationsScreenState extends State<DestinationsScreen>
       show: (id) async {
         final item = data.destinations.where((e) => e.id == id).firstOrNull;
         if (item == null) return false;
-        await DestinationDialog.open(
+        await DestinationDialog.navigator.open(
           item,
           onEdit: (d) => _openForm(destination: d),
         );
         return true;
       },
-      leave: () => RouteNames.openWorkspace(
-        widget.workspace,
-        section: RouteNames.destinations,
-      ),
+      leave: () => DestinationsScreen.navigator.go(workspace: widget.workspace),
     );
   }
 

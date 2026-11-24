@@ -5,19 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Over the screen where the service refused the token: signing in again
-/// keeps it (an unsaved canvas too); the sign-in page closes the session
-class SessionExpiredDialog extends StatefulWidget {
-  /// Its route: a change of screen doesn't close it
-  static const String routeName = 'session-expired';
-
-  const SessionExpiredDialog({super.key});
-
+class SessionExpiredDialogNavigator {
   /// Over the root navigator, without a way to close it but signing in
-  static Future<void> open() => showGeneralDialog(
+  Future<void> open() => showGeneralDialog(
     context: app.context,
     barrierDismissible: false,
-    routeSettings: const RouteSettings(name: routeName),
+    routeSettings: const RouteSettings(name: SessionExpiredDialog.routeName),
     barrierColor: app.colors.neutral.black.withValues(alpha: 0.72),
     transitionDuration: const Duration(milliseconds: 200),
     // the screen stays under it, blurred: it comes back as it was
@@ -35,6 +28,18 @@ class SessionExpiredDialog extends StatefulWidget {
     transitionBuilder: (context, animation, secondaryAnimation, child) =>
         FadeTransition(opacity: animation, child: child),
   );
+}
+
+/// Over the screen where the service refused the token: signing in again
+/// keeps it (an unsaved canvas too); the sign-in page closes the session
+class SessionExpiredDialog extends StatefulWidget {
+  static final SessionExpiredDialogNavigator navigator =
+      SessionExpiredDialogNavigator();
+
+  /// Its route: a change of screen doesn't close it
+  static const String routeName = 'session-expired';
+
+  const SessionExpiredDialog({super.key});
 
   @override
   State<SessionExpiredDialog> createState() => _SessionExpiredDialogState();

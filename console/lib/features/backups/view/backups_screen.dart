@@ -6,11 +6,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
-class BackupsScreenNavigator {
+class BackupsScreenNavigator extends SectionNavigator {
+  @override
   String get name => RouteNames.backups;
 
-  String get path => RouteNames.backups;
+  @override
+  String get itemName => RouteNames.backupRun;
 
+  @override
+  String get itemPath => RouteNames.runs;
+
+  @override
   Widget builder(BuildContext context, GoRouterState state) {
     return BackupsScreen(
       workspace: state.pathParameters[RouteNames.slugParam]!,
@@ -93,8 +99,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
     cubit.clearFilters();
   }
 
-  void _openCanvas() =>
-      RouteNames.openWorkspace(widget.workspace, section: RouteNames.canvas);
+  void _openCanvas() => CanvasScreen.navigator.go(workspace: widget.workspace);
 
   /// The backups, and the recent runs of the ones open
   Future<void> _reload() async {
@@ -113,7 +118,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
   }
 
   void _edit(BackupRow backup) {
-    ConfigDialog.open(
+    ConfigDialog.navigator.open(
       config: backup.config,
       source: backup.source,
       destination: backup.destination,
@@ -140,7 +145,7 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
   void _viewLastRun(BackupRow backup) {
     final last = backup.config.lastRun;
     if (last == null) return;
-    RouteNames.openItem(widget.workspace, RouteNames.backupRun, last.id);
+    BackupsScreen.navigator.open(workspace: widget.workspace, id: last.id);
   }
 
   /// The run of the URL (`backups/runs/{id}`) over the backups
@@ -150,10 +155,10 @@ class _BackupsScreenState extends State<BackupsScreen> with UrlDialog {
       show: (id) async {
         final run = await context.read<RunsCubit>().find(widget.workspace, id);
         if (run == null) return false;
-        await RunDialog.open(run, workspace: widget.workspace);
+        await RunDialog.navigator.open(run, workspace: widget.workspace);
         return true;
       },
-      leave: () => RouteNames.openWorkspace(widget.workspace),
+      leave: () => BackupsScreen.navigator.go(workspace: widget.workspace),
     );
   }
 
@@ -1153,7 +1158,8 @@ class _RunLine extends StatelessWidget {
     final color = RunStatusLabel.colorOf(run.status);
     final size = run.sizeBytes;
     final text = TextStyle(fontSize: 12, color: colors.neutral.grey2);
-    void open() => RouteNames.openItem(workspace, RouteNames.backupRun, run.id);
+    void open() =>
+        BackupsScreen.navigator.open(workspace: workspace, id: run.id);
     final location = run.location?.replaceFirst('s3://', '');
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 44),

@@ -11,6 +11,12 @@ class WorkspacesScreenNavigator {
   Widget builder(BuildContext context, GoRouterState state) {
     return const WorkspacesScreen();
   }
+
+  void go() => app.navigator.go(name);
+
+  List<RouteBase> routes() => [
+    GoRoute(name: name, path: path, builder: builder),
+  ];
 }
 
 /// Every workspace as a card, the current one first in its place, and the
@@ -47,7 +53,7 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
             description: app.intl.workspaces.description,
             actions: [
               PrimaryButton.secondary(
-                onPressed: () => WorkspaceImportDialog.open(context),
+                onPressed: () => WorkspaceImportDialog.navigator.open(context),
                 title: app.intl.workspaces.transfer.import,
                 icon: app.assets.icons.actions.import,
                 color: app.colors.surface.control,
@@ -63,7 +69,7 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
                 horizontalPadding: 16,
               ),
               PrimaryButton.primary(
-                onPressed: () => WorkspaceForm.open(context),
+                onPressed: () => WorkspaceForm.navigator.open(context),
                 title: app.intl.workspaces.create,
                 icon: app.assets.icons.actions.add,
                 color: app.colors.primary.primaryAction,
@@ -112,7 +118,9 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
         ),
       SizedBox(
         width: width,
-        child: _NewWorkspaceTile(onPressed: () => WorkspaceForm.open(context)),
+        child: _NewWorkspaceTile(
+          onPressed: () => WorkspaceForm.navigator.open(context),
+        ),
       ),
     ],
   );

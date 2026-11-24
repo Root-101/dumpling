@@ -2,11 +2,9 @@ import 'package:console/app_exporter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Dialog of a new workspace: name, description and color. Once created it
-/// reloads the list and opens the new workspace
-class WorkspaceForm extends StatefulWidget {
+class WorkspaceFormNavigator {
   /// Opens the dialog with its own [WorkspaceFormCubit]
-  static Future<void> open(BuildContext context) async {
+  Future<void> open(BuildContext context) async {
     final formKey = GlobalKey<_WorkspaceFormState>();
     final formCubit = WorkspaceFormCubit(
       auth: app.di.find(),
@@ -17,7 +15,7 @@ class WorkspaceForm extends StatefulWidget {
       context: context,
       title: app.intl.workspaces.formTitle,
       description: app.intl.workspaces.formDescription,
-      loadingId: loadingId,
+      loadingId: WorkspaceForm.loadingId,
       actions: [
         PrimaryButton.secondary(
           onPressed: () => Navigator.of(context).pop(),
@@ -37,6 +35,12 @@ class WorkspaceForm extends StatefulWidget {
     );
     await formCubit.close();
   }
+}
+
+/// Dialog of a new workspace: name, description and color. Once created it
+/// reloads the list and opens the new workspace
+class WorkspaceForm extends StatefulWidget {
+  static final WorkspaceFormNavigator navigator = WorkspaceFormNavigator();
 
   /// Id of the dialog's [LoadingOverlay]
   static const String loadingId = 'workspace-form';
@@ -120,7 +124,7 @@ class _WorkspaceFormState extends State<WorkspaceForm> {
             message: app.intl.workspaces.created(name: state.workspace.name),
             context: app.context,
           );
-          RouteNames.openWorkspace(state.workspace.slug);
+          BackupsScreen.navigator.go(workspace: state.workspace.slug);
         }
       },
       child: Form(

@@ -2,15 +2,12 @@ import 'package:console/app_exporter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Dialog of a destination in three steps: its type, the connection with the
-/// test of the bucket root, and its folders, each new one tested too (always
-/// by the service). Once saved it reloads the list
-class DestinationForm extends StatefulWidget {
+class DestinationFormNavigator {
   /// Opens the dialog with its own [DestinationFormCubit]. With [destination]
   /// it edits it; with [duplicate] too it creates a copy (the secret key isn't
   /// copied: the API never returns it). [folderUsage] locks the folders a
   /// backup writes to
-  static Future<void> open(
+  Future<void> open(
     BuildContext context, {
     required String workspace,
     required List<DestinationTypeModel> types,
@@ -40,6 +37,13 @@ class DestinationForm extends StatefulWidget {
     );
     await formCubit.close();
   }
+}
+
+/// Dialog of a destination in three steps: its type, the connection with the
+/// test of the bucket root, and its folders, each new one tested too (always
+/// by the service). Once saved it reloads the list
+class DestinationForm extends StatefulWidget {
+  static final DestinationFormNavigator navigator = DestinationFormNavigator();
 
   /// Id of the dialog's [LoadingOverlay]
   static const String loadingId = 'destination-form';

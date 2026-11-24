@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
-class ApiKeysScreenNavigator {
+class ApiKeysScreenNavigator extends SectionNavigator {
+  @override
   String get name => RouteNames.apiKeys;
 
-  String get path => RouteNames.apiKeys;
-
+  @override
   Widget builder(BuildContext context, GoRouterState state) {
     return ApiKeysScreen(
       workspace: state.pathParameters[RouteNames.slugParam]!,
@@ -68,7 +68,7 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
   }
 
   void _openForm([ApiKeyModel? key]) =>
-      ApiKeyForm.open(cubit.state.data, key: key);
+      ApiKeyForm.navigator.open(cubit.state.data, key: key);
 
   void _confirmDelete(ApiKeyModel key) {
     ConfirmDialog.show(

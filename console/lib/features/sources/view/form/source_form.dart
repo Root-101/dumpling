@@ -3,14 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Dialog of a source in three steps: its type, how it connects (fields or a
-/// connection URL, TLS) with the test of that connection (always run by the
-/// service), and a summary with the dump format. Once saved it reloads the list
-class SourceForm extends StatefulWidget {
+class SourceFormNavigator {
   /// Opens the dialog with its own [SourceFormCubit]. With [source] it edits
   /// it; with [duplicate] too it creates a copy (the password isn't copied:
   /// the API never returns it)
-  static Future<void> open(
+  Future<void> open(
     BuildContext context, {
     required String workspace,
     required List<SourceTypeModel> types,
@@ -34,6 +31,13 @@ class SourceForm extends StatefulWidget {
     );
     await formCubit.close();
   }
+}
+
+/// Dialog of a source in three steps: its type, how it connects (fields or a
+/// connection URL, TLS) with the test of that connection (always run by the
+/// service), and a summary with the dump format. Once saved it reloads the list
+class SourceForm extends StatefulWidget {
+  static final SourceFormNavigator navigator = SourceFormNavigator();
 
   /// Id of the dialog's [LoadingOverlay]
   static const String loadingId = 'source-form';

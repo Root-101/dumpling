@@ -4,11 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
-class RunsScreenNavigator {
+class RunsScreenNavigator extends SectionNavigator {
+  @override
   String get name => RouteNames.runs;
 
-  String get path => RouteNames.runs;
+  @override
+  String get itemName => RouteNames.run;
 
+  @override
   Widget builder(BuildContext context, GoRouterState state) {
     return RunsScreen(
       workspace: state.pathParameters[RouteNames.slugParam]!,
@@ -112,11 +115,8 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
       ..addAll({key: ?value}),
   );
 
-  void _go(Map<String, String> filters) => app.navigator.go(
-    RouteNames.runs,
-    pathParameters: {RouteNames.slugParam: widget.workspace},
-    queryParameters: filters,
-  );
+  void _go(Map<String, String> filters) =>
+      RunsScreen.navigator.go(workspace: widget.workspace, query: filters);
 
   /// An unknown value is no filter
   void _applyFilters() {
@@ -139,7 +139,7 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
       show: (id) async {
         final run = await cubit.find(widget.workspace, id);
         if (run == null) return false;
-        await RunDialog.open(run);
+        await RunDialog.navigator.open(run);
         return true;
       },
       leave: () => _go(widget.filters),
@@ -219,10 +219,8 @@ class _RunsScreenState extends State<RunsScreen> with UrlDialog {
             title: t.emptyTitle,
             description: t.emptyDescription,
             action: app.intl.nav.canvas,
-            onPressed: () => RouteNames.openWorkspace(
-              widget.workspace,
-              section: RouteNames.canvas,
-            ),
+            onPressed: () =>
+                CanvasScreen.navigator.go(workspace: widget.workspace),
           )
         : data.visibleRuns.isEmpty
         ? AppTablePlaceholder(
@@ -655,10 +653,9 @@ class _RunRow extends StatelessWidget {
             child: Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () => RouteNames.openItem(
-                  workspace,
-                  RouteNames.run,
-                  run.id,
+                onPressed: () => RunsScreen.navigator.open(
+                  workspace: workspace,
+                  id: run.id,
                   query: filters,
                 ),
                 child: Text(

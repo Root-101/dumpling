@@ -3,15 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
+class RunDialogNavigator {
+  /// [workspace]: out of the run log (Backups)
+  Future<void> open(RunModel run, {String? workspace}) => app.dialog.open(
+    dialog: RunDialog(run: run, workspace: workspace),
+  );
+}
+
 /// A run in a dialog: its status, config, source and destination; how it
 /// ended (or a generic progress while it runs); when, how long, why and how
 /// big; its steps and its log. It loads the detail (the log) when it opens
 class RunDialog extends StatefulWidget {
-  /// [workspace]: out of the run log (Backups)
-  static Future<void> open(RunModel run, {String? workspace}) =>
-      app.dialog.open(
-        dialog: RunDialog(run: run, workspace: workspace),
-      );
+  static final RunDialogNavigator navigator = RunDialogNavigator();
 
   /// The run of the list; the detail replaces it once loaded
   final RunModel run;
@@ -122,7 +125,7 @@ class _Footer extends StatelessWidget {
             InkWell(
               onTap: () {
                 Navigator.of(context).pop();
-                RouteNames.openWorkspace(slug, section: RouteNames.canvas);
+                CanvasScreen.navigator.go(workspace: slug);
               },
               child: Text(
                 app.intl.backups.editConfig,

@@ -1,7 +1,5 @@
-import 'package:console/app_exporter.dart';
-
-/// Names of the routes and their parameters. A feature navigates to another
-/// feature's screen by its route name, without importing it
+/// Names of the routes and their parameters, for the navigators of the
+/// screens (`SourcesScreen.navigator.go(...)`): nothing else navigates by name
 abstract class RouteNames {
   static const String login = 'login';
   static const String workspaces = 'workspaces';
@@ -28,24 +26,4 @@ abstract class RouteNames {
 
   /// `:id` of an item ([source], [destination], [run], [backupRun])
   static const String idParam = 'id';
-
-  /// Opens [section] (one of the names above) of the workspace [slug]
-  static void openWorkspace(String slug, {String section = backups}) {
-    app.navigator.go(section, pathParameters: {slugParam: slug});
-  }
-
-  /// Opens the dialog of the item [id] ([name] is one of the item routes);
-  /// [query] keeps the filters of its screen
-  static void openItem(
-    String slug,
-    String name,
-    String id, {
-    Map<String, String> query = const {},
-  }) {
-    app.navigator.go(
-      name,
-      pathParameters: {slugParam: slug, idParam: id},
-      queryParameters: query,
-    );
-  }
 }
