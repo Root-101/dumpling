@@ -56,7 +56,7 @@ class DestinationFormCubit extends Cubit<DestinationFormState>
               token: auth.auth?.accessToken,
             ),
           );
-        } catch (_) {}
+        } on Exception catch (_) {}
       }
       emit(DestinationFormProcessingOKState(destination));
     } on Exception catch (e) {

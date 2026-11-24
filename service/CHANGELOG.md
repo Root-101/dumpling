@@ -2,6 +2,8 @@
 
 ## 0.1.8
 
+- Built with Dart 3.14 (Flutter 3.50.1, like the console) and the latest version of every
+  dependency (winter 1.0.1, postgres 3.7, sqlite3 3.9.2, drift 2.35.4…).
 - CORS exposes `Retry-After`, so the console (on another origin in development) can say how long
   a locked sign-in waits.
 - The check each run makes before dumping is kept as the source's last check: its detail no

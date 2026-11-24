@@ -56,7 +56,7 @@ class SourceFormCubit extends Cubit<SourceFormState>
               token: auth.auth?.accessToken,
             ),
           );
-        } catch (_) {}
+        } on Exception catch (_) {}
       }
       emit(SourceFormProcessingOKState(source));
     } on Exception catch (e) {

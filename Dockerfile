@@ -30,7 +30,7 @@ COPY console/ .
 RUN flutter build web --release && echo 'window.env = {};' > build/web/env.js
 
 #--------------- Service: AOT compiled ---------------#
-FROM dart:3.13.1 AS service
+FROM dart:3.14.0 AS service
 
 WORKDIR /src
 COPY service/pubspec.* ./

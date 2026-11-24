@@ -5818,10 +5818,11 @@ class $$WorkspaceTableTableTableManager
                   getPrefetchedDataCallback: (items) async {
                     return [
                       if (sourceTableRefs)
-                        await $_getPrefetchedData<
+                        await $_getPrefetchedDataByColumns<
                           WorkspaceTableData,
                           $WorkspaceTableTable,
-                          SourceTableData
+                          SourceTableData,
+                          $SourceTableTable
                         >(
                           currentTable: table,
                           referencedTable: $$WorkspaceTableTableReferences
@@ -5832,17 +5833,16 @@ class $$WorkspaceTableTableTableManager
                                 table,
                                 p0,
                               ).sourceTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.workspaceSlug == item.slug,
-                              ),
+                          currentColumn: 'slug',
+                          referencedColumn: 'workspace_slug',
                           typedResults: items,
                         ),
                       if (destinationTableRefs)
-                        await $_getPrefetchedData<
+                        await $_getPrefetchedDataByColumns<
                           WorkspaceTableData,
                           $WorkspaceTableTable,
-                          DestinationTableData
+                          DestinationTableData,
+                          $DestinationTableTable
                         >(
                           currentTable: table,
                           referencedTable: $$WorkspaceTableTableReferences
@@ -5853,17 +5853,16 @@ class $$WorkspaceTableTableTableManager
                                 table,
                                 p0,
                               ).destinationTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.workspaceSlug == item.slug,
-                              ),
+                          currentColumn: 'slug',
+                          referencedColumn: 'workspace_slug',
                           typedResults: items,
                         ),
                       if (configTableRefs)
-                        await $_getPrefetchedData<
+                        await $_getPrefetchedDataByColumns<
                           WorkspaceTableData,
                           $WorkspaceTableTable,
-                          ConfigTableData
+                          ConfigTableData,
+                          $ConfigTableTable
                         >(
                           currentTable: table,
                           referencedTable: $$WorkspaceTableTableReferences
@@ -5874,17 +5873,16 @@ class $$WorkspaceTableTableTableManager
                                 table,
                                 p0,
                               ).configTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.workspaceSlug == item.slug,
-                              ),
+                          currentColumn: 'slug',
+                          referencedColumn: 'workspace_slug',
                           typedResults: items,
                         ),
                       if (runTableRefs)
-                        await $_getPrefetchedData<
+                        await $_getPrefetchedDataByColumns<
                           WorkspaceTableData,
                           $WorkspaceTableTable,
-                          RunTableData
+                          RunTableData,
+                          $RunTableTable
                         >(
                           currentTable: table,
                           referencedTable: $$WorkspaceTableTableReferences
@@ -5895,17 +5893,16 @@ class $$WorkspaceTableTableTableManager
                                 table,
                                 p0,
                               ).runTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.workspaceSlug == item.slug,
-                              ),
+                          currentColumn: 'slug',
+                          referencedColumn: 'workspace_slug',
                           typedResults: items,
                         ),
                       if (apiKeyTableRefs)
-                        await $_getPrefetchedData<
+                        await $_getPrefetchedDataByColumns<
                           WorkspaceTableData,
                           $WorkspaceTableTable,
-                          ApiKeyTableData
+                          ApiKeyTableData,
+                          $ApiKeyTableTable
                         >(
                           currentTable: table,
                           referencedTable: $$WorkspaceTableTableReferences
@@ -5916,10 +5913,8 @@ class $$WorkspaceTableTableTableManager
                                 table,
                                 p0,
                               ).apiKeyTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.workspaceSlug == item.slug,
-                              ),
+                          currentColumn: 'slug',
+                          referencedColumn: 'workspace_slug',
                           typedResults: items,
                         ),
                     ];
@@ -6452,10 +6447,11 @@ class $$SourceTableTableTableManager
                   getPrefetchedDataCallback: (items) async {
                     return [
                       if (configTableRefs)
-                        await $_getPrefetchedData<
+                        await $_getPrefetchedDataByColumns<
                           SourceTableData,
                           $SourceTableTable,
-                          ConfigTableData
+                          ConfigTableData,
+                          $ConfigTableTable
                         >(
                           currentTable: table,
                           referencedTable: $$SourceTableTableReferences
@@ -6466,10 +6462,8 @@ class $$SourceTableTableTableManager
                                 table,
                                 p0,
                               ).configTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.sourceId == item.id,
-                              ),
+                          currentColumn: 'id',
+                          referencedColumn: 'source_id',
                           typedResults: items,
                         ),
                     ];
@@ -7096,10 +7090,11 @@ class $$DestinationTableTableTableManager
                   getPrefetchedDataCallback: (items) async {
                     return [
                       if (configTableRefs)
-                        await $_getPrefetchedData<
+                        await $_getPrefetchedDataByColumns<
                           DestinationTableData,
                           $DestinationTableTable,
-                          ConfigTableData
+                          ConfigTableData,
+                          $ConfigTableTable
                         >(
                           currentTable: table,
                           referencedTable: $$DestinationTableTableReferences
@@ -7110,17 +7105,16 @@ class $$DestinationTableTableTableManager
                                 table,
                                 p0,
                               ).configTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.destinationId == item.id,
-                              ),
+                          currentColumn: 'id',
+                          referencedColumn: 'destination_id',
                           typedResults: items,
                         ),
                       if (destinationFolderTableRefs)
-                        await $_getPrefetchedData<
+                        await $_getPrefetchedDataByColumns<
                           DestinationTableData,
                           $DestinationTableTable,
-                          DestinationFolderTableData
+                          DestinationFolderTableData,
+                          $DestinationFolderTableTable
                         >(
                           currentTable: table,
                           referencedTable: $$DestinationTableTableReferences
@@ -7131,10 +7125,8 @@ class $$DestinationTableTableTableManager
                                 table,
                                 p0,
                               ).destinationFolderTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.destinationId == item.id,
-                              ),
+                          currentColumn: 'id',
+                          referencedColumn: 'destination_id',
                           typedResults: items,
                         ),
                     ];
@@ -7900,10 +7892,11 @@ class $$ConfigTableTableTableManager
                   getPrefetchedDataCallback: (items) async {
                     return [
                       if (runTableRefs)
-                        await $_getPrefetchedData<
+                        await $_getPrefetchedDataByColumns<
                           ConfigTableData,
                           $ConfigTableTable,
-                          RunTableData
+                          RunTableData,
+                          $RunTableTable
                         >(
                           currentTable: table,
                           referencedTable: $$ConfigTableTableReferences
@@ -7914,10 +7907,8 @@ class $$ConfigTableTableTableManager
                                 table,
                                 p0,
                               ).runTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.configId == item.id,
-                              ),
+                          currentColumn: 'id',
+                          referencedColumn: 'config_id',
                           typedResults: items,
                         ),
                     ];
