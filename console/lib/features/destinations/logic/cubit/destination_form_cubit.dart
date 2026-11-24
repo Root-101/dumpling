@@ -3,34 +3,35 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// State of the drawer of a destination (new or edited). It lives while the
 /// drawer is open, so the test, loading and errors show inside the form
-class DestinationFormCubit extends Cubit<DestinationFormState> {
-  final DestinationsRepo _repo;
-  final AuthCubit _auth;
+class DestinationFormCubit extends Cubit<DestinationFormState>
+    with GlobalEventBusCommunication<DestinationFormState> {
+  final AuthCubit auth;
+  final DestinationsRepo repo;
   final String workspace;
 
   /// The destination being edited; null: a new one
   final String? destinationId;
 
-  DestinationFormCubit(
-    this._repo,
-    this._auth, {
+  DestinationFormCubit({
+    required this.auth,
+    required this.repo,
     required this.workspace,
     this.destinationId,
   }) : super(const DestinationFormInitialState());
 
   /// Tests the connection of the form, before saving it (in the service)
   Future<void> test(DestinationDraft draft) async {
-    emit(const DestinationFormTestInProgressState());
+    emit(const DestinationFormTestingState());
     try {
-      final check = await _repo.testUnsaved(
+      final check = await repo.testUnsaved(
         workspace: workspace,
         draft: draft,
         destinationId: destinationId,
-        token: _auth.auth?.accessToken,
+        token: auth.auth?.accessToken,
       );
-      emit(DestinationFormTestedState(check));
-    } catch (e) {
-      _emitError(e);
+      emit(DestinationFormTestedOkState(check));
+    } on Exception catch (e) {
+      _emitError(e, testing: true);
     }
   }
 
@@ -39,43 +40,45 @@ class DestinationFormCubit extends Cubit<DestinationFormState> {
   Future<void> save(DestinationDraft draft, {bool tested = false}) async {
     emit(const DestinationFormProcessInProgressState());
     try {
-      var destination = await _repo.save(
+      var destination = await repo.save(
         workspace: workspace,
         draft: draft,
         id: destinationId,
-        token: _auth.auth?.accessToken,
+        token: auth.auth?.accessToken,
       );
       if (tested) {
         // already saved: a failed test leaves it untested, not unsaved
         try {
           destination = destination.withCheck(
-            await _repo.testSaved(
+            await repo.testSaved(
               workspace: workspace,
               id: destination.id,
-              token: _auth.auth?.accessToken,
+              token: auth.auth?.accessToken,
             ),
           );
         } catch (_) {}
       }
       emit(DestinationFormProcessingOKState(destination));
-    } catch (e) {
+    } on Exception catch (e) {
       _emitError(e);
     }
   }
 
-  void _emitError(Object e) {
+  /// A 422 goes to the fields; anything else to the whole form
+  void _emitError(Exception e, {bool testing = false}) {
     final exception = ExceptionConverter.parse(e);
-    emit(
-      DestinationFormProcessingErrorState(
-        exception,
-        fieldErrors: switch (exception.data) {
-          List<ValidationError> errors
-              when exception.type == GlobalExceptionType.validation =>
-            errors.asFailedValidations(),
-          _ => const {},
-        },
-      ),
-    );
+    if (exception.type == GlobalExceptionType.validation &&
+        exception.data is List<ValidationError>) {
+      emit(
+        DestinationFormValidationErrorState(
+          (exception.data as List<ValidationError>).asFailedValidations(),
+        ),
+      );
+    } else if (testing) {
+      emit(DestinationFormTestingErrorState(exception));
+    } else {
+      emit(DestinationFormProcessingErrorState(exception));
+    }
   }
 }
 
@@ -95,41 +98,61 @@ abstract class DestinationFormState {
   const DestinationFormState();
 }
 
-class DestinationFormInitialState extends DestinationFormState {
+final class DestinationFormInitialState extends DestinationFormState {
   const DestinationFormInitialState();
 }
 
-//------------------------- TEST -------------------------\
-class DestinationFormTestInProgressState extends DestinationFormState {
-  const DestinationFormTestInProgressState();
+//----------------- test the connection of the form -----------------\\
+abstract class DestinationFormTestState extends DestinationFormState {
+  const DestinationFormTestState();
 }
 
-class DestinationFormTestedState extends DestinationFormState {
+final class DestinationFormTestingState extends DestinationFormTestState {
+  const DestinationFormTestingState();
+}
+
+final class DestinationFormTestedOkState extends DestinationFormTestState {
   final ConnectionCheckModel check;
 
-  const DestinationFormTestedState(this.check);
+  const DestinationFormTestedOkState(this.check);
 }
 
-//------------------------- PROCESSING -------------------------\
-class DestinationFormProcessInProgressState extends DestinationFormState {
+final class DestinationFormTestingErrorState extends DestinationFormTestState {
+  final GlobalException exception;
+
+  const DestinationFormTestingErrorState(this.exception);
+}
+
+//----------------- validation -----------------\\
+/// The service refused fields (422), of a test or a save: under each field
+final class DestinationFormValidationErrorState extends DestinationFormState {
+  /// The message of each `fieldName` ([DestinationFormField])
+  final Map<String, String> failValidations;
+
+  const DestinationFormValidationErrorState(this.failValidations);
+}
+
+//----------------- save -----------------\\
+abstract class DestinationFormProcessState extends DestinationFormState {
+  const DestinationFormProcessState();
+}
+
+final class DestinationFormProcessInProgressState
+    extends DestinationFormProcessState {
   const DestinationFormProcessInProgressState();
 }
 
-class DestinationFormProcessingOKState extends DestinationFormState {
+/// Public contract: the list of destinations reloads on it (the bus)
+final class DestinationFormProcessingOKState
+    extends DestinationFormProcessState {
   final DestinationModel destination;
 
   const DestinationFormProcessingOKState(this.destination);
 }
 
-/// A failed test or save
-class DestinationFormProcessingErrorState extends DestinationFormState {
+final class DestinationFormProcessingErrorState
+    extends DestinationFormProcessState {
   final GlobalException exception;
 
-  /// Errors per field; if empty, the error belongs to the whole form
-  final Map<String, String> fieldErrors;
-
-  const DestinationFormProcessingErrorState(
-    this.exception, {
-    this.fieldErrors = const {},
-  });
+  const DestinationFormProcessingErrorState(this.exception);
 }

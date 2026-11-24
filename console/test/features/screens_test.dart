@@ -100,7 +100,7 @@ void main() {
     whenListen(
       destinations,
       const Stream<DestinationsState>.empty(),
-      initialState: DestinationsLoadingSuccessState(
+      initialState: DestinationsSearchOkState(
         data: const DestinationsData.empty('production').withList(
           destinationTypes,
           [
@@ -839,7 +839,7 @@ void main() {
     whenListen(
       destinations,
       const Stream<DestinationsState>.empty(),
-      initialState: const DestinationsLoadingInProgressState(
+      initialState: const DestinationsSearchingState(
         data: DestinationsData.empty('production'),
       ),
     );

@@ -152,8 +152,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
                 builder: (context, state) => AppRefreshButton(
                   onPressed: cubit.reload,
                   loading:
-                      state is DestinationsLoadingInProgressState &&
-                      state.data.loaded,
+                      state is DestinationsSearchingState && state.data.loaded,
                 ),
               ),
               BlocBuilder<DestinationsCubit, DestinationsState>(
@@ -175,7 +174,7 @@ class _DestinationsScreenState extends State<DestinationsScreen>
                 listener: _onState,
                 builder: (context, state) {
                   if (!state.data.loaded) {
-                    return state is DestinationsLoadingErrorState
+                    return state is DestinationsSearchErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
                         : _buildSkeleton();
                   }
@@ -197,32 +196,36 @@ class _DestinationsScreenState extends State<DestinationsScreen>
 
   void _onState(BuildContext context, DestinationsState state) {
     _followUrl();
-    if (state is DestinationsProcessInProgressState) {
+    if (state is DestinationsDeletingState ||
+        state is DestinationsAddingFolderState ||
+        state is DestinationsDeletingFolderState) {
       app.loading.show();
     } else {
       app.loading.hide();
     }
-    if (state is DestinationsProcessingOKState) {
-      final folder = FolderPath.show(state.folder ?? '');
-      final message = switch (state.action) {
-        DestinationsAction.deleted => app.intl.destinations.deleted(
-          name: state.destination.name,
-        ),
-        DestinationsAction.folderAdded => app.intl.destinations.folderAdded(
-          path: folder,
-        ),
-        DestinationsAction.folderDeleted => app.intl.destinations.folderDeleted(
-          path: folder,
-        ),
-        // the row shows what the test found
-        DestinationsAction.tested => null,
-      };
-      if (message != null) {
-        app.snack.showSuccess(message: message, context: app.context);
-      }
+    // the row shows what a test found: no notice for it
+    final done = switch (state) {
+      DestinationsDeletedOkState(:final destination) =>
+        app.intl.destinations.deleted(name: destination.name),
+      DestinationsAddedFolderOkState(:final folder) =>
+        app.intl.destinations.folderAdded(path: FolderPath.show(folder)),
+      DestinationsDeletedFolderOkState(:final folder) =>
+        app.intl.destinations.folderDeleted(path: FolderPath.show(folder)),
+      _ => null,
+    };
+    if (done != null) {
+      app.snack.showSuccess(message: done, context: app.context);
     }
-    if (state is DestinationsProcessingErrorState) {
-      app.snack.showError(message: state.message, context: app.context);
+    final failed = switch (state) {
+      DestinationsTestingErrorState(:final exception) ||
+      DestinationsAddingFolderErrorState(:final exception) ||
+      DestinationsDeletingFolderErrorState(:final exception) ||
+      DestinationsDeletingErrorState(:final exception) ||
+      DestinationsReorderingErrorState(:final exception) => exception,
+      _ => null,
+    };
+    if (failed != null) {
+      app.snack.showError(message: failed.intlMessage, context: app.context);
     }
   }
 
@@ -371,7 +374,10 @@ class _DestinationsScreenState extends State<DestinationsScreen>
     );
   }
 
-  List<Widget> _buildCells(DestinationsData data, DestinationModel destination) {
+  List<Widget> _buildCells(
+    DestinationsData data,
+    DestinationModel destination,
+  ) {
     final used = data.usageOf(destination);
     final testing = data.testing.contains(destination.id);
     final open = _open.contains(destination.id);

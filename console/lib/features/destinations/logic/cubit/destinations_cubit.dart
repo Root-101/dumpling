@@ -5,32 +5,40 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// the row actions (test the connection, add or delete a folder, delete). The
 /// backups (configs) are loaded with them to say how many write to each
 /// destination and each folder
-class DestinationsCubit extends Cubit<DestinationsState> {
-  final DestinationsRepo _repo;
-  final ConfigsRepo _configs;
-  final AuthCubit _auth;
+class DestinationsCubit extends Cubit<DestinationsState>
+    with GlobalEventBusCommunication<DestinationsState> {
+  final AuthCubit auth;
+  final DestinationsRepo repo;
+  final ConfigsRepo configs;
 
-  DestinationsCubit(this._repo, this._configs, this._auth)
-    : super(const DestinationsInitialState());
+  DestinationsCubit({
+    required this.auth,
+    required this.repo,
+    required this.configs,
+  }) : super(const DestinationsInitialState()) {
+    // a destination saved in its form: the list again
+    onBus<DestinationFormProcessingOKState>((_) => reload());
+  }
 
-  String? get _token => _auth.auth?.accessToken;
+  /// The service gives no refresh token: the one of the session, or none
+  String? get _token => auth.auth?.accessToken;
 
   /// The destinations of [workspace]; another workspace starts from empty
   Future<void> load(String workspace) async {
     final data = state.data.workspace == workspace
         ? state.data
         : DestinationsData.empty(workspace);
-    emit(DestinationsLoadingInProgressState(data: data));
+    emit(DestinationsSearchingState(data: data));
     try {
       final results = await Future.wait([
-        _repo.types(token: _token),
-        _repo.list(workspace: workspace, token: _token),
-        _configs.list(workspace: workspace, token: _token),
+        repo.types(token: _token),
+        repo.list(workspace: workspace, token: _token),
+        configs.list(workspace: workspace, token: _token),
       ]);
       // the answer of a workspace already left behind is dropped
       if (state.data.workspace != workspace) return;
       emit(
-        DestinationsLoadingSuccessState(
+        DestinationsSearchOkState(
           data: state.data.withList(
             results[0] as List<DestinationTypeModel>,
             results[1] as List<DestinationModel>,
@@ -38,10 +46,10 @@ class DestinationsCubit extends Cubit<DestinationsState> {
           ),
         ),
       );
-    } catch (e) {
+    } on Exception catch (e) {
       if (state.data.workspace != workspace) return;
       emit(
-        DestinationsLoadingErrorState(
+        DestinationsSearchErrorState(
           ExceptionConverter.parse(e),
           data: state.data,
         ),
@@ -56,19 +64,17 @@ class DestinationsCubit extends Cubit<DestinationsState> {
 
   /// By name, type or endpoint, over the destinations already loaded
   void search(String query) {
-    emit(DestinationsLoadingSuccessState(data: state.data.withQuery(query)));
+    emit(DestinationsSearchOkState(data: state.data.withQuery(query)));
   }
 
   /// Only the destinations of [type]; null: all of them
   void filterType(String? type) {
-    emit(DestinationsLoadingSuccessState(data: state.data.withType(type)));
+    emit(DestinationsSearchOkState(data: state.data.withType(type)));
   }
 
   void clearFilters() {
     emit(
-      DestinationsLoadingSuccessState(
-        data: state.data.withQuery('').withType(null),
-      ),
+      DestinationsSearchOkState(data: state.data.withQuery('').withType(null)),
     );
   }
 
@@ -77,31 +83,31 @@ class DestinationsCubit extends Cubit<DestinationsState> {
   Future<void> test(DestinationModel destination) async {
     final workspace = state.data.workspace!;
     emit(
-      DestinationsLoadingSuccessState(
+      DestinationsTestingState(
+        destination,
         data: state.data.withTesting(destination.id, true),
       ),
     );
     try {
-      final check = await _repo.testSaved(
+      final check = await repo.testSaved(
         workspace: workspace,
         id: destination.id,
         token: _token,
       );
       if (state.data.workspace != workspace) return;
       emit(
-        DestinationsProcessingOKState(
-          DestinationsAction.tested,
+        DestinationsTestedOkState(
           destination.withCheck(check),
           data: state.data
               .withTesting(destination.id, false)
               .withCheck(destination.id, check),
         ),
       );
-    } catch (e) {
+    } on Exception catch (e) {
       if (state.data.workspace != workspace) return;
       emit(
-        DestinationsProcessingErrorState(
-          ExceptionConverter.parse(e).intlMessage,
+        DestinationsTestingErrorState(
+          ExceptionConverter.parse(e),
           data: state.data.withTesting(destination.id, false),
         ),
       );
@@ -109,20 +115,46 @@ class DestinationsCubit extends Cubit<DestinationsState> {
   }
 
   /// Adds [path] (already clean) to the folders of [destination]
-  Future<void> addFolder(DestinationModel destination, String path) =>
-      _saveFolders(DestinationsAction.folderAdded, destination, [
+  Future<void> addFolder(DestinationModel destination, String path) async {
+    emit(DestinationsAddingFolderState(destination, path, data: state.data));
+    try {
+      final saved = await _saveFolders(destination, [
         ...destination.folders,
         path,
-      ], path);
+      ]);
+      emit(DestinationsAddedFolderOkState(saved, path, data: state.data));
+    } on Exception catch (e) {
+      emit(
+        DestinationsAddingFolderErrorState(
+          ExceptionConverter.parse(e),
+          data: state.data,
+        ),
+      );
+      return;
+    }
+    await reload();
+  }
 
   /// The service refuses it (409) while a backup writes to it
-  Future<void> deleteFolder(DestinationModel destination, String path) =>
-      _saveFolders(
-        DestinationsAction.folderDeleted,
+  Future<void> deleteFolder(DestinationModel destination, String path) async {
+    emit(DestinationsDeletingFolderState(destination, path, data: state.data));
+    try {
+      final saved = await _saveFolders(
         destination,
         destination.folders.where((f) => f != path).toList(),
-        path,
       );
+      emit(DestinationsDeletedFolderOkState(saved, path, data: state.data));
+    } on Exception catch (e) {
+      emit(
+        DestinationsDeletingFolderErrorState(
+          ExceptionConverter.parse(e),
+          data: state.data,
+        ),
+      );
+      return;
+    }
+    await reload();
+  }
 
   /// Moves the folder of [destination] at [from] to [to] and saves it; back
   /// as it was if that fails. Its last check stays: the same folders
@@ -135,7 +167,7 @@ class DestinationsCubit extends Cubit<DestinationsState> {
             d.id == destination.id ? d.withFolders(folders) : d,
         ],
       ),
-      (workspace) => _repo.save(
+      (workspace) => repo.save(
         workspace: workspace,
         id: destination.id,
         draft: DestinationDraft.of(destination, folders: folders),
@@ -151,7 +183,7 @@ class DestinationsCubit extends Cubit<DestinationsState> {
     final destinations = reordered(state.data.destinations, from, to);
     return _saveOrder(
       (data) => data._copy(destinations: destinations),
-      (workspace) => _repo.reorder(
+      (workspace) => repo.reorder(
         workspace: workspace,
         ids: [for (final d in destinations) d.id],
         token: _token,
@@ -165,69 +197,45 @@ class DestinationsCubit extends Cubit<DestinationsState> {
     Future<void> Function(String workspace) save,
   ) async {
     final before = state.data;
-    emit(DestinationsLoadingSuccessState(data: change(before)));
+    emit(DestinationsSearchOkState(data: change(before)));
     try {
       await save(before.workspace!);
-    } catch (e) {
+    } on Exception catch (e) {
       if (state.data.workspace != before.workspace) return;
       emit(
-        DestinationsProcessingErrorState(
-          ExceptionConverter.parse(e).intlMessage,
+        DestinationsReorderingErrorState(
+          ExceptionConverter.parse(e),
           data: before,
         ),
       );
     }
   }
 
-  Future<void> _saveFolders(
-    DestinationsAction action,
+  /// The saved settings as they are: without the secret key, the service
+  /// keeps the saved one
+  Future<DestinationModel> _saveFolders(
     DestinationModel destination,
     List<String> folders,
-    String path,
-  ) async {
-    await _process(action, path, () {
-      // the saved settings as they are: without the secret key, the service
-      // keeps the saved one
-      return _repo.save(
-        workspace: state.data.workspace!,
-        id: destination.id,
-        draft: DestinationDraft.of(destination, folders: folders),
-        token: _token,
-      );
-    });
-  }
+  ) => repo.save(
+    workspace: state.data.workspace!,
+    id: destination.id,
+    draft: DestinationDraft.of(destination, folders: folders),
+    token: _token,
+  );
 
   Future<void> delete(DestinationModel destination) async {
-    await _process(DestinationsAction.deleted, null, () async {
-      await _repo.delete(
+    emit(DestinationsDeletingState(destination, data: state.data));
+    try {
+      await repo.delete(
         workspace: state.data.workspace!,
         id: destination.id,
         token: _token,
       );
-      return destination;
-    });
-  }
-
-  Future<void> _process(
-    DestinationsAction action,
-    String? folder,
-    Future<DestinationModel> Function() run,
-  ) async {
-    emit(DestinationsProcessInProgressState(data: state.data));
-    try {
-      final destination = await run();
+      emit(DestinationsDeletedOkState(destination, data: state.data));
+    } on Exception catch (e) {
       emit(
-        DestinationsProcessingOKState(
-          action,
-          destination,
-          folder: folder,
-          data: state.data,
-        ),
-      );
-    } catch (e) {
-      emit(
-        DestinationsProcessingErrorState(
-          ExceptionConverter.parse(e).intlMessage,
+        DestinationsDeletingErrorState(
+          ExceptionConverter.parse(e),
           data: state.data,
         ),
       );
@@ -239,9 +247,6 @@ class DestinationsCubit extends Cubit<DestinationsState> {
   /// After signing out
   void reset() => emit(const DestinationsInitialState());
 }
-
-/// What a row action did, so the view can confirm it
-enum DestinationsAction { tested, folderAdded, folderDeleted, deleted }
 
 /// The loaded destinations and what the search and the filter leave
 /// ([visibleDestinations], filled on every change). [usage] counts the
@@ -406,55 +411,144 @@ class DestinationsData {
 }
 
 abstract class DestinationsState {
+  /// The destinations of the open workspace, kept in every state: the list
+  /// stays on screen while a row is tested, changed or deleted
   final DestinationsData data;
 
   const DestinationsState({this.data = const DestinationsData.empty()});
 }
 
-class DestinationsInitialState extends DestinationsState {
+final class DestinationsInitialState extends DestinationsState {
   const DestinationsInitialState();
 }
 
-//------------------------- LOADING -------------------------\
-class DestinationsLoadingInProgressState extends DestinationsState {
-  const DestinationsLoadingInProgressState({required super.data});
+//----------------- search -----------------\\
+abstract class DestinationsSearchState extends DestinationsState {
+  const DestinationsSearchState({required super.data});
 }
 
-class DestinationsLoadingSuccessState extends DestinationsState {
-  const DestinationsLoadingSuccessState({required super.data});
+final class DestinationsSearchingState extends DestinationsSearchState {
+  const DestinationsSearchingState({required super.data});
 }
 
-class DestinationsLoadingErrorState extends DestinationsState {
+final class DestinationsSearchOkState extends DestinationsSearchState {
+  const DestinationsSearchOkState({required super.data});
+}
+
+final class DestinationsSearchErrorState extends DestinationsSearchState {
   final GlobalException exception;
 
-  const DestinationsLoadingErrorState(this.exception, {required super.data});
+  const DestinationsSearchErrorState(this.exception, {required super.data});
 }
 
-//------------------------- PROCESSING -------------------------\
-class DestinationsProcessInProgressState extends DestinationsState {
-  const DestinationsProcessInProgressState({required super.data});
-}
-
-class DestinationsProcessingOKState extends DestinationsState {
-  final DestinationsAction action;
-
-  /// The destination acted on; after [DestinationsAction.tested], with its
-  /// new check
+//----------------- test a saved destination -----------------\\
+final class DestinationsTestingState extends DestinationsState {
   final DestinationModel destination;
 
-  /// The folder added or deleted
-  final String? folder;
+  const DestinationsTestingState(this.destination, {required super.data});
+}
 
-  const DestinationsProcessingOKState(
-    this.action,
-    this.destination, {
+/// With its new check
+final class DestinationsTestedOkState extends DestinationsState {
+  final DestinationModel destination;
+
+  const DestinationsTestedOkState(this.destination, {required super.data});
+}
+
+final class DestinationsTestingErrorState extends DestinationsState {
+  final GlobalException exception;
+
+  const DestinationsTestingErrorState(this.exception, {required super.data});
+}
+
+//----------------- add a folder -----------------\\
+final class DestinationsAddingFolderState extends DestinationsState {
+  final DestinationModel destination;
+  final String folder;
+
+  const DestinationsAddingFolderState(
+    this.destination,
+    this.folder, {
     required super.data,
-    this.folder,
   });
 }
 
-class DestinationsProcessingErrorState extends DestinationsState {
-  final String message;
+final class DestinationsAddedFolderOkState extends DestinationsState {
+  final DestinationModel destination;
+  final String folder;
 
-  const DestinationsProcessingErrorState(this.message, {required super.data});
+  const DestinationsAddedFolderOkState(
+    this.destination,
+    this.folder, {
+    required super.data,
+  });
+}
+
+final class DestinationsAddingFolderErrorState extends DestinationsState {
+  final GlobalException exception;
+
+  const DestinationsAddingFolderErrorState(
+    this.exception, {
+    required super.data,
+  });
+}
+
+//----------------- delete a folder -----------------\\
+final class DestinationsDeletingFolderState extends DestinationsState {
+  final DestinationModel destination;
+  final String folder;
+
+  const DestinationsDeletingFolderState(
+    this.destination,
+    this.folder, {
+    required super.data,
+  });
+}
+
+final class DestinationsDeletedFolderOkState extends DestinationsState {
+  final DestinationModel destination;
+  final String folder;
+
+  const DestinationsDeletedFolderOkState(
+    this.destination,
+    this.folder, {
+    required super.data,
+  });
+}
+
+final class DestinationsDeletingFolderErrorState extends DestinationsState {
+  final GlobalException exception;
+
+  const DestinationsDeletingFolderErrorState(
+    this.exception, {
+    required super.data,
+  });
+}
+
+//----------------- delete -----------------\\
+final class DestinationsDeletingState extends DestinationsState {
+  final DestinationModel destination;
+
+  const DestinationsDeletingState(this.destination, {required super.data});
+}
+
+final class DestinationsDeletedOkState extends DestinationsState {
+  final DestinationModel destination;
+
+  const DestinationsDeletedOkState(this.destination, {required super.data});
+}
+
+final class DestinationsDeletingErrorState extends DestinationsState {
+  final GlobalException exception;
+
+  const DestinationsDeletingErrorState(this.exception, {required super.data});
+}
+
+//----------------- reorder -----------------\\
+/// The order (of the destinations or of the folders of one) went back as it
+/// was: the move is shown before it is saved
+final class DestinationsReorderingErrorState extends DestinationsState {
+  final GlobalException exception;
+
+  const DestinationsReorderingErrorState(this.exception, {required super.data});
 }

@@ -20,8 +20,8 @@ class DestinationForm extends StatefulWidget {
   }) async {
     final editing = destination != null && !duplicate;
     final formCubit = DestinationFormCubit(
-      app.di.find(),
-      app.di.find(),
+      auth: app.di.find(),
+      repo: app.di.find(),
       workspace: workspace,
       destinationId: editing ? destination.id : null,
     );
@@ -170,7 +170,7 @@ class _DestinationFormState extends State<DestinationForm> {
 
   bool get _busy =>
       cubit.state is DestinationFormProcessInProgressState ||
-      cubit.state is DestinationFormTestInProgressState;
+      cubit.state is DestinationFormTestingState;
 
   /// The fields of the connection step; an error of the service in one of
   /// them takes the form back there
@@ -289,7 +289,7 @@ class _DestinationFormState extends State<DestinationForm> {
         } else {
           app.loading.hide(id: DestinationForm.loadingId);
         }
-        if (state is DestinationFormTestedState) {
+        if (state is DestinationFormTestedOkState) {
           setState(() {
             _formError = null;
             if (_step < _lastStep) {
@@ -307,13 +307,24 @@ class _DestinationFormState extends State<DestinationForm> {
             }
           });
         }
-        if (state is DestinationFormProcessingErrorState) {
+        if (state is DestinationFormProcessingErrorState ||
+            state is DestinationFormTestingErrorState) {
           setState(() {
-            _serverErrors = state.fieldErrors;
-            _formError = state.fieldErrors.isEmpty
-                ? state.exception.intlMessage
-                : null;
-            final fields = state.fieldErrors.keys;
+            _serverErrors = const {};
+            _formError = switch (state) {
+              DestinationFormProcessingErrorState(:final exception) ||
+              DestinationFormTestingErrorState(
+                :final exception,
+              ) => exception.intlMessage,
+              _ => null,
+            };
+          });
+        }
+        if (state is DestinationFormValidationErrorState) {
+          setState(() {
+            _serverErrors = state.failValidations;
+            _formError = null;
+            final fields = state.failValidations.keys;
             if (fields.contains(DestinationFormField.type) ||
                 fields.contains(DestinationFormField.name)) {
               _step = 0;
@@ -324,7 +335,6 @@ class _DestinationFormState extends State<DestinationForm> {
         }
         if (state is DestinationFormProcessingOKState) {
           Navigator.of(context).pop();
-          app.di.find<DestinationsCubit>().reload();
           final name = state.destination.name;
           app.snack.showSuccess(
             message: _editing
@@ -414,7 +424,7 @@ class _DestinationFormState extends State<DestinationForm> {
                     BlocBuilder<DestinationFormCubit, DestinationFormState>(
                       builder: (context, state) => ConnectionTestBanner(
                         check: _check,
-                        testing: state is DestinationFormTestInProgressState,
+                        testing: state is DestinationFormTestingState,
                         onTest: _test,
                         idleSub: app.intl.destinations.testIdle,
                         connectedSub: (_) => app.intl.destinations.connectedSub(
@@ -645,7 +655,7 @@ class _DestinationFormState extends State<DestinationForm> {
         ),
         child: BlocBuilder<DestinationFormCubit, DestinationFormState>(
           builder: (context, state) {
-            final testing = state is DestinationFormTestInProgressState;
+            final testing = state is DestinationFormTestingState;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -761,7 +771,7 @@ class _DestinationFormState extends State<DestinationForm> {
           app.dimensions.padding.s.gap(),
           BlocBuilder<DestinationFormCubit, DestinationFormState>(
             builder: (context, state) {
-              final testing = state is DestinationFormTestInProgressState;
+              final testing = state is DestinationFormTestingState;
               return PrimaryButton.secondary(
                 onPressed: testing ? null : _checkFolders,
                 title: testing
@@ -892,9 +902,7 @@ class _NextButton extends StatelessWidget {
       builder: (context, state) {
         final loading = state is DestinationFormProcessInProgressState;
         return PrimaryButton.primary(
-          onPressed: state is DestinationFormTestInProgressState
-              ? null
-              : onPressed,
+          onPressed: state is DestinationFormTestingState ? null : onPressed,
           isLoading: loading,
           title: loading ? app.intl.common.saving : title,
           color: app.colors.primary.primaryAction,

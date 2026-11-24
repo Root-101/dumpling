@@ -44,7 +44,7 @@ void main() {
   group('DestinationsCubit', () {
     blocTest<DestinationsCubit, DestinationsState>(
       'Counts the backups of each folder and of the root',
-      build: () => DestinationsCubit(repo, configs, auth),
+      build: () => DestinationsCubit(auth: auth, repo: repo, configs: configs),
       act: (cubit) => cubit.load('production'),
       verify: (cubit) {
         final data = cubit.state.data;
@@ -66,7 +66,7 @@ void main() {
           token: 'jwt',
         ),
       ).thenAnswer((_) async => destination('bucket')),
-      build: () => DestinationsCubit(repo, configs, auth),
+      build: () => DestinationsCubit(auth: auth, repo: repo, configs: configs),
       act: (cubit) async {
         await cubit.load('production');
         await cubit.addFolder(cubit.state.data.destinations.single, 'users');
@@ -127,7 +127,7 @@ void main() {
           token: 'jwt',
         ),
       ).thenAnswer((_) async {});
-      final cubit = DestinationsCubit(repo, configs, auth);
+      final cubit = DestinationsCubit(auth: auth, repo: repo, configs: configs);
       await cubit.load('production');
 
       await cubit.moveFolder(cubit.state.data.destinations.first, 1, 0);

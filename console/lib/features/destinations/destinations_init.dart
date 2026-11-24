@@ -9,9 +9,9 @@ class DestinationsInit {
     app.di.put(repo);
 
     DestinationsCubit cubit = DestinationsCubit(
-      repo,
-      app.di.find(),
-      app.di.find(),
+      auth: app.di.find(),
+      repo: repo,
+      configs: app.di.find(),
     );
     app.di.put(cubit);
   }
