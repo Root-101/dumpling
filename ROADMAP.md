@@ -146,3 +146,7 @@ Loose ideas, not planned or weighed yet.
       until a restart; refuse those statuses.
     - **A slow upload line:** each 16 MiB part has 5 minutes, so under ~0.45 Mbit/s a backup over
       16 MiB never ends. Say it in DECISIONS §6, or grow the timeout with the part.
+    - **The login lock on the wall clock:** `LoginRateLimiter` measures its 15 minutes with
+      `utcNow()`, so a jump of the server's clock (NTP) shortens or stretches a lock. A monotonic
+      clock (`Stopwatch`), as the Winter standard asks for waits and deadlines; its tests inject the
+      elapsed time instead of `now`.
