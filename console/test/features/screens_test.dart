@@ -86,7 +86,7 @@ void main() {
     whenListen(
       sources,
       const Stream<SourcesState>.empty(),
-      initialState: SourcesLoadingSuccessState(
+      initialState: SourcesSearchOkState(
         data: const SourcesData.empty('production').withList(
           sourceTypes,
           [
@@ -832,7 +832,7 @@ void main() {
     whenListen(
       sources,
       const Stream<SourcesState>.empty(),
-      initialState: const SourcesLoadingInProgressState(
+      initialState: const SourcesSearchingState(
         data: SourcesData.empty('production'),
       ),
     );

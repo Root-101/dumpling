@@ -8,7 +8,11 @@ class SourcesInit {
     SourcesRepo repo = SourcesRepo(client);
     app.di.put(repo);
 
-    SourcesCubit cubit = SourcesCubit(repo, app.di.find(), app.di.find());
+    SourcesCubit cubit = SourcesCubit(
+      auth: app.di.find(),
+      repo: repo,
+      configs: app.di.find(),
+    );
     app.di.put(cubit);
   }
 }

@@ -19,8 +19,8 @@ class SourceForm extends StatefulWidget {
   }) async {
     final editing = source != null && !duplicate;
     final formCubit = SourceFormCubit(
-      app.di.find(),
-      app.di.find(),
+      auth: app.di.find(),
+      repo: app.di.find(),
       workspace: workspace,
       sourceId: editing ? source.id : null,
     );
@@ -149,7 +149,7 @@ class _SourceFormState extends State<SourceForm> {
 
   bool get _busy =>
       cubit.state is SourceFormProcessInProgressState ||
-      cubit.state is SourceFormTestInProgressState;
+      cubit.state is SourceFormTestingState;
 
   static const int _lastStep = 2;
 
@@ -210,20 +210,31 @@ class _SourceFormState extends State<SourceForm> {
         } else {
           app.loading.hide(id: SourceForm.loadingId);
         }
-        if (state is SourceFormTestedState) {
+        if (state is SourceFormTestedOkState) {
           setState(() {
             _check = state.check;
             _formError = null;
           });
         }
-        if (state is SourceFormProcessingErrorState) {
+        if (state is SourceFormProcessingErrorState ||
+            state is SourceFormTestingErrorState) {
           setState(() {
-            _serverErrors = state.fieldErrors;
-            _formError = state.fieldErrors.isEmpty
-                ? state.exception.intlMessage
-                : null;
+            _serverErrors = const {};
+            _formError = switch (state) {
+              SourceFormProcessingErrorState(:final exception) ||
+              SourceFormTestingErrorState(
+                :final exception,
+              ) => exception.intlMessage,
+              _ => null,
+            };
+          });
+        }
+        if (state is SourceFormValidationErrorState) {
+          setState(() {
+            _serverErrors = state.failValidations;
+            _formError = null;
             // back to the step of the field the service refused
-            final fields = state.fieldErrors.keys;
+            final fields = state.failValidations.keys;
             if (fields.contains(SourceFormField.type) ||
                 fields.contains(SourceFormField.name)) {
               _step = 0;
@@ -234,7 +245,6 @@ class _SourceFormState extends State<SourceForm> {
         }
         if (state is SourceFormProcessingOKState) {
           Navigator.of(context).pop();
-          app.di.find<SourcesCubit>().reload();
           app.snack.showSuccess(
             message: _editing
                 ? app.intl.sources.saved(name: state.source.name)
@@ -325,7 +335,7 @@ class _SourceFormState extends State<SourceForm> {
                     BlocBuilder<SourceFormCubit, SourceFormState>(
                       builder: (context, state) => ConnectionTestBanner(
                         check: _check,
-                        testing: state is SourceFormTestInProgressState,
+                        testing: state is SourceFormTestingState,
                         onTest: _test,
                         idleSub: app.intl.sources.testIdle,
                         connectedSub: (check) => [
@@ -752,7 +762,7 @@ class _NextButton extends StatelessWidget {
       builder: (context, state) {
         final loading = state is SourceFormProcessInProgressState;
         return PrimaryButton.primary(
-          onPressed: state is SourceFormTestInProgressState ? null : onPressed,
+          onPressed: state is SourceFormTestingState ? null : onPressed,
           isLoading: loading,
           title: loading ? app.intl.common.saving : title,
           color: app.colors.primary.primaryAction,

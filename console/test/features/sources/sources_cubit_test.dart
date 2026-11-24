@@ -34,13 +34,24 @@ void main() {
   });
 
   group('SourcesCubit', () {
+    test('Loads the list again when a source is saved in its form', () async {
+      final cubit = SourcesCubit(auth: auth, repo: repo, configs: configs);
+      addTearDown(cubit.close);
+      await cubit.load('production');
+      // what the form cubit fires on the bus once it saved
+      GlobalEventBus().fire(SourceFormProcessingOKState(source('orders')));
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      verify(() => repo.list(workspace: 'production', token: 'jwt')).called(2);
+    });
+
     blocTest<SourcesCubit, SourcesState>(
       'Counts the backups of each source',
-      build: () => SourcesCubit(repo, configs, auth),
+      build: () => SourcesCubit(auth: auth, repo: repo, configs: configs),
       act: (cubit) => cubit.load('production'),
       skip: 1,
       expect: () => [
-        isA<SourcesLoadingSuccessState>()
+        isA<SourcesSearchOkState>()
             .having((s) => s.data.usage, 'usage', {'orders': 2, 'users': 1})
             .having((s) => s.data.visibleSources.length, 'visible', 2),
       ],
@@ -48,7 +59,7 @@ void main() {
 
     blocTest<SourcesCubit, SourcesState>(
       'Searches by host and filters by type over what is loaded',
-      build: () => SourcesCubit(repo, configs, auth),
+      build: () => SourcesCubit(auth: auth, repo: repo, configs: configs),
       act: (cubit) async {
         await cubit.load('production');
         cubit
@@ -57,12 +68,12 @@ void main() {
       },
       skip: 2,
       expect: () => [
-        isA<SourcesLoadingSuccessState>().having(
+        isA<SourcesSearchOkState>().having(
           (s) => s.data.visibleSources.map((s) => s.id),
           'search',
           ['users'],
         ),
-        isA<SourcesLoadingSuccessState>()
+        isA<SourcesSearchOkState>()
             .having((s) => s.data.visibleSources, 'filter', isEmpty)
             .having((s) => s.data.activeFilters, 'active', 1),
       ],
@@ -74,19 +85,17 @@ void main() {
         () =>
             repo.testSaved(workspace: 'production', id: 'orders', token: 'jwt'),
       ).thenAnswer((_) async => check(CheckStatus.failed)),
-      build: () => SourcesCubit(repo, configs, auth),
+      build: () => SourcesCubit(auth: auth, repo: repo, configs: configs),
       act: (cubit) async {
         await cubit.load('production');
         await cubit.test(source('orders'));
       },
       skip: 2,
       expect: () => [
-        isA<SourcesLoadingSuccessState>().having(
-          (s) => s.data.testing,
-          'testing',
-          {'orders'},
-        ),
-        isA<SourcesProcessingOKState>()
+        isA<SourcesTestingState>().having((s) => s.data.testing, 'testing', {
+          'orders',
+        }),
+        isA<SourcesTestedOkState>()
             .having((s) => s.data.testing, 'testing', isEmpty)
             .having(
               (s) => s.data.sources.first.lastCheck?.status,
@@ -98,7 +107,7 @@ void main() {
 
     blocTest<SourcesCubit, SourcesState>(
       'Another workspace starts from empty',
-      build: () => SourcesCubit(repo, configs, auth),
+      build: () => SourcesCubit(auth: auth, repo: repo, configs: configs),
       act: (cubit) async {
         await cubit.load('production');
         when(() => repo.list(workspace: 'staging', token: 'jwt'))
@@ -109,10 +118,10 @@ void main() {
       },
       skip: 2,
       expect: () => [
-        isA<SourcesLoadingInProgressState>()
+        isA<SourcesSearchingState>()
             .having((s) => s.data.loaded, 'loaded', false)
             .having((s) => s.data.sources, 'sources', isEmpty),
-        isA<SourcesLoadingSuccessState>().having(
+        isA<SourcesSearchOkState>().having(
           (s) => s.data.workspace,
           'workspace',
           'staging',
@@ -147,7 +156,8 @@ void main() {
           ),
         ).thenAnswer((_) async => check(CheckStatus.connected));
       },
-      build: () => SourceFormCubit(repo, auth, workspace: 'production'),
+      build: () =>
+          SourceFormCubit(auth: auth, repo: repo, workspace: 'production'),
       act: (cubit) => cubit.save(draft, tested: true),
       skip: 1,
       expect: () => [
@@ -208,7 +218,7 @@ void main() {
           token: 'jwt',
         ),
       ).thenAnswer((_) async {});
-      final cubit = SourcesCubit(repo, configs, auth);
+      final cubit = SourcesCubit(auth: auth, repo: repo, configs: configs);
       await cubit.load('production');
       expect(cubit.state.data.filtered, isFalse);
       await cubit.reorder(1, 0);
@@ -227,10 +237,10 @@ void main() {
           token: 'jwt',
         ),
       ).thenThrow(Exception('down'));
-      final cubit = SourcesCubit(repo, configs, auth);
+      final cubit = SourcesCubit(auth: auth, repo: repo, configs: configs);
       await cubit.load('production');
       await cubit.reorder(1, 0);
-      expect(cubit.state, isA<SourcesProcessingErrorState>());
+      expect(cubit.state, isA<SourcesReorderingErrorState>());
       expect(ids(cubit), ['orders', 'users']);
     });
   });

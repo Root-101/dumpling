@@ -133,9 +133,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
               BlocBuilder<SourcesCubit, SourcesState>(
                 builder: (context, state) => AppRefreshButton(
                   onPressed: cubit.reload,
-                  loading:
-                      state is SourcesLoadingInProgressState &&
-                      state.data.loaded,
+                  loading: state is SourcesSearchingState && state.data.loaded,
                 ),
               ),
               BlocBuilder<SourcesCubit, SourcesState>(
@@ -157,7 +155,7 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
                 listener: _onState,
                 builder: (context, state) {
                   if (!state.data.loaded) {
-                    return state is SourcesLoadingErrorState
+                    return state is SourcesSearchErrorState
                         ? ErrorPage.of(state.exception, onRetry: cubit.reload)
                         : _buildSkeleton();
                   }
@@ -179,20 +177,25 @@ class _SourcesScreenState extends State<SourcesScreen> with UrlDialog {
 
   void _onState(BuildContext context, SourcesState state) {
     _followUrl();
-    if (state is SourcesProcessInProgressState) {
+    if (state is SourcesDeletingState) {
       app.loading.show();
     } else {
       app.loading.hide();
     }
-    if (state is SourcesProcessingOKState &&
-        state.action == SourcesAction.deleted) {
+    if (state is SourcesDeletedOkState) {
       app.snack.showSuccess(
         message: app.intl.sources.deleted(name: state.source.name),
         context: app.context,
       );
     }
-    if (state is SourcesProcessingErrorState) {
-      app.snack.showError(message: state.message, context: app.context);
+    final failed = switch (state) {
+      SourcesTestingErrorState(:final exception) ||
+      SourcesDeletingErrorState(:final exception) ||
+      SourcesReorderingErrorState(:final exception) => exception,
+      _ => null,
+    };
+    if (failed != null) {
+      app.snack.showError(message: failed.intlMessage, context: app.context);
     }
   }
 
