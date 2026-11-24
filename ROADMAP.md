@@ -81,10 +81,25 @@ By priority, highest first. 🔴 changes the database schema (a version to expor
 8. [ ] 🔴 **Encrypt the dump** before uploading it to the bucket. `To talk through how before
    implementing it.`
 9. [ ] 🔴 **Download a backup** from the console.
-10. [ ] **Hardening left by the security audit:** a new admin password ends the sessions already
-    open; refuse to start with short secrets (today only a warning); pin the JWT algorithm and an
-    audience; a retention for the run log; no redirects followed by the S3 client; the stored
-    password dropped when a source's host changes; a `Content-Security-Policy` for the console.
+10. [ ] **Hardening left by the security audits:** a new admin password ends the sessions already
+    open; refuse to start with short secrets (today only a warning); pin the JWT algorithm (HS256)
+    and an audience; a retention for the run log; no redirects followed by the S3 client; a
+    `Content-Security-Policy` for the console. From the audit of 0.1.8:
+    - Keys limited to some configs can still get `source.update`, `destination.update` or a test,
+      and point a source or destination that other configs share elsewhere; `ConfigService.reorder`
+      ignores the limit.
+    - The API key filter doesn't check the login lock again after the lookup; a key id goes
+      unquoted into log lines.
+    - Limits: the login body (10 MB today), the map of the request limiter, the Run now queue of a
+      config, the open SSE streams, the connection tests at once, an overall `pg_dump` deadline,
+      the error line of the log.
+    - The connection test bounds a server by time, not by bytes (DECISIONS §15): a byte cap once
+      package:postgres has a public hook.
+    - The AES key is one sha256 of `SECRETS_ENCRYPTION_KEY` (a KDF with a salt), and an export's
+      ciphertexts are not bound to the service that made them.
+    - CI and image: actions pinned by commit, base images by digest, a `permissions:` block in
+      `ci.yml`; the compose file publishes 8080 on every interface (only on `127.0.0.1` by
+      default, behind a proxy).
 11. [ ] **`verify-full` with a CA** for PostgreSQL sources (`require` and `disable` exist).
 12. [ ] **Destination detail** with what is in the bucket (ListObjects): used space, objects, and
     the files, size and last write of each folder; and the history of its connection checks, not
@@ -121,3 +136,13 @@ Loose ideas, not planned or weighed yet.
     (`pg_restore -a -t <table> -n <schema> -f -`). A plain SQL backup is already text. To check
     first: that the image carries `pg_restore` next to `pg_dump`, and the cost of downloading a
     big backup whole just to preview it.
+19. [ ] **Fixes left by the code audit of 0.1.8:**
+    - **Run now followed by the console:** one failed poll (the network drops a second) shows the
+      run as failed while it goes on, in Backups and in the canvas. Keep polling, leave only on a
+      401, a 404 or a few failures in a row, in one helper of `RunsRepo` both cubits use.
+    - **A canvas save with repeated node ids** (`new_1` twice) is a `500`; a `422` naming it
+      (`validations.duplicateNode`).
+    - **An import with runs `queued` or `running`** (a file edited by hand) shows a phantom run
+      until a restart; refuse those statuses.
+    - **A slow upload line:** each 16 MiB part has 5 minutes, so under ~0.45 Mbit/s a backup over
+      16 MiB never ends. Say it in DECISIONS §6, or grow the timeout with the part.
